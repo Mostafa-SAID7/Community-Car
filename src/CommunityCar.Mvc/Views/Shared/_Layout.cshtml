@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Community Car</title>
     
+    <link rel="icon" type="image/png" href="~/images/logo/logo.png" />
+
     <!-- Libraries CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
@@ -21,7 +23,7 @@
 <body>
     <partial name="_Header" />
     
-    <main role="main" class="container-xxl my-4">
+    <main role="main" class="container-fluid my-4">
         @{
             var hideSidebars = ViewData["HideSidebars"] as bool? ?? false;
         }
@@ -97,7 +99,6 @@
     <script src="~/js/components/dropdown.js"></script>
     <script src="~/js/components/toast.js"></script>
     <script src="~/js/components/charts.js"></script>
-    <script src="~/js/components/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
     <script src="~/js/components/notification.js"></script>
     

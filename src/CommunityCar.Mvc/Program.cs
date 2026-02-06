@@ -82,8 +82,10 @@ var localizationOptions = new RequestLocalizationOptions()
 app.UseRequestLocalization(localizationOptions);
 
 // Handle status code errors (404, 401, etc.)
+// Handle status code errors (404, 401, etc.)
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -5,9 +5,26 @@
     var answers = ViewBag.Answers as IEnumerable<AnswerDto> ?? new List<AnswerDto>();
 }
 
-<div class="container py-4">
+<link rel="stylesheet" href="~/css/pages/qa.css" />
+
+<div class="container qa-container py-4">
     <div class="row">
-        <div class="col-lg-9">
+        <div class="col-12">
+            <!-- Quick Tip Alert -->
+            <div class="alert alert-info border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%); border-left: 4px solid var(--bs-info) !important;">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-lightbulb text-info fs-4 me-3 mt-1"></i>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-1">Quick Tip</h6>
+                        <p class="mb-0 small">Be detailed and specific when providing answers to help the community better.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
             <div class="question-header mb-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -30,8 +47,8 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-body">
+            <div class="question-detail">
+                <div class="question-detail-header">
                     <div class="d-flex gap-3">
                         <div class="vote-controls d-flex flex-column align-items-center" style="width: 50px;">
                             <button class="btn btn-link p-0 fs-3 @(Model.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteQuestion('@Model.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
@@ -52,21 +69,51 @@
                                     <li class="d-flex gap-2">
                                         <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 1)" title="Like">👍</button>
                                         <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 2)" title="Love">❤️</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 3)" title="Helpful">🙌</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 4)" title="Thinking">🤔</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 3)" title="Celebrate">🙌</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 4)" title="Think">🤔</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 5)" title="Insightful">💡</button>
                                     </li>
                                 </ul>
                             </div>
                             
-                            <button class="btn btn-link link-secondary p-0 fs-4" onclick="shareQuestion('@Model.Id')">
-                                <i class="bi bi-share"></i>
-                            </button>
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-link link-secondary p-0 fs-4 dropdown-toggle-no-caret" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false" 
+                                        title="Share">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="min-width: 150px;">
+                                    <li>
+                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'Facebook')">
+                                            <i class="fab fa-facebook text-primary me-2"></i>Facebook
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'Twitter')">
+                                            <i class="fab fa-x-twitter text-dark me-2"></i>Twitter
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'LinkedIn')">
+                                            <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <button class="dropdown-item rounded small" onclick="shareQuestion('@Model.Id', 'Clipboard')">
+                                            <i class="fas fa-link text-secondary me-2"></i>Copy Link
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="flex-grow-1">
                             <div class="reaction-summary mb-2" id="questionReactions">
                                 <!-- Populated via JS -->
                             </div>
-                            <div class="question-content mb-4">
+                            <div class="question-detail-content">
                                 @Html.Raw(Model.Content.Replace("\n", "<br/>"))
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-4">
@@ -101,8 +148,12 @@
                                             @if (User.Identity?.IsAuthenticated == true && Model.AuthorId == Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString()))
                                             {
                                                 <div class="mt-1 d-flex gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="text-secondary smallest text-decoration-none hover-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="deleteQuestion('@Model.Id')"><i class="bi bi-trash me-1"></i>Delete</button>
+                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" data-bs-toggle="modal" data-bs-target="#editQuestionModal">
+                                                        <i class="bi bi-pencil me-1"></i>Edit
+                                                    </button>
+                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="confirmDeleteQuestion('@Model.Id')">
+                                                        <i class="bi bi-trash me-1"></i>Delete
+                                                    </button>
                                                 </div>
                                             }
                                         </div>
@@ -114,11 +165,11 @@
             </div>
 
             <div class="answers-section">
-                <h3 class="h5 mb-3">@answers.Count() Answers</h3>
+                <h3 class="answers-header">@answers.Count() Answers</h3>
                 <div id="answersList">
                 @foreach (var answer in answers)
                 {
-                    <div class="card mb-3 @(answer.IsAccepted ? "border-success" : "")">
+                    <div class="card mb-3 @(answer.IsAccepted ? "border-success" : "")" id="answer-@answer.Id">
                         <div class="card-body">
                             <div class="d-flex gap-3">
                                 <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
@@ -168,7 +219,7 @@
                                                     <span class="text-muted d-none d-sm-inline">•</span>
                                                     <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" onclick="editAnswer('@answer.Id')">Edit</button>
                                                     <span class="text-muted d-none d-sm-inline">•</span>
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="deleteAnswer('@Model.Id', '@answer.Id')">Delete</button>
+                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="confirmDeleteAnswer('@Model.Id', '@answer.Id')">Delete</button>
                                                 }
                                             </div>
                                         </div>
@@ -210,7 +261,7 @@
             </div>
 
             <div class="post-answer mt-5">
-                <h4 class="h5 mb-3">Your Answer</h4>
+                <h4 class="h5 fw-bold mb-3">Your Answer</h4>
                 <form id="answerForm" asp-controller="Answers" asp-action="Create" method="post">
                     <input type="hidden" name="QuestionId" value="@Model.Id" />
                     <div id="answerValidationErrors" class="alert alert-danger d-none mb-3"></div>
@@ -224,17 +275,6 @@
                 </form>
             </div>
         </div>
-
-        <div class="col-lg-3">
-            <div class="sidebar">
-                <div class="card bg-light border-0 mb-4">
-                    <div class="card-body">
-                        <h5 class="h6 card-title">Quick Tip</h5>
-                        <p class="small text-secondary mb-0">Be detailed and specific when providing answers to help the community better.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     @* Related Questions Section *@
@@ -246,11 +286,11 @@
                     <h4 class="h5 fw-bold mb-0">Related Questions</h4>
                 </div>
                 
-                <div class="row g-3">
+                <div class="row g-3 related-questions">
                     @foreach (var relatedQuestion in (List<QuestionDto>)ViewBag.RelatedQuestions)
                     {
                         <div class="col-md-6">
-                            <div class="card h-100 border shadow-sm hover-shadow-lg transition">
+                            <div class="card h-100 hover-lift">
                                 <div class="card-body">
                                     <h5 class="h6 card-title mb-2">
                                         <a href="@Url.Action("Details", "Questions", new { idOrSlug = relatedQuestion.Slug ?? relatedQuestion.Id.ToString() })" class="text-decoration-none text-dark">
@@ -297,6 +337,63 @@
     }
 </div>
 
+<!-- Edit Question Modal -->
+<div class="modal fade modal-premium" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title" id="editQuestionModalLabel">
+                            <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Question
+                        </h5>
+                        <button type="button" class="btn-close-premium" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p class="mb-0 smallest text-muted mt-2">Revise your question to make it clearer for the community.</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="editQuestionForm">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-secondary">Title</label>
+                        <input type="text" name="Title" class="form-control form-control-lg" value="@Model.Title" required minlength="10" maxlength="150" placeholder="e.g. How to replace a car battery?">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-secondary">Category</label>
+                        <select name="CategoryId" class="form-select" required>
+                            <option value="">-- Select Category --</option>
+                            @foreach (var category in (IEnumerable<CategoryDto>)ViewBag.Categories)
+                            {
+                                <option value="@category.Id" selected="@(category.Id == Model.CategoryId)">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-secondary">Details</label>
+                        <textarea name="Content" class="form-control" rows="10" required minlength="20" placeholder="Explain your question in detail...">@Model.Content</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-secondary">Tags</label>
+                        <input type="text" name="Tags" class="form-control" data-tag-input="true" data-max-tags="5" value="@Model.Tags" placeholder="e.g. battery, maintenance, car">
+                        <div class="form-text smallest text-muted mt-1">Press Enter or comma to add a tag. Max 5 tags.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light px-4 fw-600" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary px-4 fw-700 shadow-sm" onclick="saveQuestionEdit()" id="btnSaveQuestion">
+                    <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <style>
         .vote-active-up { color: #f48024 !important; }
@@ -304,9 +401,11 @@
         .bookmark-active { color: #0d6efd !important; }
         .dropdown-toggle-no-caret::after { display: none; }
     </style>
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
     <script>
+        // Tag Suggestions for Edit Modal
+        window.tagSuggestions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.TagSuggestions ?? new List<TagDto>()));
+
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/questionHub")
             .build();
@@ -470,9 +569,11 @@
             if (votingLocks.has(id)) return;
             votingLocks.add(id);
 
-            const btnUp = document.querySelector(`button[onclick="voteQuestion('${id}', true)"]`);
-            const btnDown = document.querySelector(`button[onclick="voteQuestion('${id}', false)"]`);
+            const btnUp = document.querySelector(`.question-detail button[onclick*="voteQuestion('${id}', true)"]`);
+            const btnDown = document.querySelector(`.question-detail button[onclick*="voteQuestion('${id}', false)"]`);
             const countSpan = btnUp.nextElementSibling;
+            
+            const currentScore = parseInt(countSpan.innerText);
             
             try {
                 const response = await fetch(`/Questions/Vote/${id}?isUpvote=${isUpvote}`, { 
@@ -482,26 +583,32 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    countSpan.innerText = data.voteCount;
+                    
+                    // If backend return same count and userVote as before, it means toggle-off was blocked or score floor hit
+                    if (data.voteCount === currentScore) {
+                        // Minimal feedback: just a slight shake if it was a "no-change" event
+                        const activeBtn = isUpvote ? btnUp : btnDown;
+                        activeBtn.classList.add('vote-blocked');
+                        setTimeout(() => activeBtn.classList.remove('vote-blocked'), 300);
+                        
+                        // If it's already active, we don't need a toast, just stay active.
+                    } else {
+                        countSpan.innerText = data.voteCount;
+                        animateElement(countSpan, 'pop');
+                    }
                     
                     btnUp.classList.remove('vote-active-up');
                     btnUp.classList.add('link-secondary');
                     btnDown.classList.remove('vote-active-down');
                     btnDown.classList.add('link-secondary');
 
-                    if (data.userVote === 1) {
+                    if (data.userVote === 1 || data.UserVote === 1) {
                         btnUp.classList.add('vote-active-up');
                         btnUp.classList.remove('link-secondary');
-                    } else if (data.userVote === -1) {
+                    } else if (data.userVote === -1 || data.UserVote === -1) {
                         btnDown.classList.add('vote-active-down');
                         btnDown.classList.remove('link-secondary');
                     }
-                    
-                    let message = data.userVote === 1 ? "Upvoted!" : (data.userVote === -1 ? "Downvoted!" : "Vote removed.");
-                    Toast.show(message, "success");
-                } else {
-                    const data = await response.json();
-                    Toast.show(data.message || "Operation failed", "error");
                 }
             } catch (err) { 
                 console.error(err); 
@@ -549,11 +656,6 @@
                 }
             } catch (err) { 
                 console.error(err); 
-            } finally {
-                votingLocks.delete(id);
-            }
-        }
-
         function bookmarkQuestion(id) {
             const btn = document.getElementById('btnBookmark');
             const icon = btn.querySelector('i');
@@ -567,10 +669,10 @@
                     if (r.ok) {
                         if (data.isBookmarked) {
                             icon.className = 'bi bi-bookmark-fill bookmark-active';
-                            Toast.show("Bookmarked successfully!", "success");
+                            // Toast.show("Bookmarked successfully!", "success");
                         } else {
                             icon.className = 'bi bi-bookmark';
-                            Toast.show("Bookmark removed.", "success");
+                            // Toast.show("Bookmark removed.", "success");
                         }
                     } else {
                         Toast.show(data.message || "Failed to bookmark", "error");
@@ -593,20 +695,36 @@
                 });
         }
 
-        function shareQuestion(id) {
+        function shareQuestion(id, platform) {
             const url = window.location.href;
-            fetch(`/Questions/Share/${id}?platform=Clipboard&sharedUrl=${encodeURIComponent(url)}`, { 
+            
+            fetch(`/Questions/Share/${id}?platform=${platform}&sharedUrl=${encodeURIComponent(url)}`, { 
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(async r => {
-                    const data = await r.json();
                     if (r.ok) {
-                        navigator.clipboard.writeText(url).then(() => {
-                            Toast.show("Link copied to clipboard!", "success");
-                        });
+                        const shareUrl = encodeURIComponent(url);
+                        const title = encodeURIComponent(document.title);
+                        
+                        switch(platform) {
+                            case 'Facebook':
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
+                                break;
+                            case 'Twitter':
+                                window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${title}`, '_blank');
+                                break;
+                            case 'LinkedIn':
+                                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank');
+                                break;
+                            case 'Clipboard':
+                                navigator.clipboard.writeText(url).then(() => {
+                                    Toast.show("Link copied to clipboard!", "success");
+                                });
+                                break;
+                        }
                     } else {
-                        Toast.show(data.message || "Share failed", "error");
+                        Toast.show("Share failed", "error");
                     }
                 });
         }
@@ -617,13 +735,17 @@
             
             let html = '';
             summary.forEach(s => {
-                const emoji = getEmoji(s.reactionType);
-                const label = getReactionLabel(s.reactionType);
-                html += `<span class="badge bg-light text-dark border me-1 ${s.isUserReaction ? 'border-primary' : ''}" 
+                const rType = s.reactionType !== undefined ? s.reactionType : s.ReactionType;
+                const count = s.count !== undefined ? s.count : s.Count;
+                const isUser = s.isUserReaction !== undefined ? s.isUserReaction : s.IsUserReaction;
+                
+                const emoji = getEmoji(rType);
+                const label = getReactionLabel(rType);
+                html += `<span class="badge bg-light text-dark border me-1 ${isUser ? 'border-primary' : ''}" 
                                 style="cursor:pointer" 
                                 data-bs-toggle="tooltip" title="${label}"
-                                onclick="reactQuestion('@Model.Id', ${s.reactionType})">
-                            ${emoji} ${s.count}
+                                onclick="reactQuestion('@Model.Id', ${rType})">
+                            ${emoji} ${count}
                          </span>`;
             });
             container.innerHTML = html;
@@ -640,6 +762,8 @@
                 case 2: return '❤️';
                 case 3: return '🙌';
                 case 4: return '🤔';
+                case 5: return '💡';
+                case 6: return '❓';
                 default: return '❓';
             }
         }
@@ -649,7 +773,9 @@
                 case 1: return 'Like';
                 case 2: return 'Love';
                 case 3: return 'Celebrate';
-                case 4: return 'Insightful';
+                case 4: return 'Think';
+                case 5: return 'Insightful';
+                case 6: return 'Curious';
                 default: return 'React';
             }
         }
@@ -686,15 +812,55 @@
             }
         }
 
-        // Deletion logic
-        async function deleteQuestion(id) {
-            if (!confirm("Are you sure you want to delete this question? This cannot be undone.")) return;
+        function editAnswer(aId) {
+            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
+            if (!answerItem) return;
+
+            const contentDiv = answerItem.querySelector('.answer-content');
+            if (contentDiv.querySelector('textarea')) return; // Already editing
+
+            const originalHtml = contentDiv.innerHTML;
+            const originalContent = originalHtml.replace(/<br\s*\/?>/gi, '\n').trim();
             
-            const formData = new FormData();
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-            
+            contentDiv.innerHTML = `
+                <div class="edit-answer-container mt-2">
+                    <textarea class="form-control bg-light border-0 mb-2" rows="5" style="border-radius: 0.75rem;">${originalContent}</textarea>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button class="btn btn-sm btn-light px-3" onclick="cancelAnswerEdit('${aId}', '${encodeURIComponent(originalHtml)}')">Cancel</button>
+                        <button class="btn btn-sm btn-primary px-3" onclick="saveAnswerEdit('${aId}')">Save</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function cancelAnswerEdit(aId, encodedHtml) {
+            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
+            if (!answerItem) return;
+            const contentDiv = answerItem.querySelector('.answer-content');
+            contentDiv.innerHTML = decodeURIComponent(encodedHtml);
+        }
+
+        async function saveAnswerEdit(aId) {
+            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
+            const textarea = answerItem.querySelector('textarea');
+            const newContent = textarea.value.trim();
+
+            if (newContent.length < 20) {
+                Toast.show("Answer must be at least 20 characters.", "error");
+                return;
+            }
+
+            const btn = textarea.nextElementSibling.querySelector('.btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving';
+
             try {
-                const response = await fetch(`/Questions/Delete/${id}`, {
+                const formData = new FormData();
+                formData.append('id', aId);
+                formData.append('content', newContent);
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                const response = await fetch(`/Answers/Edit/${aId}`, {
                     method: 'POST',
                     body: formData,
                     headers: { 
@@ -702,9 +868,49 @@
                         'X-Requested-With': 'XMLHttpRequest' 
                     }
                 });
+
+                if (response.ok) {
+                    const contentDiv = answerItem.querySelector('.answer-content');
+                    contentDiv.innerHTML = newContent.replace(/\n/g, '<br/>');
+                    Toast.show("Answer updated!", "success");
+                } else {
+                    Toast.show("Failed to update answer", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                Toast.show("Error saving answer", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save";
+            }
+        }
+
+        function confirmDeleteQuestion(id) {
+            window.Modal.confirm(
+                'Delete Question?',
+                'Are you sure you want to permanently delete this question? This action cannot be undone.',
+                'Delete Permanently'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    performDeleteQuestion(id);
+                }
+            });
+        }
+
+        async function performDeleteQuestion(id) {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            
+            try {
+                const response = await fetch(`/Questions/Delete/${id}`, {
+                    method: 'POST',
+                    headers: { 
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest' 
+                    }
+                });
                 
                 if (response.ok) {
-                    Toast.show("Question deleted successfully", "success");
+                    Toast.show("Question deleted!", "success");
                     window.location.href = '/Questions';
                 } else {
                     Toast.show("Failed to delete question", "error");
@@ -715,15 +921,19 @@
             }
         }
 
-        async function deleteAnswer(qId, aId) {
-            if (!confirm("Are you sure you want to delete this answer?")) return;
+        async function saveQuestionEdit() {
+            const form = document.getElementById('editQuestionForm');
+            const btn = document.getElementById('btnSaveQuestion');
+            const spinner = btn.querySelector('.spinner-border');
             
-            const formData = new FormData();
-            formData.append('questionId', qId);
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-            
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
             try {
-                const response = await fetch(`/Answers/Delete/${aId}`, {
+                const formData = new FormData(form);
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                const response = await fetch(`/Questions/Edit/${formData.get('Id')}`, {
                     method: 'POST',
                     body: formData,
                     headers: { 
@@ -731,23 +941,20 @@
                         'X-Requested-With': 'XMLHttpRequest' 
                     }
                 });
-                
+
                 if (response.ok) {
-                    Toast.show("Answer deleted successfully", "success");
+                    Toast.show("Question updated!", "success");
                     location.reload();
                 } else {
-                    Toast.show("Failed to delete answer", "error");
+                    Toast.show("Failed to update question. Check inputs.", "error");
                 }
             } catch (err) {
                 console.error(err);
-                Toast.show("Error deleting answer", "error");
+                Toast.show("Error updating question", "error");
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
             }
-        }
-
-        function editAnswer(aId) {
-            // Placeholder: redirect to edit page or open inline editor
-            // For now, let's just show a toast or redirect if we had a proper GET Edit
-            Toast.show("Edit functionality coming soon!", "info");
         }
 
         const answerForm = document.getElementById('answerForm');
@@ -803,6 +1010,43 @@
                 btnSpinner.classList.add('d-none');
             }
         });
-    </script>
+        function confirmDeleteAnswer(qId, aId) {
+            window.Modal.confirm(
+                'Delete Answer?',
+                'Are you sure you want to delete this answer? This action cannot be undone.',
+                'Delete Permanently'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    performDeleteAnswer(qId, aId);
+                }
+            });
+        }
+
+        async function performDeleteAnswer(qId, aId) {
+            const formData = new FormData();
+            formData.append('questionId', qId);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            
+            try {
+                const response = await fetch(`/Answers/Delete/${aId}`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest' 
+                    }
+                });
+                
+                if (response.ok) {
+                    Toast.show("Answer deleted!", "success");
+                    location.reload();
+                } else {
+                    Toast.show("Failed to delete answer", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                Toast.show("Error deleting answer", "error");
+            }
+        }
     </script>
 }

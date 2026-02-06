@@ -64,6 +64,22 @@
     --transition-fast: 150ms ease-in-out;
     --transition-base: 250ms ease-in-out;
     --transition-slow: 350ms ease-in-out;
+
+    /* --- Premium/Glass Design Tokens (Promoted from QA) --- */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-blur: 20px;
+    --glass-border: rgba(255, 255, 255, 0.3);
+
+    /* Premium Gradients */
+    --gradient-primary-glow: linear-gradient(135deg, var(--red-500) 0%, var(--red-600) 50%, #ff6b6b 100%);
+    --gradient-premium-red: linear-gradient(135deg, #fb2c36 0%, #e7000b 25%, #c10007 50%, #ff6b6b 100%);
+    --gradient-glass-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+    --gradient-accent-red: linear-gradient(90deg, var(--red-400) 0%, var(--red-600) 100%);
+
+    /* Premium Shadows */
+    --shadow-premium-subtle: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-premium-large: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-premium-glow: 0 0 40px rgba(251, 44, 54, 0.15);
 }
 
 /* ========================================
@@ -199,4 +215,20 @@
     --bg-surface: #1e1e1e;
     --bg-surface-rgb: 30, 30, 30;
     --border-subtle: var(--gray-700);
+
+    /* --- Dark Mode Premium Tokens --- */
+    --glass-bg: rgba(30, 30, 30, 0.82);
+    --glass-blur: 20px;
+    /* Assuming blur remains constant */
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --gradient-primary-glow: linear-gradient(135deg, var(--red-500) 0%, var(--red-600) 50%, #ff6b6b 100%);
+    /* Assuming gradients remain constant unless specified */
+    --gradient-premium-red: linear-gradient(135deg, #fb2c36 0%, #e7000b 25%, #c10007 50%, #ff6b6b 100%);
+    /* Assuming gradients remain constant unless specified */
+    --gradient-glass-card: linear-gradient(145deg, rgba(45, 45, 45, 0.9) 0%, rgba(30, 30, 30, 0.95) 100%);
+    --gradient-accent-red: linear-gradient(90deg, var(--red-400) 0%, var(--red-600) 100%);
+    /* Assuming gradients remain constant unless specified */
+    --shadow-premium-subtle: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-premium-large: 0 16px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-premium-glow: 0 0 40px rgba(251, 44, 54, 0.25);
 }

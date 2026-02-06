@@ -4,10 +4,13 @@
     ViewData["Title"] = "Edit Question";
 }
 
+<link rel="stylesheet" href="~/css/pages/qa.css" />
+
 <div class="container" style="max-width: 900px; margin: 40px auto;">
-    <div class="card">
+    <div class="card qa-create-card">
         <div class="card-header">
             <h1 class="card-title">Edit Question</h1>
+            <p class="text-white-50 mb-0">Update your question details</p>
         </div>
 
         <div class="card-body">
@@ -19,26 +22,26 @@
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="CategoryId" class="form-label">Category</label>
-                    <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories ?? Enumerable.Empty<CategoryDto>(), "Id", "Name"))">
+                <div class="form-group mb-4">
+                    <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
+                    <select asp-for="CategoryId" class="form-select form-select-lg" required asp-items="@(new SelectList(Model.Categories ?? Enumerable.Empty<CategoryDto>(), "Id", "Name"))">
                         <option value="">-- Select Category --</option>
                     </select>
-                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    <span asp-validation-for="CategoryId" class="text-danger smallest"></span>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Content" class="form-label">Details</label>
+                <div class="form-group mb-4">
+                    <label asp-for="Content" class="form-label fw-bold">Details</label>
                     <textarea asp-for="Content" class="form-control" rows="10"></textarea>
-                    <span asp-validation-for="Content" class="text-danger"></span>
+                    <span asp-validation-for="Content" class="text-danger smallest"></span>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Tags" class="form-label">Tags</label>
-                    <input asp-for="Tags" class="form-control" placeholder="comma separated" />
-                    <span asp-validation-for="Tags" class="text-danger"></span>
+                <div class="form-group mb-4">
+                    <label asp-for="Tags" class="form-label fw-bold">Tags</label>
+                    <input asp-for="Tags" class="form-control" data-tag-input="true" data-max-tags="5" placeholder="comma separated" />
+                    <span asp-validation-for="Tags" class="text-danger smallest"></span>
                 </div>
-                <div class="d-flex justify-content-end gap-2">
-                    <a asp-action="Details" asp-route-idOrSlug="@(Model.Id)" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                <div class="d-flex justify-content-end gap-2 pt-3">
+                    <a asp-action="Details" asp-route-idOrSlug="@(Model.Id)" class="btn btn-light px-4 fw-600">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-700 shadow-sm">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -46,5 +49,8 @@
 </div>
 
 @section Scripts {
+    <script>
+        window.tagSuggestions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.TagSuggestions ?? new List<TagDto>()));
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

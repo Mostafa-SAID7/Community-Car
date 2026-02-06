@@ -43,6 +43,7 @@ public class CreateQuestionViewModel
     [StringLength(5000, MinimumLength = 20, ErrorMessage = "Content must be between 20 and 5000 characters")]
     public string Content { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Category is required")]
     public Guid? CategoryId { get; set; }
     public IEnumerable<CategoryDto>? Categories { get; set; }
 
@@ -62,6 +63,7 @@ public class EditQuestionViewModel
     [StringLength(5000, MinimumLength = 20, ErrorMessage = "Content must be between 20 and 5000 characters")]
     public string Content { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Category is required")]
     public Guid? CategoryId { get; set; }
     public IEnumerable<CategoryDto>? Categories { get; set; }
 

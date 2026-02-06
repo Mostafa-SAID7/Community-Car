@@ -59,6 +59,13 @@ public static class DependencyInjection
             options.AccessDeniedPath = "/Identity/Account/AccessDenied";
         });
 
+        // Configure external cookie to be permissive for localhost
+        services.PostConfigure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(Microsoft.AspNetCore.Identity.IdentityConstants.ExternalScheme, options =>
+        {
+            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+        });
+
         services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
@@ -70,11 +77,33 @@ public static class DependencyInjection
             {
                 options.ClientId = configuration["SocialAuth:Google:ClientId"] ?? "google-client-id";
                 options.ClientSecret = configuration["SocialAuth:Google:ClientSecret"] ?? "google-client-secret";
+                
+                // Fix for "Correlation failed" on localhost
+                options.CorrelationCookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+
+                options.Events.OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Login?error=" + System.Net.WebUtility.UrlEncode(context.Failure?.Message ?? "Login failed"));
+                    context.HandleResponse();
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
             })
             .AddFacebook(options =>
             {
                 options.AppId = configuration["SocialAuth:Facebook:AppId"] ?? "facebook-app-id";
                 options.AppSecret = configuration["SocialAuth:Facebook:AppSecret"] ?? "facebook-app-secret";
+                
+                // Fix for "Correlation failed" on localhost
+                options.CorrelationCookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+
+                options.Events.OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Login?error=" + System.Net.WebUtility.UrlEncode(context.Failure?.Message ?? "Login failed"));
+                    context.HandleResponse();
+                    return System.Threading.Tasks.Task.CompletedTask;
+                };
             });
 
 
@@ -96,6 +125,7 @@ public static class DependencyInjection
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IFriendshipService, FriendshipService>();
         services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<ITagService, TagService>();
         services.AddScoped<INotificationService, NotificationService>();
 
         return services;

@@ -138,7 +138,16 @@ public class QuestionService : IQuestionService
 
     public async Task<QuestionDto?> GetQuestionByIdAsync(Guid questionId, Guid? currentUserId = null)
     {
-        var question = await _questionRepository.GetByIdAsync(questionId);
+        var question = await _questionRepository.GetQueryable()
+            .Include(q => q.Author)
+            .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
+            .Include(q => q.QuestionTags)
+                .ThenInclude(qt => qt.Tag)
+            .FirstOrDefaultAsync(q => q.Id == questionId);
+
         if (question == null) return null;
         
         var dto = _mapper.Map<QuestionDto>(question);
@@ -151,7 +160,16 @@ public class QuestionService : IQuestionService
 
     public async Task<QuestionDto?> GetQuestionBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var question = await _questionRepository.FirstOrDefaultAsync(q => q.Slug == slug);
+        var question = await _questionRepository.GetQueryable()
+            .Include(q => q.Author)
+            .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
+            .Include(q => q.QuestionTags)
+                .ThenInclude(qt => qt.Tag)
+            .FirstOrDefaultAsync(q => q.Slug == slug);
+
         if (question == null) return null;
 
         var dto = _mapper.Map<QuestionDto>(question);
@@ -167,6 +185,9 @@ public class QuestionService : IQuestionService
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
             .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
             .AsQueryable();
@@ -263,6 +284,9 @@ public class QuestionService : IQuestionService
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
             .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
             .AsQueryable();
@@ -302,6 +326,9 @@ public class QuestionService : IQuestionService
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
             .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
             .AsQueryable();
@@ -352,6 +379,9 @@ public class QuestionService : IQuestionService
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
             .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
             .Where(q => q.AuthorId != userId);
@@ -398,6 +428,9 @@ public class QuestionService : IQuestionService
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
             .Include(q => q.Answers)
+            .Include(q => q.Reactions)
+            .Include(q => q.Bookmarks)
+            .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
             .Include(q => q.Category)
@@ -634,26 +667,40 @@ public class QuestionService : IQuestionService
             {
                 if (existingVote.IsDeleted)
                 {
-                    // RESURRECT
+                    // If it was deleted, we treat it as "changing" or "resurrecting"
+                    // But if they are just trying to resurrect the SAME state (e.g. upvoted before, now clicking upvote again)
+                    // we allow it.
+                    
+                    int delta = 0;
+                    bool shouldResurrect = true;
+
+                    if (existingVote.IsUpvote == isUpvote)
+                    {
+                        // Resurrecting same type: +1 (if up) or -1 (if down)
+                        delta = isUpvote ? 1 : -1;
+                    }
+                    else 
+                    {
+                        // Resurrecting opposite type: +1 (now up) or -1 (now down)
+                        existingVote.Toggle();
+                        delta = isUpvote ? 1 : -1;
+                    }
+
+                    // Score Floor Check: If delta would make score < 0, block.
+                    if (question.VoteCount + delta < 0) return;
+
                     existingVote.IsDeleted = false;
                     existingVote.DeletedAt = null;
                     existingVote.DeletedBy = null;
-                    
-                    if (existingVote.IsUpvote != isUpvote)
-                    {
-                        existingVote.Toggle();
-                    }
-                    
-                    question.UpdateVoteCount(isUpvote ? 1 : -1);
+                    question.UpdateVoteCount(delta);
                 }
                 else
                 {
                     // ACTIVE
                     if (existingVote.IsUpvote == isUpvote)
                     {
-                        // Clicked same button -> Remove vote
-                        question.UpdateVoteCount(isUpvote ? -1 : 1);
-                        _questionVoteRepository.Delete(existingVote);
+                        // Clicked same button -> NO TOGGLE OFF. Return immediately.
+                        return;
                     }
                     else
                     {
@@ -661,19 +708,28 @@ public class QuestionService : IQuestionService
                         var oldValue = existingVote.IsUpvote ? 1 : -1;
                         existingVote.Toggle();
                         var newValue = existingVote.IsUpvote ? 1 : -1;
-                        question.UpdateVoteCount(newValue - oldValue);
+                        var delta = newValue - oldValue;
+
+                        // Score Floor Check
+                        if (question.VoteCount + delta < 0) return;
+
+                        question.UpdateVoteCount(delta);
                     }
                 }
             }
             else
             {
                 // NEW
+                int delta = isUpvote ? 1 : -1;
+                if (question.VoteCount + delta < 0) return;
+
                 var vote = new QuestionVote(questionId, userId, isUpvote);
                 await _questionVoteRepository.AddAsync(vote);
-                question.UpdateVoteCount(isUpvote ? 1 : -1);
+                question.UpdateVoteCount(delta);
             }
 
             await _uow.SaveChangesAsync();
+            // ... Notification logic ...
 
             // Notify author if a new vote was added or resurrected (and not removed)
             var freshVote = await _questionVoteRepository.GetQueryable()
@@ -759,26 +815,31 @@ public class QuestionService : IQuestionService
             {
                 if (existingVote.IsDeleted)
                 {
-                    // RESURRECT
+                    int delta = 0;
+                    if (existingVote.IsUpvote == isUpvote)
+                    {
+                        delta = isUpvote ? 1 : -1;
+                    }
+                    else 
+                    {
+                        existingVote.Toggle();
+                        delta = isUpvote ? 1 : -1;
+                    }
+
+                    if (answer.VoteCount + delta < 0) return;
+
                     existingVote.IsDeleted = false;
                     existingVote.DeletedAt = null;
                     existingVote.DeletedBy = null;
-                    
-                    if (existingVote.IsUpvote != isUpvote)
-                    {
-                        existingVote.Toggle();
-                    }
-                    
-                    answer.UpdateVoteCount(isUpvote ? 1 : -1);
+                    answer.UpdateVoteCount(delta);
                 }
                 else
                 {
                     // ACTIVE
                     if (existingVote.IsUpvote == isUpvote)
                     {
-                        // Remove
-                        answer.UpdateVoteCount(isUpvote ? -1 : 1);
-                        _answerVoteRepository.Delete(existingVote);
+                        // NO TOGGLE OFF
+                        return;
                     }
                     else
                     {
@@ -786,16 +847,23 @@ public class QuestionService : IQuestionService
                         var oldValue = existingVote.IsUpvote ? 1 : -1;
                         existingVote.Toggle();
                         var newValue = existingVote.IsUpvote ? 1 : -1;
-                        answer.UpdateVoteCount(newValue - oldValue);
+                        var delta = newValue - oldValue;
+
+                        if (answer.VoteCount + delta < 0) return;
+
+                        answer.UpdateVoteCount(delta);
                     }
                 }
             }
             else
             {
                 // NEW
+                int delta = isUpvote ? 1 : -1;
+                if (answer.VoteCount + delta < 0) return;
+
                 var vote = new AnswerVote(answerId, userId, isUpvote);
                 await _answerVoteRepository.AddAsync(vote);
-                answer.UpdateVoteCount(isUpvote ? 1 : -1);
+                answer.UpdateVoteCount(delta);
             }
 
             await _uow.SaveChangesAsync();
@@ -1031,8 +1099,18 @@ public class QuestionService : IQuestionService
                 }
                 else
                 {
-                    // UPDATE OR TOGGLE? (Current logic: Update)
-                    existing.ChangeReaction(reactionType);
+                    if (existing.ReactionType == reactionType)
+                    {
+                        // TOGGLE OFF
+                        _questionReactionRepository.Delete(existing);
+                        await _uow.SaveChangesAsync();
+                        return null!;
+                    }
+                    else
+                    {
+                        // CHANGE REACTION
+                        existing.ChangeReaction(reactionType);
+                    }
                 }
             }
             else

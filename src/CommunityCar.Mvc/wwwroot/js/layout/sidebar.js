@@ -17,9 +17,15 @@ window.Sidebar = (function () {
     };
 
     function init() {
-        const toggleBtn = document.querySelector(SELECTORS.TOGGLE_BTN);
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', toggleSidebar);
+        console.log("Sidebar initialized");
+        const toggleBtns = document.querySelectorAll(SELECTORS.TOGGLE_BTN);
+        if (toggleBtns.length > 0) {
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleSidebar();
+                });
+            });
         }
 
         // Close sidebar when clicking backdrop
@@ -27,11 +33,21 @@ window.Sidebar = (function () {
         if (backdrop) {
             backdrop.addEventListener('click', closeSidebar);
         }
+
+        // Close sidebar when clicking a nav link on mobile
+        const sidebarLinks = document.querySelectorAll(`${SELECTORS.SIDEBAR} a`);
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            });
+        });
     }
 
-    function toggleSidebar(e) {
-        if (e) e.preventDefault();
+    function toggleSidebar() {
         document.body.classList.toggle(CLASSES.OPEN);
+        console.log("Sidebar toggled", document.body.classList.contains(CLASSES.OPEN));
     }
 
     function closeSidebar() {

@@ -1,10 +1,10 @@
 /**
  * Header Logic
  */
-const Header = {
+window.Header = {
     init: () => {
         console.log("Header initialized");
     }
 };
 
-document.addEventListener('DOMContentLoaded', Header.init);
+// Initialized by site.js

@@ -52,7 +52,8 @@
 
     /* When body has sidebar-open class */
     body.sidebar-open .sidebar-left {
-        left: 0;
+        left: 0 !important;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
     }
 
     /* Backdrop */
@@ -63,19 +64,26 @@
         width: 100vw;
         height: 100vh;
         background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         z-index: 1040;
         display: none;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
 
+    body.sidebar-open {
+        overflow: hidden;
+        /* Prevent scrolling when sidebar is open */
+    }
+
     body.sidebar-open .sidebar-backdrop {
-        display: block;
-        opacity: 1;
+        display: block !important;
+        opacity: 1 !important;
     }
 
     /* Hide right sidebar on mobile completely */
     .sidebar-right {
-        display: none;
+        display: none !important;
     }
 }

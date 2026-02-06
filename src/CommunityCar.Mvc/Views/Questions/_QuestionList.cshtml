@@ -64,27 +64,27 @@
 <!-- Questions List -->
 @if (!Model.Items.Any())
 {
-    <div class="text-center py-5">
-        <i class="fas fa-question-circle fa-4x text-muted mb-3"></i>
+    <div class="qa-empty-state">
+        <i class="fas fa-question-circle"></i>
         <h4>No questions found</h4>
         @if (!string.IsNullOrEmpty(searchTerm))
         {
-            <p class="text-muted">No results for "@searchTerm". Try a different search term.</p>
-            <a asp-action="Index" asp-route-tab="@currentTab" class="btn btn-secondary mt-3">
+            <p>No results for "@searchTerm". Try a different search term.</p>
+            <a asp-action="Index" asp-route-tab="@currentTab" class="btn btn-secondary mt-2">
                 <i class="fas fa-arrow-left me-2"></i>Clear Search
             </a>
         }
         else if (currentTab == "myquestions")
         {
-            <p class="text-muted">You haven't asked any questions yet.</p>
-            <a asp-action="Create" class="btn btn-primary mt-3">
+            <p>You haven't asked any questions yet.</p>
+            <a asp-action="Create" class="btn btn-primary mt-2">
                 <i class="fas fa-plus me-2"></i>Ask Your First Question
             </a>
         }
         else
         {
-            <p class="text-muted">Be the first to ask a question!</p>
-            <a asp-action="Create" class="btn btn-primary mt-3">
+            <p>Be the first to ask a question!</p>
+            <a asp-action="Create" class="btn btn-primary mt-2">
                 <i class="fas fa-plus me-2"></i>Ask Question
             </a>
         }
@@ -107,13 +107,13 @@ else
                             <i class="fas fa-caret-down fs-4"></i>
                         </button>
                     </div>
-                    <div class="stat-item text-center">
-                        <div class="small fw-bold">@question.AnswerCount</div>
-                        <div class="stat-label x-small text-muted">Answers</div>
+                    <div class="stat-item">
+                        <div class="stat-number">@question.AnswerCount</div>
+                        <div class="stat-label">Answers</div>
                     </div>
-                    <div class="stat-item text-center mt-1">
-                        <div class="small">@question.ViewCount</div>
-                        <div class="stat-label x-small text-muted">Views</div>
+                    <div class="stat-item">
+                        <div class="stat-number">@question.ViewCount</div>
+                        <div class="stat-label">Views</div>
                     </div>
                 </div>
 
@@ -178,22 +178,22 @@ else
                             </span>
                         }
 
-                        <div class="ms-auto d-flex gap-2 align-items-center">
+                        <div class="question-actions ms-auto d-flex gap-2 align-items-center">
                             <!-- Reaction Dropdown -->
                             <div class="reaction-container position-relative d-inline-block">
-                                <button class="btn btn-sm border-0 p-1 reaction-trigger @(question.CurrentUserReactionType.HasValue ? "border-primary" : "text-muted")" 
+                                <button class="btn btn-sm border-0 p-1 reaction-trigger @(question.CurrentUserReactionType.HasValue ? "text-danger" : "text-muted")" 
                                         type="button">
                                     @if (question.CurrentUserReactionType.HasValue)
                                     {
-                                        @(question.CurrentUserReactionType switch { 1 => "👍", 2 => "❤️", 3 => "🙌", 4 => "🤔", _ => "❓" })
+                                        <span class="fs-6">@(question.CurrentUserReactionType switch { 1 => "👍", 2 => "❤️", 3 => "🙌", 4 => "🤔", 5 => "💡", _ => "❓" })</span>
                                     }
                                     else
                                     {
                                         <i class="far fa-smile"></i>
                                     }
-                                    <span id="react-count-@question.Id">@question.ReactionCount</span>
+                                    <span class="ms-1 small" id="react-count-@question.Id">@question.ReactionCount</span>
                                 </button>
-                                <div class="reaction-popup shadow-sm border p-1 rounded bg-white" style="display: none; position: absolute; top: -110%; left: 50%; transform: translateX(-50%); z-index: 1000; flex-direction: row; gap: 4px;">
+                                <div class="reaction-popup" style="display: none; position: absolute; top: -110%; left: 50%; transform: translateX(-50%); z-index: 1000; flex-direction: row; gap: 4px;">
                                     <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 1)" data-bs-toggle="tooltip" title="Like">👍</button>
                                     <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 2)" data-bs-toggle="tooltip" title="Love">❤️</button>
                                     <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 3)" data-bs-toggle="tooltip" title="Celebrate">🙌</button>
@@ -202,18 +202,23 @@ else
                             </div>
 
                             <!-- Bookmark Button -->
-                            <button class="btn btn-sm border-0 p-1 @(question.IsBookmarkedByUser ? "bookmark-active" : "text-muted")" 
+                            <button class="btn btn-sm border-0 p-1 @(question.IsBookmarkedByUser ? "text-warning bookmark-active" : "text-muted")" 
                                     id="btn-bookmark-@question.Id"
-                                    onclick="bookmarkQuestionIndex('@question.Id')" title="Bookmark">
-                                <i class="fa@(question.IsBookmarkedByUser ? "s" : "r") fa-bookmark"></i> 
-                                <span id="bookmark-count-@question.Id">@question.BookmarkCount</span>
+                                    onclick="bookmarkQuestionIndex('@question.Id')" 
+                                    title="Bookmark">
+                                <i class="fa@(question.IsBookmarkedByUser ? "s" : "r") fa-bookmark"></i>
+                                <span class="ms-1 small" id="bookmark-count-@question.Id">@question.BookmarkCount</span>
                             </button>
 
                             <!-- Share Dropdown -->
                             <div class="dropdown d-inline-block">
                                 <button class="btn btn-sm text-muted border-0 p-1 dropdown-toggle-no-caret" 
-                                        type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Share">
-                                    <i class="fas fa-share-alt"></i> <span id="share-count-@question.Id">@question.ShareCount</span>
+                                        type="button" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false" 
+                                        title="Share">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span class="ms-1 small" id="share-count-@question.Id">@question.ShareCount</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="min-width: 150px;">
                                     <li><button class="dropdown-item rounded small mb-1" onclick="shareQuestionIndex('@question.Id', 'Facebook')"><i class="fab fa-facebook text-primary me-2"></i>Facebook</button></li>

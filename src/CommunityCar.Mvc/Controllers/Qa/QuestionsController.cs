@@ -16,15 +16,18 @@ namespace CommunityCar.Web.Controllers;
 public class QuestionsController : Controller
 {
     private readonly IQuestionService _questionService;
+    private readonly ITagService _tagService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IHubContext<QuestionHub> _hubContext;
 
     public QuestionsController(
         IQuestionService questionService,
+        ITagService tagService,
         ICurrentUserService currentUserService,
         IHubContext<QuestionHub> hubContext)
     {
         _questionService = questionService;
+        _tagService = tagService;
         _currentUserService = currentUserService;
         _hubContext = hubContext;
     }
@@ -102,9 +105,11 @@ public class QuestionsController : Controller
         
         var answers = await _questionService.GetAnswersAsync(question.Id, _currentUserService.UserId);
         var relatedQuestions = await _questionService.GetRelatedQuestionsAsync(question.Id, 4);
+        var categories = await _questionService.GetCategoriesAsync();
         
         ViewBag.Answers = answers;
         ViewBag.RelatedQuestions = relatedQuestions;
+        ViewBag.Categories = categories;
         return View(question);
     }
 
@@ -114,6 +119,9 @@ public class QuestionsController : Controller
     [HttpGet("Create")]
     public async Task<IActionResult> Create()
     {
+        var popularTags = await _tagService.GetPopularTagsAsync(20);
+        ViewBag.TagSuggestions = popularTags.IsSuccess ? popularTags.Value : new List<TagDto>();
+
         var model = new CreateQuestionViewModel
         {
             Categories = await _questionService.GetCategoriesAsync()
@@ -162,6 +170,9 @@ public class QuestionsController : Controller
         if (question.AuthorId != userId)
             return Forbid();
 
+        var popularTags = await _tagService.GetPopularTagsAsync(20);
+        ViewBag.TagSuggestions = popularTags.IsSuccess ? popularTags.Value : new List<TagDto>();
+
         var model = new EditQuestionViewModel
         {
             Id = question.Id,
@@ -199,6 +210,11 @@ public class QuestionsController : Controller
 
         var updatedQuestion = await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, model.CategoryId, model.Tags);
 
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Ok(new { success = true, slug = updatedQuestion.Slug });
+        }
+
         TempData["SuccessToast"] = "Question updated successfully!";
         return RedirectToAction(nameof(Details), new { idOrSlug = updatedQuestion.Slug ?? id.ToString() });
     }
@@ -217,6 +233,11 @@ public class QuestionsController : Controller
             return Forbid();
 
         await _questionService.DeleteQuestionAsync(id);
+
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Ok(new { success = true, message = "Question deleted." });
+        }
 
         TempData["SuccessToast"] = "Question deleted successfully!";
         return RedirectToAction(nameof(Index));

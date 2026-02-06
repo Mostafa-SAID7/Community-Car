@@ -1,10 +1,10 @@
 /**
  * Navigation Logic
  */
-const Navigation = {
+window.Navigation = {
     init: () => {
         console.log("Navigation initialized");
     }
 };
 
-document.addEventListener('DOMContentLoaded', Navigation.init);
+// Initialized by site.js

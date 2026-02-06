@@ -1,6 +1,6 @@
 /**
  * Theme Manager
- * Handles light/dark mode switching and persistence
+ * Handles light/dark mode switching, icon toggling, and persistence
  */
 
 class ThemeManager {
@@ -8,7 +8,7 @@ class ThemeManager {
         this.THEME_KEY = 'community-car-theme';
         this.THEME_LIGHT = 'light';
         this.THEME_DARK = 'dark';
-        
+
         this.init();
     }
 
@@ -17,7 +17,7 @@ class ThemeManager {
         const savedTheme = this.getSavedTheme();
         const systemTheme = this.getSystemTheme();
         const theme = savedTheme || systemTheme;
-        
+
         this.setTheme(theme, false);
         this.setupListeners();
     }
@@ -35,23 +35,41 @@ class ThemeManager {
 
     setTheme(theme, save = true) {
         document.documentElement.setAttribute('data-theme', theme);
-        
+
         if (save) {
             localStorage.setItem(this.THEME_KEY, theme);
         }
+
+        // Update Icons
+        this.updateIcons(theme === this.THEME_DARK);
 
         // Dispatch custom event for other components
         window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
     }
 
+    updateIcons(isDark) {
+        const moonIcons = document.querySelectorAll('.theme-icon-moon');
+        const sunIcons = document.querySelectorAll('.theme-icon-sun');
+
+        moonIcons.forEach(icon => {
+            if (isDark) icon.classList.add('d-none');
+            else icon.classList.remove('d-none');
+        });
+
+        sunIcons.forEach(icon => {
+            if (isDark) icon.classList.remove('d-none');
+            else icon.classList.add('d-none');
+        });
+    }
+
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const currentTheme = this.getCurrentTheme();
         const newTheme = currentTheme === this.THEME_LIGHT ? this.THEME_DARK : this.THEME_LIGHT;
         this.setTheme(newTheme);
     }
 
     getCurrentTheme() {
-        return document.documentElement.getAttribute('data-theme');
+        return document.documentElement.getAttribute('data-theme') || this.THEME_LIGHT;
     }
 
     setupListeners() {
@@ -64,9 +82,10 @@ class ThemeManager {
             });
         }
 
-        // Setup toggle buttons
+        // Setup toggle buttons using delegation for better reliability
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.theme-toggle') || e.target.closest('.theme-toggle-icon')) {
+            const toggleBtn = e.target.closest('.theme-toggle') || e.target.closest('.theme-toggle-icon');
+            if (toggleBtn) {
                 this.toggleTheme();
             }
         });

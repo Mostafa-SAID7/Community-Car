@@ -86,12 +86,33 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (entry.Entity is AuditLog || entry.Entity is SecurityAlert) return null;
 
+        var entityId = "0";
+        try
+        {
+            var primaryKey = entry.Metadata.FindPrimaryKey();
+            if (primaryKey != null)
+            {
+                var pkValues = primaryKey.Properties
+                    .Select(p => entry.Property(p.Name).CurrentValue)
+                    .ToArray();
+                entityId = string.Join(",", pkValues);
+            }
+            else if (entry.Metadata.FindProperty("Id") != null)
+            {
+                entityId = entry.Property("Id").CurrentValue?.ToString() ?? "0";
+            }
+        }
+        catch 
+        { 
+            // Fallback for safety
+        }
+
         var auditLog = new AuditLog
         {
             UserId = _currentUserService.UserId,
             UserName = user,
             EntityName = entry.Entity.GetType().Name,
-            EntityId = entry.Property("Id").CurrentValue?.ToString() ?? "0",
+            EntityId = entityId,
             Action = action,
             CreatedAt = now,
             CreatedBy = user

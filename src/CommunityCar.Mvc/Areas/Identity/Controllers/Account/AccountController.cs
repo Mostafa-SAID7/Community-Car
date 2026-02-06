@@ -71,13 +71,14 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult ExternalLogin(string provider, string? returnUrl = null)
     {
-        var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { area = "Identity", returnUrl });
+        var redirectUrl = Url.RouteUrl("ExternalLoginCallback", new { returnUrl });
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         return Challenge(properties, provider);
     }
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/ExternalLoginCallback", Name = "ExternalLoginCallback")]
     public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
     {
         if (remoteError != null)

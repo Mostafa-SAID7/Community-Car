@@ -97,17 +97,27 @@ public class AnswersController : Controller
         // In a real app we'd check ownership here via service
         await _questionService.UpdateAnswerAsync(id, model.Content);
 
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Ok(new { success = true, message = "Answer updated." });
+        }
+
         TempData["SuccessToast"] = "Answer updated successfully!";
         return RedirectToAction("Details", "Questions", new { idOrSlug = model.QuestionId });
     }
 
     [HttpPost("Delete/{id}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(Guid id, Guid questionId)
+    public async Task<IActionResult> Delete(Guid id, [FromForm] Guid questionId)
     {
         var userId = _currentUserService.UserId;
         // Ownership check should be in service
         await _questionService.DeleteAnswerAsync(id);
+
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Ok(new { success = true, message = "Answer deleted." });
+        }
 
         TempData["SuccessToast"] = "Answer deleted successfully!";
         return RedirectToAction("Details", "Questions", new { idOrSlug = questionId });
