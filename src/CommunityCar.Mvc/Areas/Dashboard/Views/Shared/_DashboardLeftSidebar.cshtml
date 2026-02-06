@@ -20,6 +20,10 @@
         <i class="fas fa-file-invoice fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Reports"]</span>
     </a>
+    <a asp-area="Dashboard" asp-controller="UserActivity" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserActivity" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity") ? "active" : "")">
+        <i class="fas fa-clock fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Activity"]</span>
+    </a>
 
     <div class="mt-4 px-3 py-2 text-muted text-uppercase fw-bold small">Navigation</div>
     <a asp-area="" asp-controller="Feed" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded">

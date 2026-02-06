@@ -1,0 +1,18 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isUsers = currentController?.Equals("UserActivity", StringComparison.OrdinalIgnoreCase) == true;
+    var isContent = currentController?.Equals("ContentActivity", StringComparison.OrdinalIgnoreCase) == true;
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(isUsers ? "active fw-bold border-bottom-0" : "text-secondary")" asp-area="Dashboard" asp-controller="UserActivity" asp-action="Index">
+            <i class="fas fa-user-clock me-2"></i>Users
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(isContent ? "active fw-bold border-bottom-0" : "text-secondary")" asp-area="Dashboard" asp-controller="ContentActivity" asp-action="Index">
+            <i class="fas fa-history me-2"></i>Content
+        </a>
+    </li>
+</ul>
