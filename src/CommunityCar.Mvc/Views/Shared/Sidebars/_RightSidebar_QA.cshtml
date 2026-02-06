@@ -1,0 +1,57 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!-- Ask Question Action -->
+<div class="d-grid mb-4">
+    <a asp-controller="Questions" asp-action="Create" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+        <i class="fas fa-plus-circle me-2"></i> @Localizer["Ask Question"]
+    </a>
+</div>
+
+<!-- Top Tags Widget -->
+<div class="card border-0 shadow-sm mb-4 rounded-4">
+    <div class="card-body">
+        <h6 class="card-title fw-bold mb-3">@Localizer["Top Tags"]</h6>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                <a href="#" class="text-decoration-none text-body">
+                    <span class="badge bg-primary bg-opacity-10 text-primary me-2"><i class="fas fa-tag fa-xs"></i></span>
+                    Engine
+                </a>
+                <span class="badge bg-secondary rounded-pill">14</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                <a href="#" class="text-decoration-none text-body">
+                    <span class="badge bg-success bg-opacity-10 text-success me-2"><i class="fas fa-tag fa-xs"></i></span>
+                    Tires
+                </a>
+                <span class="badge bg-secondary rounded-pill">8</span>
+            </li>
+             <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0">
+                <a href="#" class="text-decoration-none text-body">
+                    <span class="badge bg-info bg-opacity-10 text-info me-2"><i class="fas fa-tag fa-xs"></i></span>
+                    Battery
+                </a>
+                <span class="badge bg-secondary rounded-pill">5</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Unanswered Questions Widget -->
+<div class="card border-0 shadow-sm mb-4 rounded-4">
+    <div class="card-body">
+        <h6 class="card-title fw-bold mb-3">@Localizer["Help Needed"]</h6>
+        <div class="vstack gap-3">
+            <div>
+                <a href="#" class="text-decoration-none text-dark fw-bold small d-block mb-1">How to reset oil life on 2018 Civic?</a>
+                <span class="text-muted" style="font-size: 0.75rem;">Asked 2 hours ago</span>
+            </div>
+            <hr class="m-0 text-muted opacity-25">
+            <div>
+                <a href="#" class="text-decoration-none text-dark fw-bold small d-block mb-1">Weird noise when braking</a>
+                <span class="text-muted" style="font-size: 0.75rem;">Asked 5 hours ago</span>
+            </div>
+        </div>
+    </div>
+</div>

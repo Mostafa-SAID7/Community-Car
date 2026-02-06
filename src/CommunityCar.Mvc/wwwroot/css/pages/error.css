@@ -133,3 +133,49 @@
         width: 100%;
     }
 }
+
+/* Exception Details */
+.error-details {
+    margin-top: 3rem;
+    text-align: left;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.error-details-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    user-select: none;
+}
+
+.error-details-summary:hover {
+    color: var(--color-primary);
+}
+
+.error-details-content {
+    background: var(--color-background);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+}
+
+.exception-message {
+    color: var(--color-danger);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.exception-stack-trace {
+    color: var(--color-text-secondary);
+    white-space: pre;
+    line-height: 1.5;
+}

@@ -1,0 +1,556 @@
+@using CommunityCar.Domain.DTOs.Community
+@model QuestionDto
+@{
+    ViewData["Title"] = Model.Title;
+    var answers = ViewBag.Answers as IEnumerable<AnswerDto> ?? new List<AnswerDto>();
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="question-header mb-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="h2 mb-2">@Model.Title</h1>
+                        <div class="text-secondary small d-flex gap-3">
+                            <span>Asked @Model.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            <span>Viewed @Model.ViewCount times</span>
+                            @if (Model.IsResolved)
+                            {
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Resolved</span>
+                            }
+                        </div>
+                    </div>
+                    @if (Model.Category != null)
+                    {
+                        <span class="badge" style="background-color: @(Model.Category.Color ?? "#6c757d"); color: white; padding: 0.5em 1em;">
+                            <i class="@Model.Category.Icon me-1"></i> @Model.Category.Name
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <div class="vote-controls d-flex flex-column align-items-center" style="width: 50px;">
+                            <button class="btn btn-link p-0 fs-3 @(Model.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteQuestion('@Model.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
+                            <span class="fw-bold fs-4">@Model.VoteCount</span>
+                            <button class="btn btn-link p-0 fs-3 @(Model.CurrentUserVote == -1 ? "vote-active-down" : "link-secondary")" onclick="voteQuestion('@Model.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
+                            
+                            <hr class="w-100 my-2" />
+                            
+                            <button class="btn btn-link link-secondary p-0 fs-4 mb-2" onclick="bookmarkQuestion('@Model.Id')" id="btnBookmark">
+                                <i class="bi bi-bookmark"></i>
+                            </button>
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-link link-secondary p-0 fs-4 mb-2 dropdown-toggle-no-caret" data-bs-toggle="dropdown">
+                                    <i class="bi bi-emoji-smile"></i>
+                                </button>
+                                <ul class="dropdown-menu p-2">
+                                    <li class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 1)" title="Like">👍</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 2)" title="Love">❤️</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 3)" title="Helpful">🙌</button>
+                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 4)" title="Thinking">🤔</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <button class="btn btn-link link-secondary p-0 fs-4" onclick="shareQuestion('@Model.Id')">
+                                <i class="bi bi-share"></i>
+                            </button>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="reaction-summary mb-2" id="questionReactions">
+                                <!-- Populated via JS -->
+                            </div>
+                            <div class="question-content mb-4">
+                                @Html.Raw(Model.Content.Replace("\n", "<br/>"))
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="tags">
+                                    @if (!string.IsNullOrEmpty(Model.Tags))
+                                    {
+                                        foreach (var tag in Model.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <a href="@Url.Action("Index", new { tag = tag.Trim() })" class="badge bg-light text-secondary text-decoration-none me-1">@tag.Trim()</a>
+                                        }
+                                    }
+                                </div>
+                                <div class="author-info p-2 bg-light rounded" style="min-width: 200px;">
+                                    <div class="text-secondary smallest mb-1">Asked by</div>
+                                    <a asp-area="Identity" asp-controller="Profiles" asp-action="Index" asp-route-userId="@Model.AuthorId" class="d-flex align-items-center gap-2 text-decoration-none text-dark hover-opacity">
+                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            @(Model.AuthorName?.Substring(0, 1).ToUpper() ?? "U")
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold small">
+                                                @(Model.AuthorName ?? "User")
+                                                @if (Model.AuthorRankName != "Standard")
+                                                {
+                                                    var iconClass = Model.AuthorRankName switch
+                                                    {
+                                                        "Master" => "fa-star-of-life text-danger",
+                                                        "Moderator" => "fa-shield-halved text-dark",
+                                                        "Author" => "fa-pen-nib text-info",
+                                                        "Reviewer" => "fa-star text-success",
+                                                        "Expert" => "fa-crown text-warning",
+                                                        _ => "fa-certificate text-secondary"
+                                                    };
+                                                    <i class="fas @iconClass ms-1 x-small" title="@Model.AuthorRankName Member"></i>
+                                                }
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="answers-section">
+                <h3 class="h5 mb-3">@answers.Count() Answers</h3>
+                <div id="answersList">
+                @foreach (var answer in answers)
+                {
+                    <div class="card mb-3 @(answer.IsAccepted ? "border-success" : "")">
+                        <div class="card-body">
+                            <div class="d-flex gap-3">
+                                <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
+                                    <button class="btn btn-link p-0 fs-4 @(answer.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteAnswer('@answer.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
+                                    <span class="fw-bold">@answer.VoteCount</span>
+                                    <button class="btn btn-link p-0 fs-4 @(answer.CurrentUserVote == -1 ? "vote-active-down" : "link-secondary")" onclick="voteAnswer('@answer.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
+                                    @if (answer.IsAccepted)
+                                    {
+                                        <i class="bi bi-check-lg text-success fs-3 mt-2" title="Accepted Answer"></i>
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="answer-content">
+                                        @Html.Raw(answer.Content.Replace("\n", "<br/>"))
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <div class="author-info p-2" style="min-width: 150px;">
+                                            <div class="text-secondary smallest mb-1">Answered @answer.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a asp-area="Identity" asp-controller="Profiles" asp-action="Index" asp-route-userId="@answer.AuthorId" class="fw-bold small text-primary text-decoration-none hover-opacity">
+                                                    @(answer.AuthorName ?? "User")
+                                                    @if (answer.AuthorRankName != "Standard")
+                                                    {
+                                                        var iconClass = answer.AuthorRankName switch
+                                                        {
+                                                            "Master" => "fa-star-of-life text-danger",
+                                                            "Moderator" => "fa-shield-halved text-dark",
+                                                            "Author" => "fa-pen-nib text-info",
+                                                            "Reviewer" => "fa-star text-success",
+                                                            "Expert" => "fa-crown text-warning",
+                                                            _ => "fa-certificate text-secondary"
+                                                        };
+                                                        <i class="fas @iconClass ms-1 x-small" title="@answer.AuthorRankName Member"></i>
+                                                    }
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comments Section -->
+                            <div class="comments-section mt-3 ps-5 border-start-0">
+                                <div id="comments-list-@answer.Id" class="comments-list bg-light rounded-3 p-2 mb-2" style="@(answer.Comments != null && answer.Comments.Any() ? "" : "display:none;")">
+                                    @if (answer.Comments != null)
+                                    {
+                                        foreach (var comment in answer.Comments)
+                                        {
+                                            <partial name="_CommentItem" model="comment" />
+                                        }
+                                    }
+                                </div>
+                                
+                                <button class="btn btn-link btn-sm text-decoration-none p-0 text-muted" onclick="toggleCommentForm('@answer.Id')">
+                                    <i class="fas fa-comment-alt me-1"></i>Add a comment
+                                </button>
+                                
+                                <div id="comment-form-@answer.Id" class="comment-form mt-2 d-none">
+                                    <form class="submit-comment-form" data-answer-id="@answer.Id">
+                                        <input type="hidden" name="AnswerId" value="@answer.Id" />
+                                        <input type="hidden" name="QuestionId" value="@Model.Id" />
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="Content" class="form-control" placeholder="Add a comment..." required minlength="5">
+                                            <button class="btn btn-primary" type="submit">Post</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                </div>
+            </div>
+
+            <div class="post-answer mt-5">
+                <h4 class="h5 mb-3">Your Answer</h4>
+                <form id="answerForm" asp-controller="Answers" asp-action="Create" method="post">
+                    <input type="hidden" name="QuestionId" value="@Model.Id" />
+                    <div id="answerValidationErrors" class="alert alert-danger d-none mb-3"></div>
+                    <div class="form-group mb-3">
+                        <textarea name="Content" class="form-control" rows="8" placeholder="Type your answer here (min 20 chars)..."></textarea>
+                    </div>
+                    <button type="submit" id="btnPostAnswer" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm d-none mr-2" role="status" aria-hidden="true"></span>
+                        Post Your Answer
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="sidebar">
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="h6 card-title">Quick Tip</h5>
+                        <p class="small text-secondary mb-0">Be detailed and specific when providing answers to help the community better.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .vote-active-up { color: #f48024 !important; }
+        .vote-active-down { color: #f48024 !important; }
+        .bookmark-active { color: #0d6efd !important; }
+        .dropdown-toggle-no-caret::after { display: none; }
+    </style>
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/questionHub")
+            .build();
+
+        connection.on("ReceiveAnswer", function (data) {
+            // Check if this answer belongs to the current question
+            if (data.questionId === '@Model.Id') {
+                fetch(`/Answers/GetAnswerCard/${data.answerId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const listContainer = document.getElementById('answersList');
+                        if(listContainer) {
+                            listContainer.insertAdjacentHTML('beforeend', html);
+                            
+                            // Update count text if exists
+                            const header = document.querySelector('h3.h5.mb-3');
+                            if (header && header.innerText.includes('Answers')) {
+                                const currentCount = parseInt(header.innerText) || 0;
+                                header.innerText = `${currentCount + 1} Answers`;
+                            }
+
+                            Toast.show("New answer received!", "info");
+                            
+                            // Re-init tooltips
+                            var tooltipTriggerList = [].slice.call(listContainer.lastElementChild.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                return new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Failed to load new answer card", err));
+            }
+        });
+
+        // ... existing SignalR ReceiveComment ...
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        function toggleCommentForm(answerId) {
+            const form = document.getElementById(`comment-form-${answerId}`);
+            form.classList.toggle('d-none');
+            if (!form.classList.contains('d-none')) {
+                form.querySelector('input[name="Content"]').focus();
+            }
+        }
+
+        // Delegate comment submission
+        document.addEventListener('submit', async function(e) {
+            if (e.target.matches('.submit-comment-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const btn = form.querySelector('button');
+                const input = form.querySelector('input[name="Content"]');
+                
+                btn.disabled = true;
+                
+                try {
+                    const formData = new FormData(form);
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                     
+                    const response = await fetch('/Comments/Create', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': token,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        input.value = '';
+                        form.closest('.comment-form').classList.add('d-none');
+                    } else {
+                        const data = await response.json();
+                        Toast.show(data.message || "Failed to post comment", "error");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Toast.show("Error posting comment", "error");
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+        });
+
+        const votingLocks = new Set();
+        async function voteQuestion(id, isUpvote) {
+            if (votingLocks.has(id)) return;
+            votingLocks.add(id);
+
+            const btnUp = document.querySelector(`button[onclick="voteQuestion('${id}', true)"]`);
+            const btnDown = document.querySelector(`button[onclick="voteQuestion('${id}', false)"]`);
+            const countSpan = btnUp.nextElementSibling;
+            
+            try {
+                const response = await fetch(`/Questions/Vote/${id}?isUpvote=${isUpvote}`, { 
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    countSpan.innerText = data.voteCount;
+                    
+                    btnUp.classList.remove('vote-active-up');
+                    btnUp.classList.add('link-secondary');
+                    btnDown.classList.remove('vote-active-down');
+                    btnDown.classList.add('link-secondary');
+
+                    if (data.userVote === 1) {
+                        btnUp.classList.add('vote-active-up');
+                        btnUp.classList.remove('link-secondary');
+                    } else if (data.userVote === -1) {
+                        btnDown.classList.add('vote-active-down');
+                        btnDown.classList.remove('link-secondary');
+                    }
+                    
+                    let message = data.userVote === 1 ? "Upvoted!" : (data.userVote === -1 ? "Downvoted!" : "Vote removed.");
+                    Toast.show(message, "success");
+                } else {
+                    const data = await response.json();
+                    Toast.show(data.message || "Operation failed", "error");
+                }
+            } catch (err) { 
+                console.error(err); 
+            } finally {
+                votingLocks.delete(id);
+            }
+        }
+
+        async function voteAnswer(id, isUpvote) {
+            if (votingLocks.has(id)) return;
+            votingLocks.add(id);
+
+            const btnUp = document.querySelector(`button[onclick="voteAnswer('${id}', true)"]`);
+            const btnDown = document.querySelector(`button[onclick="voteAnswer('${id}', false)"]`);
+            const countSpan = btnUp.nextElementSibling;
+
+            try {
+                const response = await fetch(`/Answers/Vote/${id}?isUpvote=${isUpvote}`, { 
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    countSpan.innerText = data.voteCount;
+                    
+                    btnUp.classList.remove('vote-active-up');
+                    btnUp.classList.add('link-secondary');
+                    btnDown.classList.remove('vote-active-down');
+                    btnDown.classList.add('link-secondary');
+
+                    if (data.userVote === 1) {
+                        btnUp.classList.add('vote-active-up');
+                        btnUp.classList.remove('link-secondary');
+                    } else if (data.userVote === -1) {
+                        btnDown.classList.add('vote-active-down');
+                        btnDown.classList.remove('link-secondary');
+                    }
+                    
+                    let message = data.userVote === 1 ? "Upvoted!" : (data.userVote === -1 ? "Downvoted!" : "Vote removed.");
+                    Toast.show(message, "success");
+                } else {
+                    const data = await response.json();
+                    Toast.show(data.message || "Operation failed", "error");
+                }
+            } catch (err) { 
+                console.error(err); 
+            } finally {
+                votingLocks.delete(id);
+            }
+        }
+
+        function bookmarkQuestion(id) {
+            const btn = document.getElementById('btnBookmark');
+            const icon = btn.querySelector('i');
+            
+            fetch(`/Questions/Bookmark/${id}`, { 
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (r.ok) {
+                        if (data.isBookmarked) {
+                            icon.className = 'bi bi-bookmark-fill bookmark-active';
+                            Toast.show("Bookmarked successfully!", "success");
+                        } else {
+                            icon.className = 'bi bi-bookmark';
+                            Toast.show("Bookmark removed.", "success");
+                        }
+                    } else {
+                        Toast.show(data.message || "Failed to bookmark", "error");
+                    }
+                });
+        }
+
+        function reactQuestion(id, type) {
+            fetch(`/Questions/React/${id}?reactionType=${type}`, { 
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (r.ok) {
+                        updateReactionSummary(data);
+                    } else {
+                        Toast.show(data.message || "Reaction failed", "error");
+                    }
+                });
+        }
+
+        function shareQuestion(id) {
+            const url = window.location.href;
+            fetch(`/Questions/Share/${id}?platform=Clipboard&sharedUrl=${encodeURIComponent(url)}`, { 
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (r.ok) {
+                        navigator.clipboard.writeText(url).then(() => {
+                            Toast.show("Link copied to clipboard!", "success");
+                        });
+                    } else {
+                        Toast.show(data.message || "Share failed", "error");
+                    }
+                });
+        }
+
+        function updateReactionSummary(summary) {
+            const container = document.getElementById('questionReactions');
+            if (!container) return;
+            
+            let html = '';
+            summary.forEach(s => {
+                const emoji = getEmoji(s.reactionType);
+                const label = getReactionLabel(s.reactionType);
+                html += `<span class="badge bg-light text-dark border me-1 ${s.isUserReaction ? 'border-primary' : ''}" 
+                                style="cursor:pointer" 
+                                data-bs-toggle="tooltip" title="${label}"
+                                onclick="reactQuestion('@Model.Id', ${s.reactionType})">
+                            ${emoji} ${s.count}
+                         </span>`;
+            });
+            container.innerHTML = html;
+
+            var tooltipTriggerList = [].slice.call(container.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        function getEmoji(type) {
+            switch(type) {
+                case 1: return '👍';
+                case 2: return '❤️';
+                case 3: return '🙌';
+                case 4: return '🤔';
+                default: return '❓';
+            }
+        }
+
+        function getReactionLabel(type) {
+            switch(type) {
+                case 1: return 'Like';
+                case 2: return 'Love';
+                case 3: return 'Celebrate';
+                case 4: return 'Insightful';
+                default: return 'React';
+            }
+        }
+
+        // Removed local showToast function as it's now global
+        
+        fetch(`/Questions/Reactions/@Model.Id`)
+            .then(r => r.json())
+            .then(data => updateReactionSummary(data));
+
+        const answerForm = document.getElementById('answerForm');
+        const answerErrorContainer = document.getElementById('answerValidationErrors');
+        const btnPostAnswer = document.getElementById('btnPostAnswer');
+
+        answerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnSpinner = btnPostAnswer.querySelector('.spinner-border');
+            btnPostAnswer.disabled = true;
+            btnSpinner.classList.remove('d-none');
+
+            const formData = new FormData(this);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok) {
+                    Toast.show("Answer posted successfully!", "success");
+                    this.reset();
+                } else {
+                    const errorData = await response.json();
+                    Toast.show(errorData.message || "Failed to post answer", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                Toast.show("An unexpected error occurred", "error");
+            } finally {
+                btnPostAnswer.disabled = false;
+                btnSpinner.classList.add('d-none');
+            }
+        });
+    </script>
+    </script>
+}

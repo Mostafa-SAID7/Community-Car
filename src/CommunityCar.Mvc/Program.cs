@@ -21,6 +21,8 @@ builder.Services.AddControllersWithViews(options =>
 .AddViewLocalization()
 .AddDataAnnotationsLocalization();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(FriendshipProfile).Assembly);
 
@@ -49,6 +51,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        await services.SeedDatabase(); // Call the extension method on IServiceProvider
         await FriendshipSeeder.SeedAsync(context);
     }
     catch (Exception ex)
@@ -91,7 +94,10 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{area=Community}/{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Feed}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.MapHub<CommunityCar.Web.Hubs.QuestionHub>("/questionHub");
+app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
 
 app.Run();

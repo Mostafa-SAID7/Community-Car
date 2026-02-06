@@ -12,37 +12,63 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <!-- Main CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="container">
-            <a asp-area="Community" asp-controller="Home" asp-action="Index">Community</a>
-            <a asp-area="Identity" asp-controller="Home" asp-action="Index">Identity</a>
-            
-            <!-- Theme Toggle Button -->
-            <button class="theme-toggle-icon" aria-label="Toggle theme">
-                <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-            </button>
-        </nav>
-    </header>
+    <partial name="_Header" />
     
-    <main role="main" class="container">
-        @RenderBody()
+    <main role="main" class="container-xxl my-4">
+        @{
+            var hideSidebars = ViewData["HideSidebars"] as bool? ?? false;
+        }
+        @if (hideSidebars)
+        {
+            <div class="row">
+                <div class="col-12">
+                    @RenderBody()
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                <!-- Left Sidebar (Desktop: 2 cols, Tablet: 3 cols) -->
+                <div class="col-md-3 col-lg-2 sidebar-left">
+                    <div class="sidebar-sticky">
+                        <partial name="_LeftSidebar" />
+                    </div>
+                </div>
+
+                <!-- Main Content (Desktop: 7 cols, Tablet: 9 cols, Mobile: 12 cols) -->
+                <div class="col-md-9 col-lg-7">
+                    @RenderBody()
+                </div>
+
+                <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet/Mobile) -->
+                <div class="col-lg-3 d-none d-lg-block">
+                    <div class="sticky-top" style="top: 80px; z-index: 1;">
+                        @if (IsSectionDefined("RightSidebar"))
+                        {
+                            @await RenderSectionAsync("RightSidebar", required: false)
+                        }
+                        else
+                        {
+                            <partial name="Sidebars/_RightSidebar_Generic" />
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </main>
     
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Community Car
-        </div>
-    </footer>
+    <partial name="_Footer" />
+
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop"></div>
 
     <!-- Libraries JS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -72,9 +98,26 @@
     <script src="~/js/components/toast.js"></script>
     <script src="~/js/components/charts.js"></script>
     <script src="~/js/components/theme-toggle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="~/js/components/notification.js"></script>
     
     <!-- Entry Point JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- TempData Toast Notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["SuccessToast"] != null)
+            {
+                <text>window.Toast.show('@TempData["SuccessToast"]', 'success');</text>
+            }
+            @if (TempData["ErrorToast"] != null)
+            {
+                <text>window.Toast.show('@TempData["ErrorToast"]', 'error');</text>
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

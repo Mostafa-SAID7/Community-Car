@@ -1,0 +1,65 @@
+@model IEnumerable<CommunityCar.Web.ViewModels.Community.FriendRequestViewModel>
+@{
+    ViewData["Title"] = "Friend Requests";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-link link-secondary p-0 mb-2 text-decoration-none">
+        <i class="fas fa-arrow-left me-1"></i> Back to Friends
+    </a>
+    <h1 class="h3">Pending Requests</h1>
+    <p class="text-muted">People who want to connect with you.</p>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <div class="empty-state">
+                <i class="fas fa-envelope-open fa-3x text-light mb-3"></i>
+                <h5>All caught up!</h5>
+                <p class="text-muted">You have no pending friend requests at the moment.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var request in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 request-card">
+                    <div class="card-body text-center p-4">
+                        <div class="avatar-large bg-primary text-white mx-auto mb-3">
+                            @request.UserId.ToString()[..2].ToUpper()
+                        </div>
+                        <h5 class="fw-bold mb-1">User @request.UserId.ToString()[..8]</h5>
+                        <p class="small text-muted mb-4">Wants to be your friend</p>
+                        
+                        <div class="d-grid gap-2">
+                            <form asp-action="AcceptRequest" method="post">
+                                <input type="hidden" name="friendId" value="@request.UserId" />
+                                <button type="submit" class="btn btn-primary w-100">Accept Request</button>
+                            </form>
+                            <form asp-action="RejectRequest" method="post">
+                                <input type="hidden" name="friendId" value="@request.UserId" />
+                                <button type="submit" class="btn btn-outline-danger w-100">Decline</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center pb-3">
+                        <span class="small text-muted">Received @request.ReceivedAt.ToString("MMM dd")</span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .avatar-large { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; }
+    .request-card { transition: transform 0.2s; }
+    .request-card:hover { transform: translateY(-5px); }
+</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

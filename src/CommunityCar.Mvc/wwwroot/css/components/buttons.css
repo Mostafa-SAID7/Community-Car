@@ -16,6 +16,11 @@
     cursor: not-allowed;
 }
 
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), 0 0 0 calc(2px + var(--ring-offset-width)) var(--ring-color);
+}
+
 /* Primary Button */
 .btn-primary {
     background-color: var(--color-primary);

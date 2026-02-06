@@ -1,0 +1,343 @@
+@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
+@{
+    var currentTag = ViewBag.CurrentTag as string;
+    var isResolved = ViewBag.IsResolved as bool?;
+    var searchTerm = ViewBag.SearchTerm as string;
+    var sortBy = ViewBag.SortBy as string ?? "created";
+    var sortDesc = ViewBag.SortDesc as bool? ?? true;
+    var currentTab = ViewBag.CurrentTab as string ?? "all";
+}
+
+<!-- Active Filters -->
+@if (!string.IsNullOrEmpty(currentTag) || !string.IsNullOrEmpty(searchTerm))
+{
+    <div class="qa-active-filters mb-3">
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <span class="text-muted">Active filters:</span>
+            
+            @if (!string.IsNullOrEmpty(currentTag))
+            {
+                <span class="badge bg-primary">
+                    Tag: @currentTag
+                    <a asp-action="Index" 
+                       asp-route-tab="@currentTab"
+                       asp-route-search="@searchTerm"
+                       asp-route-isResolved="@isResolved"
+                       asp-route-sortBy="@sortBy"
+                       asp-route-sortDesc="@sortDesc"
+                       class="text-white ms-1">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            }
+            
+            @if (!string.IsNullOrEmpty(searchTerm))
+            {
+                <span class="badge bg-info">
+                    Search: "@searchTerm"
+                    <a asp-action="Index" 
+                       asp-route-tab="@currentTab"
+                       asp-route-tag="@currentTag"
+                       asp-route-isResolved="@isResolved"
+                       asp-route-sortBy="@sortBy"
+                       asp-route-sortDesc="@sortDesc"
+                       class="text-white ms-1">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            }
+            
+            <a asp-action="Index" asp-route-tab="@currentTab" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-times me-1"></i>Clear All
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Results Summary -->
+<div class="qa-results-summary mb-3">
+    <div class="text-muted">
+        Showing @((Model.PageNumber - 1) * Model.PageSize + 1) - @(Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount)) of @Model.TotalCount questions
+    </div>
+</div>
+
+<!-- Questions List -->
+@if (!Model.Items.Any())
+{
+    <div class="text-center py-5">
+        <i class="fas fa-question-circle fa-4x text-muted mb-3"></i>
+        <h4>No questions found</h4>
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <p class="text-muted">No results for "@searchTerm". Try a different search term.</p>
+            <a asp-action="Index" asp-route-tab="@currentTab" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left me-2"></i>Clear Search
+            </a>
+        }
+        else if (currentTab == "myquestions")
+        {
+            <p class="text-muted">You haven't asked any questions yet.</p>
+            <a asp-action="Create" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Ask Your First Question
+            </a>
+        }
+        else
+        {
+            <p class="text-muted">Be the first to ask a question!</p>
+            <a asp-action="Create" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Ask Question
+            </a>
+        }
+    </div>
+}
+else
+{
+    @foreach (var question in Model.Items)
+    {
+        <div class="question-card @(question.IsResolved ? "resolved" : "")">
+            <div class="d-flex">
+                <!-- Stats / Voting -->
+                <div class="question-stats d-flex flex-column align-items-center">
+                    <div class="vote-controls mb-2 d-flex flex-column align-items-center">
+                        <button class="btn btn-sm btn-link p-0 @(question.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteQuestionIndex('@question.Id', true, this)">
+                            <i class="fas fa-caret-up fs-4"></i>
+                        </button>
+                        <div class="stat-number fw-bold" id="vote-count-@question.Id">@question.VoteCount</div>
+                        <button class="btn btn-sm btn-link p-0 @(question.CurrentUserVote == -1 ? "vote-active-down" : "link-secondary")" onclick="voteQuestionIndex('@question.Id', false, this)">
+                            <i class="fas fa-caret-down fs-4"></i>
+                        </button>
+                    </div>
+                    <div class="stat-item text-center">
+                        <div class="small fw-bold">@question.AnswerCount</div>
+                        <div class="stat-label x-small text-muted">Answers</div>
+                    </div>
+                    <div class="stat-item text-center mt-1">
+                        <div class="small">@question.ViewCount</div>
+                        <div class="stat-label x-small text-muted">Views</div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="question-content">
+                    <a asp-action="Details" asp-route-idOrSlug="@(question.Slug ?? question.Id.ToString())" class="question-title">
+                        @question.Title
+                    </a>
+                    
+                    <div class="question-excerpt">
+                        @(question.Content.Length > 200 ? question.Content.Substring(0, 200) + "..." : question.Content)
+                    </div>
+
+                    <div class="question-meta">
+                        @if (!string.IsNullOrEmpty(question.Tags))
+                        {
+                            <div class="question-tags">
+                                @foreach (var tag in question.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <a asp-action="Index" 
+                                       asp-route-tab="@currentTab"
+                                       asp-route-tag="@tag.Trim()" 
+                                       asp-route-search="@searchTerm"
+                                       asp-route-isResolved="@isResolved"
+                                       asp-route-sortBy="@sortBy"
+                                       asp-route-sortDesc="@sortDesc"
+                                       class="tag">
+                                        @tag.Trim()
+                                    </a>
+                                }
+                            </div>
+                        }
+
+                        <div class="question-author">
+                            <a asp-area="Identity" asp-controller="Profiles" asp-action="Index" asp-route-userId="@question.AuthorId" class="d-flex align-items-center text-decoration-none text-dark">
+                                <div class="author-avatar me-2">
+                                    @question.AuthorName.Substring(0, Math.Min(2, question.AuthorName.Length)).ToUpper()
+                                </div>
+                                <span>@question.AuthorName</span>
+                                @if (question.AuthorRankName != "Standard")
+                                {
+                                    var iconClass = question.AuthorRankName switch
+                                    {
+                                        "Master" => "fa-star-of-life text-danger",
+                                        "Moderator" => "fa-shield-halved text-dark",
+                                        "Author" => "fa-pen-nib text-info",
+                                        "Reviewer" => "fa-star text-success",
+                                        "Expert" => "fa-crown text-warning",
+                                        _ => "fa-certificate text-secondary"
+                                    };
+                                    <i class="fas @iconClass ms-1 x-small" title="@question.AuthorRankName Member"></i>
+                                }
+                            </a>
+                            <span class="text-muted ms-2 me-2">•</span>
+                            <span class="text-muted">@question.CreatedAt.ToString("MMM dd, yyyy")</span>
+                        </div>
+
+                        @if (question.IsResolved)
+                        {
+                            <span class="resolved-badge">
+                                <i class="fas fa-check-circle"></i> Resolved
+                            </span>
+                        }
+
+                        <div class="ms-auto d-flex gap-2 align-items-center">
+                            <!-- Reaction Dropdown -->
+                            <div class="reaction-container position-relative d-inline-block">
+                                <button class="btn btn-sm border-0 p-1 reaction-trigger @(question.CurrentUserReactionType.HasValue ? "border-primary" : "text-muted")" 
+                                        type="button">
+                                    @if (question.CurrentUserReactionType.HasValue)
+                                    {
+                                        @(question.CurrentUserReactionType switch { 1 => "👍", 2 => "❤️", 3 => "🙌", 4 => "🤔", _ => "❓" })
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-smile"></i>
+                                    }
+                                    <span id="react-count-@question.Id">@question.ReactionCount</span>
+                                </button>
+                                <div class="reaction-popup shadow-sm border p-1 rounded bg-white" style="display: none; position: absolute; top: -110%; left: 50%; transform: translateX(-50%); z-index: 1000; flex-direction: row; gap: 4px;">
+                                    <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 1)" data-bs-toggle="tooltip" title="Like">👍</button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 2)" data-bs-toggle="tooltip" title="Love">❤️</button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 3)" data-bs-toggle="tooltip" title="Celebrate">🙌</button>
+                                    <button class="btn btn-sm btn-link text-decoration-none p-1 fs-5" onclick="reactQuestionIndex('@question.Id', 4)" data-bs-toggle="tooltip" title="Think">🤔</button>
+                                </div>
+                            </div>
+
+                            <!-- Bookmark Button -->
+                            <button class="btn btn-sm border-0 p-1 @(question.IsBookmarkedByUser ? "bookmark-active" : "text-muted")" 
+                                    id="btn-bookmark-@question.Id"
+                                    onclick="bookmarkQuestionIndex('@question.Id')" title="Bookmark">
+                                <i class="fa@(question.IsBookmarkedByUser ? "s" : "r") fa-bookmark"></i> 
+                                <span id="bookmark-count-@question.Id">@question.BookmarkCount</span>
+                            </button>
+
+                            <!-- Share Dropdown -->
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm text-muted border-0 p-1 dropdown-toggle-no-caret" 
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Share">
+                                    <i class="fas fa-share-alt"></i> <span id="share-count-@question.Id">@question.ShareCount</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="min-width: 150px;">
+                                    <li><button class="dropdown-item rounded small mb-1" onclick="shareQuestionIndex('@question.Id', 'Facebook')"><i class="fab fa-facebook text-primary me-2"></i>Facebook</button></li>
+                                    <li><button class="dropdown-item rounded small mb-1" onclick="shareQuestionIndex('@question.Id', 'Twitter')"><i class="fab fa-twitter text-info me-2"></i>Twitter</button></li>
+                                    <li><button class="dropdown-item rounded small mb-1" onclick="shareQuestionIndex('@question.Id', 'LinkedIn')"><i class="fab fa-linkedin text-primary me-2"></i>LinkedIn</button></li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li><button class="dropdown-item rounded small" onclick="shareQuestionIndex('@question.Id', 'Clipboard')"><i class="fas fa-link text-secondary me-2"></i>Copy Link</button></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Questions pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Button -->
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" 
+                       asp-action="Index" 
+                       asp-route-page="@(Model.PageNumber - 1)" 
+                       asp-route-tab="@currentTab"
+                       asp-route-search="@searchTerm"
+                       asp-route-tag="@currentTag" 
+                       asp-route-isResolved="@isResolved"
+                       asp-route-sortBy="@sortBy"
+                       asp-route-sortDesc="@sortDesc"
+                       asp-route-pageSize="@Model.PageSize">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                </li>
+
+                @{
+                    var startPage = Math.Max(1, Model.PageNumber - 2);
+                    var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);
+                    
+                    if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="1" 
+                               asp-route-tab="@currentTab"
+                               asp-route-search="@searchTerm"
+                               asp-route-tag="@currentTag" 
+                               asp-route-isResolved="@isResolved"
+                               asp-route-sortBy="@sortBy"
+                               asp-route-sortDesc="@sortDesc"
+                               asp-route-pageSize="@Model.PageSize">
+                                1
+                            </a>
+                        </li>
+                        if (startPage > 2)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                    }
+
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="@i" 
+                               asp-route-tab="@currentTab"
+                               asp-route-search="@searchTerm"
+                               asp-route-tag="@currentTag" 
+                               asp-route-isResolved="@isResolved"
+                               asp-route-sortBy="@sortBy"
+                               asp-route-sortDesc="@sortDesc"
+                               asp-route-pageSize="@Model.PageSize">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    if (endPage < Model.TotalPages)
+                    {
+                        if (endPage < Model.TotalPages - 1)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="@Model.TotalPages" 
+                               asp-route-tab="@currentTab"
+                               asp-route-search="@searchTerm"
+                               asp-route-tag="@currentTag" 
+                               asp-route-isResolved="@isResolved"
+                               asp-route-sortBy="@sortBy"
+                               asp-route-sortDesc="@sortDesc"
+                               asp-route-pageSize="@Model.PageSize">
+                                @Model.TotalPages
+                            </a>
+                        </li>
+                    }
+                }
+
+                <!-- Next Button -->
+                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" 
+                       asp-action="Index" 
+                       asp-route-page="@(Model.PageNumber + 1)" 
+                       asp-route-tab="@currentTab"
+                       asp-route-search="@searchTerm"
+                       asp-route-tag="@currentTag" 
+                       asp-route-isResolved="@isResolved"
+                       asp-route-sortBy="@sortBy"
+                       asp-route-sortDesc="@sortDesc"
+                       asp-route-pageSize="@Model.PageSize">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

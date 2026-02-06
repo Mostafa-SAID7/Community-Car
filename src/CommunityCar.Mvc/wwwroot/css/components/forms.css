@@ -24,8 +24,11 @@
 
 .form-control:focus {
     outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--color-primary-light);
+    border-color: var(--ring-color);
+    box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), 0 0 0 4px rgba(var(--bg-surface-rgb), 0.2);
+    /* Fallback/Adjustment */
+    /* Shadcn uses: ring-2 ring-ring ring-offset-2 */
+    box-shadow: 0 0 0 var(--ring-offset-width) var(--ring-offset-color), 0 0 0 calc(2px + var(--ring-offset-width)) var(--ring-color);
 }
 
 .form-control::placeholder {

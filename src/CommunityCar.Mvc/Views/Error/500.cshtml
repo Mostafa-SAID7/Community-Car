@@ -1,6 +1,9 @@
 @{
     ViewData["Title"] = ViewBag.Title ?? "Internal Server Error";
+    ViewData["HideSidebars"] = true;
 }
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment Env
 
 <div class="error-container">
     <div class="error-content">
@@ -23,6 +26,36 @@
         @if (ViewBag.OriginalPath != null)
         {
             <p class="error-path">Requested path: <code>@ViewBag.OriginalPath</code></p>
+        }
+
+        @if (ViewBag.Exception != null && Env.IsDevelopment())
+        {
+            var ex = ViewBag.Exception as Exception;
+            <div class="error-details">
+                <div class="error-details-summary" onclick="toggleErrorDetails()">
+                    <i class="fas fa-bug"></i>
+                    <span>Developer Details</span>
+                    <i class="fas fa-chevron-down ms-auto" id="detailsIcon"></i>
+                </div>
+                <div class="error-details-content d-none" id="detailsContent">
+                    <span class="exception-message">@ex?.Message</span>
+                    <div class="exception-stack-trace">@ex?.StackTrace</div>
+                </div>
+            </div>
+
+            <script>
+                function toggleErrorDetails() {
+                    const content = document.getElementById('detailsContent');
+                    const icon = document.getElementById('detailsIcon');
+                    if (content.classList.contains('d-none')) {
+                        content.classList.remove('d-none');
+                        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                    } else {
+                        content.classList.add('d-none');
+                        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                    }
+                }
+            </script>
         }
     </div>
 </div>

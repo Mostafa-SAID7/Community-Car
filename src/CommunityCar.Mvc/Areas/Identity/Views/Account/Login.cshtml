@@ -1,113 +1,76 @@
 @{
     ViewData["Title"] = "Log in";
+    ViewData["HideSidebars"] = true;
 }
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-left">
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-header">
             <h2>Welcome Back</h2>
-            <form asp-area="Identity" asp-controller="Account" asp-action="Login" method="post">
-                <div class="form-group mb-3">
-                    <label>Email</label>
-                    <input type="email" name="Email" class="form-control" placeholder="Enter your email" required />
-                </div>
-                <div class="form-group mb-4">
-                    <label>Password</label>
-                    <input type="password" name="Password" class="form-control" placeholder="Enter your password" required />
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Sign In</button>
-            </form>
+            <p class="text-muted">Sign in to continue to Community Car</p>
         </div>
-        <div class="login-divider"></div>
-        <div class="login-right">
-            <h3>Or login with</h3>
-            <p class="text-muted mb-4">Access your account using your social media</p>
+
+        <form asp-area="Identity" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="login-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             
-            <form asp-area="Identity" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-                <button type="submit" name="provider" value="Google" class="social-btn google-btn mb-3">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" />
-                    Connect with Google
+            <div class="form-floating mb-3">
+                <input type="email" name="Email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
+                <label for="floatingInput">Email address</label>
+            </div>
+            
+            <div class="form-floating mb-3 position-relative">
+                <input type="password" name="Password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                <label for="floatingPassword">Password</label>
+                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3" 
+                        onclick="togglePassword()" style="z-index: 10;">
+                    <i class="fas fa-eye" id="toggleIcon"></i>
                 </button>
-                
-                <button type="submit" name="provider" value="Facebook" class="social-btn facebook-btn">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook" />
-                    Connect with Facebook
-                </button>
-            </form>
+            </div>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" name="RememberMe" class="form-check-input" id="rememberMe" value="true">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-4">Sign In</button>
+        </form>
+
+        <div class="divider">
+            <span>Or continue with</span>
         </div>
+
+        <form asp-area="Identity" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="social-login">
+            <button type="submit" name="provider" value="Google" class="social-btn google-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" />
+                <span>Google</span>
+            </button>
+            <button type="submit" name="provider" value="Facebook" class="social-btn facebook-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook" />
+                <span>Facebook</span>
+            </button>
+        </form>
     </div>
 </div>
 
-<style>
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 70vh;
-        padding: 2rem;
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('floatingPassword');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
     }
-    
-    .login-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        display: flex;
-        width: 100%;
-        max-width: 900px;
-        overflow: hidden;
-    }
-    
-    .login-left {
-        flex: 1;
-        padding: 3rem;
-    }
-    
-    .login-divider {
-        width: 1px;
-        background: #eee;
-        margin: 2rem 0;
-    }
-    
-    .login-right {
-        flex: 1;
-        padding: 3rem;
-        background: #fcfcfc;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .social-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: white;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .social-btn img {
-        width: 20px;
-        margin-right: 12px;
-    }
-    
-    .social-btn:hover {
-        background: #f8f9fa;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-    
-    .google-btn:hover { border-color: #4285F4; }
-    .facebook-btn:hover { border-color: #1877F2; }
+</script>
 
-    @@media (max-width: 768px) {
-        .login-card { flex-direction: column; }
-        .login-divider { display: none; }
-    }
-</style>
+

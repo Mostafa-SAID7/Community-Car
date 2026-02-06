@@ -62,9 +62,26 @@ public class ExceptionHandlerMiddleware
         }
         else
         {
-            // Redirect to error page for MVC requests
-            context.Response.Redirect($"/Error/{statusCode}");
+            // Set the exception in features so ErrorController can find it
+            context.Features.Set<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>(new CustomExceptionHandlerFeature
+            {
+                Error = exception
+            });
+
+            // Re-execute for MVC requests to preserve exception details
+            context.Items["Exception"] = exception;
+            context.Response.Clear();
+            context.Response.StatusCode = statusCode;
+            context.Request.Path = $"/Error/{statusCode}";
+            
+            // Re-invoke the pipeline
+            await _next(context);
         }
+    }
+
+    private class CustomExceptionHandlerFeature : Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature
+    {
+        public Exception Error { get; set; } = null!;
     }
 
     private static int GetStatusCode(Exception exception) => exception switch

@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Community Car - Home";
+}
+
+<div class="py-2">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">Welcome to Community Car</h1>
+        <p class="lead text-muted mb-4">Your automotive community hub for questions, events, and connections</p>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="row g-4 mb-5">
+        <!-- Questions & Answers -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-question-circle fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Questions & Answers</h5>
+                    <p class="card-text text-muted">Get help from the community or share your knowledge</p>
+                    <a asp-controller="Questions" asp-action="Index" class="btn btn-primary mt-2">
+                        Browse Questions
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friends -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Friends</h5>
+                    <p class="card-text text-muted">Connect with other car enthusiasts</p>
+                    <a asp-controller="Friends" asp-action="Index" class="btn btn-success mt-2">
+                        Find Friends
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-calendar-alt fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Events</h5>
+                    <p class="card-text text-muted">Discover and join automotive events</p>
+                    <a asp-controller="Events" asp-action="Index" class="btn btn-warning mt-2">
+                        View Events
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-star fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Reviews</h5>
+                    <p class="card-text text-muted">Read and write car reviews</p>
+                    <a asp-controller="Reviews" asp-action="Index" class="btn btn-info mt-2">
+                        Browse Reviews
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-comments fa-2x text-primary me-3"></i>
+                </div>
+                <div>
+                    <h5>Community Driven</h5>
+                    <p class="text-muted">Join a vibrant community of car enthusiasts sharing knowledge and experiences.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-shield-alt fa-2x text-success me-3"></i>
+                </div>
+                <div>
+                    <h5>Trusted Information</h5>
+                    <p class="text-muted">Get reliable answers and reviews from verified community members.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-bolt fa-2x text-warning me-3"></i>
+                </div>
+                <div>
+                    <h5>Stay Updated</h5>
+                    <p class="text-muted">Never miss important automotive events and community activities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_Feed" />
+}
+
+<style>
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>

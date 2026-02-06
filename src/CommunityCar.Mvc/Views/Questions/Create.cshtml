@@ -1,0 +1,50 @@
+@using CommunityCar.Domain.DTOs.Community
+@model CommunityCar.Web.ViewModels.Community.Qa.CreateQuestionViewModel
+@{
+    ViewData["Title"] = "Ask a Question";
+}
+
+<div class="container" style="max-width: 900px; margin: 40px auto;">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Ask a Question</h1>
+            <p class="text-secondary">Get help from the community</p>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group mb-3">
+                    <label asp-for="Title" class="form-label">Title</label>
+                    <input asp-for="Title" class="form-control" placeholder="What is your question? Be specific." />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="CategoryId" class="form-label">Category</label>
+                    <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories ?? Enumerable.Empty<CategoryDto>(), "Id", "Name"))">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Content" class="form-label">Details</label>
+                    <textarea asp-for="Content" class="form-control" rows="10" placeholder="Provide more context and details..."></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Tags" class="form-label">Tags</label>
+                    <input asp-for="Tags" class="form-control" placeholder="Identify with tags (comma separated, e.g., engine, transmission)" />
+                    <span asp-validation-for="Tags" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Post Your Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,482 @@
+@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
+@{
+    ViewData["Title"] = "Questions & Answers";
+    var currentTag = ViewBag.CurrentTag as string;
+    var isResolved = ViewBag.IsResolved as bool?;
+    var searchTerm = ViewBag.SearchTerm as string;
+    var sortBy = ViewBag.SortBy as string ?? "created";
+    var sortDesc = ViewBag.SortDesc as bool? ?? true;
+    var currentTab = ViewBag.CurrentTab as string ?? "all";
+}
+
+<link rel="stylesheet" href="~/css/pages/qa.css" />
+
+<div class="qa-container">
+    <!-- Header -->
+    <div class="qa-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-2">Questions & Answers</h1>
+                <p class="mb-0 opacity-90">Get help from the community or share your knowledge</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="Create" class="btn btn-light btn-lg">
+                    <i class="fas fa-plus me-2"></i>Ask Question
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="qa-tabs mb-4">
+        <ul class="nav nav-tabs qa-nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(currentTab == "all" ? "active" : "")" 
+                   asp-action="Index" 
+                   asp-route-tab="all"
+                   asp-route-search="@searchTerm"
+                   asp-route-tag="@currentTag"
+                   asp-route-sortBy="@sortBy"
+                   asp-route-sortDesc="@sortDesc">
+                    <i class="fas fa-list me-2"></i>All Questions
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(currentTab == "trending" ? "active" : "")" 
+                   asp-action="Index" 
+                   asp-route-tab="trending"
+                   asp-route-search="@searchTerm"
+                   asp-route-tag="@currentTag"
+                   asp-route-sortBy="@sortBy"
+                   asp-route-sortDesc="@sortDesc">
+                    <i class="fas fa-fire me-2"></i>Trending
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(currentTab == "recent" ? "active" : "")" 
+                   asp-action="Index" 
+                   asp-route-tab="recent"
+                   asp-route-search="@searchTerm"
+                   asp-route-tag="@currentTag"
+                   asp-route-sortBy="@sortBy"
+                   asp-route-sortDesc="@sortDesc">
+                    <i class="fas fa-clock me-2"></i>Recent
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(currentTab == "unanswered" ? "active" : "")" 
+                   asp-action="Index" 
+                   asp-route-tab="unanswered"
+                   asp-route-search="@searchTerm"
+                   asp-route-tag="@currentTag"
+                   asp-route-sortBy="@sortBy"
+                   asp-route-sortDesc="@sortDesc">
+                    <i class="fas fa-question-circle me-2"></i>Unanswered
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(currentTab == "answered" ? "active" : "")" 
+                   asp-action="Index" 
+                   asp-route-tab="answered"
+                   asp-route-search="@searchTerm"
+                   asp-route-tag="@currentTag"
+                   asp-route-sortBy="@sortBy"
+                   asp-route-sortDesc="@sortDesc">
+                    <i class="fas fa-check-circle me-2"></i>Answered
+                </a>
+            </li>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link @(currentTab == "myquestions" ? "active" : "")" 
+                       asp-action="Index" 
+                       asp-route-tab="myquestions"
+                       asp-route-search="@searchTerm"
+                       asp-route-tag="@currentTag"
+                       asp-route-sortBy="@sortBy"
+                       asp-route-sortDesc="@sortDesc">
+                        <i class="fas fa-user me-2"></i>My Questions
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Search and Sort -->
+    <div class="qa-search-section mb-4">
+        <form asp-action="Index" method="get" id="searchForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control" 
+                               name="search" 
+                               id="searchInput"
+                               value="@searchTerm"
+                               placeholder="Search questions by title, content, or tags...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        @if (!string.IsNullOrEmpty(searchTerm))
+                        {
+                            <a asp-action="Index" 
+                               asp-route-tab="@currentTab"
+                               asp-route-tag="@currentTag" 
+                               asp-route-isResolved="@isResolved"
+                               asp-route-sortBy="@sortBy"
+                               asp-route-sortDesc="@sortDesc"
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="sortBy" id="sortBySelect" onchange="document.getElementById('searchForm').submit()">
+                        <option value="created" selected="@(sortBy == "created")">Newest</option>
+                        <option value="votes" selected="@(sortBy == "votes")">Most Votes</option>
+                        <option value="answers" selected="@(sortBy == "answers")">Most Answers</option>
+                        <option value="views" selected="@(sortBy == "views")">Most Views</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="pageSize" id="pageSizeSelect" onchange="document.getElementById('searchForm').submit()">
+                        <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
+                        <option value="20" selected="@(Model.PageSize == 20)">20 per page</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
+                        <option value="100" selected="@(Model.PageSize == 100)">100 per page</option>
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" name="tab" value="@currentTab" />
+            <input type="hidden" name="tag" value="@currentTag" />
+            <input type="hidden" name="isResolved" value="@isResolved" />
+            <input type="hidden" name="sortDesc" value="@sortDesc" />
+        </form>
+    </div>
+
+    <!-- Dynamic List Container -->
+    <div id="questionListContainer">
+        <partial name="_QuestionList" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .vote-active-up { color: #f48024 !important; }
+        .vote-active-down { color: #f48024 !important; }
+        .bookmark-active { color: #0d6efd !important; }
+        .dropdown-toggle-no-caret::after { display: none; }
+        .x-small { font-size: 0.75rem; }
+        
+        /* Reaction Tooltip Logic */
+        .reaction-popup {
+            display: none;
+        }
+        .reaction-container.show-visible .reaction-popup {
+            display: flex !important;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/questionHub")
+            .build();
+
+        connection.on("ReceiveQuestion", function (question) {
+            fetch(`/Questions/GetQuestionCard/${question.id}`)
+                .then(response => response.text())
+                .then(html => {
+                    const listContainer = document.getElementById('questionListContainer');
+                    if(listContainer) {
+                        listContainer.insertAdjacentHTML('afterbegin', html);
+                        
+                        // Re-init tooltips for new content
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.map(function (tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+
+                        Toast.show("New question posted!", "info");
+                    }
+                })
+                .catch(err => console.error("Failed to load new question card", err));
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const searchForm = document.getElementById('searchForm');
+        const listContainer = document.getElementById('questionListContainer');
+
+        // Reaction Dropdown Logic
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.reaction-container')) {
+                document.querySelectorAll('.reaction-container.show-visible').forEach(el => {
+                    el.classList.remove('show-visible');
+                });
+            }
+        });
+
+        listContainer.addEventListener('click', function(e) {
+            const trigger = e.target.closest('.reaction-trigger');
+            if (trigger) {
+                const container = trigger.closest('.reaction-container');
+                document.querySelectorAll('.reaction-container.show-visible').forEach(el => {
+                    if (el !== container) el.classList.remove('show-visible');
+                });
+                container.classList.toggle('show-visible');
+                e.stopPropagation();
+            }
+        });
+
+        // Social Action Handlers for Index
+        const votingLocks = new Set();
+        async function voteQuestionIndex(id, isUpvote, btn) {
+            if (votingLocks.has(id)) return;
+            votingLocks.add(id);
+            
+            const card = btn.closest('.question-card');
+            const btnActive = card.querySelector('.vote-active-up, .vote-active-down');
+            const btnUp = btnActive?.classList.contains('vote-active-up') ? btnActive : card.querySelector('.fa-caret-up').parentElement;
+            const btnDown = btnActive?.classList.contains('vote-active-down') ? btnActive : card.querySelector('.fa-caret-down').parentElement;
+            const countSpan = document.getElementById(`vote-count-${id}`);
+            
+            try {
+                const response = await fetch(`/Questions/Vote/${id}?isUpvote=${isUpvote}`, { 
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    countSpan.innerText = data.voteCount;
+                    
+                    btnUp.classList.remove('vote-active-up');
+                    btnUp.classList.add('link-secondary');
+                    btnDown.classList.remove('vote-active-down');
+                    btnDown.classList.add('link-secondary');
+
+                    if (data.userVote === 1) {
+                        btnUp.classList.add('vote-active-up');
+                        btnUp.classList.remove('link-secondary');
+                    } else if (data.userVote === -1) {
+                        btnDown.classList.add('vote-active-down');
+                        btnDown.classList.remove('link-secondary');
+                    }
+                    
+                    let message = data.userVote === 1 ? "Upvoted!" : (data.userVote === -1 ? "Downvoted!" : "Vote removed.");
+                    Toast.show(message, "success");
+                } else {
+                    const data = await response.json();
+                    Toast.show(data.message || "Operation failed", "error");
+                }
+            } catch (err) { 
+                console.error(err); 
+            } finally {
+                votingLocks.delete(id);
+            }
+        }
+
+        async function bookmarkQuestionIndex(id) {
+            try {
+                const response = await fetch(`/Questions/Bookmark/${id}`, { 
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const btn = document.getElementById(`btn-bookmark-${id}`);
+                    const countEl = document.getElementById(`bookmark-count-${id}`);
+                    const icon = btn.querySelector('i');
+                    
+                    if (countEl) countEl.innerText = data.bookmarkCount;
+                    
+                    const isActive = data.isBookmarked;
+                    btn.classList.toggle('bookmark-active', isActive);
+                    btn.classList.toggle('text-muted', !isActive);
+                    icon.className = isActive ? 'fas fa-bookmark' : 'far fa-bookmark';
+                    
+                    Toast.show(isActive ? "Bookmarked!" : "Bookmark removed.", "success");
+                } else {
+                    Toast.show(data.message || "Failed to bookmark", "error");
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function reactQuestionIndex(id, type) {
+            try {
+                const response = await fetch(`/Questions/React/${id}?reactionType=${type}`, { 
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const countEl = document.getElementById(`react-count-${id}`);
+                    if (countEl) {
+                        const total = data.reduce((acc, curr) => acc + curr.count, 0);
+                        countEl.innerText = total;
+                        
+                        const container = countEl.closest('.reaction-container');
+                        const triggerBtn = container.querySelector('.reaction-trigger');
+                        
+                        if (triggerBtn) {
+                            const userReaction = data.find(r => r.isUserReaction);
+                            
+                            if (userReaction) {
+                                const emoji = getEmoji(userReaction.reactionType);
+                                triggerBtn.innerHTML = `${emoji} <span id="react-count-${id}">${total}</span>`;
+                                triggerBtn.classList.remove('text-muted');
+                                triggerBtn.classList.add('border-primary');
+                            } else {
+                                triggerBtn.innerHTML = `<i class="far fa-smile"></i> <span id="react-count-${id}">${total}</span>`;
+                                triggerBtn.classList.add('text-muted');
+                                triggerBtn.classList.remove('border-primary');
+                            }
+                        }
+                        
+                        container.classList.remove('show-visible');
+                    }
+                    Toast.show("Reaction updated!", "success");
+                } else {
+                    Toast.show(data.message || "Reaction failed", "error");
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function getEmoji(type) {
+            switch(type) {
+                case 1: return '👍';
+                case 2: return '❤️';
+                case 3: return '🙌';
+                case 4: return '🤔';
+                default: return '❓';
+            }
+        }
+
+        function shareQuestionIndex(id, platform) {
+            const detailLink = document.querySelector(`.question-card a[href*="${id}"]`) || 
+                               document.querySelector(`.question-card a[href*="Details"]`);
+            const url = detailLink ? new URL(detailLink.href, window.location.origin).href : window.location.href;
+            const title = "Check out this question on Community Car!";
+
+            fetch(`/Questions/Share/${id}?platform=${platform}&sharedUrl=${encodeURIComponent(url)}`, { 
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (r.ok) {
+                        const countEl = document.getElementById(`share-count-${id}`);
+                        if (countEl) countEl.innerText = data.shareCount;
+
+                        if (platform === 'Clipboard') {
+                            navigator.clipboard.writeText(url).then(() => {
+                                Toast.show("Link copied to clipboard!", "success");
+                            });
+                        } else {
+                            let shareUrl = "";
+                            switch(platform) {
+                                case 'Facebook':
+                                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                                    break;
+                                case 'Twitter':
+                                    shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                                    break;
+                                case 'LinkedIn':
+                                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                                    break;
+                            }
+                            if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
+                        }
+                    } else {
+                        Toast.show(data.message || "Share failed", "error");
+                    }
+                })
+                .catch(err => console.error("Share tracking failed", err));
+        }
+
+        // Standardized global Toast is used; local showToast removed.
+
+        // Live Search logic
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadQuestions();
+            }, 500);
+        });
+
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadQuestions();
+        });
+
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (!link) return;
+
+            if (link.href && (link.classList.contains('page-link') || 
+                              link.classList.contains('nav-link') || 
+                              link.classList.contains('tag') || 
+                              link.innerText.includes('Clear All'))) {
+                
+                if (link.getAttribute('href').startsWith('/Questions') || link.href.includes('/Questions')) {
+                    e.preventDefault();
+                    loadQuestions(link.href);
+                }
+            }
+        });
+
+        document.getElementById('sortBySelect').onchange = () => loadQuestions();
+        document.getElementById('pageSizeSelect').onchange = () => loadQuestions();
+
+        async function loadQuestions(url = null) {
+            if (!url) {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams(formData);
+                params.set('search', searchInput.value);
+                params.set('sortBy', document.getElementById('sortBySelect').value);
+                params.set('pageSize', document.getElementById('pageSizeSelect').value);
+                url = `${searchForm.action}?${params.toString()}`;
+            }
+
+            listContainer.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                if (response.ok) {
+                    const html = await response.text();
+                    listContainer.innerHTML = html;
+                    window.history.pushState({ path: url }, '', url);
+                    
+                    const newUrl = new URL(url, window.location.origin);
+                    const tab = newUrl.searchParams.get('tab') || 'all';
+                    document.querySelectorAll('.qa-nav-tabs .nav-link').forEach(nav => {
+                        nav.classList.remove('active');
+                        if (nav.href.includes(`tab=${tab}`)) nav.classList.add('active');
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load questions:", err);
+            } finally {
+                listContainer.style.opacity = '1';
+            }
+        }
+
+        window.addEventListener('popstate', function() {
+            location.reload();
+        });
+    </script>
+}
+
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_QA" />
+}
