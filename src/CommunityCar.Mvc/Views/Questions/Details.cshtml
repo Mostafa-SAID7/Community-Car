@@ -256,11 +256,13 @@
             // Check if this answer belongs to the current question
             if (data.questionId === '@Model.Id') {
                 fetch(`/Answers/GetAnswerCard/${data.answerId}`)
-                    .then(response => response.text())
-                    .then(html => {
+                    .then(response => response.json())
+                    .then(answer => {
                         const listContainer = document.getElementById('answersList');
                         if(listContainer) {
-                            listContainer.insertAdjacentHTML('beforeend', html);
+                            // Build answer HTML from JSON
+                            const answerHtml = buildAnswerHtml(answer);
+                            listContainer.insertAdjacentHTML('beforeend', answerHtml);
                             
                             // Update count text if exists
                             const header = document.querySelector('h3.h5.mb-3');
@@ -270,23 +272,92 @@
                             }
 
                             Toast.show("New answer received!", "info");
-                            
-                            // Re-init tooltips
-                            var tooltipTriggerList = [].slice.call(listContainer.lastElementChild.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                                return new bootstrap.Tooltip(tooltipTriggerEl);
-                            });
                         }
                     })
                     .catch(err => console.error("Failed to load new answer card", err));
             }
         });
 
-        // ... existing SignalR ReceiveComment ...
+        connection.on("ReceiveComment", function (data) {
+            // Find the comment list for this answer
+            const commentList = document.getElementById(`comments-${data.answerId}`);
+            if (commentList) {
+                // Build comment HTML from JSON
+                const commentHtml = buildCommentHtml(data.comment);
+                commentList.insertAdjacentHTML('beforeend', commentHtml);
+                Toast.show("New comment received!", "info");
+            }
+        });
 
         connection.start().catch(function (err) {
             return console.error(err.toString());
         });
+
+        // Helper function to build answer HTML from JSON
+        function buildAnswerHtml(answer) {
+            const isAuthor = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value' === answer.authorId;
+            const isQuestionAuthor = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value' === '@Model.AuthorId';
+            
+            return `
+                <div class="answer-item d-flex gap-3 p-3 border rounded mb-3" id="answer-${answer.id}">
+                    <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
+                        <button class="btn btn-link p-0 fs-4 link-secondary" onclick="voteAnswer('${answer.id}', true)"><i class="bi bi-caret-up-fill"></i></button>
+                        <span class="fw-bold">${answer.voteCount}</span>
+                        <button class="btn btn-link p-0 fs-4 link-secondary" onclick="voteAnswer('${answer.id}', false)"><i class="bi bi-caret-down-fill"></i></button>
+                        ${isQuestionAuthor ? `
+                            <button class="btn btn-link p-0 mt-2 text-secondary" onclick="toggleAcceptAnswer('@Model.Id', '${answer.id}', false)" title="Accept this answer">
+                                <i class="bi bi-check-circle fs-3"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="answer-content mb-3">${answer.content}</div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="/Profiles/Index/${answer.authorId}" class="fw-bold small text-primary text-decoration-none hover-opacity">
+                                    ${answer.authorName}
+                                </a>
+                                ${isAuthor ? `
+                                    <span class="text-muted d-none d-sm-inline">•</span>
+                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" onclick="editAnswer('${answer.id}')">Edit</button>
+                                    <span class="text-muted d-none d-sm-inline">•</span>
+                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="deleteAnswer('@Model.Id', '${answer.id}')">Delete</button>
+                                ` : ''}
+                            </div>
+                            <span class="text-muted smallest">Just now</span>
+                        </div>
+                        <div class="mt-2">
+                            <button onclick="toggleCommentForm('${answer.id}')" class="btn btn-link btn-sm p-0 text-secondary"><i class="bi bi-chat"></i> Add Comment</button>
+                        </div>
+                        <div id="comment-form-${answer.id}" class="comment-form mt-2 d-none">
+                            <form class="submit-comment-form">
+                                <input type="hidden" name="AnswerId" value="${answer.id}" />
+                                <div class="input-group">
+                                    <input type="text" name="Content" class="form-control form-control-sm" placeholder="Write a comment..." required />
+                                    <button type="submit" class="btn btn-primary btn-sm">Post</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="comments-${answer.id}" class="mt-2"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to build comment HTML from JSON
+        function buildCommentHtml(comment) {
+            return `
+                <div class="comment-item border-start border-2 border-info ps-2 py-1 mb-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="fw-bold smallest">${comment.authorName}</span>
+                            <span class="text-muted smallest ms-2">${comment.content}</span>
+                        </div>
+                        <span class="text-muted x-small">Just now</span>
+                    </div>
+                </div>
+            `;
+        }
 
         function toggleCommentForm(answerId) {
             const form = document.getElementById(`comment-form-${answerId}`);

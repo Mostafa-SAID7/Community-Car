@@ -40,10 +40,10 @@ public class CommentsController : Controller
 
         var comment = await _questionService.AddAnswerCommentAsync(model.AnswerId, model.Content, userId.Value);
 
-        // Real-time broadcast
+        // Real-time broadcast with full comment data
         await _hubContext.Clients.All.SendAsync("ReceiveComment", new { 
             answerId = model.AnswerId,
-            commentId = comment.Id
+            comment = comment
         });
 
         if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
