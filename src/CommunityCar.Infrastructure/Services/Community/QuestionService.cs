@@ -378,6 +378,92 @@ public class QuestionService : IQuestionService
         return new PagedResult<QuestionDto>(dtos, totalCount, parameters.PageNumber, parameters.PageSize);
     }
 
+    public async Task<List<QuestionDto>> GetRelatedQuestionsAsync(Guid questionId, int count = 4)
+    {
+        // Get the current question with tags
+        var currentQuestion = await _questionRepository.GetQueryable()
+            .Include(q => q.QuestionTags)
+                .ThenInclude(qt => qt.Tag)
+            .FirstOrDefaultAsync(q => q.Id == questionId);
+            
+        if (currentQuestion == null)
+            return new List<QuestionDto>();
+
+        // Get tags from the current question
+        var currentTags = currentQuestion.QuestionTags
+            .Select(qt => qt.Tag.Name.ToLower())
+            .ToList();
+
+        // Build query for related questions
+        var query = _questionRepository.GetQueryable()
+            .Include(q => q.Author)
+            .Include(q => q.Answers)
+            .Include(q => q.QuestionTags)
+                .ThenInclude(qt => qt.Tag)
+            .Include(q => q.Category)
+            .Where(q => q.Id != questionId); // Exclude current question
+
+        List<Question> relatedQuestions;
+
+        if (currentTags.Any())
+        {
+            // Find questions with matching tags
+            relatedQuestions = await query
+                .Where(q => q.QuestionTags.Any(qt => currentTags.Contains(qt.Tag.Name.ToLower())))
+                .Take(count * 2) // Get more to sort by tag match count
+                .ToListAsync();
+
+            // Sort by number of matching tags, then by recent activity
+            relatedQuestions = relatedQuestions
+                .Select(q => new
+                {
+                    Question = q,
+                    MatchCount = q.QuestionTags.Count(qt => currentTags.Contains(qt.Tag.Name.ToLower()))
+                })
+                .OrderByDescending(x => x.MatchCount)
+                .ThenByDescending(x => x.Question.CreatedAt)
+                .Take(count)
+                .Select(x => x.Question)
+                .ToList();
+        }
+        else
+        {
+            relatedQuestions = new List<Question>();
+        }
+
+        // If we don't have enough, fill with questions from the same category
+        if (relatedQuestions.Count < count && currentQuestion.CategoryId.HasValue)
+        {
+            var neededCount = count - relatedQuestions.Count;
+            var existingIds = relatedQuestions.Select(q => q.Id).ToList();
+
+            var categoryQuestions = await query
+                .Where(q => q.CategoryId == currentQuestion.CategoryId && !existingIds.Contains(q.Id))
+                .OrderByDescending(q => q.CreatedAt)
+                .Take(neededCount)
+                .ToListAsync();
+
+            relatedQuestions.AddRange(categoryQuestions);
+        }
+
+        // If still not enough, just get recent questions
+        if (relatedQuestions.Count < count)
+        {
+            var neededCount = count - relatedQuestions.Count;
+            var existingIds = relatedQuestions.Select(q => q.Id).ToList();
+
+            var recentQuestions = await query
+                .Where(q => !existingIds.Contains(q.Id))
+                .OrderByDescending(q => q.CreatedAt)
+                .Take(neededCount)
+                .ToListAsync();
+
+            relatedQuestions.AddRange(recentQuestions);
+        }
+
+        return _mapper.Map<List<QuestionDto>>(relatedQuestions);
+    }
+
     public async Task<AnswerDto> AddAnswerAsync(Guid questionId, string content, Guid authorId)
     {
         var user = await _userRepository.GetByIdAsync(authorId);

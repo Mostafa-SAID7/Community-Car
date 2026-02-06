@@ -21,6 +21,7 @@ public interface IQuestionService
     Task<PagedResult<QuestionDto>> GetTrendingQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, Guid? currentUserId = null);
     Task<PagedResult<QuestionDto>> GetRecentQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, Guid? currentUserId = null);
     Task<PagedResult<QuestionDto>> GetSuggestedQuestionsAsync(Guid userId, QueryParameters parameters);
+    Task<List<QuestionDto>> GetRelatedQuestionsAsync(Guid questionId, int count = 4);
     
     Task<AnswerDto> AddAnswerAsync(Guid questionId, string content, Guid authorId);
     Task<AnswerDto> UpdateAnswerAsync(Guid answerId, string content);

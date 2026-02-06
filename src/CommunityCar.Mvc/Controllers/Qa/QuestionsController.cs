@@ -101,9 +101,10 @@ public class QuestionsController : Controller
         await _questionService.IncrementViewCountAsync(question.Id);
         
         var answers = await _questionService.GetAnswersAsync(question.Id, _currentUserService.UserId);
+        var relatedQuestions = await _questionService.GetRelatedQuestionsAsync(question.Id, 4);
         
         ViewBag.Answers = answers;
-        ViewBag.Answers = answers;
+        ViewBag.RelatedQuestions = relatedQuestions;
         return View(question);
     }
 
