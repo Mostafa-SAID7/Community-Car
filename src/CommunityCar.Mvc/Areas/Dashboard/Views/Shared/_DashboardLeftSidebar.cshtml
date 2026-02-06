@@ -28,7 +28,7 @@
         <i class="fas fa-user-check fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Audit Logs"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="UserLocalization" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserLocalization" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentLocalization") ? "active" : "")">
+    <a asp-area="Dashboard" asp-controller="Localization" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
         <i class="fas fa-language fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Localization"]</span>
     </a>
