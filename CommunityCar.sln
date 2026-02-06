@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Domain", "CommunityCar.Domain\CommunityCar.Domain.csproj", "{B7540B4B-9687-461B-97E9-391F80A9887E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Domain", "src\CommunityCar.Domain\CommunityCar.Domain.csproj", "{B7540B4B-9687-461B-97E9-391F80A9887E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Infrastructure", "CommunityCar.Infrastructure\CommunityCar.Infrastructure.csproj", "{DA6E0553-E7EB-4AA2-887D-A1C626992520}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Infrastructure", "src\CommunityCar.Infrastructure\CommunityCar.Infrastructure.csproj", "{DA6E0553-E7EB-4AA2-887D-A1C626992520}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Web", "CommunityCar.Web\CommunityCar.Web.csproj", "{94EDFD29-4DF1-4516-BE52-440AF6BB42AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunityCar.Mvc", "src\CommunityCar.Mvc\CommunityCar.Mvc.csproj", "{94EDFD29-4DF1-4516-BE52-440AF6BB42AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

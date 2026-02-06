@@ -1,0 +1,133 @@
+@using CommunityCar.Domain.Entities.Community.qa
+@model Question
+@{
+    ViewData["Title"] = Model.Title;
+    var answers = ViewBag.Answers as IEnumerable<Answer> ?? new List<Answer>();
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="question-header mb-4">
+                <h1 class="h2 mb-2">@Model.Title</h1>
+                <div class="text-secondary small d-flex gap-3">
+                    <span>Asked @Model.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    <span>Viewed @Model.ViewCount times</span>
+                    @if (Model.IsResolved)
+                    {
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Resolved</span>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <div class="vote-controls d-flex flex-column align-items-center" style="width: 50px;">
+                            <button class="btn btn-link link-secondary p-0 fs-3" onclick="voteQuestion('@Model.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
+                            <span class="fw-bold fs-4">@Model.VoteCount</span>
+                            <button class="btn btn-link link-secondary p-0 fs-3" onclick="voteQuestion('@Model.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="question-content mb-4">
+                                @Html.Raw(Model.Content.Replace("\n", "<br/>"))
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="tags">
+                                    @if (!string.IsNullOrEmpty(Model.Tags))
+                                    {
+                                        foreach (var tag in Model.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <a href="@Url.Action("Index", new { tag = tag.Trim() })" class="badge bg-light text-secondary text-decoration-none me-1">@tag.Trim()</a>
+                                        }
+                                    }
+                                </div>
+                                <div class="author-info p-2 bg-light rounded" style="min-width: 200px;">
+                                    <div class="text-secondary smallest mb-1">Asked by</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            @(Model.Author?.UserName?.Substring(0, 1).ToUpper() ?? "U")
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold small">@(Model.Author?.UserName ?? "User")</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="answers-section">
+                <h3 class="h5 mb-3">@answers.Count() Answers</h3>
+                @foreach (var answer in answers)
+                {
+                    <div class="card mb-3 @(answer.IsAccepted ? "border-success" : "")">
+                        <div class="card-body">
+                            <div class="d-flex gap-3">
+                                <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
+                                    <button class="btn btn-link link-secondary p-0 fs-4" onclick="voteAnswer('@answer.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
+                                    <span class="fw-bold">@answer.VoteCount</span>
+                                    <button class="btn btn-link link-secondary p-0 fs-4" onclick="voteAnswer('@answer.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
+                                    @if (answer.IsAccepted)
+                                    {
+                                        <i class="bi bi-check-lg text-success fs-3 mt-2" title="Accepted Answer"></i>
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="answer-content">
+                                        @Html.Raw(answer.Content.Replace("\n", "<br/>"))
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <div class="author-info p-2" style="min-width: 150px;">
+                                            <div class="text-secondary smallest mb-1">Answered @answer.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="fw-bold small text-primary">@(answer.Author?.UserName ?? "User")</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="post-answer mt-5">
+                <h4 class="h5 mb-3">Your Answer</h4>
+                <form asp-area="Community" asp-controller="Answers" asp-action="Create" method="post">
+                    <input type="hidden" name="QuestionId" value="@Model.Id" />
+                    <div class="form-group mb-3">
+                        <textarea name="Content" class="form-control" rows="8" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Your Answer</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="sidebar">
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="h6 card-title">Quick Tip</h5>
+                        <p class="small text-secondary mb-0">Be detailed and specific when providing answers to help the community better.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function voteQuestion(id, isUpvote) {
+            fetch(`/Community/Questions/Vote/${id}?isUpvote=${isUpvote}`, { method: 'POST' })
+                .then(r => { if(r.ok) location.reload(); });
+        }
+        function voteAnswer(id, isUpvote) {
+            fetch(`/Community/Answers/Vote/${id}?isUpvote=${isUpvote}`, { method: 'POST' })
+                .then(r => { if(r.ok) location.reload(); });
+        }
+    </script>
+}
