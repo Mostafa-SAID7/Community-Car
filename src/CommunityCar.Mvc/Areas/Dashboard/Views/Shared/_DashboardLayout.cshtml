@@ -1,0 +1,101 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dashboard - Community Car</title>
+    
+    <link rel="icon" type="image/png" href="~/images/logo/logo.png" />
+
+    <!-- Libraries CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- Custom Dashboard CSS -->
+    <style>
+        .app-header { z-index: 1030; }
+        .dashboard-container { margin-top: 2rem; }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <!-- Reuse Main Header for consistency, or create _DashboardHeader if needed -->
+    <partial name="_Header" />
+    
+    <main role="main" class="container-fluid my-4">
+        <div class="row g-4">
+            <!-- Dashboard Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar-left">
+                <div class="sidebar-sticky">
+                    <partial name="_DashboardLeftSidebar" />
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="col-md-9 col-lg-10">
+                @RenderBody()
+            </div>
+        </div>
+    </main>
+    
+    <partial name="_Footer" />
+
+    <div class="sidebar-backdrop"></div>
+
+    <!-- Libraries JS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/chart.js/chart.umd.min.js"></script>
+
+    <!-- Core Modular JS -->
+    <script src="~/js/core/config.js"></script>
+    <script src="~/js/core/helpers.js"></script>
+    <script src="~/js/core/ajax.js"></script>
+    
+    <!-- Utils Modular JS -->
+    <script src="~/js/utils/dom.js"></script>
+    <script src="~/js/utils/validators.js"></script>
+    <script src="~/js/utils/theme-manager.js"></script>
+    
+    <!-- Layout Modular JS -->
+    <script src="~/js/layout/header.js"></script>
+    <script src="~/js/layout/navigation.js"></script>
+    <script src="~/js/layout/sidebar.js"></script>
+    
+    <!-- Component Modular JS -->
+    <script src="~/js/components/modal.js"></script>
+    <script src="~/js/components/dropdown.js"></script>
+    <script src="~/js/components/toast.js"></script>
+    <script src="~/js/components/charts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="~/js/components/notification.js"></script>
+    
+    <!-- Entry Point JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- TempData Notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["SuccessToast"] != null)
+            {
+                <text>window.Toast.show('@TempData["SuccessToast"]', 'success');</text>
+            }
+            @if (TempData["ErrorToast"] != null)
+            {
+                <text>window.Toast.show('@TempData["ErrorToast"]', 'error');</text>
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

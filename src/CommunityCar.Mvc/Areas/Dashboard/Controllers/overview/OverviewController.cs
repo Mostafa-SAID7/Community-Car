@@ -2,11 +2,12 @@ using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Domain.Models;
 using CommunityCar.Web.Areas.Dashboard.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.overview;
 
 [Area("Dashboard")]
-[Route("Dashboard/[controller]")]
+[Authorize(Roles = "SuperAdmin,Admin")]
 public class OverviewController : Controller
 {
     private readonly IDashboardService _dashboardService;

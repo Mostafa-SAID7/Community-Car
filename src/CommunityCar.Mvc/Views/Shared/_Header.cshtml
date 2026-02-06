@@ -56,6 +56,14 @@
                 <i class="fas fa-plus-circle fa-lg"></i>
             </a>
 
+            <!-- Admin Dashboard Link -->
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+            {
+                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-icon text-danger p-1" title="Admin Dashboard">
+                    <i class="fas fa-tachometer-alt fa-lg"></i>
+                </a>
+            }
+
             <!-- Notifications -->
             <div class="dropdown me-1">
                 <button class="btn btn-icon text-body p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
@@ -104,8 +112,20 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                     <li><a class="dropdown-item" href="#">Profile</a></li>
                     <li><a class="dropdown-item" href="#">Settings</a></li>
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a class="dropdown-item text-danger" asp-area="Dashboard" asp-controller="Overview" asp-action="Index">
+                                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                            </a>
+                        </li>
+                    }
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#">Sign out</a></li>
+                    <li>
+                        <form class="form-inline" asp-area="Identity" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Feed", new { area = "" })" method="post">
+                            <button type="submit" class="dropdown-item text-danger">Sign out</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>

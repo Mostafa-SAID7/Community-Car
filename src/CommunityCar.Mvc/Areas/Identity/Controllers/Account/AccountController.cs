@@ -180,6 +180,23 @@ public class AccountController : Controller
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("/Logout")]
+    public async Task<IActionResult> Logout(string? returnUrl = null)
+    {
+        await _signInManager.SignOutAsync();
+        _logger.LogInformation("User logged out.");
+        if (returnUrl != null)
+        {
+            return LocalRedirect(returnUrl);
+        }
+        else
+        {
+            return RedirectToAction("Index", "Feed", new { area = "" });
+        }
+    }
+
     private IActionResult RedirectToLocal(string? returnUrl)
     {
         if (Url.IsLocalUrl(returnUrl))
@@ -188,7 +205,13 @@ public class AccountController : Controller
         }
         else
         {
-            return RedirectToAction("Index", "Home", new { area = "Community" });
+            return RedirectToAction("Index", "Feed", new { area = "" });
         }
+    }
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

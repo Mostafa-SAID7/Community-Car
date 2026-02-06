@@ -10,6 +10,7 @@ using CommunityCar.Web.Filters;
 using CommunityCar.Web.Middleware;
 using CommunityCar.Infrastructure.Data.Seed;
 using CommunityCar.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
         await services.SeedDatabase(); // Call the extension method on IServiceProvider
         await FriendshipSeeder.SeedAsync(context);
     }

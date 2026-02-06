@@ -29,6 +29,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<KPI> KPIs => Set<KPI>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<CommunityCar.Domain.Entities.Community.Common.Category> Categories => Set<CommunityCar.Domain.Entities.Community.Common.Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

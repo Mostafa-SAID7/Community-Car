@@ -31,6 +31,9 @@ public static class DbSeeder
             // 2. Seed Users
             await SeedUsersAsync(userManager, logger);
 
+            // 3. Seed Categories
+            await SeedCategoriesAsync(context, logger);
+
             logger.LogInformation("Database seeding completed successfully.");
         }
         catch (Exception ex)
@@ -43,7 +46,7 @@ public static class DbSeeder
 
     private static async Task SeedRolesAsync(ApplicationDbContext context, RoleManager<ApplicationRole> roleManager, ILogger logger)
     {
-        string[] roleNames = { "SuperAdmin", "User" };
+        string[] roleNames = { "SuperAdmin", "Admin", "User" };
         foreach (var roleName in roleNames)
         {
             if (!await roleManager.RoleExistsAsync(roleName))
@@ -126,6 +129,64 @@ public static class DbSeeder
                     logger.LogError("Error creating normal user: {ErrorMessage}", error.Description);
                 }
             }
+        }
+    }
+
+    private static async Task SeedCategoriesAsync(ApplicationDbContext context, ILogger logger)
+    {
+        if (!context.Categories.Any())
+        {
+            logger.LogInformation("Seeding categories...");
+            
+            var categories = new[]
+            {
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "Engine & Transmission", 
+                    "engine-transmission", 
+                    "Discussions related to engine repair, transmission issues, and performance.", 
+                    "bi bi-gear-fill", 
+                    "#dc3545", 
+                    1),
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "Electrical & Lights", 
+                    "electrical-lights", 
+                    "Battery, alternator, wiring, and lighting systems.", 
+                    "bi bi-lightning-fill", 
+                    "#ffc107", 
+                    2),
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "Brakes & Suspension", 
+                    "brakes-suspension", 
+                    "Braking systems, shocks, struts, and wheel alignment.", 
+                    "bi bi-slash-circle-fill", 
+                    "#fd7e14", 
+                    3),
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "Interior & Accessories", 
+                    "interior-accessories", 
+                    "Dashboard, seats, audio systems, and modifications.", 
+                    "bi bi-ui-checks-grid", 
+                    "#198754", 
+                    4),
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "Maintenance & Service", 
+                    "maintenance-service", 
+                    "Oil changes, scheduled service, and general upkeep.", 
+                    "bi bi-wrench-adjustable", 
+                    "#0d6efd", 
+                    5),
+                new CommunityCar.Domain.Entities.Community.Common.Category(
+                    "General Discussion", 
+                    "general-discussion", 
+                    "General car talk, news, and off-topic discussions.", 
+                    "bi bi-chat-dots-fill", 
+                    "#6c757d", 
+                    6)
+            };
+
+            await context.Categories.AddRangeAsync(categories);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Categories seeded successfully.");
         }
     }
 }

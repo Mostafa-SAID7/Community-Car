@@ -145,15 +145,16 @@
                                                     <i class="fas @iconClass ms-1 x-small" title="@Model.AuthorRankName Member"></i>
                                                 }
                                             </div>
-                                            @if (User.Identity?.IsAuthenticated == true && Model.AuthorId == Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString()))
                                             {
-                                                <div class="mt-1 d-flex gap-2">
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" data-bs-toggle="modal" data-bs-target="#editQuestionModal">
+                                                <div class="mt-1 d-flex gap-2 align-items-center">
+                                                    <a asp-controller="Questions" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-link p-0 text-secondary smallest text-decoration-none hover-primary">
                                                         <i class="bi bi-pencil me-1"></i>Edit
-                                                    </button>
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="confirmDeleteQuestion('@Model.Id')">
-                                                        <i class="bi bi-trash me-1"></i>Delete
-                                                    </button>
+                                                    </a>
+                                                    <form asp-controller="Questions" asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirmDeleteWithSweetAlert(event)">
+                                                        <button type="submit" class="btn btn-link p-0 text-secondary smallest text-decoration-none hover-danger border-0 bg-transparent">
+                                                            <i class="bi bi-trash me-1"></i>Delete
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             }
                                         </div>
@@ -337,61 +338,7 @@
     }
 </div>
 
-<!-- Edit Question Modal -->
-<div class="modal fade modal-premium" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div class="w-100">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="modal-title" id="editQuestionModalLabel">
-                            <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Question
-                        </h5>
-                        <button type="button" class="btn-close-premium" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <p class="mb-0 smallest text-muted mt-2">Revise your question to make it clearer for the community.</p>
-                </div>
-            </div>
-            <div class="modal-body">
-                <form id="editQuestionForm">
-                    <input type="hidden" name="Id" value="@Model.Id" />
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-secondary">Title</label>
-                        <input type="text" name="Title" class="form-control form-control-lg" value="@Model.Title" required minlength="10" maxlength="150" placeholder="e.g. How to replace a car battery?">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-secondary">Category</label>
-                        <select name="CategoryId" class="form-select" required>
-                            <option value="">-- Select Category --</option>
-                            @foreach (var category in (IEnumerable<CategoryDto>)ViewBag.Categories)
-                            {
-                                <option value="@category.Id" selected="@(category.Id == Model.CategoryId)">@category.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-secondary">Details</label>
-                        <textarea name="Content" class="form-control" rows="10" required minlength="20" placeholder="Explain your question in detail...">@Model.Content</textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-secondary">Tags</label>
-                        <input type="text" name="Tags" class="form-control" data-tag-input="true" data-max-tags="5" value="@Model.Tags" placeholder="e.g. battery, maintenance, car">
-                        <div class="form-text smallest text-muted mt-1">Press Enter or comma to add a tag. Max 5 tags.</div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light px-4 fw-600" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary px-4 fw-700 shadow-sm" onclick="saveQuestionEdit()" id="btnSaveQuestion">
-                    <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
-                    Save Changes
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 
 @section Scripts {
@@ -885,77 +832,7 @@
             }
         }
 
-        function confirmDeleteQuestion(id) {
-            window.Modal.confirm(
-                'Delete Question?',
-                'Are you sure you want to permanently delete this question? This action cannot be undone.',
-                'Delete Permanently'
-            ).then((result) => {
-                if (result.isConfirmed) {
-                    performDeleteQuestion(id);
-                }
-            });
-        }
 
-        async function performDeleteQuestion(id) {
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-            
-            try {
-                const response = await fetch(`/Questions/Delete/${id}`, {
-                    method: 'POST',
-                    headers: { 
-                        'RequestVerificationToken': token,
-                        'X-Requested-With': 'XMLHttpRequest' 
-                    }
-                });
-                
-                if (response.ok) {
-                    Toast.show("Question deleted!", "success");
-                    window.location.href = '/Questions';
-                } else {
-                    Toast.show("Failed to delete question", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("Error deleting question", "error");
-            }
-        }
-
-        async function saveQuestionEdit() {
-            const form = document.getElementById('editQuestionForm');
-            const btn = document.getElementById('btnSaveQuestion');
-            const spinner = btn.querySelector('.spinner-border');
-            
-            btn.disabled = true;
-            spinner.classList.remove('d-none');
-
-            try {
-                const formData = new FormData(form);
-                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-                const response = await fetch(`/Questions/Edit/${formData.get('Id')}`, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 
-                        'RequestVerificationToken': token,
-                        'X-Requested-With': 'XMLHttpRequest' 
-                    }
-                });
-
-                if (response.ok) {
-                    Toast.show("Question updated!", "success");
-                    location.reload();
-                } else {
-                    Toast.show("Failed to update question. Check inputs.", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("Error updating question", "error");
-            } finally {
-                btn.disabled = false;
-                spinner.classList.add('d-none');
-            }
-        }
 
         const answerForm = document.getElementById('answerForm');
         const answerErrorContainer = document.getElementById('answerValidationErrors');
@@ -1047,6 +924,22 @@
                 console.error(err);
                 Toast.show("Error deleting answer", "error");
             }
+        }
+
+        function confirmDeleteWithSweetAlert(e) {
+            e.preventDefault();
+            const form = e.target;
+            
+            window.Modal.confirm(
+                'Delete Question?',
+                'Are you sure you want to permanently delete this question? This action cannot be undone.',
+                'Delete Permanently'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
         }
     </script>
 }

@@ -1,0 +1,36 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="list-group list-group-flush border-0">
+    <div class="px-3 py-2 text-muted text-uppercase fw-bold small">Admin Controls</div>
+    
+    <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Overview" ? "active" : "")">
+        <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Overview"]</span>
+    </a>
+    <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
+        <i class="fas fa-cogs fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Management"]</span>
+    </a>
+    <a asp-area="Dashboard" asp-controller="UserAnalytics" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserAnalytics" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentAnalytics") ? "active" : "")">
+        <i class="fas fa-chart-line fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Analytics"]</span>
+    </a>
+
+    <div class="mt-4 px-3 py-2 text-muted text-uppercase fw-bold small">Navigation</div>
+    <a asp-area="" asp-controller="Feed" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded">
+        <i class="fas fa-arrow-left fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Back to Main Site"]</span>
+    </a>
+</div>
+
+<style>
+    .list-group-item.active {
+        background-color: #e2e8f0;
+        color: #1a202c;
+        font-weight: 600;
+    }
+    .list-group-item:hover {
+        background-color: #f7fafc;
+    }
+</style>

@@ -59,6 +59,15 @@
         <i class="fas fa-newspaper fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["News"]</span>
     </a>
+    
+    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+    {
+        <div class="mt-4 mb-2 px-3 text-xs fw-bold text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.05em;">Admin</div>
+        <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Overview" ? "active" : "")">
+            <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+            <span class="fw-medium">@Localizer["Dashboard"]</span>
+        </a>
+    }
 </div>
 
 <style>
