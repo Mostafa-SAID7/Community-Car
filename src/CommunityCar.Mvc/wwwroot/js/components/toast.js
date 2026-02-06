@@ -6,11 +6,15 @@ const Toast = {
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
-            "positionClass": "toast-top-right",
-            "showDuration": "300",
+            "positionClass": "toast-bottom-right",
+            "showDuration": "400",
             "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000"
+            "timeOut": "6000",
+            "extendedTimeOut": "1500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
         };
 
         switch (type.toLowerCase()) {
