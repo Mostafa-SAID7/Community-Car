@@ -8,7 +8,7 @@ public class AnswerViewModel
     public Guid QuestionId { get; set; }
 
     [Required(ErrorMessage = "Content is required")]
-    [StringLength(5000, MinimumLength = 20, ErrorMessage = "Content must be between 20 and 5000 characters")]
+    [StringLength(5000, MinimumLength = 5, ErrorMessage = "Content must be between 5 and 5000 characters")]
     public string Content { get; set; } = string.Empty;
 
     public Guid AuthorId { get; set; }
@@ -27,7 +27,7 @@ public class CreateAnswerViewModel
     public Guid QuestionId { get; set; }
 
     [Required(ErrorMessage = "Content is required")]
-    [StringLength(5000, MinimumLength = 20, ErrorMessage = "Content must be between 20 and 5000 characters")]
+    [StringLength(5000, MinimumLength = 5, ErrorMessage = "Content must be between 5 and 5000 characters")]
     public string Content { get; set; } = string.Empty;
 }
 
@@ -37,6 +37,6 @@ public class EditAnswerViewModel
     public Guid QuestionId { get; set; }
 
     [Required(ErrorMessage = "Content is required")]
-    [StringLength(5000, MinimumLength = 20, ErrorMessage = "Content must be between 20 and 5000 characters")]
+    [StringLength(5000, MinimumLength = 5, ErrorMessage = "Content must be between 5 and 5000 characters")]
     public string Content { get; set; } = string.Empty;
 }

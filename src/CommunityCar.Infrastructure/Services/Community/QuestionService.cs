@@ -393,6 +393,7 @@ public class QuestionService : IQuestionService
             UserRank.Author => 50,
             UserRank.Reviewer => 25,
             UserRank.Expert => 10,
+            UserRank.Standard => 5,
             _ => 1
         };
 

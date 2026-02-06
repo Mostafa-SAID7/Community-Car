@@ -65,9 +65,7 @@ public class AnswersController : Controller
         var answer = await _questionService.GetAnswerByIdAsync(id, _currentUserService.UserId);
         if (answer == null) return NotFound();
 
-        // Wrap in list to reuse _AnswerList or render custom partial
-        // Assuming _AnswerList takes IEnumerable<AnswerDto>
-        return PartialView("_AnswerList", new List<AnswerDto> { answer });
+        return Ok(answer);
     }
 
     [HttpGet("Edit/{id}")]

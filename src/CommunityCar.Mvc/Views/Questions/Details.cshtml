@@ -660,6 +660,8 @@
                         errorMessage = errorData.message || (errorData.Content ? errorData.Content[0] : errorMessage);
                     } catch (pErr) {
                          // Likely HTML response (e.g. 500)
+                         const rawText = await response.text();
+                         console.error("Server returned non-JSON error:", rawText.substring(0, 500));
                     }
                     Toast.show(errorMessage, "error");
                 }
