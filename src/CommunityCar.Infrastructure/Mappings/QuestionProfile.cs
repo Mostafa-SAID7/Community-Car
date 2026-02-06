@@ -10,16 +10,41 @@ public class QuestionProfile : Profile
     public QuestionProfile()
     {
         CreateMap<Question, QuestionDto>()
-            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName ?? string.Empty))
-            .ForMember(dest => dest.AuthorProfilePicture, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl))
-            .ForMember(dest => dest.AnswerCount, opt => opt.MapFrom(src => src.Answers.Count))
+            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => 
+                src.Author != null 
+                    ? (!string.IsNullOrWhiteSpace(src.Author.FirstName) || !string.IsNullOrWhiteSpace(src.Author.LastName) 
+                        ? (src.Author.FirstName + " " + src.Author.LastName).Trim() 
+                        : src.Author.UserName)
+                    : "Unknown User"))
+            .ForMember(dest => dest.AuthorProfilePicture, opt => opt.MapFrom(src => src.Author != null ? src.Author.ProfilePictureUrl : null))
+            .ForMember(dest => dest.AuthorIsExpert, opt => opt.MapFrom(src => src.Author != null ? src.Author.IsExpert : false))
+            .ForMember(dest => dest.AuthorRankName, opt => opt.MapFrom(src => src.Author != null ? src.Author.Rank.ToString() : "Newbie"))
+            .ForMember(dest => dest.AnswerCount, opt => opt.MapFrom(src => src.Answers != null ? src.Answers.Count : 0))
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
-            .ForMember(dest => dest.TagList, opt => opt.MapFrom(src => src.QuestionTags.Select(qt => qt.Tag)));
+            .ForMember(dest => dest.TagList, opt => opt.MapFrom(src => src.QuestionTags != null ? src.QuestionTags.Select(qt => qt.Tag) : new List<Tag>()))
+            .ForMember(dest => dest.Slug, opt => opt.MapFrom(src => src.Slug));
 
         CreateMap<Answer, AnswerDto>()
-            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.UserName ?? string.Empty))
-            .ForMember(dest => dest.AuthorProfilePicture, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl));
+            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => 
+                src.Author != null
+                    ? (!string.IsNullOrWhiteSpace(src.Author.FirstName) || !string.IsNullOrWhiteSpace(src.Author.LastName) 
+                        ? (src.Author.FirstName + " " + src.Author.LastName).Trim() 
+                        : src.Author.UserName)
+                    : "Unknown User"))
+            .ForMember(dest => dest.AuthorProfilePicture, opt => opt.MapFrom(src => src.Author != null ? src.Author.ProfilePictureUrl : null))
+            .ForMember(dest => dest.AuthorIsExpert, opt => opt.MapFrom(src => src.Author != null ? src.Author.IsExpert : false))
+            .ForMember(dest => dest.AuthorRankName, opt => opt.MapFrom(src => src.Author != null ? src.Author.Rank.ToString() : "Newbie"));
+
+        CreateMap<AnswerComment, AnswerCommentDto>()
+            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => 
+                src.Author != null
+                    ? (!string.IsNullOrWhiteSpace(src.Author.FirstName) || !string.IsNullOrWhiteSpace(src.Author.LastName) 
+                        ? (src.Author.FirstName + " " + src.Author.LastName).Trim() 
+                        : src.Author.UserName)
+                    : "Unknown User"))
+            .ForMember(dest => dest.AuthorIsExpert, opt => opt.MapFrom(src => src.Author != null ? src.Author.IsExpert : false))
+            .ForMember(dest => dest.AuthorRankName, opt => opt.MapFrom(src => src.Author != null ? src.Author.Rank.ToString() : "Newbie"));
 
         CreateMap<Category, CategoryDto>()
             .ForMember(dest => dest.QuestionCount, opt => opt.MapFrom(src => src.Questions.Count));

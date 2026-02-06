@@ -7,6 +7,8 @@ public class AnswerCommentDto
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorProfilePicture { get; set; }
+    public bool AuthorIsExpert { get; set; }
+    public string AuthorRankName { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid? ParentCommentId { get; set; }
     public int VoteCount { get; set; }

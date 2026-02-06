@@ -17,6 +17,11 @@ public class UnitOfWork : IUnitOfWork
         return await _context.SaveChangesAsync(cancellationToken);
     }
 
+    public void ClearTracker()
+    {
+        _context.ChangeTracker.Clear();
+    }
+
     public void Dispose()
     {
         _context.Dispose();

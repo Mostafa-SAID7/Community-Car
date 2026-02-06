@@ -4,6 +4,7 @@ using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CommunityCar.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260206044930_FixFriendshipShadowProperties")]
+    partial class FixFriendshipShadowProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,69 +24,6 @@ namespace CommunityCar.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CommunityCar.Domain.Entities.Communications.notifications.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Link")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
-                });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.Common.Category", b =>
                 {
@@ -275,9 +215,6 @@ namespace CommunityCar.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApplicationUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -324,8 +261,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("IsAccepted");
@@ -333,67 +268,6 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("Answers", (string)null);
-                });
-
-            modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerComment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AnswerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentCommentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VoteCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnswerId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("ParentCommentId");
-
-                    b.ToTable("AnswerComment");
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerReaction", b =>
@@ -511,9 +385,6 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.Property<Guid?>("AcceptedAnswerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApplicationUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -572,8 +443,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("CategoryId");
@@ -589,9 +458,6 @@ namespace CommunityCar.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -633,8 +499,6 @@ namespace CommunityCar.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("UserId");
 
@@ -1089,9 +953,6 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProfilePictureUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -1224,15 +1085,6 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CommunityCar.Domain.Entities.Communications.notifications.Notification", b =>
-                {
-                    b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.friends.Friendship", b =>
                 {
                     b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", "Friend")
@@ -1254,10 +1106,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.Answer", b =>
                 {
-                    b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", null)
-                        .WithMany("Answers")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
@@ -1273,31 +1121,6 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerComment", b =>
-                {
-                    b.HasOne("CommunityCar.Domain.Entities.Community.qa.Answer", "Answer")
-                        .WithMany("Comments")
-                        .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CommunityCar.Domain.Entities.Community.qa.AnswerComment", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId");
-
-                    b.Navigation("Answer");
-
-                    b.Navigation("Author");
-
-                    b.Navigation("ParentComment");
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerReaction", b =>
@@ -1340,10 +1163,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.Question", b =>
                 {
-                    b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
@@ -1362,10 +1181,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.QuestionBookmark", b =>
                 {
-                    b.HasOne("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", null)
-                        .WithMany("Bookmarks")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("CommunityCar.Domain.Entities.Community.qa.Question", "Question")
                         .WithMany("Bookmarks")
                         .HasForeignKey("QuestionId")
@@ -1522,16 +1337,9 @@ namespace CommunityCar.Infrastructure.Migrations
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.Answer", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Reactions");
 
                     b.Navigation("Votes");
-                });
-
-            modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerComment", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.Question", b =>
@@ -1551,12 +1359,6 @@ namespace CommunityCar.Infrastructure.Migrations
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Identity.Users.ApplicationUser", b =>
                 {
-                    b.Navigation("Answers");
-
-                    b.Navigation("Bookmarks");
-
-                    b.Navigation("Questions");
-
                     b.Navigation("ReceivedFriendships");
 
                     b.Navigation("SentFriendships");

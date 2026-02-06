@@ -32,11 +32,13 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
-        foreach (var entry in context.ChangeTracker.Entries())
-        {
-            var now = DateTimeOffset.UtcNow;
-            var user = _currentUserService.UserName ?? "System";
+        var now = DateTimeOffset.UtcNow;
+        var user = _currentUserService.UserName ?? "System";
+        var auditLogs = new List<AuditLog>();
 
+        // 1. First pass: update auditable properties and identify logs
+        foreach (var entry in context.ChangeTracker.Entries().ToList())
+        {
             if (entry.Entity is IAuditable auditable)
             {
                 if (entry.State == EntityState.Added)
@@ -58,24 +60,31 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 softDelete.DeletedAt = now;
                 softDelete.DeletedBy = user;
 
-                CreateAuditLog(context, entry, "SoftDelete", user, now);
+                var log = CreateAuditLogEntry(context, entry, "SoftDelete", user, now);
+                if (log != null) auditLogs.Add(log);
             }
             else if (entry.State == EntityState.Modified)
             {
-                CreateAuditLog(context, entry, "Update", user, now);
+                var log = CreateAuditLogEntry(context, entry, "Update", user, now);
+                if (log != null) auditLogs.Add(log);
             }
             else if (entry.State == EntityState.Added)
             {
-                // For Added entities, we usually don't log old values.
-                // But we could log the creation event.
-                CreateAuditLog(context, entry, "Create", user, now);
+                var log = CreateAuditLogEntry(context, entry, "Create", user, now);
+                if (log != null) auditLogs.Add(log);
             }
+        }
+
+        // 2. Second pass: add audit logs to context
+        if (auditLogs.Any())
+        {
+            context.Set<AuditLog>().AddRange(auditLogs);
         }
     }
 
-    private void CreateAuditLog(DbContext context, Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, string action, string user, DateTimeOffset now)
+    private AuditLog? CreateAuditLogEntry(DbContext context, Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, string action, string user, DateTimeOffset now)
     {
-        if (entry.Entity is AuditLog || entry.Entity is SecurityAlert) return;
+        if (entry.Entity is AuditLog || entry.Entity is SecurityAlert) return null;
 
         var auditLog = new AuditLog
         {
@@ -124,7 +133,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         auditLog.NewValues = newValues.Count == 0 ? null : System.Text.Json.JsonSerializer.Serialize(newValues);
         auditLog.AffectedColumns = affectedColumns.Count == 0 ? null : string.Join(",", affectedColumns);
 
-        context.Set<AuditLog>().Add(auditLog);
+        return auditLog;
     }
 }
 

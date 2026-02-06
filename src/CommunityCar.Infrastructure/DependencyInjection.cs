@@ -12,9 +12,11 @@ using CommunityCar.Domain.Entities.Identity.Roles;
 using CommunityCar.Domain.Interfaces.Identity;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Dashboard;
+using CommunityCar.Domain.Interfaces.Communications;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Infrastructure.Services.Identity;
 using CommunityCar.Infrastructure.Services.Community;
+using CommunityCar.Infrastructure.Services.Communications;
 using CommunityCar.Infrastructure.Services.Dashboard;
 using CommunityCar.Infrastructure.Services.Common;
 
@@ -47,6 +49,15 @@ public static class DependencyInjection
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
+
+        // Configure cookie authentication paths
+        // Configure cookie authentication paths
+        services.PostConfigure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme, options =>
+        {
+            options.LoginPath = "/Login";
+            options.LogoutPath = "/Identity/Account/Logout";
+            options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+        });
 
         services.AddAuthorization(options =>
         {
@@ -85,6 +96,7 @@ public static class DependencyInjection
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IFriendshipService, FriendshipService>();
         services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

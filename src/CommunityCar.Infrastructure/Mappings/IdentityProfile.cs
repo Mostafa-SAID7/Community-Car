@@ -12,10 +12,10 @@ public class IdentityProfile : Profile
 {
     public IdentityProfile()
     {
-        // User to DTOs
         CreateMap<ApplicationUser, UserDto>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.RankName, opt => opt.MapFrom(src => src.Rank.ToString()));
 
         CreateMap<ApplicationUser, UserSearchDto>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));

@@ -12,5 +12,8 @@ public class UserDto
     public string? Slug { get; set; }
     public bool EmailConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
+    public int Points { get; set; }
+    public bool IsExpert { get; set; }
+    public string RankName { get; set; } = string.Empty;
     public DateTime? CreatedAt { get; set; }
 }

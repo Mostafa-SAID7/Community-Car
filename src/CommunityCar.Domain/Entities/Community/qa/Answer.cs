@@ -18,6 +18,7 @@ public class Answer : BaseEntity
     
     public virtual ICollection<AnswerVote> Votes { get; private set; } = new List<AnswerVote>();
     public virtual ICollection<AnswerReaction> Reactions { get; private set; } = new List<AnswerReaction>();
+    public virtual ICollection<AnswerComment> Comments { get; private set; } = new List<AnswerComment>();
 
     private Answer() { }
 

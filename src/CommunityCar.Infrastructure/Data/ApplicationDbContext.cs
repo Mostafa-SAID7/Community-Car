@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using CommunityCar.Domain.Entities.Dashboard.security;
 using CommunityCar.Domain.Entities.Dashboard.KPIs;
 using CommunityCar.Domain.Entities.Community.friends;
+using CommunityCar.Domain.Entities.Communications.notifications;
 using CommunityCar.Infrastructure.Data.Extensions;
 
 namespace CommunityCar.Infrastructure.Data;
@@ -25,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     // Features
     public DbSet<Friendship> Friendships => Set<Friendship>();
+    public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<KPI> KPIs => Set<KPI>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 

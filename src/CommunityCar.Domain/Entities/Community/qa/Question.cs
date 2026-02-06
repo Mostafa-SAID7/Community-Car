@@ -39,6 +39,7 @@ public class Question : AggregateRoot
         Guard.Against.Empty(authorId, nameof(authorId));
 
         Title = title;
+        Slug = SlugHelper.GenerateSlug(title);
         Content = content;
         AuthorId = authorId;
         CategoryId = categoryId;
@@ -54,6 +55,7 @@ public class Question : AggregateRoot
         Guard.Against.NullOrWhiteSpace(content, nameof(content));
 
         Title = title;
+        Slug = SlugHelper.GenerateSlug(title);
         Content = content;
         CategoryId = categoryId;
         Tags = tags;
