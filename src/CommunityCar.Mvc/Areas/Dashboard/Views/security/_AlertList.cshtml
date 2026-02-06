@@ -1,0 +1,20 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.SecurityIndexViewModel
+
+@if (Model.Alerts.Any())
+{
+    @foreach (var alert in Model.Alerts)
+    {
+        <partial name="_AlertCard" model="alert" />
+    }
+}
+else
+{
+    <div class="security-empty-state">
+        <i class="fas fa-shield-alt"></i>
+        <h4>No Security Alerts Found</h4>
+        <p>There are no security alerts matching your criteria.</p>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create First Alert
+        </a>
+    </div>
+}

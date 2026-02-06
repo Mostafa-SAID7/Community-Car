@@ -1,6 +1,7 @@
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Infrastructure.Data;
 using CommunityCar.Domain.Entities.Dashboard.security;
+using CommunityCar.Domain.Enums.Dashboard.security;
 
 namespace CommunityCar.Infrastructure.Services.Common;
 
@@ -38,13 +39,17 @@ public class SecurityService : ISecurityService
 
     public async Task LogSystemAlertAsync(string title, string severity, string description)
     {
-        var alert = new SecurityAlert
-        {
-            Title = title,
-            Severity = severity,
-            Description = description,
-            IsResolved = false
-        };
+        // Parse severity string to enum
+        var severityEnum = Enum.TryParse<SecuritySeverity>(severity, true, out var parsedSeverity) 
+            ? parsedSeverity 
+            : SecuritySeverity.Low;
+
+        var alert = new SecurityAlert(
+            title,
+            severityEnum,
+            SecurityAlertType.Other,
+            description,
+            source: "System");
 
         _context.Set<SecurityAlert>().Add(alert);
         await _context.SaveChangesAsync();

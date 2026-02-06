@@ -1,0 +1,209 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.SecurityStatisticsViewModel
+@{
+    ViewData["Title"] = "Security Statistics - Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/pages/security.css" />
+
+<div class="container-fluid security-container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Dashboard" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Security Alerts</a></li>
+            <li class="breadcrumb-item active">Statistics</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="security-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-2 fw-bold">Security Statistics</h1>
+                <p class="mb-0 opacity-90">Overview of security alerts and trends</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="Index" class="btn btn-light shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Alerts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-primary">
+                <div class="card-body">
+                    <div class="text-xs text-uppercase text-primary fw-bold mb-1">Total Alerts</div>
+                    <div class="h3 mb-0 fw-bold">@Model.Statistics.TotalAlerts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-warning">
+                <div class="card-body">
+                    <div class="text-xs text-uppercase text-warning fw-bold mb-1">Unresolved</div>
+                    <div class="h3 mb-0 fw-bold">@Model.Statistics.UnresolvedAlerts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-success">
+                <div class="card-body">
+                    <div class="text-xs text-uppercase text-success fw-bold mb-1">Resolved</div>
+                    <div class="h3 mb-0 fw-bold">@Model.Statistics.ResolvedAlerts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-critical">
+                <div class="card-body">
+                    <div class="text-xs text-uppercase text-critical fw-bold mb-1">Critical</div>
+                    <div class="h3 mb-0 fw-bold">@Model.Statistics.CriticalAlerts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Alerts by Severity -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Alerts by Severity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="severity-stats">
+                        <div class="severity-stat-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">
+                                    <i class="fas fa-fire text-critical me-2"></i>Critical
+                                </span>
+                                <span class="badge bg-critical">@Model.Statistics.CriticalAlerts</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-critical" style="width: @(Model.Statistics.TotalAlerts > 0 ? (Model.Statistics.CriticalAlerts * 100.0 / Model.Statistics.TotalAlerts) : 0)%"></div>
+                            </div>
+                        </div>
+
+                        <div class="severity-stat-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">
+                                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>High
+                                </span>
+                                <span class="badge bg-danger">@Model.Statistics.HighAlerts</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-danger" style="width: @(Model.Statistics.TotalAlerts > 0 ? (Model.Statistics.HighAlerts * 100.0 / Model.Statistics.TotalAlerts) : 0)%"></div>
+                            </div>
+                        </div>
+
+                        <div class="severity-stat-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">
+                                    <i class="fas fa-exclamation-circle text-warning me-2"></i>Medium
+                                </span>
+                                <span class="badge bg-warning text-dark">@Model.Statistics.MediumAlerts</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: @(Model.Statistics.TotalAlerts > 0 ? (Model.Statistics.MediumAlerts * 100.0 / Model.Statistics.TotalAlerts) : 0)%"></div>
+                            </div>
+                        </div>
+
+                        <div class="severity-stat-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">
+                                    <i class="fas fa-info-circle text-info me-2"></i>Low
+                                </span>
+                                <span class="badge bg-info">@Model.Statistics.LowAlerts</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: @(Model.Statistics.TotalAlerts > 0 ? (Model.Statistics.LowAlerts * 100.0 / Model.Statistics.TotalAlerts) : 0)%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts by Type -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Alerts by Type</h5>
+                </div>
+                <div class="card-body">
+                    <div class="type-stats">
+                        @foreach (var typeCount in Model.Statistics.AlertsByType.OrderByDescending(x => x.Value).Take(8))
+                        {
+                            <div class="type-stat-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-bold">@typeCount.Key</span>
+                                    <span class="badge bg-secondary">@typeCount.Value</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: @(Model.Statistics.TotalAlerts > 0 ? (typeCount.Value * 100.0 / Model.Statistics.TotalAlerts) : 0)%"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Critical Alerts -->
+    @if (Model.Statistics.CriticalUnresolved.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Critical Unresolved Alerts</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Detected</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var alert in Model.Statistics.CriticalUnresolved.Take(10))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@alert.Id" class="text-decoration-none fw-bold">
+                                                    @alert.Title
+                                                </a>
+                                            </td>
+                                            <td><span class="badge bg-secondary">@alert.AlertType</span></td>
+                                            <td><small>@alert.DetectedAt.ToString("MMM dd, yyyy HH:mm")</small></td>
+                                            <td>
+                                                <a asp-action="Resolve" asp-route-id="@alert.Id" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Resolve
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/security.js"></script>
+}

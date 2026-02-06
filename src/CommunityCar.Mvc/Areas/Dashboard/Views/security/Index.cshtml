@@ -1,0 +1,308 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.SecurityIndexViewModel
+@using CommunityCar.Domain.Enums.Dashboard.security
+@{
+    ViewData["Title"] = "Security Alerts - Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/pages/security.css" />
+
+<div class="container-fluid security-container py-4">
+    <!-- Premium Header -->
+    <div class="security-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-2 fw-bold">Security Alerts</h1>
+                <p class="mb-0 opacity-90">Monitor and manage security incidents across your platform</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="Create" class="btn btn-light shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Create Alert
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-danger fw-bold mb-1">Total Alerts</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.TotalAlerts</div>
+                        </div>
+                        <div class="icon-circle bg-danger-subtle">
+                            <i class="fas fa-shield-alt text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-warning fw-bold mb-1">Unresolved</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.UnresolvedAlerts</div>
+                        </div>
+                        <div class="icon-circle bg-warning-subtle">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-critical">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-critical fw-bold mb-1">Critical</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.CriticalAlerts</div>
+                        </div>
+                        <div class="icon-circle bg-critical-subtle">
+                            <i class="fas fa-fire text-critical"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-success fw-bold mb-1">Resolution Rate</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.ResolutionRate.ToString("F1")%</div>
+                        </div>
+                        <div class="icon-circle bg-success-subtle">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="security-tabs mb-4">
+        <ul class="nav security-nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link @(Model.Filter.IsResolved == null ? "active" : "")" 
+                   asp-action="Index" asp-route-isResolved="">
+                    <i class="fas fa-list"></i>
+                    <span>All Alerts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(Model.Filter.IsResolved == false ? "active" : "")" 
+                   asp-action="Index" asp-route-isResolved="false">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Unresolved</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(Model.Filter.Severity == SecuritySeverity.Critical ? "active" : "")" 
+                   asp-action="Index" asp-route-severity="@SecuritySeverity.Critical">
+                    <i class="fas fa-fire"></i>
+                    <span>Critical</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(Model.Filter.IsResolved == true ? "active" : "")" 
+                   asp-action="Index" asp-route-isResolved="true">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Resolved</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-action="Statistics" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistics</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="security-search-section mb-4">
+        <form method="get" asp-action="Index">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" 
+                               name="searchTerm" value="@Model.Filter.SearchTerm" 
+                               placeholder="Search alerts...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="severity">
+                        <option value="">All Severities</option>
+                        <option value="@SecuritySeverity.Low" selected="@(Model.Filter.Severity == SecuritySeverity.Low)">Low</option>
+                        <option value="@SecuritySeverity.Medium" selected="@(Model.Filter.Severity == SecuritySeverity.Medium)">Medium</option>
+                        <option value="@SecuritySeverity.High" selected="@(Model.Filter.Severity == SecuritySeverity.High)">High</option>
+                        <option value="@SecuritySeverity.Critical" selected="@(Model.Filter.Severity == SecuritySeverity.Critical)">Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="alertType">
+                        <option value="">All Types</option>
+                        @foreach (SecurityAlertType type in Enum.GetValues(typeof(SecurityAlertType)))
+                        {
+                            <option value="@type" selected="@(Model.Filter.AlertType == type)">@type</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="isResolved">
+                        <option value="">All Status</option>
+                        <option value="false" selected="@(Model.Filter.IsResolved == false)">Unresolved</option>
+                        <option value="true" selected="@(Model.Filter.IsResolved == true)">Resolved</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters -->
+    @if (!string.IsNullOrEmpty(Model.Filter.SearchTerm) || Model.Filter.Severity.HasValue || Model.Filter.AlertType.HasValue || Model.Filter.IsResolved.HasValue)
+    {
+        <div class="security-active-filters mb-3">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="fw-bold text-muted small">Active Filters:</span>
+                @if (!string.IsNullOrEmpty(Model.Filter.SearchTerm))
+                {
+                    <span class="badge bg-primary">
+                        Search: @Model.Filter.SearchTerm
+                        <a asp-action="Index" 
+                           asp-route-severity="@Model.Filter.Severity" 
+                           asp-route-alertType="@Model.Filter.AlertType" 
+                           asp-route-isResolved="@Model.Filter.IsResolved" 
+                           class="text-white ms-1">×</a>
+                    </span>
+                }
+                @if (Model.Filter.Severity.HasValue)
+                {
+                    <span class="badge bg-warning">
+                        Severity: @Model.Filter.Severity
+                        <a asp-action="Index" 
+                           asp-route-searchTerm="@Model.Filter.SearchTerm" 
+                           asp-route-alertType="@Model.Filter.AlertType" 
+                           asp-route-isResolved="@Model.Filter.IsResolved" 
+                           class="text-white ms-1">×</a>
+                    </span>
+                }
+                @if (Model.Filter.AlertType.HasValue)
+                {
+                    <span class="badge bg-info">
+                        Type: @Model.Filter.AlertType
+                        <a asp-action="Index" 
+                           asp-route-searchTerm="@Model.Filter.SearchTerm" 
+                           asp-route-severity="@Model.Filter.Severity" 
+                           asp-route-isResolved="@Model.Filter.IsResolved" 
+                           class="text-white ms-1">×</a>
+                    </span>
+                }
+                @if (Model.Filter.IsResolved.HasValue)
+                {
+                    <span class="badge bg-secondary">
+                        Status: @(Model.Filter.IsResolved.Value ? "Resolved" : "Unresolved")
+                        <a asp-action="Index" 
+                           asp-route-searchTerm="@Model.Filter.SearchTerm" 
+                           asp-route-severity="@Model.Filter.Severity" 
+                           asp-route-alertType="@Model.Filter.AlertType" 
+                           class="text-white ms-1">×</a>
+                    </span>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Alerts List -->
+    <div class="alerts-list">
+        @if (Model.Alerts.Any())
+        {
+            @foreach (var alert in Model.Alerts)
+            {
+                <partial name="_AlertCard" model="alert" />
+            }
+
+            <!-- Pagination -->
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav aria-label="Alert pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.Pagination.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-severity="@Model.Filter.Severity"
+                               asp-route-alertType="@Model.Filter.AlertType"
+                               asp-route-isResolved="@Model.Filter.IsResolved">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@i"
+                                   asp-route-searchTerm="@Model.Filter.SearchTerm"
+                                   asp-route-severity="@Model.Filter.Severity"
+                                   asp-route-alertType="@Model.Filter.AlertType"
+                                   asp-route-isResolved="@Model.Filter.IsResolved">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-severity="@Model.Filter.Severity"
+                               asp-route-alertType="@Model.Filter.AlertType"
+                               asp-route-isResolved="@Model.Filter.IsResolved">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="security-empty-state">
+                <i class="fas fa-shield-alt"></i>
+                <h4>No Security Alerts Found</h4>
+                <p>There are no security alerts matching your criteria.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create First Alert
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/security.js"></script>
+}

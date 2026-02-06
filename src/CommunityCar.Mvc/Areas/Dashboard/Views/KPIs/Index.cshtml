@@ -1,143 +1,314 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.KPIIndexViewModel
 @{
-    ViewData["Title"] = "KPIs Dashboard";
+    ViewData["Title"] = "KPIs - Dashboard";
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Key Performance Indicators</h1>
-            <p class="text-muted small">Monitor core metrics, growth trends, and content health across the entire platform.</p>
-        </div>
-        <div class="dropdown">
-            <button class="btn btn-white shadow-sm border px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="far fa-calendar-alt me-2 text-primary"></i>This Month
-            </button>
-            <ul class="dropdown-menu border-0 shadow">
-                <li><a class="dropdown-item" href="#">Today</a></li>
-                <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Custom Range</a></li>
-            </ul>
-        </div>
-    </div>
-
+<div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary me-3">
-                        <i class="fas fa-users fa-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem;">Active Users</div>
-                        <div class="h4 mb-0 fw-bold">1,248</div>
-                        <div class="text-success small fw-medium mt-1"><i class="fas fa-arrow-up me-1"></i>+12.5%</div>
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">Key Performance Indicators</h1>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create KPI
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total KPIs</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Summary.TotalKPIs</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded-4 text-success me-3">
-                        <i class="fas fa-file-alt fa-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem;">New Content</div>
-                        <div class="h4 mb-0 fw-bold">342</div>
-                        <div class="text-success small fw-medium mt-1"><i class="fas fa-arrow-up me-1"></i>+8.2%</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded-4 text-warning me-3">
-                        <i class="fas fa-star fa-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem;">Engagement</div>
-                        <div class="h4 mb-0 fw-bold">4.8k</div>
-                        <div class="text-danger small fw-medium mt-1"><i class="fas fa-arrow-down me-1"></i>-2.1%</div>
+
+        <div class="col-md-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active KPIs</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Summary.ActiveKPIs</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-info bg-opacity-10 p-3 rounded-4 text-info me-3">
-                        <i class="fas fa-clock fa-lg"></i>
+
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">On Target</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Summary.KPIsOnTarget</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bullseye fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-xs text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem;">Avg. Session</div>
-                        <div class="h4 mb-0 fw-bold">4m 12s</div>
-                        <div class="text-success small fw-medium mt-1"><i class="fas fa-arrow-up me-1"></i>+15.3%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Below Target</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Summary.KPIsBelowTarget</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold text-primary">Performance Trends</h6>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary active">Line</button>
-                        <button class="btn btn-outline-secondary">Bar</button>
-                    </div>
-                </div>
-                <div class="card-body p-5 text-center">
-                    <div class="py-5">
-                        <i class="fas fa-chart-line fa-4x text-gray-200 mb-3 opacity-50"></i>
-                        <h5 class="text-muted">Interactive growth charts will appear here</h5>
-                        <p class="text-muted small">Integrating with Chart.js to visualize daily active users and content volume.</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
         </div>
-        <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h6 class="m-0 fw-bold text-primary">Context Breakdown</h6>
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="searchTerm">Search</label>
+                            <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                                   value="@Model.Filter.SearchTerm" placeholder="Search by name or code...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select class="form-control" id="category" name="category">
+                                <option value="">All Categories</option>
+                                @foreach (var cat in Model.Categories)
+                                {
+                                    <option value="@cat" selected="@(cat == Model.Filter.Category)">@cat</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="isActive">Status</label>
+                            <select class="form-control" id="isActive" name="isActive">
+                                <option value="">All</option>
+                                <option value="true" selected="@(Model.Filter.IsActive == true)">Active</option>
+                                <option value="false" selected="@(Model.Filter.IsActive == false)">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Filter
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-medium text-muted">User Growth</span>
-                            <span class="small fw-bold">75%</span>
-                        </div>
-                        <div class="progress rounded-pill" style="height: 6px;">
-                            <div class="progress-bar bg-primary rounded-pill" role="progressbar" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-medium text-muted">Content Quality</span>
-                            <span class="small fw-bold">92%</span>
-                        </div>
-                        <div class="progress rounded-pill" style="height: 6px;">
-                            <div class="progress-bar bg-success rounded-pill" role="progressbar" style="width: 92%"></div>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small fw-medium text-muted">Report Resolution</span>
-                            <span class="small fw-bold">48%</span>
-                        </div>
-                        <div class="progress rounded-pill" style="height: 6px;">
-                            <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 48%"></div>
-                        </div>
-                    </div>
-                    <div class="text-center mt-4">
-                        <button class="btn btn-light btn-sm rounded-pill px-4 text-muted">View More Insights</button>
-                    </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- KPIs Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">KPI List</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.KPIs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Category</th>
+                                <th>Value</th>
+                                <th>Target</th>
+                                <th>Achievement</th>
+                                <th>Trend</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var kpi in Model.KPIs)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@kpi.Id" class="font-weight-bold">
+                                            @kpi.Name
+                                        </a>
+                                    </td>
+                                    <td><code>@kpi.Code</code></td>
+                                    <td><span class="badge badge-secondary">@kpi.Category</span></td>
+                                    <td class="text-right">
+                                        <strong>@kpi.Value.ToString("N2")</strong> @kpi.Unit
+                                    </td>
+                                    <td class="text-right">
+                                        @if (kpi.Target.HasValue)
+                                        {
+                                            <span>@kpi.Target.Value.ToString("N2") @kpi.Unit</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not set</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (kpi.Target.HasValue && kpi.TargetAchievementPercentage.HasValue)
+                                        {
+                                            var achievement = kpi.TargetAchievementPercentage.Value;
+                                            var progressClass = achievement >= 100 ? "bg-success" : achievement >= 75 ? "bg-info" : achievement >= 50 ? "bg-warning" : "bg-danger";
+                                            var displayWidth = Math.Min(achievement, 100.0);
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar @progressClass" role="progressbar" 
+                                                     style="width: @(displayWidth)%" 
+                                                     aria-valuenow="@achievement" aria-valuemin="0" aria-valuemax="100">
+                                                    @achievement.ToString("N0")%
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (kpi.TrendDirection == "up")
+                                        {
+                                            <i class="fas fa-arrow-up text-success"></i>
+                                            @if (kpi.ChangePercentage.HasValue)
+                                            {
+                                                <small>@kpi.ChangePercentage.Value.ToString("N1")%</small>
+                                            }
+                                        }
+                                        else if (kpi.TrendDirection == "down")
+                                        {
+                                            <i class="fas fa-arrow-down text-danger"></i>
+                                            @if (kpi.ChangePercentage.HasValue)
+                                            {
+                                                <small>@kpi.ChangePercentage.Value.ToString("N1")%</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-minus text-secondary"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (kpi.IsActive)
+                                        {
+                                            <span class="badge badge-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@kpi.LastUpdated.ToString("yyyy-MM-dd HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@kpi.Id" 
+                                               class="btn btn-info" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="UpdateValue" asp-route-id="@kpi.Id" 
+                                               class="btn btn-primary" title="Update Value">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@kpi.Id" 
+                                               class="btn btn-warning" title="Edit">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+
+                <!-- Pagination -->
+                @if (Model.Pagination.TotalPages > 1)
+                {
+                    <nav aria-label="KPI pagination">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(Model.Pagination.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                                   asp-route-category="@Model.Filter.Category"
+                                   asp-route-isActive="@Model.Filter.IsActive"
+                                   asp-route-searchTerm="@Model.Filter.SearchTerm">
+                                    Previous
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" 
+                                       asp-route-page="@i"
+                                       asp-route-category="@Model.Filter.Category"
+                                       asp-route-isActive="@Model.Filter.IsActive"
+                                       asp-route-searchTerm="@Model.Filter.SearchTerm">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                                   asp-route-category="@Model.Filter.Category"
+                                   asp-route-isActive="@Model.Filter.IsActive"
+                                   asp-route-searchTerm="@Model.Filter.SearchTerm">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> No KPIs found. 
+                    <a asp-action="Create" class="alert-link">Create your first KPI</a>
+                </div>
+            }
         </div>
     </div>
 </div>

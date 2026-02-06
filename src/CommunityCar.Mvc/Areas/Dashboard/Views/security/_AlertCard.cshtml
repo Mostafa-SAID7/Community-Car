@@ -1,0 +1,163 @@
+@model CommunityCar.Domain.DTOs.Dashboard.SecurityAlertDto
+@using CommunityCar.Domain.Enums.Dashboard.security
+
+@{
+    var severityClass = Model.Severity switch
+    {
+        SecuritySeverity.Critical => "severity-critical",
+        SecuritySeverity.High => "severity-high",
+        SecuritySeverity.Medium => "severity-medium",
+        SecuritySeverity.Low => "severity-low",
+        _ => "severity-low"
+    };
+
+    var severityIcon = Model.Severity switch
+    {
+        SecuritySeverity.Critical => "fa-fire",
+        SecuritySeverity.High => "fa-exclamation-triangle",
+        SecuritySeverity.Medium => "fa-exclamation-circle",
+        SecuritySeverity.Low => "fa-info-circle",
+        _ => "fa-info-circle"
+    };
+
+    var alertTypeIcon = Model.AlertType switch
+    {
+        SecurityAlertType.UnauthorizedAccess => "fa-user-lock",
+        SecurityAlertType.SuspiciousActivity => "fa-user-secret",
+        SecurityAlertType.DataBreach => "fa-database",
+        SecurityAlertType.FailedLogin => "fa-sign-in-alt",
+        SecurityAlertType.PasswordChange => "fa-key",
+        SecurityAlertType.PermissionChange => "fa-user-shield",
+        SecurityAlertType.AccountLockout => "fa-lock",
+        SecurityAlertType.MaliciousRequest => "fa-bug",
+        _ => "fa-shield-alt"
+    };
+}
+
+<div class="alert-card @severityClass @(Model.IsResolved ? "resolved" : "")">
+    <div class="d-flex gap-3">
+        <!-- Severity Indicator -->
+        <div class="severity-indicator">
+            <div class="severity-badge">
+                <i class="fas @severityIcon"></i>
+            </div>
+        </div>
+
+        <!-- Alert Content -->
+        <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="flex-grow-1">
+                    <h5 class="alert-title mb-1">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none">
+                            @Model.Title
+                        </a>
+                    </h5>
+                    <div class="alert-meta d-flex gap-3 flex-wrap">
+                        <span class="badge badge-@severityClass.Replace("severity-", "")">
+                            <i class="fas @severityIcon me-1"></i>@Model.Severity
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="fas @alertTypeIcon me-1"></i>@Model.AlertType
+                        </span>
+                        @if (Model.IsResolved)
+                        {
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Resolved
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-clock me-1"></i>Pending
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <p class="alert-description mb-2">@Model.Description</p>
+
+            <div class="alert-details d-flex gap-3 flex-wrap small text-muted mb-3">
+                <span>
+                    <i class="fas fa-clock me-1"></i>
+                    Detected @Model.DetectedAt.ToString("MMM dd, yyyy HH:mm")
+                </span>
+                @if (!string.IsNullOrEmpty(Model.Source))
+                {
+                    <span>
+                        <i class="fas fa-server me-1"></i>
+                        @Model.Source
+                    </span>
+                }
+                @if (!string.IsNullOrEmpty(Model.IpAddress))
+                {
+                    <span>
+                        <i class="fas fa-network-wired me-1"></i>
+                        @Model.IpAddress
+                    </span>
+                }
+                @if (!string.IsNullOrEmpty(Model.AffectedUserName))
+                {
+                    <span>
+                        <i class="fas fa-user me-1"></i>
+                        @Model.AffectedUserName
+                    </span>
+                }
+            </div>
+
+            @if (Model.IsResolved && Model.ResolvedAt.HasValue)
+            {
+                <div class="resolution-info">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span class="small">
+                        Resolved by <strong>@Model.ResolvedByName</strong> on @Model.ResolvedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                    </span>
+                </div>
+            }
+
+            <!-- Actions -->
+            <div class="alert-actions mt-3">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-eye me-1"></i>View Details
+                </a>
+                @if (!Model.IsResolved)
+                {
+                    <a asp-action="Resolve" asp-route-id="@Model.Id" class="btn btn-sm btn-success">
+                        <i class="fas fa-check me-1"></i>Resolve
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                }
+                else
+                {
+                    <form asp-action="Reopen" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-redo me-1"></i>Reopen
+                        </button>
+                    </form>
+                }
+                <div class="dropdown d-inline">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this alert?')">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-trash me-2"></i>Delete
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

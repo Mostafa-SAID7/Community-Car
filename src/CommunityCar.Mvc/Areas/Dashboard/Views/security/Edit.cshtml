@@ -1,0 +1,92 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.EditSecurityAlertViewModel
+@using CommunityCar.Domain.Enums.Dashboard.security
+@{
+    ViewData["Title"] = "Edit Security Alert";
+}
+
+<link rel="stylesheet" href="~/css/pages/security.css" />
+
+<div class="container-fluid security-container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Dashboard" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Security Alerts</a></li>
+            <li class="breadcrumb-item active">Edit Alert</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="security-create-card">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Security Alert
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-90">Update alert information</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-bold">Alert Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Severity" class="form-label fw-bold">Severity <span class="text-danger">*</span></label>
+                                <select asp-for="Severity" class="form-select">
+                                    <option value="@SecuritySeverity.Low">Low - Minor issue</option>
+                                    <option value="@SecuritySeverity.Medium">Medium - Moderate concern</option>
+                                    <option value="@SecuritySeverity.High">High - Serious threat</option>
+                                    <option value="@SecuritySeverity.Critical">Critical - Immediate action required</option>
+                                </select>
+                                <span asp-validation-for="Severity" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="AlertType" class="form-label fw-bold">Alert Type <span class="text-danger">*</span></label>
+                                <select asp-for="AlertType" class="form-select">
+                                    @foreach (SecurityAlertType type in Enum.GetValues(typeof(SecurityAlertType)))
+                                    {
+                                        <option value="@type">@type</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="AlertType" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="alert alert-warning border-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Note:</strong> Editing an alert will update its information but will not change its resolution status or timestamps.
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/security.js"></script>
+}

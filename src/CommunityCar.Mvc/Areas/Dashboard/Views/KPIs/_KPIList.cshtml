@@ -1,0 +1,168 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.KPIIndexViewModel
+
+@if (Model.KPIs.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Category</th>
+                    <th>Value</th>
+                    <th>Target</th>
+                    <th>Achievement</th>
+                    <th>Trend</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kpi in Model.KPIs)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@kpi.Id" class="font-weight-bold">
+                                @kpi.Name
+                            </a>
+                        </td>
+                        <td><code>@kpi.Code</code></td>
+                        <td><span class="badge badge-secondary">@kpi.Category</span></td>
+                        <td class="text-right">
+                            <strong>@kpi.Value.ToString("N2")</strong> @kpi.Unit
+                        </td>
+                        <td class="text-right">
+                            @if (kpi.Target.HasValue)
+                            {
+                                <span>@kpi.Target.Value.ToString("N2") @kpi.Unit</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not set</span>
+                            }
+                        </td>
+                        <td>
+                            @if (kpi.Target.HasValue && kpi.TargetAchievementPercentage.HasValue)
+                            {
+                                var achievement = kpi.TargetAchievementPercentage.Value;
+                                var progressClass = achievement >= 100 ? "bg-success" : achievement >= 75 ? "bg-info" : achievement >= 50 ? "bg-warning" : "bg-danger";
+                                var displayWidth = Math.Min(achievement, 100.0);
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar @progressClass" role="progressbar" 
+                                         style="width: @(displayWidth)%" 
+                                         aria-valuenow="@achievement" aria-valuemin="0" aria-valuemax="100">
+                                        @achievement.ToString("N0")%
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @if (kpi.TrendDirection == "up")
+                            {
+                                <i class="fas fa-arrow-up text-success"></i>
+                                @if (kpi.ChangePercentage.HasValue)
+                                {
+                                    <small>@kpi.ChangePercentage.Value.ToString("N1")%</small>
+                                }
+                            }
+                            else if (kpi.TrendDirection == "down")
+                            {
+                                <i class="fas fa-arrow-down text-danger"></i>
+                                @if (kpi.ChangePercentage.HasValue)
+                                {
+                                    <small>@kpi.ChangePercentage.Value.ToString("N1")%</small>
+                                }
+                            }
+                            else
+                            {
+                                <i class="fas fa-minus text-secondary"></i>
+                            }
+                        </td>
+                        <td>
+                            @if (kpi.IsActive)
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <small>@kpi.LastUpdated.ToString("yyyy-MM-dd HH:mm")</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a asp-action="Details" asp-route-id="@kpi.Id" 
+                                   class="btn btn-info" title="Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="UpdateValue" asp-route-id="@kpi.Id" 
+                                   class="btn btn-primary" title="Update Value">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@kpi.Id" 
+                                   class="btn btn-warning" title="Edit">
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.Pagination.TotalPages > 1)
+    {
+        <nav aria-label="KPI pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.Pagination.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" 
+                       asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                       asp-route-category="@Model.Filter.Category"
+                       asp-route-isActive="@Model.Filter.IsActive"
+                       asp-route-searchTerm="@Model.Filter.SearchTerm">
+                        Previous
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@i"
+                           asp-route-category="@Model.Filter.Category"
+                           asp-route-isActive="@Model.Filter.IsActive"
+                           asp-route-searchTerm="@Model.Filter.SearchTerm">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" 
+                       asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                       asp-route-category="@Model.Filter.Category"
+                       asp-route-isActive="@Model.Filter.IsActive"
+                       asp-route-searchTerm="@Model.Filter.SearchTerm">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle"></i> No KPIs found. 
+        <a asp-action="Create" class="alert-link">Create your first KPI</a>
+    </div>
+}

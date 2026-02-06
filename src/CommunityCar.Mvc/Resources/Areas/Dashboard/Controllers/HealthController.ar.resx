@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SystemHealth" xml:space="preserve">
+    <value>مراقبة صحة النظام</value>
+  </data>
+  <data name="AllSystemsOperational" xml:space="preserve">
+    <value>جميع الأنظمة تعمل</value>
+  </data>
+  <data name="DegradedPerformance" xml:space="preserve">
+    <value>أداء منخفض</value>
+  </data>
+  <data name="SystemIssuesDetected" xml:space="preserve">
+    <value>تم اكتشاف مشاكل في النظام</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="HealthChecks" xml:space="preserve">
+    <value>فحوصات الصحة</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>الخدمة</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>الوصف</value>
+  </data>
+  <data name="ResponseTime" xml:space="preserve">
+    <value>وقت الاستجابة</value>
+  </data>
+  <data name="LastChecked" xml:space="preserve">
+    <value>آخر فحص</value>
+  </data>
+</root>

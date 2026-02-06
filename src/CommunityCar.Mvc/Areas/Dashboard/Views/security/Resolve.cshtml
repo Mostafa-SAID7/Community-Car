@@ -1,0 +1,85 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.ResolveSecurityAlertViewModel
+@{
+    ViewData["Title"] = "Resolve Security Alert";
+}
+
+<link rel="stylesheet" href="~/css/pages/security.css" />
+
+<div class="container-fluid security-container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Dashboard" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Security Alerts</a></li>
+            <li class="breadcrumb-item active">Resolve Alert</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="security-create-card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Resolve Security Alert
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-90">Mark this alert as resolved and add resolution notes</p>
+                </div>
+                <div class="card-body">
+                    <!-- Alert Summary -->
+                    <div class="alert alert-light border mb-4">
+                        <h5 class="mb-3">@Model.Title</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <strong>Severity:</strong>
+                                <span class="badge badge-@Model.Severity.ToString().ToLower() ms-2">@Model.Severity</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Detected:</strong>
+                                <span class="ms-2">@Model.DetectedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            <div class="col-12">
+                                <strong>Description:</strong>
+                                <p class="mb-0 mt-2">@Model.Description</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Resolve" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="ResolutionNotes" class="form-label fw-bold">Resolution Notes</label>
+                            <textarea asp-for="ResolutionNotes" class="form-control" rows="6" 
+                                      placeholder="Describe how this alert was resolved, what actions were taken, and any follow-up required..."></textarea>
+                            <span asp-validation-for="ResolutionNotes" class="text-danger small"></span>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Document the resolution process for future reference and audit purposes.
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success border-0">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Action:</strong> This alert will be marked as resolved with the current timestamp and your user information.
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-2"></i>Resolve Alert
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/security.js"></script>
+}

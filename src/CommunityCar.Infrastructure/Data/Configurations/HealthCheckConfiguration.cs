@@ -32,6 +32,9 @@ public class HealthCheckConfiguration : IEntityTypeConfiguration<HealthCheck>
         builder.Property(h => h.ErrorMessage)
             .HasMaxLength(1000);
 
+        // Ignore the Metadata property as it's not persisted to the database
+        builder.Ignore(h => h.Metadata);
+
         builder.HasIndex(h => h.CheckedAt);
         builder.HasIndex(h => new { h.Name, h.CheckedAt });
     }

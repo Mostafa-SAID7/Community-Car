@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using CommunityCar.Domain.Entities.Dashboard.security;
 using CommunityCar.Domain.Entities.Dashboard.KPIs;
+using CommunityCar.Domain.Entities.Dashboard.health;
 using CommunityCar.Domain.Entities.Community.friends;
 using CommunityCar.Domain.Entities.Communications.notifications;
 using CommunityCar.Infrastructure.Data.Extensions;
@@ -29,6 +30,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<KPI> KPIs => Set<KPI>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<SecurityAlert> SecurityAlerts => Set<SecurityAlert>();
+    public DbSet<HealthCheck> HealthChecks => Set<HealthCheck>();
+    public DbSet<SystemMetric> SystemMetrics => Set<SystemMetric>();
     public DbSet<CommunityCar.Domain.Entities.Community.Common.Category> Categories => Set<CommunityCar.Domain.Entities.Community.Common.Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

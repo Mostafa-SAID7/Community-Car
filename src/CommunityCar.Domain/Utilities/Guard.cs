@@ -47,4 +47,12 @@ public static class GuardClauseExtensions
             throw new ArgumentException($"{parameterName} cannot be negative.", parameterName);
         }
     }
+
+    public static void Negative(this IGuardClause guardClause, double value, string parameterName)
+    {
+        if (value < 0)
+        {
+            throw new ArgumentException($"{parameterName} cannot be negative.", parameterName);
+        }
+    }
 }
