@@ -1,0 +1,16 @@
+/* Typography */
+body {
+    font-family: var(--font-primary);
+    line-height: 1.5;
+    color: var(--red-950);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    margin-bottom: var(--spacing-md);
+}

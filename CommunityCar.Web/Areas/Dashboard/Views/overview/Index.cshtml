@@ -1,0 +1,184 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.DashboardSummaryViewModel
+@{
+    ViewData["Title"] = Localizer["Dashboard.Title"];
+    var activityData = System.Text.Json.JsonSerializer.Serialize(ViewBag.ActivityData);
+    var activityLabels = System.Text.Json.JsonSerializer.Serialize(ViewBag.ActivityLabels);
+}
+
+<div class="dashboard-header mb-4">
+    <div>
+        <h1 class="h3 mb-1">@Localizer["Dashboard.Welcome"], Admin</h1>
+        <p class="text-muted mb-0">Here's what's happening in your community today.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <div class="dropdown me-2">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-globe me-1"></i> @Localizer["Dashboard.Language"]
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                <li><a class="dropdown-item" href="?culture=en">English</a></li>
+                <li><a class="dropdown-item" href="?culture=ar">العربية</a></li>
+            </ul>
+        </div>
+        <button class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Export Report</button>
+        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>New Action</button>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon bg-primary-light text-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="badge bg-success-light text-success">+12% <i class="fas fa-arrow-up small ms-1"></i></span>
+                </div>
+                <h6 class="text-muted mb-1">@Localizer["Dashboard.TotalUsers"]</h6>
+                <h3 class="fw-bold">@Model.TotalUsers</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon bg-info-light text-info">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <span class="badge bg-success-light text-success">+5% <i class="fas fa-arrow-up small ms-1"></i></span>
+                </div>
+                <h6 class="text-muted mb-1">@Localizer["Dashboard.Friendships"]</h6>
+                <h3 class="fw-bold">@Model.TotalFriendships</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon bg-warning-light text-warning">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <span class="badge bg-danger-light text-danger">-2% <i class="fas fa-arrow-down small ms-1"></i></span>
+                </div>
+                <h6 class="text-muted mb-1">@Localizer["Dashboard.ActiveEvents"]</h6>
+                <h3 class="fw-bold">@Model.ActiveEvents</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon bg-success-light text-success">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <span class="badge bg-success-light text-success">Optimal</span>
+                </div>
+                <h6 class="text-muted mb-1">@Localizer["Dashboard.SystemHealth"]</h6>
+                <h3 class="fw-bold">@Model.SystemHealth%</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">@Localizer["Dashboard.WeeklyActivity"]</h5>
+                <select class="form-select form-select-sm w-auto">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                </select>
+            </div>
+            <div class="card-body">
+                <canvas id="activityChart" style="min-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Recent Notifications</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 border-bottom d-flex gap-3 py-3 px-4">
+                        <div class="activity-dot bg-primary"></div>
+                        <div>
+                            <p class="mb-1 fw-bold">New user registered</p>
+                            <p class="small text-muted mb-0">John Doe joined the community</p>
+                            <span class="small text-muted">2 mins ago</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item border-0 border-bottom d-flex gap-3 py-3 px-4">
+                        <div class="activity-dot bg-success"></div>
+                        <div>
+                            <p class="mb-1 fw-bold">Event created</p>
+                            <p class="small text-muted mb-0">Saturday Car Meet in Downtown</p>
+                            <span class="small text-muted">1 hour ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-center border-0 py-3">
+                <a href="#" class="btn btn-link btn-sm text-decoration-none fw-bold">View All Activity <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-primary-light { background: #e7f1ff; }
+    .bg-info-light { background: #e0faff; }
+    .bg-warning-light { background: #fff8e1; }
+    .bg-success-light { background: #e8f5e9; }
+    .bg-danger-light { background: #ffebee; }
+    
+    .stat-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.2rem; }
+    .activity-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .dashboard-header { display: flex; justify-content: space-between; align-items: center; }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityData = @Html.Raw(activityData);
+        const activityLabels = @Html.Raw(activityLabels);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: activityLabels,
+                datasets: [{
+                    label: 'Registrations',
+                    data: activityData,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+}

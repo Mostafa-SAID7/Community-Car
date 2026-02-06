@@ -1,0 +1,27 @@
+/* Layout: Footer */
+footer {
+    padding: var(--spacing-xl) 0;
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    text-align: center;
+    border-top: 1px solid var(--border-primary);
+    margin-top: var(--spacing-3xl);
+    transition: all var(--transition-base);
+}
+
+footer .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+footer a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+footer a:hover {
+    color: var(--color-primary-hover);
+}

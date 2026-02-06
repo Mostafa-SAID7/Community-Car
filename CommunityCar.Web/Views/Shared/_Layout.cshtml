@@ -1,0 +1,80 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Community Car</title>
+    
+    <!-- Libraries CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a asp-area="Community" asp-controller="Home" asp-action="Index">Community</a>
+            <a asp-area="Identity" asp-controller="Home" asp-action="Index">Identity</a>
+            
+            <!-- Theme Toggle Button -->
+            <button class="theme-toggle-icon" aria-label="Toggle theme">
+                <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+    
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+    
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - Community Car
+        </div>
+    </footer>
+
+    <!-- Libraries JS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/chart.js/chart.umd.min.js"></script>
+
+    <!-- Core Modular JS -->
+    <script src="~/js/core/config.js"></script>
+    <script src="~/js/core/helpers.js"></script>
+    <script src="~/js/core/ajax.js"></script>
+    
+    <!-- Utils Modular JS -->
+    <script src="~/js/utils/dom.js"></script>
+    <script src="~/js/utils/validators.js"></script>
+    <script src="~/js/utils/theme-manager.js"></script>
+    
+    <!-- Layout Modular JS -->
+    <script src="~/js/layout/header.js"></script>
+    <script src="~/js/layout/navigation.js"></script>
+    <script src="~/js/layout/sidebar.js"></script>
+    
+    <!-- Component Modular JS -->
+    <script src="~/js/components/modal.js"></script>
+    <script src="~/js/components/dropdown.js"></script>
+    <script src="~/js/components/toast.js"></script>
+    <script src="~/js/components/charts.js"></script>
+    <script src="~/js/components/theme-toggle.js"></script>
+    
+    <!-- Entry Point JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

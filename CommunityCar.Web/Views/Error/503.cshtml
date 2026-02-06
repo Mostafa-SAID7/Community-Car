@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Service Unavailable";
+}
+
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-icon error-icon-warning">
+            <i class="fas fa-tools"></i>
+        </div>
+        <h1 class="error-code">503</h1>
+        <h2 class="error-title">@ViewBag.Title</h2>
+        <p class="error-message">@ViewBag.Message</p>
+        
+        <div class="error-actions">
+            <a href="javascript:location.reload()" class="btn btn-primary">
+                <i class="fas fa-redo"></i> Try Again
+            </a>
+            <a href="@Url.Action("Index", "Home", new { area = "Community" })" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+        </div>
+
+        @if (ViewBag.OriginalPath != null)
+        {
+            <p class="error-path">Requested path: <code>@ViewBag.OriginalPath</code></p>
+        }
+    </div>
+</div>

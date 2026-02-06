@@ -1,0 +1,6 @@
+/* Page: Home */
+.hero-section {
+    padding: 100px 0;
+    background-color: var(--red-100);
+    text-align: center;
+}

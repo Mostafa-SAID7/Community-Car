@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+   <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Error400Title" xml:space="preserve">
+    <value>طلب خاطئ</value>
+  </data>
+  <data name="Error400Message" xml:space="preserve">
+    <value>تعذر فهم الطلب أو كانت هناك معلمات مطلوبة مفقودة.</value>
+  </data>
+  <data name="Error401Title" xml:space="preserve">
+    <value>غير مصرح</value>
+  </data>
+  <data name="Error401Message" xml:space="preserve">
+    <value>يجب عليك تسجيل الدخول للوصول إلى هذا المورد.</value>
+  </data>
+  <data name="Error403Title" xml:space="preserve">
+    <value>محظور</value>
+  </data>
+  <data name="Error403Message" xml:space="preserve">
+    <value>ليس لديك إذن للوصول إلى هذا المورد.</value>
+  </data>
+  <data name="Error404Title" xml:space="preserve">
+    <value>الصفحة غير موجودة</value>
+  </data>
+  <data name="Error404Message" xml:space="preserve">
+    <value>الصفحة التي تبحث عنها ربما تمت إزالتها أو تغيير اسمها أو أنها غير متاحة مؤقتًا.</value>
+  </data>
+  <data name="Error500Title" xml:space="preserve">
+    <value>خطأ داخلي في الخادم</value>
+  </data>
+  <data name="Error500Message" xml:space="preserve">
+    <value>حدث خطأ ما من جانبنا. نحن نعمل على إصلاحه. يرجى المحاولة مرة أخرى لاحقًا.</value>
+  </data>
+  <data name="Error503Title" xml:space="preserve">
+    <value>الخدمة غير متاحة</value>
+  </data>
+  <data name="Error503Message" xml:space="preserve">
+    <value>الخدمة غير متاحة مؤقتًا. يرجى المحاولة مرة أخرى بعد لحظات.</value>
+  </data>
+</root>
