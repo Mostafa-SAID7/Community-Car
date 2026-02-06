@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
 
 [Area("Dashboard")]
-[Route("Dashboard/[controller]")]
-public class AuditLogsController : Controller
+[Authorize(Roles = "SuperAdmin,Admin")]
+public class UserAuditLogsController : Controller
 {
     public IActionResult Index() => View();
 }
