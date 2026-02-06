@@ -5,7 +5,8 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-public class UserAuditLogsController : Controller
+[Route("Dashboard/[controller]")]
+public class AuditLogsController : Controller
 {
     public IActionResult Index() => View();
 }

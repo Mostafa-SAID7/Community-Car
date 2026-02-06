@@ -1,0 +1,253 @@
+@model CommunityCar.Web.Areas.Dashboard.ViewModels.HealthViewModel
+@{
+    ViewData["Title"] = "System Health Monitor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-heart-pulse me-2"></i>System Health Monitor
+                </h1>
+                <div>
+                    <span class="@Model.StatusBadgeClass fs-5 px-3 py-2">
+                        @Model.StatusText
+                    </span>
+                    <button class="btn btn-primary ms-2" onclick="refreshHealth()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Status Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center border-end">
+                            <div class="mb-2">
+                                <i class="bi bi-speedometer2 fs-1 text-primary"></i>
+                            </div>
+                            <h5>Overall Status</h5>
+                            <p class="mb-0 fw-bold">@Model.SystemHealth.OverallStatus</p>
+                        </div>
+                        <div class="col-md-3 text-center border-end">
+                            <div class="mb-2">
+                                <i class="bi bi-clock-history fs-1 text-info"></i>
+                            </div>
+                            <h5>Uptime</h5>
+                            <p class="mb-0 fw-bold" id="uptime">@Model.SystemHealth.Metrics.Uptime.ToString(@"dd\.hh\:mm\:ss")</p>
+                        </div>
+                        <div class="col-md-3 text-center border-end">
+                            <div class="mb-2">
+                                <i class="bi bi-cpu fs-1 text-warning"></i>
+                            </div>
+                            <h5>CPU Usage</h5>
+                            <p class="mb-0 fw-bold" id="cpuUsage">@Model.SystemHealth.Metrics.CpuUsage%</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-2">
+                                <i class="bi bi-memory fs-1 text-success"></i>
+                            </div>
+                            <h5>Memory Usage</h5>
+                            <p class="mb-0 fw-bold" id="memoryUsage">@Model.SystemHealth.Metrics.UsedMemoryMB MB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Checks -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Health Checks
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                    <th>Response Time</th>
+                                    <th>Last Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody id="healthChecksTable">
+                                @foreach (var check in Model.SystemHealth.Checks)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@check.Name</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge @(check.Status == CommunityCar.Domain.Enums.Dashboard.health.HealthStatus.Healthy ? "bg-success" : 
+                                                                check.Status == CommunityCar.Domain.Enums.Dashboard.health.HealthStatus.Degraded ? "bg-warning" : "bg-danger")">
+                                                @check.Status
+                                            </span>
+                                        </td>
+                                        <td>@check.Description</td>
+                                        <td>@check.ResponseTime.TotalMilliseconds.ToString("F2") ms</td>
+                                        <td>@check.CheckedAt.ToString("HH:mm:ss")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Metrics -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>CPU & Memory
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>CPU Usage</span>
+                            <span class="fw-bold">@Model.SystemHealth.Metrics.CpuUsage%</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar @(Model.SystemHealth.Metrics.CpuUsage > 80 ? "bg-danger" : Model.SystemHealth.Metrics.CpuUsage > 60 ? "bg-warning" : "bg-success")" 
+                                 role="progressbar" 
+                                 style="width: @Model.SystemHealth.Metrics.CpuUsage%"
+                                 aria-valuenow="@Model.SystemHealth.Metrics.CpuUsage" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                @Model.SystemHealth.Metrics.CpuUsage%
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Memory Usage</span>
+                            <span class="fw-bold">@Model.SystemHealth.Metrics.UsedMemoryMB MB / @Model.SystemHealth.Metrics.TotalMemoryMB MB</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            @{
+                                var memoryPercent = Model.SystemHealth.Metrics.TotalMemoryMB > 0 
+                                    ? (double)Model.SystemHealth.Metrics.UsedMemoryMB / Model.SystemHealth.Metrics.TotalMemoryMB * 100 
+                                    : 0;
+                            }
+                            <div class="progress-bar @(memoryPercent > 80 ? "bg-danger" : memoryPercent > 60 ? "bg-warning" : "bg-success")" 
+                                 role="progressbar" 
+                                 style="width: @memoryPercent%"
+                                 aria-valuenow="@memoryPercent" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                @memoryPercent.ToString("F1")%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Last Checked:</strong></td>
+                                <td>@Model.SystemHealth.LastChecked.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Uptime:</strong></td>
+                                <td>@Model.SystemHealth.Metrics.Uptime.ToString(@"dd\.hh\:mm\:ss")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Active Connections:</strong></td>
+                                <td>@Model.SystemHealth.Metrics.ActiveConnections</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Checks:</strong></td>
+                                <td>@Model.SystemHealth.Checks.Count</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let refreshInterval;
+
+        function refreshHealth() {
+            fetch('/Dashboard/Health/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updateHealthDisplay(data);
+                })
+                .catch(error => {
+                    console.error('Error refreshing health:', error);
+                });
+        }
+
+        function updateHealthDisplay(data) {
+            // Update metrics
+            document.getElementById('cpuUsage').textContent = data.metrics.cpuUsage + '%';
+            document.getElementById('memoryUsage').textContent = data.metrics.usedMemoryMB + ' MB';
+            
+            // Update health checks table
+            const tbody = document.getElementById('healthChecksTable');
+            tbody.innerHTML = '';
+            
+            data.checks.forEach(check => {
+                const statusClass = check.status === 0 ? 'bg-success' : 
+                                  check.status === 1 ? 'bg-warning' : 'bg-danger';
+                const statusText = check.status === 0 ? 'Healthy' : 
+                                 check.status === 1 ? 'Degraded' : 'Unhealthy';
+                
+                const row = `
+                    <tr>
+                        <td><strong>${check.name}</strong></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td>${check.description || ''}</td>
+                        <td>${check.responseTime.totalMilliseconds.toFixed(2)} ms</td>
+                        <td>${new Date(check.checkedAt).toLocaleTimeString()}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Auto-refresh every 30 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshInterval = setInterval(refreshHealth, 30000);
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+}

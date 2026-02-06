@@ -8,6 +8,10 @@
         <i class="fas fa-tachometer-alt fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Overview"]</span>
     </a>
+    <a asp-area="Dashboard" asp-controller="KPIs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "KPIs" ? "active" : "")">
+        <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["KPIs"]</span>
+    </a>
     <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
         <i class="fas fa-cogs fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Management"]</span>
@@ -24,7 +28,7 @@
         <i class="fas fa-clock fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Activity"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="UserAuditLogs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserAuditLogs" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentAuditLogs") ? "active" : "")">
+    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
         <i class="fas fa-user-check fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Audit Logs"]</span>
     </a>

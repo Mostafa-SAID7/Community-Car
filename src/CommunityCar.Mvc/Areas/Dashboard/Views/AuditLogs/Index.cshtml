@@ -1,0 +1,97 @@
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Audit Logs</h1>
+            <p class="text-muted small">Monitor system-wide activity, administrative changes, and security events.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-white shadow-sm border px-3">
+                <i class="fas fa-filter me-2 text-primary"></i>Filters
+            </button>
+            <button class="btn btn-primary shadow-sm px-3">
+                <i class="fas fa-download me-2"></i>Export
+            </button>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold text-primary">Recent Activity Logs</h6>
+            <div class="input-group input-group-sm w-25">
+                <input type="text" class="form-control" placeholder="Search logs...">
+                <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 px-4">Timestamp</th>
+                            <th class="border-0">User/Source</th>
+                            <th class="border-0">Action</th>
+                            <th class="border-0">Details</th>
+                            <th class="border-0 text-end px-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 small">2026-02-06 23:25:47</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
+                                        <i class="fas fa-user-shield text-primary small"></i>
+                                    </div>
+                                    <span class="small fw-medium">AdminUser</span>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-soft-info text-info rounded-pill">UPDATE</span></td>
+                            <td class="small text-muted">Changed localization settings for Main Site</td>
+                            <td class="text-end px-4">
+                                <span class="text-success small"><i class="fas fa-check-circle me-1"></i>Success</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 small">2026-02-06 23:20:12</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2 me-2">
+                                        <i class="fas fa-system text-secondary small"></i>
+                                    </div>
+                                    <span class="small fw-medium">System</span>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-soft-warning text-warning rounded-pill">DELETE</span></td>
+                            <td class="small text-muted">Removed temporary resource files</td>
+                            <td class="text-end px-4">
+                                <span class="text-success small"><i class="fas fa-check-circle me-1"></i>Success</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-0 py-3">
+            <nav aria-label="Logs pagination">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-soft-info { background-color: rgba(13, 202, 240, 0.1); }
+    .bg-soft-warning { background-color: rgba(255, 193, 7, 0.1); }
+    .text-info { color: #0dcaf0 !important; }
+    .text-warning { color: #ffc107 !important; }
+</style>

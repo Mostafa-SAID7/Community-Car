@@ -123,6 +123,7 @@ public static class DependencyInjection
 
         // Existing Services
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IHealthService, HealthService>();
         services.AddScoped<IFriendshipService, FriendshipService>();
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<ITagService, TagService>();
