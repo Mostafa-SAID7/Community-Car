@@ -15,7 +15,7 @@ public interface IQuestionService
     Task DeleteQuestionAsync(Guid questionId);
     Task<QuestionDto?> GetQuestionByIdAsync(Guid questionId, Guid? currentUserId = null);
     Task<QuestionDto?> GetQuestionBySlugAsync(string slug, Guid? currentUserId = null);
-    Task<PagedResult<QuestionDto>> GetQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, bool? isResolved = null, bool? hasAnswers = null, Guid? currentUserId = null);
+    Task<PagedResult<QuestionDto>> GetQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, bool? isResolved = null, bool? hasAnswers = null, Guid? categoryId = null, Guid? currentUserId = null);
     Task<PagedResult<QuestionDto>> GetUserQuestionsAsync(Guid userId, QueryParameters parameters);
     Task<PagedResult<QuestionDto>> GetBookmarkedQuestionsAsync(Guid userId, QueryParameters parameters);
     Task<PagedResult<QuestionDto>> GetTrendingQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, Guid? currentUserId = null);

@@ -1,0 +1,52 @@
+/* Page: Info Pages (Privacy, Terms, Support) */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-green.hero-lg, .hero.hero-purple.hero-lg, .hero.hero-pink-red.hero-lg
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-green.hero-lg instead */
+.privacy-hero {
+    background: var(--gradient-green);
+    color: var(--text-inverse);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .hero.hero-purple.hero-lg instead */
+.terms-hero {
+    background: var(--gradient-purple);
+    color: var(--text-inverse);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .hero.hero-pink-red.hero-lg instead */
+.support-hero {
+    background: var(--gradient-pink-red);
+    color: var(--text-inverse);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Page-specific: Info section styles */
+.info-section {
+    margin-bottom: 3rem;
+}
+
+.info-section h2 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.info-section p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+}

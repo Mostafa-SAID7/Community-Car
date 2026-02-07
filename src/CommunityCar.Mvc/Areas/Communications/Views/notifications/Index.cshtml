@@ -9,32 +9,31 @@
     var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 }
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        <i class="fas fa-bell me-2"></i>Notifications
-                        @if (unreadCount > 0)
-                        {
-                            <span class="badge bg-danger ms-2">@unreadCount</span>
-                        }
-                    </h4>
-                    <div class="btn-group">
-                        <button class="btn btn-light btn-sm" onclick="refreshNotifications()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        @if (unreadCount > 0)
-                        {
-                            <button class="btn btn-light btn-sm" onclick="markAllAsRead()">
-                                <i class="fas fa-check-double"></i> Mark All Read
-                            </button>
-                        }
-                    </div>
-                </div>
+@{
+    ViewData["HeaderTitle"] = "Notifications";
+    ViewData["HeaderDescription"] = "Stay updated with your latest activity";
+    ViewData["HeaderIcon"] = "fas fa-bell";
+    
+    var unreadBadgeContent = unreadCount > 0 ? $"<span class='badge bg-light text-dark fs-6'>{unreadCount} unread</span>" : "";
+    var markAllButtonContent = unreadCount > 0 ? $"<button class='btn btn-light' onclick='markAllAsRead()'><i class='fas fa-check-double me-2'></i>Mark All Read</button>" : "";
+    
+    var headerActionsHtml = $@"
+        <div class='d-flex gap-2 flex-wrap align-items-center'>
+            <span class='text-white'>{unreadBadgeContent}</span>
+            <button class='btn btn-light' onclick='refreshNotifications()'>
+                <i class='fas fa-sync-alt me-2'></i>Refresh
+            </button>
+            {markAllButtonContent}
+        </div>";
+        
+    ViewData["HeaderActions"] = Html.Raw(headerActionsHtml);
+}
 
-                <div class="card-body p-0">
+<partial name="_InnerPageHeader" />
+
+<div class="container">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
                     <!-- Filter Tabs -->
                     <div class="border-bottom">
                         <ul class="nav nav-tabs border-0 px-3 pt-3">
@@ -169,7 +168,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 @section Scripts {

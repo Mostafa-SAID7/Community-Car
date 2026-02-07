@@ -48,18 +48,8 @@ class ThemeManager {
     }
 
     updateIcons(isDark) {
-        const moonIcons = document.querySelectorAll('.theme-icon-moon');
-        const sunIcons = document.querySelectorAll('.theme-icon-sun');
-
-        moonIcons.forEach(icon => {
-            if (isDark) icon.classList.add('d-none');
-            else icon.classList.remove('d-none');
-        });
-
-        sunIcons.forEach(icon => {
-            if (isDark) icon.classList.remove('d-none');
-            else icon.classList.add('d-none');
-        });
+        // Visibility is now handled purely by CSS using [data-theme] attribute
+        // This method remains as a hook for any advanced future icon transitions
     }
 
     toggleTheme() {

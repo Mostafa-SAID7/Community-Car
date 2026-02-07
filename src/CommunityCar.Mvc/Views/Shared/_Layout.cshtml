@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
     
     <!-- Main CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -52,7 +52,7 @@
 
                 <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet/Mobile) -->
                 <div class="col-lg-3 d-none d-lg-block">
-                    <div class="sticky-top" style="top: 80px; z-index: 1;">
+                    <div class="sticky-sidebar">
                         @if (IsSectionDefined("RightSidebar"))
                         {
                             @await RenderSectionAsync("RightSidebar", required: false)
@@ -104,6 +104,8 @@
     
     <!-- Entry Point JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/notification.js" asp-append-version="true"></script>
+    <script src="~/js/friends.js" asp-append-version="true"></script>
 
     <!-- TempData Toast Notifications -->
     <script>

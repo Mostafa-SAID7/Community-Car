@@ -1,4 +1,4 @@
-namespace CommunityCar.Web.ViewModels.Community.Qa;
+namespace CommunityCar.Mvc.ViewModels.Qa;
 
 public class QuestionSearchViewModel
 {

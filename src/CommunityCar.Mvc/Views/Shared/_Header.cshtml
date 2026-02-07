@@ -5,13 +5,13 @@
     <div class="container-fluid h-100 d-flex align-items-center justify-content-between px-3 px-lg-4">
         <!-- Left: Logo & Sidebar Toggle -->
         <div class="header-left d-flex align-items-center gap-3">
-            <button id="sidebarToggle" class="btn btn-icon d-md-none text-body p-0" aria-label="Toggle Sidebar">
+            <button id="sidebarToggle" class="btn btn-icon d-md-none p-0" aria-label="Toggle Sidebar">
                 <i class="fas fa-bars fa-lg"></i>
             </button>
             <a asp-controller="Feed" asp-action="Index" class="navbar-brand d-flex align-items-center gap-2">
                 <!-- Placeholder Logo -->
-                <div class="brand-logo-circle bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px;">
-                    <i class="fas fa-car"></i>
+                <div class="brand-logo-circle size-32">
+                    <i class="fas fa-car-side"></i>
                 </div>
                 <span class="brand-text fw-bold fs-5 d-none d-sm-block">CommunityCar</span>
             </a>
@@ -24,27 +24,24 @@
                    <!-- Nav Links -->
                 <nav class="pill-nav d-flex align-items-center gap-1">
                     <a asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="Home">
-                        <i class="fas fa-home fa-lg"></i>
+                        <i class="fas fa-house fa-lg"></i>
                     </a>
-                    <a asp-area="Communication" asp-controller="Chat" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="Chat">
-                        <i class="fas fa-comment-dots fa-lg"></i>
+                    <a asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="Chat">
+                        <i class="fas fa-messages fa-lg"></i>
+                        <span class="notification-badge badge-xs bg-primary-premium">3</span>
                     </a>
-                    <a asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="Friends">
-                        <i class="fas fa-user-friends fa-lg"></i>
+                    <a asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="Friends">
+                        <i class="fas fa-user-group fa-lg"></i>
+                        <span class="notification-badge badge-xs bg-success-premium">1</span>
                     </a>
                 </nav>
 
                 <!-- Search -->
                 <div class="pill-search position-relative">
-                    <i class="fas fa-search search-icon text-muted"></i>
+                    <i class="fas fa-magnifying-glass search-icon"></i>
                     <input type="text" class="form-control border-0 bg-transparent shadow-none" placeholder="@Localizer["Search..."]" aria-label="Search">
                 </div>
                 
-             
-                
-             
-
-               
             </div>
         </div>
 
@@ -53,27 +50,27 @@
             
             <!-- Quick Create -->
             <a asp-controller="Questions" asp-action="Create" class="btn btn-icon text-primary p-1" title="Ask Question">
-                <i class="fas fa-plus-circle fa-lg"></i>
+                <i class="fas fa-circle-plus fa-lg"></i>
             </a>
 
             <!-- Admin Dashboard Link -->
             @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
             {
                 <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-icon text-danger p-1" title="Admin Dashboard">
-                    <i class="fas fa-tachometer-alt fa-lg"></i>
+                    <i class="fas fa-gauge-high fa-lg"></i>
                 </a>
             }
 
             <!-- Notifications -->
             <div class="dropdown me-1">
-                <button class="btn btn-icon text-body p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <button class="btn btn-icon p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
                     <i class="fas fa-bell fa-lg"></i>
-                    <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light p-1 d-none" style="font-size: 0.6rem;">
+                    <span id="notificationBadge" class="notification-badge badge-xs bg-danger d-none">
                         0
                     </span>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 480px; overflow-y: auto;">
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light rounded-top">
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-320 shadow-lg border-0 mt-2 p-0" aria-labelledby="notificationDropdown">
+                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-tertiary rounded-top">
                         <h6 class="mb-0 fw-bold">Notifications</h6>
                         <a href="javascript:void(0)" onclick="markAllNotificationsAsRead()" class="text-xs text-primary text-decoration-none">Mark all as read</a>
                     </div>
@@ -89,29 +86,30 @@
                     </a>
                 </div>
             </div>
- <!-- Language Toggle (Inside Pill) -->
-                <button class="btn btn-icon btn-sm text-secondary rounded-circle me-1" title="Switch Language">
-                    <span class="fw-bold" style="font-size: 0.7rem;">EN</span>
-                </button>
+            <!-- Language Toggle -->
+            <button class="btn btn-icon btn-sm text-secondary rounded-circle me-1" title="Switch Language">
+                <i class="fas fa-language fa-lg"></i>
+            </button>
 
-                <!-- Theme Toggle -->
-                <button class="theme-toggle-icon btn btn-icon text-body rounded-circle" aria-label="Toggle theme" title="Toggle Theme">
-                     <i class="fas fa-moon theme-icon-moon"></i>
-                     <i class="fas fa-sun theme-icon-sun d-none"></i>
-                </button>
+            <!-- Theme Toggle -->
+            <button class="theme-toggle-icon btn btn-icon rounded-circle" aria-label="Toggle theme" title="Toggle Theme">
+                <i class="fas fa-moon theme-icon-moon"></i>
+                <i class="fas fa-sun theme-icon-sun"></i>
+            </button>
+
             <!-- Badges/Awards -->
-            <a asp-controller="Badges" asp-action="Index" class="btn btn-icon text-body p-1" title="Badges & Achievements">
-                <i class="fas fa-medal fa-lg"></i>
+            <a asp-controller="Badges" asp-action="Index" class="btn btn-icon p-1" title="Badges & Achievements">
+                <i class="fas fa-trophy fa-lg"></i>
             </a>
             
             <!-- User Avatar -->
             <div class="dropdown">
-                <a href="#" class="d-block link-dark text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="d-block text-decoration-none header-user-link" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="https://ui-avatars.com/api/?name=User&background=random" alt="mdo" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Index">Profile</a></li>
+                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Settings">Settings</a></li>
                     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                     {
                         <li>

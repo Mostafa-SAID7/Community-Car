@@ -20,11 +20,11 @@
                 {
                     <div>
                         <a asp-controller="Reviews" asp-action="Details" asp-route-slug="@review.Slug" class="text-decoration-none text-dark fw-bold small d-block mb-1">@review.Title</a>
-                        <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
-                            <div class="me-2">
+                        <div class="d-flex align-items-center text-xs text-muted">
+                            <div class="star-rating me-2">
                                 @for (int i = 1; i <= 5; i++)
                                 {
-                                    <i class="fas fa-star @(i <= review.Rating ? "text-warning" : "text-muted opacity-25")" style="font-size: 0.65rem;"></i>
+                                    <i class="fas fa-star star @(i <= review.Rating ? "filled" : "empty")"></i>
                                 }
                             </div>
                             <span>@review.CreatedAt.ToTimeAgo()</span>
@@ -55,7 +55,7 @@
                 {
                     <div>
                         <a asp-controller="Reviews" asp-action="Details" asp-route-slug="@review.Slug" class="text-decoration-none text-dark fw-bold small d-block mb-1">@review.Title</a>
-                        <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                        <div class="metadata-text">
                             <i class="fas fa-thumbs-up me-1"></i>
                             <span>@review.HelpfulCount @Localizer["helpful"]</span>
                         </div>

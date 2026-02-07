@@ -11,166 +11,30 @@
 }
 
 @section Styles {
-    <style>
-        .question-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 30px;
-            color: white;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        .question-card, .answer-card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .question-card:hover, .answer-card:hover {
-            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
-        }
-        .vote-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            min-width: 80px;
-        }
-        .vote-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-        .vote-btn:hover {
-            transform: scale(1.1);
-        }
-        .vote-btn.upvote {
-            border-color: #28a745;
-            color: #28a745;
-        }
-        .vote-btn.upvote:hover {
-            background: #28a745;
-            color: white;
-        }
-        .vote-btn.downvote {
-            border-color: #dc3545;
-            color: #dc3545;
-        }
-        .vote-btn.downvote:hover {
-            background: #dc3545;
-            color: white;
-        }
-        .vote-count {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #495057;
-            display: block;
-            margin: 12px 0;
-        }
-        .tag-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            display: inline-block;
-            margin: 4px;
-            transition: all 0.3s ease;
-        }
-        .tag-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        .accepted-answer {
-            border: 3px solid #28a745 !important;
-            background: linear-gradient(to right, rgba(40, 167, 69, 0.05), transparent);
-        }
-        .accepted-badge {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        .answer-form-card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            background: linear-gradient(to bottom, white, #f8f9fa);
-        }
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 12px 32px;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        .author-info {
-            background: #f8f9fa;
-            padding: 12px 16px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-        .stats-badge {
-            background: white;
-            padding: 8px 16px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-right: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = Model.Title;
+    ViewData["HeaderIcon"] = "fas fa-question-circle";
+    ViewData["HeaderActions"] = Html.Raw($@"
+        <div class='d-flex flex-wrap gap-2 align-items-center'>
+            <span class='stats-badge'>
+                <i class='fas fa-eye me-1'></i> {Model.ViewCount} views
+            </span>
+            <span class='stats-badge'>
+                <i class='fas fa-comment me-1'></i> {Model.AnswerCount} answers
+            </span>
+            <span class='stats-badge'>
+                <i class='fas fa-arrow-up me-1'></i> {Model.VoteCount} votes
+            </span>
+            {(Model.IsResolved ? "<span class='badge bg-success px-3 py-2'><i class='fas fa-check-circle me-1'></i> Resolved</span>" : "")}
+        </div>");
 }
 
-<!-- Question Header -->
-<div class="question-header">
-    <div class="d-flex justify-content-between align-items-start">
-        <div class="flex-grow-1">
-            <h1 class="mb-3 fw-bold">
-                @Model.Title
-            </h1>
-            <div class="d-flex flex-wrap gap-2 align-items-center">
-                <span class="stats-badge">
-                    <i class="fas fa-eye me-1"></i> @Model.ViewCount views
-                </span>
-                <span class="stats-badge">
-                    <i class="fas fa-comment me-1"></i> @Model.AnswerCount answers
-                </span>
-                <span class="stats-badge">
-                    <i class="fas fa-arrow-up me-1"></i> @Model.VoteCount votes
-                </span>
-                @if (Model.IsResolved)
-                {
-                    <span class="badge bg-success px-3 py-2">
-                        <i class="fas fa-check-circle me-1"></i> Resolved
-                    </span>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <!-- Question Card -->
-<div class="card question-card">
+<div class="card question-card" data-question-id="@Model.Id">
     <div class="card-body p-4">
         <div class="row">
             <div class="col-auto">
@@ -199,7 +63,7 @@
                     }
                 </div>
 
-                <div class="question-content mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+                <div class="question-content mb-4" class="content-readable">
                     @Html.Raw(Model.Content.Replace("\n", "<br/>"))
                 </div>
 
@@ -242,64 +106,9 @@
     {
         foreach (var answer in answers.OrderByDescending(a => a.IsAccepted).ThenByDescending(a => a.VoteCount))
         {
-            <div class="card answer-card @(answer.IsAccepted ? "accepted-answer" : "")">
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-auto">
-                            <div class="vote-section">
-                                <button class="vote-btn upvote" data-type="answer" data-id="@answer.Id" data-vote="up">
-                                    <i class="fas fa-arrow-up"></i>
-                                </button>
-                                <span class="vote-count">@answer.VoteCount</span>
-                                <button class="vote-btn downvote" data-type="answer" data-id="@answer.Id" data-vote="down">
-                                    <i class="fas fa-arrow-down"></i>
-                                </button>
-                                @if (isAuthor && !Model.IsResolved)
-                                {
-                                    <button class="btn btn-success rounded-circle mt-3" style="width: 45px; height: 45px;" 
-                                            onclick="acceptAnswer('@Model.Id', '@answer.Id')" 
-                                            title="Accept this answer">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                }
-                            </div>
-                        </div>
-                        <div class="col">
-                            @if (answer.IsAccepted)
-                            {
-                                <div class="accepted-badge">
-                                    <i class="fas fa-check-circle me-2"></i>Accepted Answer
-                                </div>
-                            }
-                            
-                            <div class="answer-content mb-3" style="font-size: 1.05rem; line-height: 1.7;">
-                                @Html.Raw(answer.Content.Replace("\n", "<br/>"))
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                                <div class="author-info">
-                                    <i class="fas fa-user-circle me-2 text-primary"></i>
-                                    <strong>@answer.AuthorName</strong>
-                                    <span class="text-muted ms-2">
-                                        • @answer.CreatedAt.ToString("MMM dd, yyyy 'at' hh:mm tt")
-                                    </span>
-                                </div>
-                                @if (currentUserId.HasValue && answer.AuthorId == currentUserId.Value)
-                                {
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                            <i class="fas fa-edit me-1"></i>Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3">
-                                            <i class="fas fa-trash me-1"></i>Delete
-                                        </button>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            ViewBag.IsQuestionAuthor = isAuthor;
+            ViewBag.QuestionId = Model.Id;
+            <partial name="_AnswerItem" model="answer" />
         }
     }
     else
@@ -328,7 +137,7 @@
                 <input type="hidden" name="QuestionId" value="@Model.Id" />
                 <div class="mb-3">
                     <textarea name="Content" class="form-control" rows="8" 
-                              style="border-radius: 12px; border: 2px solid #e9ecef; font-size: 1.05rem;"
+                              class="form-control-rounded form-control-readable"
                               placeholder="Write your answer here...&#10;&#10;• Be clear and concise&#10;• Provide examples if possible&#10;• Explain your reasoning" 
                               required></textarea>
                 </div>
@@ -394,6 +203,58 @@ else
                     }
                 );
             });
+
+            // SignalR Real-time Updates
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/questionHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveAnswer", (answer) => {
+                if (answer.questionId === '@Model.Id') {
+                     toastr.info('New answer posted! Click to refresh.', 'Update', {
+                        timeOut: 5000,
+                        onclick: function() { location.reload(); }
+                     });
+                     
+                     // Auto-reload if user is not typing
+                     if (!$('textarea').is(':focus') && !$('textarea').val()) {
+                         setTimeout(() => location.reload(), 3000);
+                     }
+                }
+            });
+
+            connection.on("QuestionScoreUpdated", ({ questionId, newScore }) => {
+                if (questionId === '@Model.Id') {
+                    const $count = $('.question-card .vote-count');
+                    const currentScore = parseInt($count.text());
+                    $count.text(newScore);
+                    
+                    if (newScore !== currentScore) {
+                        $count.addClass('text-primary fw-bold scale-up'); // scale-up needs css or just use std classes
+                        setTimeout(() => $count.removeClass('text-primary fw-bold scale-up'), 1000);
+                    }
+                }
+            });
+
+            connection.on("AnswerScoreUpdated", ({ answerId, newScore }) => {
+                const $card = $(`.answer-card[data-answer-id="${answerId}"]`);
+                if ($card.length) {
+                    const $count = $card.find('.vote-count');
+                    $count.text(newScore);
+                    $count.addClass('text-primary fw-bold');
+                    setTimeout(() => $count.removeClass('text-primary fw-bold'), 1000);
+                }
+            });
+            
+            connection.on("QuestionMarkedResolved", ({ questionId, isResolved }) => {
+                 if (questionId === '@Model.Id') {
+                     toastr.success(`Question marked as ${isResolved ? 'Resolved' : 'Unresolved'}!`);
+                     setTimeout(() => location.reload(), 1500);
+                 }
+            });
+
+            connection.start().catch(err => console.error("SignalR: ", err));
         });
 
         function acceptAnswer(questionId, answerId) {
@@ -468,6 +329,70 @@ else
                             }
                         }
                     );
+                }
+            });
+        }
+
+        function deleteAnswer(id, questionId) {
+            Swal.fire({
+                title: 'Delete Answer?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(`/Answers/Delete/${id}`, 
+                        { 
+                            questionId: questionId,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() 
+                        },
+                        function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Answer has been deleted',
+                                    confirmButtonColor: '#667eea'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message,
+                                    confirmButtonColor: '#667eea'
+                                });
+                            }
+                        }
+                    );
+                }
+            });
+        }
+
+        function toggleCommentForm(answerId) {
+            $(`#comment-form-${answerId}`).toggle();
+            $(`#comment-form-${answerId} textarea`).focus();
+        }
+
+        function submitComment(answerId) {
+            const content = $(`#comment-form-${answerId} textarea`).val();
+            if (!content) return;
+
+            $.post('/Answers/AddComment', { answerId: answerId, content: content }, function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                        confirmButtonColor: '#667eea'
+                    });
                 }
             });
         }

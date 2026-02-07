@@ -27,17 +27,29 @@ public class QuestionsController : Controller
 
     // GET: Questions
     [HttpGet("")]
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? tag = null, bool? isResolved = null)
+    // GET: Questions
+    [HttpGet("")]
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? tag = null, bool? isResolved = null, string? searchTerm = null, Guid? categoryId = null, string sortBy = "recent")
     {
         try
         {
             var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
-            var result = await _questionService.GetQuestionsAsync(parameters, searchTerm: null, tag: tag, isResolved: isResolved);
+            var currentUserId = User.Identity?.IsAuthenticated == true ? GetCurrentUserId() : (Guid?)null;
+            
+            var result = await _questionService.GetQuestionsAsync(parameters, searchTerm: searchTerm, tag: tag, isResolved: isResolved, categoryId: categoryId, currentUserId: currentUserId);
             
             ViewBag.CurrentTag = tag;
             ViewBag.IsResolved = isResolved;
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize;
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SortBy = sortBy;
+            ViewBag.CurrentCategoryId = categoryId;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_QuestionList", result);
+            }
             
             return View(result);
         }
@@ -56,7 +68,8 @@ public class QuestionsController : Controller
     {
         try
         {
-            var question = await _questionService.GetQuestionByIdAsync(id);
+            var currentUserId = User.Identity?.IsAuthenticated == true ? GetCurrentUserId() : (Guid?)null;
+            var question = await _questionService.GetQuestionByIdAsync(id, currentUserId);
             if (question == null)
             {
                 TempData["Error"] = "Question not found";
@@ -65,16 +78,48 @@ public class QuestionsController : Controller
 
             await _questionService.IncrementViewCountAsync(id);
             
-            var answers = await _questionService.GetAnswersAsync(id);
+            var answers = await _questionService.GetAnswersAsync(id, currentUserId);
             
             ViewBag.Answers = answers;
-            ViewBag.CurrentUserId = User.Identity?.IsAuthenticated == true ? GetCurrentUserId() : (Guid?)null;
+            ViewBag.CurrentUserId = currentUserId;
             
             return View(question);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading question {QuestionId}", id);
+            TempData["Error"] = "Failed to load question";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    // GET: Questions/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
+    public async Task<IActionResult> Details(string slug)
+    {
+        try
+        {
+            var currentUserId = User.Identity?.IsAuthenticated == true ? GetCurrentUserId() : (Guid?)null;
+            var question = await _questionService.GetQuestionBySlugAsync(slug, currentUserId);
+            if (question == null)
+            {
+                TempData["Error"] = "Question not found";
+                return RedirectToAction(nameof(Index));
+            }
+
+            await _questionService.IncrementViewCountAsync(question.Id);
+            
+            var answers = await _questionService.GetAnswersAsync(question.Id, currentUserId);
+            
+            ViewBag.Answers = answers;
+            ViewBag.CurrentUserId = currentUserId;
+            
+            return View("Details", question);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading question {Slug}", slug);
             TempData["Error"] = "Failed to load question";
             return RedirectToAction(nameof(Index));
         }
@@ -87,13 +132,14 @@ public class QuestionsController : Controller
     {
         try
         {
+            var categories = await _questionService.GetCategoriesAsync();
             var viewModel = new CreateQuestionViewModel
             {
                 Title = string.Empty,
                 Content = string.Empty,
                 Tags = string.Empty,
                 CategoryId = null,
-                Categories = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
+                Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList()
             };
             
             return View(viewModel);
@@ -116,8 +162,8 @@ public class QuestionsController : Controller
         {
             if (!ModelState.IsValid)
             {
-                // Ensure Categories is initialized before returning to view
-                model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+                model.Categories = (await _questionService.GetCategoriesAsync())
+                    .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
                 return View(model);
             }
 
@@ -127,17 +173,18 @@ public class QuestionsController : Controller
                 model.Title, 
                 model.Content, 
                 userId, 
-                categoryId: null,
+                categoryId: model.CategoryId,
                 tags: model.Tags);
 
             TempData["Success"] = "Question created successfully";
-            return RedirectToAction(nameof(Details), new { id = question.Id });
+            return RedirectToAction(nameof(Details), new { slug = question.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating question");
             ModelState.AddModelError("", "Failed to create question");
-            model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+            model.Categories = (await _questionService.GetCategoriesAsync())
+                .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
             return View(model);
         }
     }
@@ -163,14 +210,15 @@ public class QuestionsController : Controller
                 return RedirectToAction(nameof(Details), new { id });
             }
 
+            var categories = await _questionService.GetCategoriesAsync();
             var model = new EditQuestionViewModel
             {
                 Id = question.Id,
                 Title = question.Title,
                 Content = question.Content,
                 Tags = question.Tags,
-                CategoryId = null,
-                Categories = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
+                CategoryId = question.CategoryId,
+                Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList()
             };
 
             return View(model);
@@ -196,8 +244,8 @@ public class QuestionsController : Controller
 
             if (!ModelState.IsValid)
             {
-                // Ensure Categories is initialized before returning to view
-                model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+                model.Categories = (await _questionService.GetCategoriesAsync())
+                    .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
                 return View(model);
             }
 
@@ -215,7 +263,7 @@ public class QuestionsController : Controller
                 return RedirectToAction(nameof(Details), new { id });
             }
 
-            await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, categoryId: null, tags: model.Tags);
+            await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, categoryId: model.CategoryId, tags: model.Tags);
 
             TempData["Success"] = "Question updated successfully";
             return RedirectToAction(nameof(Details), new { id });
@@ -224,7 +272,8 @@ public class QuestionsController : Controller
         {
             _logger.LogError(ex, "Error updating question {QuestionId}", id);
             ModelState.AddModelError("", "Failed to update question");
-            model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+            model.Categories = (await _questionService.GetCategoriesAsync())
+                .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
             return View(model);
         }
     }
@@ -294,6 +343,25 @@ public class QuestionsController : Controller
         }
     }
 
+    // POST: Questions/Bookmark/{id}
+    [Authorize]
+    [HttpPost("Bookmark/{id:guid}")]
+    public async Task<IActionResult> Bookmark(Guid id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var result = await _questionService.BookmarkQuestionAsync(id, userId);
+
+            return Json(new { success = true, message = result != null ? "Question bookmarked" : "Bookmark removed" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling bookmark for question {QuestionId}", id);
+            return Json(new { success = false, message = "Failed to toggle bookmark" });
+        }
+    }
+
     // POST: Questions/AcceptAnswer
     [Authorize]
     [HttpPost("AcceptAnswer")]
@@ -352,6 +420,30 @@ public class QuestionsController : Controller
         {
             _logger.LogError(ex, "Error loading user questions");
             TempData["Error"] = "Failed to load your questions";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    // GET: Questions/Bookmarks
+    [Authorize]
+    [HttpGet("Bookmarks")]
+    public async Task<IActionResult> Bookmarks(int page = 1, int pageSize = 20)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
+            var result = await _questionService.GetBookmarkedQuestionsAsync(userId, parameters);
+            
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            
+            return View(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading bookmarked questions");
+            TempData["Error"] = "Failed to load your bookmarks";
             return RedirectToAction(nameof(Index));
         }
     }

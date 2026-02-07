@@ -5,15 +5,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #d4e0ed 100%);
     padding: 20px;
 }
 
 .login-container {
-    background: white;
+    background: var(--color-bg-white);
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
     width: 100%;
     max-width: 450px;
     animation: fadeIn 0.5s ease-out;
@@ -26,13 +25,13 @@
 
 .login-header h2 {
     font-weight: 700;
-    color: #1a202c;
+    color: var(--color-text-dark);
     margin-bottom: 10px;
 }
 
 .form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 0.2rem rgba(49, 130, 206, 0.25);
+    border-color: var(--color-info);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
 }
 
 .divider {
@@ -48,14 +47,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #e2e8f0;
+    background: var(--color-border-light);
     z-index: 1;
 }
 
 .divider span {
-    background: white;
+    background: var(--color-bg-white);
     padding: 0 15px;
-    color: #718096;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
     position: relative;
     z-index: 2;
@@ -72,20 +71,20 @@
     align-items: center;
     justify-content: center;
     padding: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border-light);
     border-radius: 10px;
-    background: white;
+    background: var(--color-bg-white);
     transition: all 0.2s ease;
     font-weight: 600;
-    color: #4a5568;
+    color: var(--color-text-medium);
     font-size: 0.95rem;
 }
 
 .social-btn:hover {
-    background: #f7fafc;
+    background: var(--color-bg-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border-color: #cbd5e0;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-border-gray);
 }
 
 .social-btn img {

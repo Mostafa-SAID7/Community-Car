@@ -10,14 +10,14 @@
     --color-high: #dc3545;
     --color-medium: #ffc107;
     --color-low: #17a2b8;
-    
+
     --gradient-critical: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
     --gradient-high: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     --gradient-medium: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
     --gradient-low: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    
+
     --gradient-security-header: linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%);
-    
+
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
     --shadow-glow-critical: 0 0 20px rgba(220, 38, 38, 0.3);
@@ -89,8 +89,15 @@
 }
 
 @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 /* ===== Summary Cards ===== */
@@ -206,7 +213,7 @@
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
-.security-nav-tabs .nav-link i {
+.security-nav-tabs .nav-link svg {
     font-size: 1rem;
 }
 
@@ -275,6 +282,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -539,7 +547,7 @@
     animation: slideUp 0.5s ease-out;
 }
 
-.security-empty-state i {
+.security-empty-state svg {
     font-size: 4rem;
     color: #d1d5db;
     margin-bottom: 1.5rem;

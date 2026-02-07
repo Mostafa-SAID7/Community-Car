@@ -1,6 +1,6 @@
 using CommunityCar.Domain.DTOs.Community;
 
-namespace CommunityCar.Web.ViewModels.Community.Qa;
+namespace CommunityCar.Mvc.ViewModels.Qa;
 
 public class QuestionListViewModel
 {

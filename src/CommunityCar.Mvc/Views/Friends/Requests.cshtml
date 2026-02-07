@@ -4,87 +4,57 @@
 }
 
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h1 class="h2">Friend Requests</h1>
-            <p class="text-muted">Review and manage your pending friend requests</p>
-        </div>
-        <div class="col-md-4 text-end">
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Friends
-            </a>
-        </div>
-    </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/friends.css" />
+}
 
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-            <a class="nav-link" asp-action="Index">
-                <i class="bi bi-people"></i> My Friends
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" asp-action="Requests">
-                <i class="bi bi-inbox"></i> Requests
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-action="Blocked">
-                <i class="bi bi-slash-circle"></i> Blocked
-            </a>
-        </li>
-    </ul>
+<partial name="_InnerPageHeader" />
 
-    <div class="row mb-3">
-        <div class="col-12">
-            <ul class="nav nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Index">
-                        <i class="bi bi-people"></i> Friends
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" asp-action="Requests">
-                        <i class="bi bi-person-plus"></i> Requests (@(ViewBag.RequestCount ?? 0))
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Suggestions">
-                        <i class="bi bi-lightbulb"></i> Suggestions
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Blocked">
-                        <i class="bi bi-slash-circle"></i> Blocked
-                    </a>
-                </li>
-            </ul>
-        </div>
+<div class="container py-4">
+
+    <!-- Premium Navigation Tabs -->
+    <div class="friends-nav">
+        <a class="nav-link" asp-action="Index">
+            <i class="fas fa-user-friends"></i> Friends 
+        </a>
+        <a class="nav-link active" asp-action="Requests">
+            <i class="fas fa-user-plus"></i> Requests
+             @if (ViewBag.RequestCount > 0) { <span class="badge bg-danger ms-2">@ViewBag.RequestCount</span> }
+        </a>
+        <a class="nav-link" asp-action="Suggestions">
+            <i class="fas fa-lightbulb"></i> Suggestions
+        </a>
+        <a class="nav-link" asp-action="Blocked">
+            <i class="fas fa-ban"></i> Blocked
+        </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show rounded-pill px-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible fade show rounded-pill px-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
     @if (!Model.Any())
     {
-        <div class="text-center py-5">
-            <i class="bi bi-inbox display-1 text-muted"></i>
-            <h3 class="mt-3">No Pending Requests</h3>
-            <p class="text-muted">You don't have any friend requests at the moment.</p>
-            <a asp-action="Index" class="btn btn-primary mt-3">
-                <i class="bi bi-people"></i> View My Friends
+        <div class="friends-empty">
+            <div class="friends-empty-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="fw-bold mb-2">No Friend Requests</h3>
+            <p class="text-muted mb-4">You're all caught up! Why not find someone new?</p>
+            <a href="@Url.Action("Search")" class="btn btn-primary rounded-pill px-4 py-2">
+                <i class="fas fa-search me-2"></i>Find Friends
             </a>
         </div>
     }
@@ -94,53 +64,44 @@
             @foreach (var request in Model)
             {
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                @if (!string.IsNullOrEmpty(request.ProfilePictureUrl))
-                                {
-                                    <img src="@request.ProfilePictureUrl" alt="@request.UserName" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                }
-                                else
-                                {
-                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                        <span class="fs-4">@request.UserName.Substring(0, 1)</span>
-                                    </div>
-                                }
-                                <div class="flex-grow-1">
-                                    <h5 class="card-title mb-1">
-                                        <a href="/Identity/Profiles/@request.Slug" class="text-decoration-none text-dark">
-                                            @request.UserName
-                                        </a>
-                                    </h5>
-                                    <small class="text-muted">
-                                        <i class="bi bi-clock"></i> @request.ReceivedAt.ToString("MMM dd, yyyy")
-                                    </small>
+                    <div class="friend-card">
+                         <div class="friend-avatar-container">
+                            @if (!string.IsNullOrEmpty(request.ProfilePictureUrl))
+                            {
+                                <img src="@request.ProfilePictureUrl" alt="@request.UserName" class="friend-avatar">
+                            }
+                            else
+                            {
+                                <div class="friend-avatar-placeholder">
+                                    @request.UserName.Substring(0, 1)
+                                </div>
+                            }
+                            
+                            <div class="friend-info">
+                                <a href="/Identity/Profiles/@request.Slug" class="friend-name">
+                                    @request.UserName
+                                </a>
+                                <div class="friend-meta">
+                                    <i class="fas fa-clock"></i> Sent @request.ReceivedAt.ToString("MMM dd")
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="d-flex gap-2">
-                                <form asp-action="AcceptRequest" method="post" class="flex-grow-1">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="friendId" value="@request.UserId" />
-                                    <button type="submit" class="btn btn-sm btn-success w-100">
-                                        <i class="bi bi-check-circle"></i> Accept
-                                    </button>
-                                </form>
-                                <form asp-action="RejectRequest" method="post" class="flex-grow-1">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="friendId" value="@request.UserId" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                                        <i class="bi bi-x-circle"></i> Reject
-                                    </button>
-                                </form>
-                            </div>
-
-                            <div class="mt-2">
-                                <a href="/Identity/Profiles/@request.Slug" class="btn btn-sm btn-outline-secondary w-100">
-                                    <i class="bi bi-person"></i> View Profile
-                                </a>
-                            </div>
+                        <div class="friend-actions mt-auto">
+                            <form asp-action="AcceptRequest" method="post" class="flex-grow-1 ajax-accept-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="friendId" value="@request.UserId" />
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                                    <i class="fas fa-check me-2"></i> Accept
+                                </button>
+                            </form>
+                            <form asp-action="RejectRequest" method="post" class="flex-grow-1 ajax-reject-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="friendId" value="@request.UserId" />
+                                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
+                                    <i class="fas fa-times me-2"></i> Decline
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -149,6 +110,4 @@
     }
 </div>
 
-@section Scripts {
-    <script src="~/js/friends.js"></script>
-}
+

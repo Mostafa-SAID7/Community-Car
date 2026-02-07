@@ -8,21 +8,21 @@ using System.Security.Claims;
 
 namespace CommunityCar.Web.Controllers.Content;
 
-[Route("Post")]
-public class PostController : Controller
+[Route("Posts")]
+public class PostsController : Controller
 {
     private readonly IPostService _postService;
-    private readonly ILogger<PostController> _logger;
+    private readonly ILogger<PostsController> _logger;
 
-    public PostController(
+    public PostsController(
         IPostService postService,
-        ILogger<PostController> logger)
+        ILogger<PostsController> logger)
     {
         _postService = postService;
         _logger = logger;
     }
 
-    // GET: Post
+    // GET: Posts
     [HttpGet("")]
     public async Task<IActionResult> Index(
         int page = 1,
@@ -57,8 +57,9 @@ public class PostController : Controller
         }
     }
 
-    // GET: Post/{slug}
-    [HttpGet("{slug}")]
+    // GET: Posts/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
     public async Task<IActionResult> Details(string slug)
     {
         try

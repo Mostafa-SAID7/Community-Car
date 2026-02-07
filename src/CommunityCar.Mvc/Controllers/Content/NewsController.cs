@@ -57,8 +57,9 @@ public class NewsController : Controller
         }
     }
 
-    // GET: News/{slug}
-    [HttpGet("{slug}")]
+    // GET: News/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
     public async Task<IActionResult> Details(string slug)
     {
         try

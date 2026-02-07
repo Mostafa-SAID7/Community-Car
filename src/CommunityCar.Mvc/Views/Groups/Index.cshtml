@@ -10,21 +10,28 @@
     <partial name="Sidebars/_RightSidebar_Social" />
 }
 
+@{
+    ViewData["HeaderTitle"] = "Groups";
+    ViewData["HeaderDescription"] = "Connect with enthusiasts who share your passion";
+    ViewData["HeaderIcon"] = "fas fa-users";
+    
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <div class='d-flex gap-2 flex-wrap'>
+                <a href='{Url.Action("Create")}' class='btn btn-light'>
+                    <i class='fas fa-plus-circle me-2'></i>Create Group
+                </a>
+                <a href='{Url.Action("MyGroups")}' class='btn btn-light'>
+                    <i class='fas fa-user-edit me-2'></i>My Groups
+                </a>
+            </div>");
+    }
+}
+
+<partial name="_InnerPageHeader" />
+
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-users me-2"></i>Groups</h2>
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <div class="btn-group">
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Create Group
-                </a>
-                <a asp-action="MyGroups" class="btn btn-outline-primary">
-                    <i class="fas fa-user me-2"></i>My Groups
-                </a>
-            </div>
-        }
-    </div>
 
     @if (Model.Any())
     {
@@ -35,11 +42,11 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(group.ImageUrl))
                         {
-                            <img src="@group.ImageUrl" class="card-img-top" alt="@group.Name" style="height: 200px; object-fit: cover;" />
+                            <img src="@group.ImageUrl" class="card-img-top" alt="@group.Name" class="img-cover-200" />
                         }
                         else
                         {
-                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" class="h-200">
                                 <i class="fas fa-users fa-4x text-white"></i>
                             </div>
                         }

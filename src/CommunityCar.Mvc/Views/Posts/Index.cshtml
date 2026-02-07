@@ -7,98 +7,28 @@
 }
 
 @section Styles {
-    <style>
-        .posts-hero {
-            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
-        }
-        
-        .post-card {
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            height: 100%;
-        }
-        
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-        
-        .post-image {
-            height: 200px;
-            object-fit: cover;
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
-        
-        .post-type-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1;
-        }
-        
-        .pinned-badge {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1;
-        }
-        
-        .filter-btn {
-            transition: all 0.2s ease;
-        }
-        
-        .filter-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .post-meta {
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-        
-        .post-title {
-            font-weight: 600;
-            color: #2d3748;
-            line-height: 1.4;
-        }
-        
-        .post-content {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = "Community Posts";
+    ViewData["HeaderDescription"] = "Share your thoughts, stories, and experiences with fellow car enthusiasts";
+    ViewData["HeaderIcon"] = "fas fa-edit";
+    
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <div class='d-flex gap-2 flex-wrap'>
+                <a href='{Url.Action("Create")}' class='btn btn-light'>
+                    <i class='fas fa-plus-circle me-2'></i>Create Post
+                </a>
+                <a href='{Url.Action("MyPosts")}' class='btn btn-light'>
+                    <i class='fas fa-user-edit me-2'></i>My Posts
+                </a>
+            </div>");
+    }
 }
 
-<!-- Hero Section -->
-<div class="posts-hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3">
-                    <i class="fas fa-edit me-3"></i>Community Posts
-                </h1>
-                <p class="lead mb-4">Share your thoughts, stories, and experiences with fellow car enthusiasts</p>
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    <a asp-action="Create" class="btn btn-light btn-lg">
-                        <i class="fas fa-plus-circle me-2"></i>Create Post
-                    </a>
-                    <a asp-action="MyPosts" class="btn btn-outline-light btn-lg ms-2">
-                        <i class="fas fa-user-edit me-2"></i>My Posts
-                    </a>
-                }
-            </div>
-            <div class="col-lg-4 text-center">
-                <i class="fas fa-edit fa-8x opacity-25"></i>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <div class="container">
     <!-- Filters -->
@@ -163,8 +93,8 @@
                                 <i class="fas fa-calendar me-1"></i>@post.CreatedAt.ToString("MMM dd, yyyy")
                             </div>
                             <h5 class="post-title mb-2">
-                                <a href="@Url.Action("Details", new { slug = post.Slug })" 
-                                   class="text-decoration-none text-dark stretched-link">
+                                <a href="@Url.Action("Details", "Posts", new { slug = post.Slug })" 
+                                   class="text-decoration-none text-dark">
                                     @post.Title
                                 </a>
                             </h5>
@@ -200,11 +130,7 @@
             <nav aria-label="Posts pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                        <a class="page-link" 
-                           asp-action="Index" 
-                           asp-route-page="@(Model.PageNumber - 1)"
-                           asp-route-type="@currentType"
-                           asp-route-groupId="@groupId">
+                        <a class="page-link" href="@Url.Action("Index", "Posts", new { page = Model.PageNumber - 1, type = currentType, groupId = groupId })">
                             <i class="fas fa-chevron-left"></i> Previous
                         </a>
                     </li>
@@ -212,11 +138,7 @@
                     @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
                     {
                         <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link" 
-                               asp-action="Index" 
-                               asp-route-page="@i"
-                               asp-route-type="@currentType"
-                               asp-route-groupId="@groupId">
+                            <a class="page-link" href="@Url.Action("Index", "Posts", new { page = i, type = currentType, groupId = groupId })">
                                 @i
                             </a>
                         </li>

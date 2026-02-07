@@ -11,7 +11,7 @@ public class Answer : BaseEntity
     
     public string Content { get; private set; } = string.Empty;
     public Guid AuthorId { get; private set; }
-    public virtual ApplicationUser Author { get; private set; } = null!;
+    public virtual ApplicationUser Author { get; set; } = null!;
     
     public int VoteCount { get; private set; }
     public bool IsAccepted { get; private set; }

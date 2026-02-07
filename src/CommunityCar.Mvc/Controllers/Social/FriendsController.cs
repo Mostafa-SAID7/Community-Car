@@ -16,15 +16,18 @@ public class FriendsController : Controller
     private readonly IFriendshipService _friendshipService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<FriendsController> _logger;
+    private readonly CommunityCar.Domain.Interfaces.Communications.INotificationService _notificationService;
 
     public FriendsController(
         IFriendshipService friendshipService, 
         UserManager<ApplicationUser> userManager,
-        ILogger<FriendsController> logger)
+        ILogger<FriendsController> logger,
+        CommunityCar.Domain.Interfaces.Communications.INotificationService notificationService)
     {
         _friendshipService = friendshipService;
         _userManager = userManager;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     private Guid GetCurrentUserId()
@@ -110,6 +113,12 @@ public class FriendsController : Controller
             }
 
             await _friendshipService.SendRequestAsync(userId, friendId);
+            
+            // Notify user
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            await _notificationService.NotifyUserOfFriendRequestAsync(friendId, userId, currentUserName);
+
             TempData["Success"] = "Friend request sent successfully.";
         }
         catch (Exception ex)
@@ -121,6 +130,35 @@ public class FriendsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost("SendRequestJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendRequestJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            if (userId == friendId)
+            {
+                return Json(new { success = false, message = "You cannot send a friend request to yourself." });
+            }
+
+            await _friendshipService.SendRequestAsync(userId, friendId);
+            
+            // Notify user
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            await _notificationService.NotifyUserOfFriendRequestAsync(friendId, userId, currentUserName);
+
+            return Json(new { success = true, message = "Friend request sent successfully." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending friend request to {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to send friend request." });
+        }
+    }
+
     [HttpPost("AcceptRequest")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AcceptRequest(Guid friendId)
@@ -129,6 +167,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.AcceptRequestAsync(userId, friendId);
+            
+            // Notify user who sent the request
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+
             TempData["Success"] = "Friend request accepted successfully.";
         }
         catch (Exception ex)
@@ -138,6 +182,29 @@ public class FriendsController : Controller
         }
 
         return RedirectToAction(nameof(Requests));
+    }
+
+    [HttpPost("AcceptRequestJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AcceptRequestJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _friendshipService.AcceptRequestAsync(userId, friendId);
+            
+            // Notify user who sent the request
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+
+            return Json(new { success = true, message = "Friend request accepted successfully." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting friend request from {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to accept friend request." });
+        }
     }
 
     [HttpPost("RejectRequest")]
@@ -159,6 +226,23 @@ public class FriendsController : Controller
         return RedirectToAction(nameof(Requests));
     }
 
+    [HttpPost("RejectRequestJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RejectRequestJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _friendshipService.RejectRequestAsync(userId, friendId);
+            return Json(new { success = true, message = "Friend request rejected." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rejecting friend request from {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to reject friend request." });
+        }
+    }
+
     [HttpPost("RemoveFriend")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveFriend(Guid friendId)
@@ -176,6 +260,23 @@ public class FriendsController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("RemoveFriendJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveFriendJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _friendshipService.RemoveFriendAsync(userId, friendId);
+            return Json(new { success = true, message = "Friend removed successfully." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing friend {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to remove friend." });
+        }
     }
 
     [HttpPost("BlockUser")]
@@ -202,6 +303,29 @@ public class FriendsController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("BlockUserJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BlockUserJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            if (userId == friendId)
+            {
+                return Json(new { success = false, message = "You cannot block yourself." });
+            }
+
+            await _friendshipService.BlockUserAsync(userId, friendId);
+            return Json(new { success = true, message = "User blocked successfully." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error blocking user {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to block user." });
+        }
     }
 
     [HttpGet("Status/{friendId}")]
@@ -387,5 +511,22 @@ public class FriendsController : Controller
         }
 
         return RedirectToAction(nameof(Blocked));
+    }
+
+    [HttpPost("UnblockUserJson")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UnblockUserJson(Guid friendId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _friendshipService.UnblockUserAsync(userId, friendId);
+            return Json(new { success = true, message = "User unblocked successfully." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error unblocking user {FriendId}", friendId);
+            return Json(new { success = false, message = "Failed to unblock user." });
+        }
     }
 }

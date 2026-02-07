@@ -8,47 +8,15 @@
 }
 
 @section Styles {
-    <style>
-        .create-review-hero {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
-        }
-        
-        .star-rating-input {
-            font-size: 2rem;
-            color: #e2e8f0;
-            cursor: pointer;
-        }
-        
-        .star-rating-input i {
-            transition: all 0.2s ease;
-        }
-        
-        .star-rating-input i:hover,
-        .star-rating-input i.active {
-            color: #fbbf24;
-            transform: scale(1.1);
-        }
-        
-        .pros-cons-section {
-            background: #f7fafc;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = "Write a Review";
+    ViewData["HeaderDescription"] = "Share your experience with the community";
+    ViewData["HeaderIcon"] = "fas fa-star";
 }
 
-<div class="create-review-hero">
-    <div class="container">
-        <h1 class="display-5 fw-bold mb-2">
-            <i class="fas fa-star me-3"></i>Write a Review
-        </h1>
-        <p class="lead mb-0">Share your experience with the community</p>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -156,7 +124,18 @@
                                 </label>
                             </div>
                         </div>
+                        @{
+    ViewData["HeaderTitle"] = "My Reviews";
+    ViewData["HeaderDescription"] = "Manage and track your reviews";
+    ViewData["HeaderIcon"] = "fas fa-user-edit";
+    
+    ViewData["HeaderActions"] = Html.Raw($@"
+        <a href='{Url.Action("Create")}' class='btn btn-light'>
+            <i class='fas fa-plus-circle me-2'></i>Write New Review
+        </a>");
+}
 
+<partial name="_InnerPageHeader" />
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="fas fa-times me-2"></i>Cancel

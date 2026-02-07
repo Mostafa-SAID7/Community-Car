@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace CommunityCar.Web.Controllers.Communications;
 
-[Route("Chats")]
+[Route("chat")]
 [Authorize]
 public class ChatsController : Controller
 {

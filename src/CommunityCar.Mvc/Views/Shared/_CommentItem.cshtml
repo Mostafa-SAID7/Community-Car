@@ -1,49 +1,35 @@
 @model CommunityCar.Domain.DTOs.Community.AnswerCommentDto
 
-<div class="comment-item border-bottom py-3" data-comment-id="@Model.Id">
-    <div class="d-flex">
+<div class="comment-item border-bottom py-3 px-2 transition-all hover-bg-light" data-comment-id="@Model.Id">
+    <div class="d-flex align-items-start">
         <img src="@(Model.AuthorProfilePicture ?? "/images/default-avatar.png")" 
              alt="@Model.AuthorName" 
-             class="rounded-circle me-3" 
-             style="width: 32px; height: 32px; object-fit: cover;" />
+             class="rounded-circle me-3" style="width: 32px; height: 32px; object-fit: cover;" />
         
         <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-start mb-1">
-                <div>
-                    <strong class="me-2">@Model.AuthorName</strong>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="d-flex align-items-center gap-2">
+                    <strong class="text-dark small">@Model.AuthorName</strong>
                     @if (Model.AuthorIsExpert)
                     {
-                        <span class="badge bg-primary badge-sm">Expert</span>
+                        <span class="badge bg-soft-primary text-primary border border-primary-soft smaller">Expert</span>
                     }
-                    <small class="text-muted">
-                        @{
-                            var timeSpan = DateTimeOffset.UtcNow - Model.CreatedAt;
-                            var timeAgo = timeSpan.TotalMinutes < 1 ? "just now" :
-                                         timeSpan.TotalMinutes < 60 ? $"{(int)timeSpan.TotalMinutes}m ago" :
-                                         timeSpan.TotalHours < 24 ? $"{(int)timeSpan.TotalHours}h ago" :
-                                         timeSpan.TotalDays < 7 ? $"{(int)timeSpan.TotalDays}d ago" :
-                                         timeSpan.TotalDays < 30 ? $"{(int)(timeSpan.TotalDays / 7)}w ago" :
-                                         timeSpan.TotalDays < 365 ? $"{(int)(timeSpan.TotalDays / 30)}mo ago" :
-                                         $"{(int)(timeSpan.TotalDays / 365)}y ago";
-                        }
-                        @timeAgo
-                        @if (Model.UpdatedAt.HasValue && Model.UpdatedAt.Value > Model.CreatedAt.AddMinutes(1))
-                        {
-                            <span class="ms-1">(edited)</span>
-                        }
-                    </small>
+                    <span class="text-muted smaller">• @Model.CreatedAt.ToString("MMM dd")</span>
                 </div>
             </div>
             
             <div class="comment-content">
-                <p class="mb-2">@Model.Content</p>
+                <p class="mb-1 small text-secondary">@Model.Content</p>
             </div>
             
-            <div class="comment-actions">
-                <span class="text-muted small">
-                    <i class="far fa-thumbs-up me-1"></i>@Model.VoteCount
-                </span>
-            </div>
+            @if (Model.VoteCount > 0)
+            {
+                <div class="comment-stats mt-1">
+                    <span class="text-primary smaller">
+                        <i class="fas fa-heart me-1"></i>@Model.VoteCount
+                    </span>
+                </div>
+            }
         </div>
     </div>
 </div>

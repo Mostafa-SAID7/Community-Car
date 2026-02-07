@@ -25,6 +25,7 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddSignalR();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<CommunityCar.Domain.Interfaces.Community.IQuestionHubService, CommunityCar.Mvc.Services.QuestionHubService>();
 builder.Services.AddAutoMapper(typeof(FriendshipProfile).Assembly);
 
 // FluentValidation

@@ -46,6 +46,7 @@ public class QuestionProfile : Profile
                         ? (src.Author.FirstName + " " + src.Author.LastName).Trim() 
                         : src.Author.UserName)
                     : "Unknown User"))
+            .ForMember(dest => dest.AuthorProfilePicture, opt => opt.MapFrom(src => src.Author != null ? src.Author.ProfilePictureUrl : null))
             .ForMember(dest => dest.AuthorIsExpert, opt => opt.MapFrom(src => src.Author != null ? src.Author.IsExpert : false))
             .ForMember(dest => dest.AuthorRankName, opt => opt.MapFrom(src => src.Author != null ? src.Author.Rank.ToString() : "Newbie"));
 

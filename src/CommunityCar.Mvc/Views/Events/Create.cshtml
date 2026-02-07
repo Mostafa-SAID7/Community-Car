@@ -7,13 +7,13 @@
     var categories = ViewBag.Categories as EventCategory[];
 }
 
-<div class="container py-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Events</a></li>
-            <li class="breadcrumb-item active">Create Event</li>
-        </ol>
-    </nav>
+@{
+    ViewData["HeaderTitle"] = "Host an Event";
+    ViewData["HeaderDescription"] = "Organize a meetup, car show, or adventure for the community";
+    ViewData["HeaderIcon"] = "fas fa-calendar-plus";
+}
+
+<partial name="_InnerPageHeader" />
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -86,7 +86,7 @@
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3" id="onlineUrlField" style="display: none;">
+                        <div class="mb-3" id="onlineUrlField" class="d-none">
                             <label asp-for="OnlineUrl" class="form-label"></label>
                             <input asp-for="OnlineUrl" class="form-control" placeholder="https://zoom.us/..." />
                             <span asp-validation-for="OnlineUrl" class="text-danger"></span>

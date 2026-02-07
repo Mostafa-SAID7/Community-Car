@@ -4,6 +4,7 @@
     var currentTag = ViewBag.CurrentTag as string;
     var isResolved = ViewBag.IsResolved as bool?;
     var sortBy = ViewBag.SortBy as string ?? "recent";
+    var searchTerm = ViewBag.SearchTerm as string;
 }
 
 @section RightSidebar {
@@ -12,339 +13,133 @@
 
 @section Styles {
     <style>
-        .qa-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 2rem;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
-        }
-        
-        .filter-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        
-        .filter-card .card-body {
-            padding: 1.5rem;
-        }
-        
-        .sort-tabs {
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .sort-tab {
-            padding: 0.5rem 1.25rem;
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            background: white;
-            color: #6c757d;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
+            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
+            z-index: 10;
+            backdrop-filter: blur(2px);
+            border-radius: var(--radius-xl);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .question-list-wrapper {
+            position: relative;
+            min-height: 200px;
         }
         
-        .sort-tab:hover {
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateY(-2px);
+        /* Fade transition for list content */
+        #question-list-container {
+            transition: opacity 0.2s ease;
         }
-        
-        .sort-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .question-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-        
-        .question-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            transform: translateY(-4px);
-        }
-        
-        .question-stats {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            min-width: 100px;
-        }
-        
-        .stat-item {
-            margin-bottom: 0.75rem;
-        }
-        
-        .stat-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .stat-number {
-            display: block;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #495057;
-        }
-        
-        .stat-number.resolved {
-            color: #28a745;
-        }
-        
-        .stat-label {
-            display: block;
-            font-size: 0.75rem;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .question-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-        
-        .question-title a {
-            color: #212529;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .question-title a:hover {
-            color: #667eea;
-        }
-        
-        .question-excerpt {
-            color: #6c757d;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-        
-        .tag-badge {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            background: #e9ecef;
-            color: #495057;
-            font-size: 0.875rem;
-            text-decoration: none;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .tag-badge:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .question-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .author-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .author-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .badge-resolved {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-        
-        .badge-open {
-            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #000;
-        }
-        
-        .search-input {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .search-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-        }
-        
-        .btn-filter {
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-ask {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-ask:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            color: #dee2e6;
-            margin-bottom: 1rem;
-        }
-        
-        @@media (max-width: 768px) {
-            .qa-header {
-                padding: 1.5rem;
-            }
-            
-            .question-stats {
-                min-width: 80px;
-                padding: 0.75rem;
-            }
-            
-            .stat-number {
-                font-size: 1.25rem;
-            }
-            
-            .question-title {
-                font-size: 1.1rem;
-            }
-            
-            .sort-tabs {
-                gap: 0.25rem;
-            }
-            
-            .sort-tab {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.875rem;
-            }
+        #question-list-container.fading {
+            opacity: 0.5;
         }
     </style>
 }
 
-<!-- Header -->
-<div class="qa-header">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div>
-            <h1 class="mb-2"><i class="fas fa-question-circle me-2"></i>Questions & Answers</h1>
-            <p class="mb-0 opacity-75">Ask questions and get answers from the community</p>
-        </div>
-        <div class="d-flex gap-2 flex-wrap">
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <a asp-action="Create" class="btn btn-ask">
-                    <i class="fas fa-plus-circle me-2"></i>Ask Question
+@section LeftSidebar {
+    <partial name="Sidebars/_LeftSidebar" />
+}
+
+@{
+    ViewData["HeaderTitle"] = "Questions & Answers";
+    ViewData["HeaderDescription"] = "Ask questions and get answers from the community";
+    ViewData["HeaderIcon"] = "fas fa-question-circle";
+    
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <div class='d-flex gap-2 flex-wrap'>
+                <a href='{Url.Action("Create")}' class='btn btn-light'>
+                    <i class='fas fa-plus-circle me-2'></i>Ask Question
                 </a>
-                <a asp-action="MyQuestions" class="btn btn-light">
-                    <i class="fas fa-user me-2"></i>My Questions
+                <a href='{Url.Action("MyQuestions")}' class='btn btn-light'>
+                    <i class='fas fa-user me-2'></i>My Questions
                 </a>
-            }
-            else
-            {
-                <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-light">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login to Ask
-                </a>
-            }
-        </div>
-    </div>
-</div>
+            </div>");
+    }
+    else
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <a href='{Url.Action("Login", "Account", new { area = "Identity" })}' class='btn btn-light'>
+                <i class='fas fa-sign-in-alt me-2'></i>Login to Ask
+            </a>");
+    }
+}
+
+<partial name="_InnerPageHeader" />
 
 <!-- Sort Tabs -->
-<div class="sort-tabs">
-    <a asp-action="Index" asp-route-sortBy="recent" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
-       class="sort-tab @(sortBy == "recent" ? "active" : "")">
+<div class="sort-tabs" id="sort-tabs">
+    <a href="#" data-sort="recent" class="sort-tab @(sortBy == "recent" ? "active" : "")">
         <i class="fas fa-clock"></i> Recent
     </a>
-    <a asp-action="Index" asp-route-sortBy="popular" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
-       class="sort-tab @(sortBy == "popular" ? "active" : "")">
+    <a href="#" data-sort="popular" class="sort-tab @(sortBy == "popular" ? "active" : "")">
         <i class="fas fa-fire"></i> Popular
     </a>
-    <a asp-action="Index" asp-route-sortBy="unanswered" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
-       class="sort-tab @(sortBy == "unanswered" ? "active" : "")">
+    <a href="#" data-sort="unanswered" class="sort-tab @(sortBy == "unanswered" ? "active" : "")">
         <i class="fas fa-question"></i> Unanswered
     </a>
-    <a asp-action="Index" asp-route-sortBy="votes" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
-       class="sort-tab @(sortBy == "votes" ? "active" : "")">
+    <a href="#" data-sort="votes" class="sort-tab @(sortBy == "votes" ? "active" : "")">
         <i class="fas fa-arrow-up"></i> Most Votes
     </a>
 </div>
 
 <!-- Filters -->
-<div class="filter-card card">
+<div class="filter-card card mb-4">
     <div class="card-body">
-        <form asp-action="Index" method="get" class="row g-3">
-            <input type="hidden" name="sortBy" value="@sortBy" />
-            <div class="col-md-4">
+        <form id="filter-form" asp-action="Index" method="get" class="row g-3">
+            <input type="hidden" name="sortBy" id="sortByInput" value="@sortBy" />
+            <input type="hidden" name="page" id="pageInput" value="@Model.PageNumber" />
+            <input type="hidden" name="categoryId" value="@ViewBag.CurrentCategoryId" />
+            
+            <div class="col-md-5">
                 <label class="form-label fw-bold small text-secondary">
-                    <i class="fas fa-tag me-1"></i>Filter by Tag
+                    <i class="fas fa-search me-1"></i>Search
                 </label>
-                <input type="text" name="tag" class="form-control search-input" placeholder="Enter tag name" value="@currentTag" />
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" name="searchTerm" id="searchInput" class="form-control border-start-0 ps-0" 
+                           placeholder="Search questions..." value="@searchTerm" autocomplete="off" />
+                </div>
             </div>
+            
+            <div class="col-md-3">
+                <label class="form-label fw-bold small text-secondary">
+                    <i class="fas fa-tag me-1"></i>Tag
+                </label>
+                <input type="text" name="tag" id="tagInput" class="form-control" placeholder="Filter by tag" value="@currentTag" />
+            </div>
+            
             <div class="col-md-3">
                 <label class="form-label fw-bold small text-secondary">
                     <i class="fas fa-filter me-1"></i>Status
                 </label>
-                <select name="isResolved" class="form-select search-input">
+                <select name="isResolved" id="statusInput" class="form-select">
                     <option value="">All Questions</option>
                     <option value="false" selected="@(isResolved == false)">Open</option>
                     <option value="true" selected="@(isResolved == true)">Resolved</option>
                 </select>
             </div>
-            <div class="col-md-5 d-flex align-items-end gap-2">
-                <button type="submit" class="btn btn-primary btn-filter flex-grow-1">
-                    <i class="fas fa-search me-2"></i>Apply Filters
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary btn-filter">
+            
+            <div class="col-md-1 d-flex align-items-end">
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-100" title="Clear Filters">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -352,150 +147,147 @@
     </div>
 </div>
 
-<!-- Questions List -->
-@if (Model.Items.Any())
-{
-    foreach (var question in Model.Items)
-    {
-        <div class="question-card card">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-auto">
-                        <div class="question-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">@question.VoteCount</span>
-                                <span class="stat-label">Votes</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number @(question.IsResolved ? "resolved" : "")">@question.AnswerCount</span>
-                                <span class="stat-label">Answers</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">@question.ViewCount</span>
-                                <span class="stat-label">Views</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="question-title">
-                            <a asp-action="Details" asp-route-slug="@question.Slug">
-                                @question.Title
-                            </a>
-                            @if (question.IsResolved)
-                            {
-                                <span class="badge badge-resolved ms-2">
-                                    <i class="fas fa-check-circle me-1"></i>Resolved
-                                </span>
-                            }
-                            else if (question.AnswerCount == 0)
-                            {
-                                <span class="badge badge-open ms-2">
-                                    <i class="fas fa-clock me-1"></i>Open
-                                </span>
-                            }
-                        </div>
-                        
-                        <p class="question-excerpt">
-                            @(question.Content.Length > 200 ? question.Content.Substring(0, 200) + "..." : question.Content)
-                        </p>
-                        
-                        @if (!string.IsNullOrEmpty(question.Tags))
-                        {
-                            <div class="mb-3">
-                                @foreach (var tag in question.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    <a asp-action="Index" asp-route-tag="@tag.Trim()" class="tag-badge">
-                                        <i class="fas fa-tag me-1"></i>@tag.Trim()
-                                    </a>
-                                }
-                            </div>
-                        }
-                        
-                        <div class="question-meta">
-                            <div class="author-info">
-                                <img src="@(question.AuthorProfilePicture ?? $"https://ui-avatars.com/api/?name={question.AuthorName}&background=random")" 
-                                     alt="@question.AuthorName" 
-                                     class="author-avatar" />
-                                <small class="text-muted">
-                                    <strong>@question.AuthorName</strong> asked @question.CreatedAt.ToTimeAgo()
-                                </small>
-                            </div>
-                            @if (question.Category != null)
-                            {
-                                <span class="badge bg-light text-dark">
-                                    <i class="fas fa-folder me-1"></i>@question.Category.Name
-                                </span>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="question-list-wrapper">
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
-    }
-
-    <!-- Pagination -->
-    @if (Model.TotalPages > 1)
-    {
-        <nav aria-label="Questions pagination" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" 
-                       asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
-                        <i class="fas fa-chevron-left me-1"></i>Previous
-                    </a>
-                </li>
-                
-                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
-                {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i" 
-                           asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
-                            @i
-                        </a>
-                    </li>
-                }
-                
-                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" 
-                       asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
-                        Next<i class="fas fa-chevron-right ms-1"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    }
-}
-else
-{
-    <div class="empty-state">
-        <i class="fas fa-inbox"></i>
-        <h4 class="mb-2">No Questions Found</h4>
-        <p class="text-muted mb-3">
-            @if (!string.IsNullOrEmpty(currentTag) || isResolved.HasValue)
-            {
-                <span>Try adjusting your filters or</span>
-            }
-            else
-            {
-                <span>Be the first to ask a question!</span>
-            }
-        </p>
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <a asp-action="Create" class="btn btn-ask">
-                <i class="fas fa-plus-circle me-2"></i>Ask the First Question
-            </a>
-        }
     </div>
-}
+    
+    <div id="question-list-container">
+        <partial name="_QuestionList" model="Model" />
+    </div>
+</div>
 
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Smooth scroll to top on pagination
-            $('.pagination a').on('click', function() {
-                $('html, body').animate({ scrollTop: 0 }, 300);
+            let searchTimeout;
+            const $container = $('#question-list-container');
+            const $loading = $('.loading-overlay');
+            const $form = $('#filter-form');
+            
+            // Function to fetch results
+            function fetchResults() {
+                // Show loading state
+                $loading.addClass('active');
+                $container.addClass('fading');
+                
+                // Get form data
+                const formData = $form.serialize();
+                
+                // Update URL
+                const newUrl = `${window.location.pathname}?${formData}`;
+                window.history.pushState({ path: newUrl }, '', newUrl);
+                
+                // AJAX Request
+                $.get(newUrl, function(data) {
+                    $container.html(data);
+                    
+                    // Smooth scroll to top of list if we changed pages
+                    // (Optional: logic to detect if it was a page change vs filter change)
+                    
+                }).fail(function() {
+                    toastr.error('Failed to load questions');
+                }).always(function() {
+                    $loading.removeClass('active');
+                    $container.removeClass('fading');
+                });
+            }
+
+            // Live Search (Debounced)
+            $('#searchInput, #tagInput').on('input', function() {
+                clearTimeout(searchTimeout);
+                $('#pageInput').val(1); // Reset to page 1
+                searchTimeout = setTimeout(fetchResults, 500);
             });
+
+            // Status Filter Change
+            $('#statusInput').on('change', function() {
+                $('#pageInput').val(1);
+                fetchResults();
+            });
+
+            // Sort Tabs
+            $('.sort-tab').on('click', function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                $('.sort-tab').removeClass('active');
+                $(this).addClass('active');
+                
+                // Update hidden input
+                const sortBy = $(this).data('sort');
+                $('#sortByInput').val(sortBy);
+                $('#pageInput').val(1);
+                
+                fetchResults();
+            });
+
+            // Pagination (Delegated event for dynamic content)
+            $(document).on('click', '.pagination .page-link', function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                
+                if (page) {
+                    $('#pageInput').val(page);
+                    fetchResults();
+                    // Scroll to top of list
+                    $('html, body').animate({
+                        scrollTop: $('.sort-tabs').offset().top - 100
+                    }, 300);
+                }
+            });
+
+            // Handle browser back/forward buttons
+            window.onpopstate = function(event) {
+                if (event.state) {
+                    location.reload(); // Simplest way to ensure correct state
+                }
+            };
+
+            // SignalR Real-time Updates
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/questionHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveQuestion", (question) => {
+                const sortBy = $('#sortByInput').val();
+                // If on first page and sorted by recent, refresh
+                if ($('#pageInput').val() == 1 && (sortBy === 'recent' || sortBy === 'created')) {
+                     toastr.info('New question received!');
+                     fetchResults(); 
+                }
+            });
+
+            connection.on("QuestionScoreUpdated", ({ questionId, newScore }) => {
+                const $card = $(`.question-card[data-question-id="${questionId}"]`);
+                if ($card.length) {
+                    const $voteCount = $card.find('.question-stats .stat-item:first-child .stat-number');
+                    $voteCount.text(newScore);
+                    $voteCount.addClass('text-primary');
+                    
+                    // Also animate the icon or card slightly
+                    $card.addClass('border-primary');
+                    setTimeout(() => {
+                        $voteCount.removeClass('text-primary');
+                        $card.removeClass('border-primary');
+                    }, 2000);
+                }
+            });
+            
+            connection.on("QuestionMarkedResolved", ({ questionId, isResolved }) => {
+                const $card = $(`.question-card[data-question-id="${questionId}"]`);
+                if ($card.length) {
+                    // Update UI simply by refreshing if visible, or implement specific DOM manipulation
+                    // For now, refreshing is safer to ensure correct badge state
+                    fetchResults();
+                }
+            });
+
+            connection.start().catch(err => console.error("SignalR Connection Error: ", err));
+
         });
     </script>
 }

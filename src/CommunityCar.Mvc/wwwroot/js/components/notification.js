@@ -25,12 +25,16 @@ window.loadLatestNotifications = function () {
     const list = document.getElementById('notificationList');
     if (!list) return;
 
+    // Show spinner
     list.innerHTML = '<div class="p-4 text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"></div></div>';
 
     fetch('/Communications/Notifications/Latest')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('Network response was not ok');
+            return r.json();
+        })
         .then(data => {
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 list.innerHTML = `
                     <div class="p-4 text-center text-muted">
                         <i class="fas fa-bell-slash fa-2x mb-2 opacity-25"></i>
@@ -56,7 +60,15 @@ window.loadLatestNotifications = function () {
                 </a>
             `).join('');
         })
-        .catch(err => console.error("Failed to load notifications:", err));
+        .catch(err => {
+            console.error("Failed to load notifications:", err);
+            list.innerHTML = `
+                <div class="p-4 text-center text-muted">
+                    <i class="fas fa-exclamation-circle fa-2x mb-2 text-danger opacity-50"></i>
+                    <p class="mb-0 small">Failed to load notifications</p>
+                    <button class="btn btn-link btn-sm text-primary p-0 mt-1" onclick="loadLatestNotifications()">Try again</button>
+                </div>`;
+        });
 };
 
 window.markAsRead = function (id, event) {

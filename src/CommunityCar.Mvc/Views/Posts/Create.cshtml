@@ -5,69 +5,16 @@
 @{
     ViewData["Title"] = "Create Post";
     var postTypes = ViewBag.PostTypes as PostType[];
+
+    ViewData["HeaderTitle"] = "Create Post";
+    ViewData["HeaderDescription"] = "Share your story with the community";
+    ViewData["HeaderIcon"] = "fas fa-edit";
 }
 
 @section Styles {
-    <style>
-        .create-post-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
-        }
-        
-        .post-type-selector {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .post-type-card {
-            flex: 1;
-            min-width: 150px;
-            padding: 1.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .post-type-card:hover {
-            border-color: #667eea;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-        
-        .post-type-card.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .post-type-card i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .media-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-        }
-    </style>
-}
+    }
 
-<div class="create-post-hero">
-    <div class="container">
-        <h1 class="display-5 fw-bold mb-2">
-            <i class="fas fa-pen me-3"></i>Create Post
-        </h1>
-        <p class="lead mb-0">Share your thoughts with the community</p>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -123,7 +70,7 @@
                             <span asp-validation-for="Content" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-4" id="imageUrlField" style="display: none;">
+                        <div class="mb-4" id="imageUrlField" class="d-none">
                             <label asp-for="ImageUrl" class="form-label fw-bold">
                                 <i class="fas fa-image me-1"></i>Image URL
                             </label>
@@ -131,7 +78,7 @@
                             <span asp-validation-for="ImageUrl" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-4" id="videoUrlField" style="display: none;">
+                        <div class="mb-4" id="videoUrlField" class="d-none">
                             <label asp-for="VideoUrl" class="form-label fw-bold">
                                 <i class="fas fa-video me-1"></i>Video URL
                             </label>
@@ -139,7 +86,7 @@
                             <span asp-validation-for="VideoUrl" class="text-danger"></span>
                         </div>
 
-                        <div id="linkFields" style="display: none;">
+                        <div id="linkFields" class="d-none">
                             <div class="mb-4">
                                 <label asp-for="LinkUrl" class="form-label fw-bold">
                                     <i class="fas fa-link me-1"></i>Link URL

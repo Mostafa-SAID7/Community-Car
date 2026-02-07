@@ -4,55 +4,20 @@
 }
 
 @section Styles {
-    <style>
-        .my-reviews-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
-        }
-        
-        .review-card {
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        
-        .review-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
-        
-        .review-status {
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .star-rating {
-            color: #fbbf24;
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = "My Reviews";
+    ViewData["HeaderDescription"] = "Manage and track your reviews";
+    ViewData["HeaderIcon"] = "fas fa-user-edit";
+    
+    ViewData["HeaderActions"] = Html.Raw($@"
+        <a href='{Url.Action("Create")}' class='btn btn-light'>
+            <i class='fas fa-plus-circle me-2'></i>Write New Review
+        </a>");
 }
 
-<div class="my-reviews-hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-2">
-                    <i class="fas fa-user-edit me-2"></i>My Reviews
-                </h1>
-                <p class="lead mb-0">Manage and track your reviews</p>
-            </div>
-            <div class="col-lg-4 text-end">
-                <a asp-action="Create" class="btn btn-light btn-lg">
-                    <i class="fas fa-plus-circle me-2"></i>Write New Review
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <div class="container">
     @if (Model.Items.Any())

@@ -8,107 +8,28 @@
 }
 
 @section Styles {
-    <style>
-        .reviews-hero {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
-        }
-        
-        .review-card {
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            height: 100%;
-        }
-        
-        .review-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-        
-        .review-type-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1;
-        }
-        
-        .verified-badge {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1;
-        }
-        
-        .recommended-badge {
-            position: absolute;
-            top: 3.5rem;
-            left: 1rem;
-            z-index: 1;
-        }
-        
-        .type-filter-btn {
-            transition: all 0.2s ease;
-        }
-        
-        .type-filter-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .review-meta {
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-        
-        .review-title {
-            font-weight: 600;
-            color: #2d3748;
-            line-height: 1.4;
-        }
-        
-        .review-content {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .star-rating {
-            color: #fbbf24;
-        }
-        
-        .pros-cons {
-            font-size: 0.85rem;
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = "Car Reviews";
+    ViewData["HeaderDescription"] = "Read honest reviews from real car owners and enthusiasts";
+    ViewData["HeaderIcon"] = "fas fa-star";
+    
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <div class='d-flex gap-2 flex-wrap'>
+                <a href='{Url.Action("Create")}' class='btn btn-light'>
+                    <i class='fas fa-plus-circle me-2'></i>Write Review
+                </a>
+                <a href='{Url.Action("MyReviews")}' class='btn btn-light'>
+                    <i class='fas fa-user-edit me-2'></i>My Reviews
+                </a>
+            </div>");
+    }
 }
 
-<!-- Hero Section -->
-<div class="reviews-hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3">
-                    <i class="fas fa-star me-3"></i>Car Reviews
-                </h1>
-                <p class="lead mb-4">Read honest reviews from real car owners and enthusiasts</p>
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    <a asp-action="Create" class="btn btn-light btn-lg">
-                        <i class="fas fa-plus-circle me-2"></i>Write Review
-                    </a>
-                    <a asp-action="MyReviews" class="btn btn-outline-light btn-lg ms-2">
-                        <i class="fas fa-user-edit me-2"></i>My Reviews
-                    </a>
-                }
-            </div>
-            <div class="col-lg-4 text-center">
-                <i class="fas fa-star fa-8x opacity-25"></i>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <div class="container">
     <!-- Filters -->

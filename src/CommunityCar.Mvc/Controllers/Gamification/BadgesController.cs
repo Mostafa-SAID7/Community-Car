@@ -14,6 +14,16 @@ public class BadgesController : Controller
         return View(badges);
     }
     
+    // GET: Badges/MyBadges
+    [HttpGet("MyBadges")]
+    public IActionResult MyBadges()
+    {
+        // Mock data for now - replace with actual service call
+        // In a real scenario, this would filter for badges earned by the current user
+        var badges = GetMockBadges().Where(b => b.IsEarned).ToList();
+        return View(badges);
+    }
+
     private List<BadgeViewModel> GetMockBadges()
     {
         return new List<BadgeViewModel>

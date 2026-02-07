@@ -1,0 +1,181 @@
+/* Components: Badges */
+
+/* Base Badge Styles */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+/* Badge Sizes */
+.badge-xs {
+    font-size: 0.6rem;
+    padding: 0.15em 0.4em;
+}
+
+.badge-sm {
+    font-size: 0.7rem;
+    padding: 0.2em 0.5em;
+}
+
+.badge-lg {
+    font-size: 0.875rem;
+    padding: 0.35em 0.75em;
+}
+
+/* Badge Variants */
+.badge-primary {
+    background-color: var(--color-primary);
+    color: var(--text-inverse);
+}
+
+.badge-secondary {
+    background-color: var(--color-secondary);
+    color: var(--text-inverse);
+}
+
+.badge-success {
+    background-color: var(--color-success);
+    color: var(--text-inverse);
+}
+
+.badge-danger {
+    background-color: var(--color-danger);
+    color: var(--text-inverse);
+}
+
+.badge-warning {
+    background-color: var(--color-warning);
+    color: var(--text-primary);
+}
+
+.badge-info {
+    background-color: var(--color-info);
+    color: var(--text-inverse);
+}
+
+/* Badge Shapes */
+.badge-pill {
+    border-radius: 10rem;
+}
+
+.badge-circle {
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    font-size: 0.6rem;
+    padding: 0.25em 0.5em;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badge with Border */
+.badge-bordered {
+    border: 2px solid currentColor;
+    background-color: transparent;
+}
+
+
+/* Type/Status Badges */
+.type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.type-badge-text {
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+}
+
+.type-badge-image {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.type-badge-video {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.type-badge-link {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+/* Difficulty Badges */
+.difficulty-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.difficulty-easy {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.difficulty-medium {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.difficulty-hard {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+/* Privacy Badges */
+.privacy-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.privacy-public {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.privacy-private {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+/* Category Badge */
+.category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}

@@ -12,21 +12,26 @@
     <link rel="stylesheet" href="~/css/feed.css" />
 }
 
-<!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Community Feed</h2>
-    <div class="btn-group" role="group">
-        <a asp-action="Index" asp-route-sortBy="Recent" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Recent ? "btn-primary" : "btn-outline-primary")">
-            <i class="fas fa-clock"></i> Recent
-        </a>
-        <a asp-action="Popular" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Popular ? "btn-primary" : "btn-outline-primary")">
-            <i class="fas fa-fire"></i> Popular
-        </a>
-        <a asp-action="Trending" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Trending ? "btn-primary" : "btn-outline-primary")">
-            <i class="fas fa-chart-line"></i> Trending
-        </a>
-    </div>
-</div>
+@{
+    ViewData["HeaderTitle"] = "Community Feed";
+    ViewData["HeaderDescription"] = "Latest updates from the community";
+    ViewData["HeaderIcon"] = "fas fa-stream";
+    
+    ViewData["HeaderActions"] = Html.Raw($@"
+        <div class='btn-group' role='group'>
+            <a href='{Url.Action("Index", new { sortBy = FeedSortType.Recent })}' class='btn btn-sm btn-light {(Model.Filters.SortBy == FeedSortType.Recent ? "active" : "")}'>
+                <i class='fas fa-clock'></i> Recent
+            </a>
+            <a href='{Url.Action("Popular")}' class='btn btn-sm btn-light {(Model.Filters.SortBy == FeedSortType.Popular ? "active" : "")}'>
+                <i class='fas fa-fire'></i> Popular
+            </a>
+            <a href='{Url.Action("Trending")}' class='btn btn-sm btn-light {(Model.Filters.SortBy == FeedSortType.Trending ? "active" : "")}'>
+                <i class='fas fa-chart-line'></i> Trending
+            </a>
+        </div>");
+}
+
+<partial name="_InnerPageHeader" />
 
 <!-- Filters -->
 <div class="card mb-4">

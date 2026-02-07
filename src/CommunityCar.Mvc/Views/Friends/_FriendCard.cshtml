@@ -1,59 +1,60 @@
 @model CommunityCar.Web.ViewModels.Community.FriendshipViewModel
 
-<div class="card h-100 shadow-sm">
-    <div class="card-body">
-        <div class="d-flex align-items-center mb-3">
-            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
-            {
-                <img src="@Model.ProfilePictureUrl" alt="@Model.FriendName" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-            }
-            else
-            {
-                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                    <span class="fs-4">@Model.FriendName.Substring(0, 1)</span>
-                </div>
-            }
-            <div class="flex-grow-1">
-                <h5 class="card-title mb-1">
-                    <a href="/Identity/Profiles/@Model.Slug" class="text-decoration-none text-dark">
-                        @Model.FriendName
-                    </a>
-                </h5>
-                <small class="text-muted">
-                    <i class="bi bi-calendar-check"></i> Friends since @Model.Since.ToString("MMM dd, yyyy")
-                </small>
+@model CommunityCar.Web.ViewModels.Community.FriendshipViewModel
+
+<div class="friend-card">
+    <div class="friend-avatar-container">
+        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+        {
+            <img src="@Model.ProfilePictureUrl" alt="@Model.FriendName" class="friend-avatar">
+        }
+        else
+        {
+            <div class="friend-avatar-placeholder">
+                @Model.FriendName.Substring(0, 1)
+            </div>
+        }
+        
+        <div class="friend-info">
+            <a href="/Identity/Profiles/@Model.Slug" class="friend-name">
+                @Model.FriendName
+            </a>
+            <div class="friend-meta">
+                <i class="fas fa-calendar-check"></i> Friends since @Model.Since.ToString("MMM yyyy")
             </div>
         </div>
+    </div>
 
-        <div class="d-flex gap-2">
-            <a href="/Identity/Profiles/@Model.Slug" class="btn btn-sm btn-outline-primary flex-grow-1">
-                <i class="bi bi-person"></i> View Profile
-            </a>
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <form asp-controller="Friends" asp-action="RemoveFriend" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this friend?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="friendId" value="@Model.FriendId" />
-                            <button type="submit" class="dropdown-item text-danger">
-                                <i class="bi bi-person-dash"></i> Remove Friend
-                            </button>
-                        </form>
-                    </li>
-                    <li>
-                        <form asp-controller="Friends" asp-action="BlockUser" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to block this user?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="friendId" value="@Model.FriendId" />
-                            <button type="submit" class="dropdown-item text-danger">
-                                <i class="bi bi-slash-circle"></i> Block User
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+    <div class="friend-actions">
+        <a href="/Identity/Profiles/@Model.Slug" class="btn-friend-action btn-friend-view">
+            <i class="fas fa-user"></i> Profile
+        </a>
+        
+        <div class="dropdown">
+            <button class="btn-friend-action btn-friend-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                <li>
+                    <form asp-controller="Friends" asp-action="RemoveFriend" method="post" class="d-inline ajax-remove-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="friendId" value="@Model.FriendId" />
+                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
+                            <i class="fas fa-user-minus"></i> Remove Friend
+                        </button>
+                    </form>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form asp-controller="Friends" asp-action="BlockUser" method="post" class="d-inline ajax-block-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="friendId" value="@Model.FriendId" />
+                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
+                            <i class="fas fa-ban"></i> Block User
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

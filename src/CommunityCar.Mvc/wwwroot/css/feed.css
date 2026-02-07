@@ -9,6 +9,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -56,11 +57,11 @@
     transform: scale(1.1);
 }
 
-.like-btn i.fas {
+.like-btn svg.fas {
     color: #dc3545;
 }
 
-.like-btn i.far {
+.like-btn svg.far {
     color: #6c757d;
 }
 
@@ -102,7 +103,7 @@
     .feed-item {
         margin-bottom: 1rem;
     }
-    
+
     .feed-item-content h5 {
         font-size: 1.1rem;
     }
@@ -113,7 +114,7 @@
         flex-direction: column;
         width: 100%;
     }
-    
+
     .btn-group .btn {
         border-radius: 0.25rem !important;
         margin-bottom: 0.25rem;
@@ -205,7 +206,7 @@ html {
         box-shadow: none;
         border: 1px solid #000;
     }
-    
+
     .btn,
     .dropdown,
     .like-btn {

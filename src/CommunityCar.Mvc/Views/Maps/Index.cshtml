@@ -66,12 +66,12 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(point.ImageUrl))
                         {
-                            <img src="@point.ImageUrl" class="card-img-top" alt="@point.Name" style="height: 200px; object-fit: cover;">
+                            <img src="@point.ImageUrl" class="card-img-top" alt="@point.Name" class="img-cover-200">
                         }
                         else
                         {
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <i class="bi bi-geo-alt" style="font-size: 3rem; color: #dee2e6;"></i>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" class="h-200">
+                                <i class="bi bi-geo-alt" class="icon-placeholder"></i>
                             </div>
                         }
                         <div class="card-body">

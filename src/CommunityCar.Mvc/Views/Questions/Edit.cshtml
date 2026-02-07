@@ -9,70 +9,15 @@
 }
 
 @section Styles {
-    <style>
-        .edit-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 40px;
-            color: white;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        .edit-card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-        }
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 12px 32px;
-            border-radius: 10px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        .btn-light-custom {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            color: #495057;
-            font-weight: 600;
-            padding: 12px 32px;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        .btn-light-custom:hover {
-            background: #e9ecef;
-            border-color: #dee2e6;
-        }
-    </style>
+    }
+
+@{
+    ViewData["HeaderTitle"] = "Edit Question";
+    ViewData["HeaderDescription"] = "Update your question details";
+    ViewData["HeaderIcon"] = "fas fa-edit";
 }
 
-<!-- Header -->
-<div class="edit-header">
-    <div class="text-center">
-        <h1 class="mb-2 fw-bold">
-            <i class="fas fa-edit me-2"></i>Edit Question
-        </h1>
-        <p class="mb-0 opacity-90">Update your question details</p>
-    </div>
-</div>
+<partial name="_InnerPageHeader" />
 
 <!-- Edit Form -->
 <div class="card edit-card">

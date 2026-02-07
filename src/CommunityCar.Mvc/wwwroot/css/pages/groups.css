@@ -1,0 +1,52 @@
+/* Page: Groups */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-purple.hero-sm
+ * - Cards: .content-card
+ * - Badges: .privacy-badge with .privacy-public/private
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-purple.hero-sm instead */
+.create-group-header {
+    background: var(--gradient-purple);
+    color: var(--text-inverse);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+}
+
+/* Legacy alias - use .content-card instead */
+.group-card {
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.group-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Legacy aliases - use .privacy-badge with .privacy-public/private instead */
+.group-privacy-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.group-privacy-public {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.group-privacy-private {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}

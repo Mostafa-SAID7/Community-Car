@@ -41,7 +41,6 @@
 .theme-toggle__icon {
     width: 14px;
     height: 14px;
-    color: white;
 }
 
 /* Alternative: Icon-based toggle */
@@ -69,13 +68,16 @@
 
 .theme-icon-sun,
 .theme-icon-moon {
-    display: none;
+    display: none !important;
 }
 
-[data-theme="light"] .theme-icon-sun {
-    display: block;
+/* Light Mode (or Default): Show Moon to switch to dark */
+:root:not([data-theme="dark"]) .theme-icon-moon,
+[data-theme="light"] .theme-icon-moon {
+    display: block !important;
 }
 
-[data-theme="dark"] .theme-icon-moon {
-    display: block;
+/* Dark Mode: Show Sun to switch to light */
+[data-theme="dark"] .theme-icon-sun {
+    display: block !important;
 }

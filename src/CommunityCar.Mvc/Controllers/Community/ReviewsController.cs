@@ -60,8 +60,9 @@ public class ReviewsController : Controller
         }
     }
 
-    // GET: Reviews/{slug}
-    [HttpGet("{slug}")]
+    // GET: Reviews/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
     public async Task<IActionResult> Details(string slug)
     {
         try

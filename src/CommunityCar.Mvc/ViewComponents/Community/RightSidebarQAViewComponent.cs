@@ -23,11 +23,15 @@ public class RightSidebarQAViewComponent : ViewComponent
         
         // Help Needed = Recent Questions without any answers
         var helpNeededPageResult = await _questionService.GetQuestionsAsync(new QueryParameters { PageNumber = 1, PageSize = 5 }, hasAnswers: false);
+        
+        // Categories
+        var categories = await _questionService.GetCategoriesAsync();
 
         var viewModel = new SidebarQAViewModel
         {
             PopularTags = popularTagsResult.IsSuccess ? popularTagsResult.Value : new List<CommunityCar.Domain.DTOs.Community.TagDto>(),
-            HelpNeededQuestions = helpNeededPageResult.Items ?? new List<CommunityCar.Domain.DTOs.Community.QuestionDto>()
+            HelpNeededQuestions = helpNeededPageResult.Items ?? new List<CommunityCar.Domain.DTOs.Community.QuestionDto>(),
+            Categories = categories ?? new List<CommunityCar.Domain.DTOs.Community.CategoryDto>()
         };
 
         return View(viewModel);

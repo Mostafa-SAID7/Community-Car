@@ -1,0 +1,57 @@
+/* Page: Guides */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-green
+ * - Cards: .content-card
+ * - Badges: .difficulty-badge with .difficulty-easy/medium/hard
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-green instead */
+.guides-hero {
+    background: var(--gradient-green);
+    color: var(--text-inverse);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .content-card instead */
+.guide-card {
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.guide-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Legacy aliases - use .difficulty-badge with .difficulty-easy/medium/hard instead */
+.guide-difficulty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.guide-difficulty-easy {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.guide-difficulty-medium {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.guide-difficulty-hard {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+}

@@ -7,84 +7,21 @@
     var evt = Model.Event;
 }
 
-<div class="container py-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Events</a></li>
-            <li class="breadcrumb-item active">@evt.Title</li>
-        </ol>
-    </nav>
+@{
+    ViewData["HeaderTitle"] = evt.Title;
+    ViewData["HeaderDescription"] = evt.Description?.Length > 150 ? evt.Description.Substring(0, 150) + "..." : evt.Description;
+    ViewData["HeaderIcon"] = "fas fa-calendar-alt";
 
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Event Header -->
-            <div class="card mb-4">
-                @if (!string.IsNullOrEmpty(evt.ImageUrl))
-                {
-                    <img src="@evt.ImageUrl" class="card-img-top" alt="@evt.Title" style="max-height: 400px; object-fit: cover;">
-                }
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <span class="badge bg-primary me-2">@evt.CategoryName</span>
-                            <span class="badge bg-@(evt.Status.ToString() == "Published" ? "success" : evt.Status.ToString() == "Cancelled" ? "danger" : "secondary")">
-                                @evt.StatusName
-                            </span>
-                            @if (evt.IsFeatured)
-                            {
-                                <span class="badge bg-warning text-dark">Featured</span>
-                            }
-                        </div>
-                        @if (evt.IsOrganizer)
-                        {
-                            <div class="btn-group">
-                                <a asp-action="Edit" asp-route-id="@evt.Id" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                @if (evt.Status == EventStatus.Draft)
-                                {
-                                    <button type="button" class="btn btn-sm btn-outline-success" onclick="publishEvent('@evt.Id')">
-                                        <i class="bi bi-check-circle"></i> Publish
-                                    </button>
-                                }
-                                @if (evt.Status == EventStatus.Published)
-                                {
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="cancelEvent('@evt.Id')">
-                                        <i class="bi bi-x-circle"></i> Cancel
-                                    </button>
-                                }
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteEvent('@evt.Id')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </div>
-                        }
-                    </div>
-
-                    <h1 class="h2 mb-3">@evt.Title</h1>
-
-                    <div class="d-flex align-items-center mb-3">
-                        @if (!string.IsNullOrEmpty(evt.OrganizerAvatar))
-                        {
-                            <img src="@evt.OrganizerAvatar" alt="@evt.OrganizerName" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                        }
-                        else
-                        {
-                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
-                                <i class="bi bi-person"></i>
-                            </div>
-                        }
-                        <div>
-                            <strong>@evt.OrganizerName</strong>
-                            <br>
-                            <small class="text-muted">Organizer</small>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <p class="lead">@evt.Description</p>
-                    </div>
-                </div>
+    ViewData["HeaderActions"] = Html.Raw($@"
+        <div class='d-flex gap-2 flex-wrap'>
+            <div class='event-calendar-badge bg-white text-primary rounded px-3 py-2 text-center shadow-sm'>
+                <div class='small fw-bold text-uppercase'>{evt.StartTime:MMM}</div>
+                <div class='h4 fw-bold mb-0'>{evt.StartTime.Day}</div>
             </div>
+        </div>");
+}
+
+<partial name="_InnerPageHeader" />
 
             <!-- Attendees Section -->
             <div class="card mb-4">
@@ -105,7 +42,7 @@
                                         }
                                         else
                                         {
-                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" class="size-40">
                                                 <i class="bi bi-person"></i>
                                             </div>
                                         }
@@ -160,7 +97,7 @@
                                     }
                                     else
                                     {
-                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" class="size-40">
                                             <i class="bi bi-person"></i>
                                         </div>
                                     }
@@ -234,32 +171,20 @@
                     {
                         @if (!evt.IsOrganizer)
                         {
-                            @if (evt.CurrentUserStatus == null)
+                            @if (evt.CanJoin)
                             {
-                                @if (evt.CanJoin)
-                                {
-                                    <button type="button" class="btn btn-success w-100 mb-2" onclick="joinEvent('@evt.Id', '@((int)AttendeeStatus.Going)')">
-                                        <i class="bi bi-check-circle"></i> Join Event
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary w-100" onclick="joinEvent('@evt.Id', '@((int)AttendeeStatus.Interested)')">
-                                        <i class="bi bi-star"></i> Interested
-                                    </button>
-                                }
-                                else
-                                {
-                                    <div class="alert alert-warning mb-0">
-                                        <i class="bi bi-exclamation-triangle"></i> Event is full
-                                    </div>
-                                }
+                                <button type="button" class="btn btn-success w-100 mb-2" onclick="joinEvent('@evt.Id', '@((int)AttendeeStatus.Going)')">
+                                    <i class="bi bi-check-circle"></i> Join Event
+                                </button>
+                                <button type="button" class="btn btn-outline-primary w-100" onclick="joinEvent('@evt.Id', '@((int)AttendeeStatus.Interested)')">
+                                    <i class="bi bi-star"></i> Interested
+                                </button>
                             }
                             else
                             {
-                                <div class="alert alert-success mb-2">
-                                    <i class="bi bi-check-circle"></i> You're @evt.CurrentUserStatus.ToString().ToLower()
+                                <div class="alert alert-warning mb-0">
+                                    <i class="bi bi-exclamation-triangle"></i> Event is full
                                 </div>
-                                <button type="button" class="btn btn-outline-danger w-100" onclick="leaveEvent('@evt.Id')">
-                                    <i class="bi bi-x-circle"></i> Leave Event
-                                </button>
                             }
                         }
                     }

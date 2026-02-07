@@ -58,8 +58,9 @@ public class GuidesController : Controller
         }
     }
 
-    // GET: Guides/{slug}
-    [HttpGet("{slug}")]
+    // GET: Guides/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
     public async Task<IActionResult> Details(string slug)
     {
         try

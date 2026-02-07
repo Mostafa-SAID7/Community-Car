@@ -1,0 +1,68 @@
+/* Page: Reviews */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-pink-yellow, .hero.hero-purple.hero-sm
+ * - Cards: .content-card
+ * - Ratings: .star-rating from components/content.css
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-pink-yellow instead */
+.reviews-hero {
+    background: var(--gradient-pink-yellow);
+    color: var(--text-inverse);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .hero.hero-pink-yellow.hero-sm instead */
+.create-review-hero {
+    background: var(--gradient-pink-yellow);
+    color: var(--text-inverse);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .hero.hero-purple.hero-sm instead */
+.my-reviews-hero {
+    background: var(--gradient-purple);
+    color: var(--text-inverse);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .content-card instead */
+.review-card {
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Legacy alias - use .star-rating from components/content.css instead */
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.review-rating .star {
+    color: var(--color-warning);
+    font-size: 1.25rem;
+}
+
+.review-rating .star.empty {
+    color: var(--text-tertiary);
+    opacity: 0.3;
+}

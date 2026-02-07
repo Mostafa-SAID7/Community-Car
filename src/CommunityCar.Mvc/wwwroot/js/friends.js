@@ -1,163 +1,164 @@
-// Friends feature JavaScript
-(function () {
-    'use strict';
+"use strict";
 
-    // Live search functionality
-    const searchInput = document.getElementById('friendSearch');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function (e) {
-            clearTimeout(searchTimeout);
-            const query = e.target.value.trim();
+$(document).ready(function () {
 
-            if (query.length < 2) {
-                document.getElementById('searchResults').innerHTML = '';
-                return;
-            }
+    // Helper to handle AJAX form submissions
+    function handleAjaxForm(form, options) {
+        var btn = form.find('button[type="submit"]');
+        var originalBtnContent = btn.html();
 
-            searchTimeout = setTimeout(function () {
-                fetch(`/Friends/SearchApi?query=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            displaySearchResults(data.users);
-                        }
-                    })
-                    .catch(error => console.error('Search error:', error));
-            }, 300);
-        });
-    }
+        // Append 'Json' to action if not already present, to use the JSON endpoint
+        var url = form.attr('action');
+        if (!url.endsWith('Json')) {
+            url += 'Json';
+        }
 
-    function displaySearchResults(users) {
-        const resultsContainer = document.getElementById('searchResults');
-        if (!resultsContainer) return;
-
-        if (users.length === 0) {
-            resultsContainer.innerHTML = '<div class="alert alert-info">No users found</div>';
+        if (options.confirmMsg && !confirm(options.confirmMsg)) {
             return;
         }
 
-        let html = '<div class="list-group">';
-        users.forEach(user => {
-            html += `
-                <div class="list-group-item list-group-item-action">
-                    <div class="d-flex align-items-center">
-                        ${user.profilePictureUrl 
-                            ? `<img src="${user.profilePictureUrl}" alt="${user.name}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">`
-                            : `<div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                <span>${user.name.charAt(0)}</span>
-                               </div>`
-                        }
-                        <div class="flex-grow-1">
-                            <h6 class="mb-0">${user.name}</h6>
-                            <small class="text-muted">@${user.username}</small>
-                        </div>
-                        <a href="/Identity/Profiles/${user.slug}" class="btn btn-sm btn-outline-primary">View</a>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
-        resultsContainer.innerHTML = html;
-    }
+        // Disable button and show spinner
+        btn.prop('disabled', true);
+        btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
-    // Friendship status checker
-    function checkFriendshipStatus(friendId) {
-        return fetch(`/Friends/Status/${friendId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    return data.status;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            success: function (response) {
+                if (response.success) {
+                    // Show success toast
+                    if (window.Toast) {
+                        window.Toast.show(response.message, 'success');
+                    }
+
+                    // Execute success callback
+                    if (options.onSuccess) {
+                        options.onSuccess(form, btn, response);
+                    }
+                } else {
+                    // Revert button state
+                    btn.prop('disabled', false);
+                    btn.html(originalBtnContent);
+
+                    // Show error toast
+                    if (window.Toast) {
+                        window.Toast.show(response.message, 'error');
+                    } else {
+                        alert(response.message);
+                    }
                 }
-                return null;
-            })
-            .catch(error => {
-                console.error('Status check error:', error);
-                return null;
-            });
+            },
+            error: function (xhr) {
+                // Revert button state
+                btn.prop('disabled', false);
+                btn.html(originalBtnContent);
+
+                var msg = 'An error occurred. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+
+                if (window.Toast) {
+                    window.Toast.show(msg, 'error');
+                } else {
+                    alert(msg);
+                }
+            }
+        });
     }
 
-    // Confirm actions
-    document.querySelectorAll('[data-confirm]').forEach(element => {
-        element.addEventListener('click', function (e) {
-            const message = this.getAttribute('data-confirm');
-            if (!confirm(message)) {
-                e.preventDefault();
-                return false;
+    // 1. Add Friend
+    $(document).on('submit', '.ajax-add-friend-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            onSuccess: function (form, btn) {
+                btn.removeClass('btn-primary-premium').addClass('btn-secondary');
+                btn.html('<i class="fas fa-clock me-1"></i> Pending');
+                btn.prop('disabled', true);
             }
         });
     });
 
-    // Auto-dismiss alerts after 5 seconds
-    setTimeout(function () {
-        const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-        alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+    // 2. Accept Request
+    $(document).on('submit', '.ajax-accept-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            onSuccess: function (form) {
+                // Remove the card
+                var cardCol = form.closest('.col-md-6, .col-lg-4');
+                cardCol.fadeOut(300, function () {
+                    $(this).remove();
+                    checkEmptyState('.friends-empty-placeholder', 'No Friend Requests', 'You re all caught up!');
+                });
+            }
         });
-    }, 5000);
+    });
 
-    // Friend request counter update
-    function updateRequestCount() {
-        fetch('/Friends/Requests')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const count = doc.querySelectorAll('.friend-request-item').length;
-                
-                const badge = document.querySelector('.request-count-badge');
-                if (badge) {
-                    if (count > 0) {
-                        badge.textContent = count;
-                        badge.style.display = 'inline';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            })
-            .catch(error => console.error('Request count update error:', error));
-    }
+    // 3. Reject Request
+    $(document).on('submit', '.ajax-reject-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            confirmMsg: 'Are you sure you want to decline this request?',
+            onSuccess: function (form) {
+                var cardCol = form.closest('.col-md-6, .col-lg-4');
+                cardCol.fadeOut(300, function () {
+                    $(this).remove();
+                    checkEmptyState('.friends-empty-placeholder');
+                });
+            }
+        });
+    });
 
-    // Update request count every 30 seconds
-    if (document.querySelector('.request-count-badge')) {
-        setInterval(updateRequestCount, 30000);
-    }
+    // 4. Remove Friend
+    $(document).on('submit', '.ajax-remove-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            confirmMsg: 'Are you sure you want to remove this friend?',
+            onSuccess: function (form) {
+                var cardCol = form.closest('.col-md-6, .col-lg-4');
+                cardCol.fadeOut(300, function () {
+                    $(this).remove();
+                    checkEmptyState();
+                });
+            }
+        });
+    });
 
-    // Toast notifications
-    window.showFriendNotification = function (message, type = 'success') {
-        const toastContainer = document.getElementById('toastContainer');
-        if (!toastContainer) {
-            const container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.className = 'toast-container position-fixed top-0 end-0 p-3';
-            document.body.appendChild(container);
+    // 5. Block User
+    $(document).on('submit', '.ajax-block-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            confirmMsg: 'Are you sure you want to block this user?',
+            onSuccess: function (form) {
+                var cardCol = form.closest('.col-md-6, .col-lg-4');
+                cardCol.fadeOut(300, function () {
+                    $(this).remove();
+                    checkEmptyState();
+                });
+            }
+        });
+    });
+
+    // 6. Unblock User
+    $(document).on('submit', '.ajax-unblock-form', function (e) {
+        e.preventDefault();
+        handleAjaxForm($(this), {
+            confirmMsg: 'Are you sure you want to unblock this user?',
+            onSuccess: function (form) {
+                var cardCol = form.closest('.col-md-6, .col-lg-4');
+                cardCol.fadeOut(300, function () {
+                    $(this).remove();
+                    checkEmptyState();
+                });
+            }
+        });
+    });
+
+    function checkEmptyState(placeholderSelector = '.friends-empty', title = 'Nothing here', msg = 'List is empty') {
+        // If no more columns, show refresh or empty state
+        if ($('.col-md-6:visible, .col-lg-4:visible').length === 0) {
+            location.reload(); // Simplest way to show correct empty state for now
         }
-
-        const toastId = 'toast-' + Date.now();
-        const toastHtml = `
-            <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-${type} text-white">
-                    <strong class="me-auto">
-                        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                        ${type === 'success' ? 'Success' : 'Error'}
-                    </strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    ${message}
-                </div>
-            </div>
-        `;
-
-        document.getElementById('toastContainer').insertAdjacentHTML('beforeend', toastHtml);
-        const toastElement = document.getElementById(toastId);
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            toastElement.remove();
-        });
-    };
-
-})();
+    }
+});

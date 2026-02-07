@@ -30,6 +30,7 @@ public class QuestionService : IQuestionService
     private readonly INotificationService _notificationService;
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
+    private readonly IQuestionHubService _questionHubService;
 
     public QuestionService(
         IRepository<Question> questionRepository,
@@ -45,7 +46,8 @@ public class QuestionService : IQuestionService
         IRepository<ApplicationUser> userRepository,
         INotificationService notificationService,
         IUnitOfWork uow,
-        IMapper mapper)
+        IMapper mapper,
+        IQuestionHubService questionHubService)
     {
         _questionRepository = questionRepository;
         _answerRepository = answerRepository;
@@ -61,6 +63,7 @@ public class QuestionService : IQuestionService
         _notificationService = notificationService;
         _uow = uow;
         _mapper = mapper;
+        _questionHubService = questionHubService;
     }
 
     public async Task<Question> CreateQuestionAsync(string title, string content, Guid authorId, Guid? categoryId = null, string? tags = null)
@@ -97,6 +100,17 @@ public class QuestionService : IQuestionService
         
         // Notify friends
         await _notificationService.NotifyFriendsOfNewQuestionAsync(authorId, question);
+
+        // Real-time broadcast - reload with navigation properties
+        var questionWithDetails = await _questionRepository.GetQueryable()
+            .Include(q => q.Author)
+            .Include(q => q.Category)
+            .FirstOrDefaultAsync(q => q.Id == question.Id);
+        
+        if (questionWithDetails != null)
+        {
+            await _questionHubService.BroadcastNewQuestionAsync(_mapper.Map<QuestionDto>(questionWithDetails));
+        }
 
         return question;
     }
@@ -180,7 +194,7 @@ public class QuestionService : IQuestionService
         return dto;
     }
 
-    public async Task<PagedResult<QuestionDto>> GetQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, bool? isResolved = null, bool? hasAnswers = null, Guid? currentUserId = null)
+    public async Task<PagedResult<QuestionDto>> GetQuestionsAsync(QueryParameters parameters, string? searchTerm = null, string? tag = null, bool? isResolved = null, bool? hasAnswers = null, Guid? categoryId = null, Guid? currentUserId = null)
     {
         var query = _questionRepository.GetQueryable()
             .Include(q => q.Author)
@@ -190,6 +204,7 @@ public class QuestionService : IQuestionService
             .Include(q => q.Shares)
             .Include(q => q.QuestionTags)
                 .ThenInclude(qt => qt.Tag)
+            .Include(q => q.Category)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -213,6 +228,11 @@ public class QuestionService : IQuestionService
                 query = query.Where(q => q.Answers.Any());
             else
                 query = query.Where(q => !q.Answers.Any());
+        }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(q => q.CategoryId == categoryId.Value);
         }
 
         var totalCount = await query.CountAsync();
@@ -537,6 +557,10 @@ public class QuestionService : IQuestionService
         // Notify question author
         await _notificationService.NotifyAuthorOfNewAnswerAsync(question.AuthorId, answer);
         
+        // Real-time broadcast
+        answer.Author = user; // Ensure author info is available
+        await _questionHubService.BroadcastNewAnswerAsync(_mapper.Map<AnswerDto>(answer));
+
         return _mapper.Map<AnswerDto>(answer);
     }
 
@@ -629,6 +653,8 @@ public class QuestionService : IQuestionService
         answer.MarkAsAccepted();
         question.MarkAsResolved(answerId);
         await _uow.SaveChangesAsync();
+
+        await _questionHubService.BroadcastQuestionResolvedAsync(questionId, true);
     }
 
     public async Task UnacceptAnswerAsync(Guid questionId, Guid userId)
@@ -648,6 +674,8 @@ public class QuestionService : IQuestionService
 
         question.MarkAsUnresolved();
         await _uow.SaveChangesAsync();
+
+        await _questionHubService.BroadcastQuestionResolvedAsync(questionId, false);
     }
 
     public async Task VoteQuestionAsync(Guid questionId, Guid userId, bool isUpvote)
@@ -735,10 +763,11 @@ public class QuestionService : IQuestionService
             var freshVote = await _questionVoteRepository.GetQueryable()
                 .FirstOrDefaultAsync(v => v.QuestionId == questionId && v.UserId == userId);
             
-            if (freshVote != null && question.AuthorId != userId)
             {
                 await _notificationService.NotifyAuthorOfQuestionVoteAsync(question.AuthorId, question, isUpvote);
             }
+            
+            await _questionHubService.BroadcastQuestionScoreUpdateAsync(questionId, question.VoteCount);
         }
         catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
         {
@@ -775,6 +804,7 @@ public class QuestionService : IQuestionService
                     freshQuestion.UpdateVoteCount(newValue - oldValue);
                 }
                 await _uow.SaveChangesAsync();
+                await _questionHubService.BroadcastQuestionScoreUpdateAsync(questionId, freshQuestion.VoteCount);
             }
         }
     }
@@ -795,6 +825,9 @@ public class QuestionService : IQuestionService
 
             _questionVoteRepository.Delete(vote);
             await _uow.SaveChangesAsync();
+            
+            if(question != null)
+                 await _questionHubService.BroadcastQuestionScoreUpdateAsync(questionId, question.VoteCount);
         }
     }
 
@@ -872,10 +905,11 @@ public class QuestionService : IQuestionService
             var freshVote = await _answerVoteRepository.GetQueryable()
                 .FirstOrDefaultAsync(v => v.AnswerId == answerId && v.UserId == userId);
             
-            if (freshVote != null && answer.AuthorId != userId)
             {
                 await _notificationService.NotifyAuthorOfAnswerVoteAsync(answer.AuthorId, answer, isUpvote);
             }
+            
+            await _questionHubService.BroadcastAnswerScoreUpdateAsync(answerId, answer.VoteCount);
         }
         catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
         {
@@ -928,6 +962,9 @@ public class QuestionService : IQuestionService
 
             _answerVoteRepository.Delete(vote);
             await _uow.SaveChangesAsync();
+            
+             if(answer != null)
+                 await _questionHubService.BroadcastAnswerScoreUpdateAsync(answerId, answer.VoteCount);
         }
     }
 

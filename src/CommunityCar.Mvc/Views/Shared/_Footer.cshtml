@@ -1,133 +1,22 @@
-<footer class="border-top footer py-4 mt-auto bg-light">
+<footer class="border-top footer py-3 mt-auto">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-4 mb-3 mb-lg-0">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-car me-2"></i>CommunityCar
-                </h5>
-                <p class="text-muted small">
-                    The ultimate platform for automotive enthusiasts to connect, share, and learn.
-                </p>
-                <div class="social-links">
-                    <a href="#" class="text-muted me-3" title="Facebook">
-                        <i class="fab fa-facebook fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-muted me-3" title="Twitter">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-muted me-3" title="Instagram">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-muted" title="YouTube">
-                        <i class="fab fa-youtube fa-lg"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="col-lg-2 col-md-4 mb-3 mb-lg-0">
-                <h6 class="fw-bold mb-3">Community</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a asp-controller="Feed" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-stream me-2"></i>Feed
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Post" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-edit me-2"></i>Posts
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Events" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-calendar me-2"></i>Events
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Groups" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-users me-2"></i>Groups
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-2 col-md-4 mb-3 mb-lg-0">
-                <h6 class="fw-bold mb-3">Resources</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a asp-controller="Guides" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-book me-2"></i>Guides
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Reviews" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-star me-2"></i>Reviews
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="News" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-newspaper me-2"></i>News
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Badges" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-trophy me-2"></i>Badges
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-2 col-md-4 mb-3 mb-lg-0">
-                <h6 class="fw-bold mb-3">Support</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a asp-controller="Info" asp-action="Support" class="text-muted text-decoration-none">
-                            <i class="fas fa-life-ring me-2"></i>Help Center
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Info" asp-action="Contact" class="text-muted text-decoration-none">
-                            <i class="fas fa-envelope me-2"></i>Contact Us
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Questions" asp-action="Index" class="text-muted text-decoration-none">
-                            <i class="fas fa-question-circle me-2"></i>Q&A
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-2 col-md-4">
-                <h6 class="fw-bold mb-3">Legal</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a asp-controller="Info" asp-action="Terms" class="text-muted text-decoration-none">
-                            <i class="fas fa-file-contract me-2"></i>Terms of Service
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Info" asp-action="Privacy" class="text-muted text-decoration-none">
-                            <i class="fas fa-shield-alt me-2"></i>Privacy Policy
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a asp-controller="Info" asp-action="About" class="text-muted text-decoration-none">
-                            <i class="fas fa-info-circle me-2"></i>About Us
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-        <hr class="my-4">
-        
-        <div class="row">
-            <div class="col-12 text-center">
-                <p class="text-muted small mb-0">
-                    &copy; @DateTime.Now.Year CommunityCar. All rights reserved. Made with 
-                    <i class="fas fa-heart text-danger"></i> for car enthusiasts.
-                </p>
-            </div>
+        <div class="footer-inline">
+            <a asp-controller="Info" asp-action="Terms" class="footer-link">
+                <i class="fas fa-file-contract me-1"></i>Terms of Service
+            </a>
+            <span class="footer-separator">·</span>
+            <a asp-controller="Info" asp-action="Privacy" class="footer-link">
+                <i class="fas fa-shield-alt me-1"></i>Privacy Policy
+            </a>
+            <span class="footer-separator">·</span>
+            <a asp-controller="Info" asp-action="About" class="footer-link">
+                <i class="fas fa-info-circle me-1"></i>About Us
+            </a>
+            <span class="footer-separator">·</span>
+            <span class="footer-copyright">
+                &copy; @DateTime.Now.Year CommunityCar. All rights reserved. Made with
+                <i class="fas fa-heart text-danger"></i> for car enthusiasts.
+            </span>
         </div>
     </div>
 </footer>

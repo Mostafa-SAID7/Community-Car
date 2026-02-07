@@ -26,11 +26,11 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(group.ImageUrl))
                         {
-                            <img src="@group.ImageUrl" class="card-img-top" alt="@group.Name" style="height: 200px; object-fit: cover;" />
+                            <img src="@group.ImageUrl" class="card-img-top" alt="@group.Name" class="img-cover-200" />
                         }
                         else
                         {
-                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" class="h-200">
                                 <i class="fas fa-users fa-4x text-white"></i>
                             </div>
                         }

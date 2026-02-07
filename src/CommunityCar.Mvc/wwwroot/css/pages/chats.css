@@ -1,0 +1,33 @@
+/* Page: Chats */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-purple
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-purple instead */
+.chat-hero {
+    background: var(--gradient-purple);
+    color: var(--text-inverse);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Page-specific: Chat list item styles */
+.chat-list-item {
+    transition: all var(--transition-fast);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1rem;
+}
+
+.chat-list-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.chat-list-item:last-child {
+    border-bottom: none;
+}

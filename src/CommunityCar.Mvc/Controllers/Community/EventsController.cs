@@ -71,8 +71,9 @@ public class EventsController : Controller
         }
     }
 
-    // GET: Events/{slug}
-    [HttpGet("{slug}")]
+    // GET: Events/Details/{slug}
+    [HttpGet("Details/{slug}")]
+    [HttpGet("Details")]
     public async Task<IActionResult> Details(string slug)
     {
         try

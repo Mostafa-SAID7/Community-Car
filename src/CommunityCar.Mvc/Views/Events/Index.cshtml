@@ -8,24 +8,28 @@
     var categories = ViewBag.Categories as EventCategory[];
     var currentCategory = ViewBag.CurrentCategory as EventCategory?;
     var isUpcoming = ViewBag.IsUpcoming as bool? ?? true;
+  
+    ViewData["HeaderTitle"] = "Community Events";
+    ViewData["HeaderDescription"] = "Join meetups, car shows, and adventures";
+    ViewData["HeaderIcon"] = "fas fa-calendar-alt";
+
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        ViewData["HeaderActions"] = Html.Raw($@"
+            <div class='d-flex gap-2 flex-wrap'>
+                <a href='{Url.Action("Create")}' class='btn btn-light'>
+                    <i class='fas fa-plus-circle me-2'></i>Host Event
+                </a>
+                <a href='{Url.Action("MyEvents")}' class='btn btn-light'>
+                    <i class='fas fa-briefcase me-2'></i>My Events
+                </a>
+            </div>");
+    }
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">Community Events</h1>
-        @if (User.Identity?.IsAuthenticated ?? false)
-        {
-            <div>
-                <a asp-action="MyEvents" class="btn btn-outline-primary me-2">
-                    <i class="bi bi-calendar-check"></i> My Events
-                </a>
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create Event
-                </a>
-            </div>
-        }
-    </div>
+<partial name="_InnerPageHeader" />
 
+<div class="container">
     <!-- Filters -->
     <div class="card mb-4">
         <div class="card-body">
@@ -63,12 +67,12 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(evt.ImageUrl))
                         {
-                            <img src="@evt.ImageUrl" class="card-img-top" alt="@evt.Title" style="height: 200px; object-fit: cover;">
+                            <img src="@evt.ImageUrl" class="card-img-top" alt="@evt.Title" class="img-cover-200">
                         }
                         else
                         {
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <i class="bi bi-calendar-event" style="font-size: 3rem; color: #dee2e6;"></i>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" class="h-200">
+                                <i class="bi bi-calendar-event" class="icon-placeholder"></i>
                             </div>
                         }
                         <div class="card-body">
@@ -141,4 +145,5 @@
             <i class="bi bi-info-circle"></i> No events found. @if (User.Identity?.IsAuthenticated ?? false) { <a asp-action="Create">Create the first event!</a> }
         </div>
     }
+</div>
 </div>

@@ -13,11 +13,11 @@
         <p class="error-message">@ViewBag.Message</p>
         
         <div class="error-actions">
-            <a href="@Url.Action("Login", "Account", new { area = "Identity" })" class="btn btn-primary">
-                <i class="fas fa-sign-in-alt"></i> Sign In
-            </a>
-            <a href="@Url.Action("Index", "Home", new { area = "Community" })" class="btn btn-secondary">
+            <a asp-controller="Feed" asp-action="Index" class="btn btn-primary">
                 <i class="fas fa-home"></i> Go Home
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
             </a>
         </div>
 
