@@ -1,7 +1,7 @@
 using CommunityCar.Domain.DTOs.Dashboard;
 using CommunityCar.Domain.Enums.Dashboard.health;
 
-namespace CommunityCar.Web.Areas.Dashboard.ViewModels;
+namespace CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 
 public class HealthViewModel
 {

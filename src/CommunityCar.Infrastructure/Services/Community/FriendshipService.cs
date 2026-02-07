@@ -73,6 +73,29 @@ public class FriendshipService : IFriendshipService
         await _uow.SaveChangesAsync();
     }
 
+    public async Task RemoveFriendAsync(Guid userId, Guid friendId)
+    {
+        var friendship = await _friendshipRepository.FirstOrDefaultAsync(f => 
+            (f.UserId == userId && f.FriendId == friendId) || 
+            (f.UserId == friendId && f.FriendId == userId));
+
+        if (friendship == null) return;
+
+        _friendshipRepository.Delete(friendship);
+        await _uow.SaveChangesAsync();
+    }
+
+    public async Task<FriendshipStatus> GetFriendshipStatusAsync(Guid userId, Guid friendId)
+    {
+        var friendship = await _friendshipRepository.FirstOrDefaultAsync(f => 
+            (f.UserId == userId && f.FriendId == friendId) || 
+            (f.UserId == friendId && f.FriendId == userId));
+
+        if (friendship == null) return FriendshipStatus.None;
+        
+        return friendship.Status;
+    }
+
     public async Task<IEnumerable<Friendship>> GetFriendsAsync(Guid userId)
     {
         return await _friendshipRepository.WhereAsync(f => 

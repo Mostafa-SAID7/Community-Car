@@ -127,10 +127,14 @@ public static class DependencyInjection
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IKPIService, KPIService>();
         services.AddScoped<ISecurityAlertService, SecurityAlertService>();
+        services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<ISystemSettingService, SystemSettingService>();
+        services.AddScoped<ISystemService, SystemService>();
         services.AddScoped<IFriendshipService, FriendshipService>();
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IWidgetService, WidgetService>();
 
         return services;
     }

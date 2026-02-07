@@ -1,0 +1,135 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.WidgetIndexViewModel
+@{
+    ViewData["Title"] = "Dashboard Widgets";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Dashboard Widgets</h2>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> Create Widget
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="searchTerm" value="@Model.Filter.SearchTerm" class="form-control" placeholder="Search widgets..." />
+                    </div>
+                    <div class="col-md-3">
+                        <select name="type" class="form-select">
+                            <option value="">All Types</option>
+                            @foreach (var type in Model.TypeCounts.Keys)
+                            {
+                                <option value="@type" selected="@(Model.Filter.Type == type)">@type (@Model.TypeCounts[type])</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="sortBy" class="form-select">
+                            <option value="Order" selected="@(Model.Filter.SortBy == "Order")">Order</option>
+                            <option value="Title" selected="@(Model.Filter.SortBy == "Title")">Title</option>
+                            <option value="CreatedAt" selected="@(Model.Filter.SortBy == "CreatedAt")">Created Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            @if (Model.Widgets.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Order</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var widget in Model.Widgets)
+                            {
+                                <tr>
+                                    <td>@widget.Title</td>
+                                    <td><span class="badge bg-info">@widget.Type</span></td>
+                                    <td>@widget.Order</td>
+                                    <td>@widget.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@widget.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@widget.Id" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@widget.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this widget?');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model.Pagination.TotalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(Model.Pagination.HasPreviousPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.Pagination.CurrentPage - 1)">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.Pagination.HasNextPage ? "" : "disabled")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.Pagination.CurrentPage + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No widgets found</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

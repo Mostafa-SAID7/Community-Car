@@ -1,0 +1,164 @@
+@model CommunityCar.Web.Areas.Identity.ViewModels.UserFriendsViewModel
+@{
+    ViewData["Title"] = $"{Model.User.FirstName}'s Friends";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- User Info -->
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            @if (!string.IsNullOrEmpty(Model.User.ProfilePictureUrl))
+                            {
+                                <img src="@Model.User.ProfilePictureUrl" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 80px; height: 80px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 28px;">
+                                    @Model.User.FirstName.Substring(0, 1)@Model.User.LastName.Substring(0, 1)
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <h3 class="mb-1">@Model.User.FirstName @Model.User.LastName's Friends</h3>
+                            <p class="text-muted mb-0">@Model.Friends.Count friend@(Model.Friends.Count != 1 ? "s" : "")</p>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a asp-action="Index" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Back to Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        @if (Model.Friends.Any())
+        {
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" id="searchFriends" class="form-control" placeholder="Search friends...">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="sortFriends" class="form-select">
+                                    <option value="name">Sort by Name</option>
+                                    <option value="recent">Recently Added</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Friends List -->
+        <div class="col-12">
+            @if (Model.Friends.Any())
+            {
+                <div class="row" id="friendsList">
+                    @foreach (var friendship in Model.Friends)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4 friend-card" data-name="@friendship.FriendName">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    @if (!string.IsNullOrEmpty(friendship.ProfilePictureUrl))
+                                    {
+                                        <img src="@friendship.ProfilePictureUrl" alt="@friendship.FriendName" class="rounded-circle img-fluid mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        var initials = friendship.FriendName.Split(' ').Select(n => n.Substring(0, 1)).Take(2);
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px; font-size: 36px;">
+                                            @string.Join("", initials)
+                                        </div>
+                                    }
+                                    <h5 class="mb-1">@friendship.FriendName</h5>
+                                    <div class="d-grid gap-2">
+                                        <a asp-action="Index" asp-route-userId="@friendship.FriendId" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-person"></i> View Profile
+                                        </a>
+                                        @if (Model.IsOwnProfile)
+                                        {
+                                            <form asp-action="RemoveFriend" asp-route-userId="@friendship.FriendId" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to remove this friend?')">
+                                                    <i class="bi bi-person-dash"></i> Remove Friend
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted small text-center">
+                                    Friends since @friendship.Since.ToString("MMM yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">No friends yet</h4>
+                        @if (Model.IsOwnProfile)
+                        {
+                            <p class="text-muted">Start connecting with other members!</p>
+                            <a asp-action="Search" class="btn btn-primary mt-2">
+                                <i class="bi bi-search"></i> Find Friends
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="text-muted">This user hasn't added any friends yet.</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('searchFriends')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const friendCards = document.querySelectorAll('.friend-card');
+            
+            friendCards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                if (name.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Sort functionality
+        document.getElementById('sortFriends')?.addEventListener('change', function(e) {
+            const sortBy = e.target.value;
+            const friendsList = document.getElementById('friendsList');
+            const friendCards = Array.from(document.querySelectorAll('.friend-card'));
+            
+            if (sortBy === 'name') {
+                friendCards.sort((a, b) => {
+                    const nameA = a.getAttribute('data-name');
+                    const nameB = b.getAttribute('data-name');
+                    return nameA.localeCompare(nameB);
+                });
+            }
+            
+            friendCards.forEach(card => friendsList.appendChild(card.parentElement));
+        });
+    </script>
+}

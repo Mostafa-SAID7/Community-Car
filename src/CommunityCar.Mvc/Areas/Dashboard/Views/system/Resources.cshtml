@@ -1,0 +1,209 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SystemResourcesViewModel
+@{
+    ViewData["Title"] = "System Resources";
+    Layout = "~/Areas/Dashboard/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">System Resources</h2>
+            <p class="text-muted mb-0">Monitor CPU, memory, and disk usage</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
+            <button type="button" class="btn btn-primary" onclick="refreshResources()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="card-title mb-0">CPU Usage</h6>
+                        <i class="bi bi-cpu text-primary fs-4"></i>
+                    </div>
+                    <h3 class="mb-2">@Model.Resources.CpuUsagePercentage.ToString("F1")%</h3>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar @(Model.Resources.CpuUsagePercentage > 80 ? "bg-danger" : Model.Resources.CpuUsagePercentage > 60 ? "bg-warning" : "bg-success")" 
+                             role="progressbar" 
+                             style="width: @Model.Resources.CpuUsagePercentage%"></div>
+                    </div>
+                    <small class="text-muted">@Model.Resources.ThreadCount threads active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="card-title mb-0">Memory Usage</h6>
+                        <i class="bi bi-memory text-info fs-4"></i>
+                    </div>
+                    <h3 class="mb-2">@Model.Resources.MemoryUsagePercentage.ToString("F1")%</h3>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar @(Model.Resources.MemoryUsagePercentage > 80 ? "bg-danger" : Model.Resources.MemoryUsagePercentage > 60 ? "bg-warning" : "bg-info")" 
+                             role="progressbar" 
+                             style="width: @Model.Resources.MemoryUsagePercentage%"></div>
+                    </div>
+                    <small class="text-muted">@Model.Resources.UsedMemoryMB MB / @Model.Resources.TotalMemoryMB MB</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="card-title mb-0">Disk Usage</h6>
+                        <i class="bi bi-hdd text-warning fs-4"></i>
+                    </div>
+                    <h3 class="mb-2">@Model.Resources.DiskUsagePercentage.ToString("F1")%</h3>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar @(Model.Resources.DiskUsagePercentage > 80 ? "bg-danger" : Model.Resources.DiskUsagePercentage > 60 ? "bg-warning" : "bg-success")" 
+                             role="progressbar" 
+                             style="width: @Model.Resources.DiskUsagePercentage%"></div>
+                    </div>
+                    <small class="text-muted">@Model.Resources.UsedDiskSpaceGB GB / @Model.Resources.TotalDiskSpaceGB GB</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Memory Details</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Memory:</strong></td>
+                                <td class="text-end">@Model.Resources.TotalMemoryMB MB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Used Memory:</strong></td>
+                                <td class="text-end">@Model.Resources.UsedMemoryMB MB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Free Memory:</strong></td>
+                                <td class="text-end">@Model.Resources.FreeMemoryMB MB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Usage Percentage:</strong></td>
+                                <td class="text-end">
+                                    <span class="badge @(Model.Resources.MemoryUsagePercentage > 80 ? "bg-danger" : Model.Resources.MemoryUsagePercentage > 60 ? "bg-warning" : "bg-success")">
+                                        @Model.Resources.MemoryUsagePercentage.ToString("F2")%
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Disk Details</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Disk Space:</strong></td>
+                                <td class="text-end">@Model.Resources.TotalDiskSpaceGB GB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Used Disk Space:</strong></td>
+                                <td class="text-end">@Model.Resources.UsedDiskSpaceGB GB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Free Disk Space:</strong></td>
+                                <td class="text-end">@Model.Resources.FreeDiskSpaceGB GB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Usage Percentage:</strong></td>
+                                <td class="text-end">
+                                    <span class="badge @(Model.Resources.DiskUsagePercentage > 80 ? "bg-danger" : Model.Resources.DiskUsagePercentage > 60 ? "bg-warning" : "bg-success")">
+                                        @Model.Resources.DiskUsagePercentage.ToString("F2")%
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Current Process Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Process ID:</strong></td>
+                                <td>@Model.ProcessInfo.ProcessId</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Process Name:</strong></td>
+                                <td>@Model.ProcessInfo.ProcessName</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Working Set:</strong></td>
+                                <td>@Model.ProcessInfo.WorkingSetMB MB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thread Count:</strong></td>
+                                <td>@Model.ProcessInfo.ThreadCount</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Start Time:</strong></td>
+                                <td>@Model.ProcessInfo.StartTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPU Usage:</strong></td>
+                                <td>@Model.ProcessInfo.CpuUsage.ToString("F2")%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Processor Time:</strong></td>
+                                <td>@Model.ProcessInfo.TotalProcessorTime.ToString(@"hh\:mm\:ss")</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Handle Count:</strong></td>
+                                <td>@Model.Resources.HandleCount</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function refreshResources() {
+            location.reload();
+        }
+        setInterval(refreshResources, 30000);
+    </script>
+}

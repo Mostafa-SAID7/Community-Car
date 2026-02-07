@@ -1,98 +1,173 @@
-@model CommunityCar.Domain.Entities.Identity.Users.ApplicationUser
-@using Microsoft.AspNetCore.Identity
-@using CommunityCar.Domain.Entities.Identity.Users
-@using CommunityCar.Domain.Enums.Identity.Users
-@inject UserManager<ApplicationUser> UserManager
+@using CommunityCar.Domain.Enums.Community.friends
+@model CommunityCar.Web.Areas.Identity.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = Model.FullName ?? Model.UserName;
-
-    var rankBadge = Model.Rank switch
-    {
-        UserRank.Master => new { Color = "bg-danger", Icon = "fa-star-of-life", Name = "Grand Master" },
-        UserRank.Moderator => new { Color = "bg-dark", Icon = "fa-shield-halved", Name = "Moderator" },
-        UserRank.Author => new { Color = "bg-info", Icon = "fa-pen-nib", Name = "Author" },
-        UserRank.Reviewer => new { Color = "bg-success", Icon = "fa-star", Name = "Reviewer" },
-        UserRank.Expert => new { Color = "bg-warning", Icon = "fa-crown", Name = "Expert" },
-        _ => new { Color = "bg-secondary", Icon = "fa-user", Name = "Standard" }
-    };
-
-    var (nextThreshold, progress) = Model.Rank switch
-    {
-        UserRank.Moderator => (10000, (int)((Model.Points - 8000) / 20.0)),
-        UserRank.Author => (8000, (int)((Model.Points - 5000) / 30.0)),
-        UserRank.Reviewer => (5000, (int)((Model.Points - 3000) / 20.0)),
-        UserRank.Expert => (3000, (int)((Model.Points - 1000) / 20.0)),
-        UserRank.Standard => (1000, (int)(Model.Points / 10.0)),
-        _ => (0, 100)
-    };
+    ViewData["Title"] = $"{Model.User.FirstName} {Model.User.LastName}";
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0 overflow-hidden">
-                <div class="card-header bg-primary text-white p-4 text-center">
-                    <div class="avatar-circle mx-auto mb-3 bg-white text-primary d-flex align-items-center justify-content-center fw-bold display-4 shadow" style="width: 100px; height: 100px; border-radius: 50%;">
-                        @(Model.FullName?.Substring(0, Math.Min(2, Model.FullName.Length)).ToUpper() ?? Model.UserName?.Substring(0, 2).ToUpper() ?? "??")
-                    </div>
-                    <h2 class="h3 mb-1">@ViewData["Title"]</h2>
-                    
-                    <div class="mb-2">
-                        <span class="badge @rankBadge.Color text-white shadow-sm px-3 py-2">
-                            <i class="fas @rankBadge.Icon me-1"></i> @rankBadge.Name
-                        </span>
-                    </div>
-
-                    @if (Model.Rank < UserRank.Master)
-                    {
-                        <div class="mx-auto mt-2" style="max-width: 200px;">
-                            <div class="d-flex justify-content-between x-small mb-1 opacity-75">
-                                <span>Next Rank</span>
-                                <span>@Model.Points / @nextThreshold</span>
-                            </div>
-                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.2);">
-                                <div class="progress-bar bg-white" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Profile Header -->
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            @if (!string.IsNullOrEmpty(Model.User.ProfilePictureUrl))
+                            {
+                                <img src="@Model.User.ProfilePictureUrl" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px; font-size: 48px;">
+                                    @Model.User.FirstName.Substring(0, 1)@Model.User.LastName.Substring(0, 1)
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="mb-1">@Model.User.FirstName @Model.User.LastName</h2>
+                            @if (!string.IsNullOrEmpty(Model.User.Bio))
+                            {
+                                <p class="text-muted mb-2">@Model.User.Bio</p>
+                            }
+                            <div class="d-flex gap-3 text-muted small">
+                                @if (!string.IsNullOrEmpty(Model.User.Location))
+                                {
+                                    <span><i class="bi bi-geo-alt"></i> @Model.User.Location</span>
+                                }
+                                <span><i class="bi bi-calendar"></i> Joined @Model.JoinedDate.ToString("MMMM yyyy")</span>
+                                @if (!string.IsNullOrEmpty(Model.User.Website))
+                                {
+                                    <span><i class="bi bi-link-45deg"></i> <a href="@Model.User.Website" target="_blank">Website</a></span>
+                                }
                             </div>
                         </div>
-                    }
-
-                    <p class="mb-0 mt-3 opacity-75 small">@Model.Email</p>
+                        <div class="col-md-3 text-end">
+                            @if (Model.IsOwnProfile)
+                            {
+                                <a asp-action="Edit" class="btn btn-primary mb-2 w-100">
+                                    <i class="bi bi-pencil"></i> Edit Profile
+                                </a>
+                                <a asp-action="Settings" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-gear"></i> Settings
+                                </a>
+                            }
+                            else
+                            {
+                                @switch (Model.FriendshipStatus)
+                                {
+                                    case FriendshipStatus.None:
+                                        <form asp-action="SendFriendRequest" asp-route-userId="@Model.User.Id" method="post" class="mb-2">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="bi bi-person-plus"></i> Add Friend
+                                            </button>
+                                        </form>
+                                        break;
+                                    case FriendshipStatus.Pending:
+                                        <button class="btn btn-secondary w-100 mb-2" disabled>
+                                            <i class="bi bi-clock"></i> Request Pending
+                                        </button>
+                                        break;
+                                    case FriendshipStatus.Accepted:
+                                        <form asp-action="RemoveFriend" asp-route-userId="@Model.User.Id" method="post" class="mb-2">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger w-100">
+                                                <i class="bi bi-person-dash"></i> Remove Friend
+                                            </button>
+                                        </form>
+                                        break;
+                                }
+                            }
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row text-center mb-4">
-                        <div class="col-3">
-                            <h5 class="fw-bold text-primary mb-0">@Model.Questions.Count</h5>
-                            <small class="text-muted">Questions</small>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0">@Model.User.ReputationPoints</h3>
+                    <p class="text-muted mb-0">Reputation</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-success mb-0">@Model.QuestionsCount</h3>
+                    <p class="text-muted mb-0">Questions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-info mb-0">@Model.FriendsCount</h3>
+                    <p class="text-muted mb-0">Friends</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-warning mb-0">0</h3>
+                    <p class="text-muted mb-0">Badges</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#activity" data-bs-toggle="tab">Activity</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Statistics" asp-route-userId="@Model.User.Id">Statistics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Friends" asp-route-userId="@Model.User.Id">Friends</a>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="activity">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Questions</h5>
                         </div>
-                        <div class="col-3 border-start">
-                            <h5 class="fw-bold text-primary mb-0">@Model.Answers.Count</h5>
-                            <small class="text-muted">Answers</small>
-                        </div>
-                        <div class="col-3 border-start">
-                            <h5 class="fw-bold text-primary mb-0">@Model.Points</h5>
-                            <small class="text-muted">Points</small>
-                        </div>
-                        <div class="col-3 border-start">
-                            <h5 class="fw-bold text-primary mb-0">@Model.CreatedAt.Year</h5>
-                            <small class="text-muted">Joined</small>
+                        <div class="card-body">
+                            @if (Model.RecentQuestions.Any())
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var question in Model.RecentQuestions)
+                                    {
+                                        <a href="/Questions/Details/@question.Id" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">@question.Title</h6>
+                                                <small class="text-muted">@question.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                            </div>
+                                            <p class="mb-1 text-muted small">@(question.Content.Length > 150 ? question.Content.Substring(0, 150) + "..." : question.Content)</p>
+                                            <small class="text-muted">
+                                                <span class="badge bg-secondary">@question.ViewCount views</span>
+                                                <span class="badge bg-success">@question.AnswerCount answers</span>
+                                            </small>
+                                        </a>
+                                    }
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a asp-action="Activity" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">View All Activity</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted text-center py-4">No recent activity</p>
+                            }
                         </div>
                     </div>
-
-                    <hr class="my-4">
-
-                    <h5 class="fw-bold mb-3">About</h5>
-                    <p class="text-muted">
-                        @(string.IsNullOrWhiteSpace(Model.Bio) ? "This user hasn't written a bio yet." : Model.Bio)
-                    </p>
-                    
-                    @if (Model.Id.ToString() == UserManager.GetUserId(User))
-                    {
-                        <div class="text-center mt-4">
-                            <a asp-area="Identity" asp-controller="Account" asp-action="Manage" class="btn btn-outline-primary">
-                                <i class="fas fa-edit me-2"></i>Edit Profile
-                            </a>
-                        </div>
-                    }
                 </div>
             </div>
         </div>

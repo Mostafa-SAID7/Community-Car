@@ -1,0 +1,75 @@
+@model CommunityCar.Web.Areas.Identity.ViewModels.VerifyPhoneNumberViewModel
+@{
+    ViewData["Title"] = "Verify Phone Number";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-phone-vibrate" style="font-size: 3rem; color: #007bff;"></i>
+                    </div>
+                    <h2 class="text-center mb-4">Verify Phone</h2>
+                    <p class="text-center text-muted mb-4">
+                        Enter the 6-digit code sent to<br />
+                        <strong>@Model.PhoneNumber</strong>
+                    </p>
+
+                    @if (TempData["Info"] != null)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            @TempData["Info"]
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    <form asp-action="VerifyPhoneNumber" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <input asp-for="PhoneNumber" type="hidden" />
+
+                        <div class="mb-4">
+                            <label asp-for="Code" class="form-label"></label>
+                            <input asp-for="Code" class="form-control text-center" 
+                                   style="font-size: 1.5rem; letter-spacing: 0.5rem;" 
+                                   maxlength="6" 
+                                   placeholder="000000" 
+                                   autofocus />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Verify Phone Number</button>
+
+                        <div class="text-center">
+                            <p class="mb-2">Didn't receive the code?</p>
+                            <form asp-action="ResendPhoneConfirmationCode" method="post" class="d-inline">
+                                <input type="hidden" name="phoneNumber" value="@Model.PhoneNumber" />
+                                <button type="submit" class="btn btn-link p-0">Resend Code</button>
+                            </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-submit when 6 digits are entered
+        document.querySelector('input[name="Code"]').addEventListener('input', function(e) {
+            if (e.target.value.length === 6) {
+                e.target.form.submit();
+            }
+        });
+    </script>
+}

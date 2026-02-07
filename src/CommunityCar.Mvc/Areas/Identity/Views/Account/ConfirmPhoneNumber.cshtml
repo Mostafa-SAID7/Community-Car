@@ -1,0 +1,38 @@
+@model CommunityCar.Web.Areas.Identity.ViewModels.ConfirmPhoneNumberViewModel
+@{
+    ViewData["Title"] = "Confirm Phone Number";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Confirm Phone Number</h2>
+                    <p class="text-center text-muted mb-4">Add or update your phone number</p>
+
+                    <form asp-action="SendPhoneConfirmationCode" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1234567890" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            <small class="form-text text-muted">Include country code (e.g., +1 for US)</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Send Verification Code</button>
+
+                        <div class="text-center">
+                            <a asp-controller="Profiles" asp-action="Index" class="text-decoration-none">Back to Profile</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

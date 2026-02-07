@@ -1,0 +1,299 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SettingsIndexViewModel
+@using CommunityCar.Domain.Enums.Dashboard.settings
+@{
+    ViewData["Title"] = "System Settings - Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/pages/settings.css" />
+
+<div class="container-fluid settings-container py-4">
+    <!-- Premium Header -->
+    <div class="settings-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-2 fw-bold">System Settings</h1>
+                <p class="mb-0 opacity-90">Configure and manage your application settings</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="Create" class="btn btn-light shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Create Setting
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-primary fw-bold mb-1">Total Settings</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.TotalSettings</div>
+                        </div>
+                        <div class="icon-circle bg-primary-subtle">
+                            <i class="fas fa-cog text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-warning fw-bold mb-1">Read-Only</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.ReadOnlySettings</div>
+                        </div>
+                        <div class="icon-circle bg-warning-subtle">
+                            <i class="fas fa-lock text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-info fw-bold mb-1">Encrypted</div>
+                            <div class="h4 mb-0 fw-bold">@Model.Summary.EncryptedSettings</div>
+                        </div>
+                        <div class="icon-circle bg-info-subtle">
+                            <i class="fas fa-shield-alt text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-success fw-bold mb-1">Last Modified</div>
+                            <div class="small mb-0 fw-bold">@Model.Summary.LastModified.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div class="icon-circle bg-success-subtle">
+                            <i class="fas fa-clock text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="settings-tabs mb-4">
+        <ul class="nav settings-nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link @(Model.Filter.Category == null ? "active" : "")" 
+                   asp-action="Index" asp-route-category="">
+                    <i class="fas fa-list"></i>
+                    <span>All Settings</span>
+                </a>
+            </li>
+            @foreach (SettingCategory category in Enum.GetValues(typeof(SettingCategory)))
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(Model.Filter.Category == category ? "active" : "")" 
+                       asp-action="Index" asp-route-category="@category">
+                        <i class="fas fa-folder"></i>
+                        <span>@category</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="settings-search-section mb-4">
+        <form method="get" asp-action="Index">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" 
+                               name="searchTerm" value="@Model.Filter.SearchTerm" 
+                               placeholder="Search settings...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="category">
+                        <option value="">All Categories</option>
+                        @foreach (SettingCategory category in Enum.GetValues(typeof(SettingCategory)))
+                        {
+                            <option value="@category" selected="@(Model.Filter.Category == category)">@category</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="dataType">
+                        <option value="">All Data Types</option>
+                        @foreach (SettingDataType dataType in Enum.GetValues(typeof(SettingDataType)))
+                        {
+                            <option value="@dataType" selected="@(Model.Filter.DataType == dataType)">@dataType</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="isReadOnly">
+                        <option value="">All Status</option>
+                        <option value="false" selected="@(Model.Filter.IsReadOnly == false)">Editable</option>
+                        <option value="true" selected="@(Model.Filter.IsReadOnly == true)">Read-Only</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Settings List -->
+    <div class="settings-list">
+        @if (Model.Settings.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                            <th>Category</th>
+                            <th>Data Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var setting in Model.Settings)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@setting.Key</strong>
+                                    @if (!string.IsNullOrEmpty(setting.Description))
+                                    {
+                                        <br /><small class="text-muted">@setting.Description</small>
+                                    }
+                                </td>
+                                <td>
+                                    <code>@setting.Value</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@setting.CategoryText</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@setting.DataTypeText</span>
+                                </td>
+                                <td>
+                                    @if (setting.IsReadOnly)
+                                    {
+                                        <span class="badge bg-warning"><i class="fas fa-lock"></i> Read-Only</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success"><i class="fas fa-edit"></i> Editable</span>
+                                    }
+                                    @if (setting.IsEncrypted)
+                                    {
+                                        <span class="badge bg-secondary"><i class="fas fa-shield-alt"></i> Encrypted</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@setting.Id" 
+                                           class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (!setting.IsReadOnly)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@setting.Id" 
+                                               class="btn btn-outline-secondary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav aria-label="Settings pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.Pagination.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-category="@Model.Filter.Category"
+                               asp-route-dataType="@Model.Filter.DataType"
+                               asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@i"
+                                   asp-route-searchTerm="@Model.Filter.SearchTerm"
+                                   asp-route-category="@Model.Filter.Category"
+                                   asp-route-dataType="@Model.Filter.DataType"
+                                   asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-category="@Model.Filter.Category"
+                               asp-route-dataType="@Model.Filter.DataType"
+                               asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="settings-empty-state">
+                <i class="fas fa-cog"></i>
+                <h4>No Settings Found</h4>
+                <p>There are no system settings matching your criteria.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create First Setting
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/settings.js"></script>
+}

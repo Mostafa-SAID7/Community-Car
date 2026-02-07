@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
-@model CommunityCar.Web.Areas.Dashboard.ViewModels.DashboardSummaryViewModel
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.DashboardSummaryViewModel
 @{
     ViewData["Title"] = Localizer["Dashboard.Title"];
     var activityData = System.Text.Json.JsonSerializer.Serialize(ViewBag.ActivityData);

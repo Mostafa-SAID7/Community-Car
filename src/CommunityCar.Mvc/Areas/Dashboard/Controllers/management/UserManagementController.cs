@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Entities.Identity.Roles;
-using CommunityCar.Web.Areas.Dashboard.ViewModels.management;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels.management;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.management;
 

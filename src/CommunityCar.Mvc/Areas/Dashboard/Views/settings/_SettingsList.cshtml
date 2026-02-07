@@ -1,0 +1,126 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SettingsIndexViewModel
+
+@if (Model.Settings.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                    <th>Category</th>
+                    <th>Data Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var setting in Model.Settings)
+                {
+                    <tr>
+                        <td>
+                            <strong>@setting.Key</strong>
+                            @if (!string.IsNullOrEmpty(setting.Description))
+                            {
+                                <br /><small class="text-muted">@setting.Description</small>
+                            }
+                        </td>
+                        <td>
+                            <code>@setting.Value</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">@setting.CategoryText</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">@setting.DataTypeText</span>
+                        </td>
+                        <td>
+                            @if (setting.IsReadOnly)
+                            {
+                                <span class="badge bg-warning"><i class="fas fa-lock"></i> Read-Only</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="fas fa-edit"></i> Editable</span>
+                            }
+                            @if (setting.IsEncrypted)
+                            {
+                                <span class="badge bg-secondary"><i class="fas fa-shield-alt"></i> Encrypted</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@setting.Id" 
+                                   class="btn btn-outline-primary" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @if (!setting.IsReadOnly)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@setting.Id" 
+                                       class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.Pagination.TotalPages > 1)
+    {
+        <nav aria-label="Settings pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.Pagination.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" 
+                       asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                       asp-route-searchTerm="@Model.Filter.SearchTerm"
+                       asp-route-category="@Model.Filter.Category"
+                       asp-route-dataType="@Model.Filter.DataType"
+                       asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@i"
+                           asp-route-searchTerm="@Model.Filter.SearchTerm"
+                           asp-route-category="@Model.Filter.Category"
+                           asp-route-dataType="@Model.Filter.DataType"
+                           asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.Pagination.CurrentPage == Model.Pagination.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" 
+                       asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                       asp-route-searchTerm="@Model.Filter.SearchTerm"
+                       asp-route-category="@Model.Filter.Category"
+                       asp-route-dataType="@Model.Filter.DataType"
+                       asp-route-isReadOnly="@Model.Filter.IsReadOnly">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="settings-empty-state text-center py-5">
+        <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+        <h4>No Settings Found</h4>
+        <p class="text-muted">There are no system settings matching your criteria.</p>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create First Setting
+        </a>
+    </div>
+}

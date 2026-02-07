@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CommunityCar.Web.Areas.Dashboard.ViewModels.management;
+namespace CommunityCar.Mvc.Areas.Dashboard.ViewModels.management;
 
 public class EditUserViewModel
 {

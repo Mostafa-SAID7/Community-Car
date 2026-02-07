@@ -3,13 +3,10 @@ using CommunityCar.Web.Areas.Identity.ViewModels;
 
 namespace CommunityCar.Web.Areas.Identity.Validators;
 
-public class UpdateUserProfileValidator : AbstractValidator<UserProfileViewModel>
+public class UpdateUserProfileValidator : AbstractValidator<EditProfileViewModel>
 {
     public UpdateUserProfileValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("User ID is required");
-
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("First name is required")
             .MaximumLength(50).WithMessage("First name cannot exceed 50 characters");

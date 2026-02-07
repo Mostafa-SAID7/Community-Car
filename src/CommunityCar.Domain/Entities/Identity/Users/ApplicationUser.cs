@@ -22,6 +22,12 @@ public class ApplicationUser : IdentityUser<Guid>, IEntity, IAuditable, ISoftDel
     public string? ProfilePictureUrl { get; set; }
     public string? Slug { get; set; }
     
+    // Additional profile fields
+    public string? Location { get; set; }
+    public string? Website { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public int ReputationPoints { get; set; }
+    
     public int Points { get; set; }
     
     public UserRank Rank => Points switch

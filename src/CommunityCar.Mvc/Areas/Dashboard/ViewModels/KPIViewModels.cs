@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CommunityCar.Domain.DTOs.Dashboard;
 
-namespace CommunityCar.Web.Areas.Dashboard.ViewModels;
+namespace CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 
 public class KPIIndexViewModel
 {

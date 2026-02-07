@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CommunityCar.Domain.Interfaces.Dashboard;
-using CommunityCar.Web.Areas.Dashboard.ViewModels;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.health;
 

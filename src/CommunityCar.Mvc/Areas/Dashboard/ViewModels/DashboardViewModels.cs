@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CommunityCar.Web.Areas.Dashboard.ViewModels;
+namespace CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 
 public class DashboardSummaryViewModel
 {

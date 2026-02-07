@@ -1,0 +1,169 @@
+@using Microsoft.AspNetCore.Html
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SystemLogsViewModel
+@{
+    ViewData["Title"] = "System Logs";
+    Layout = "~/Areas/Dashboard/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">System Logs</h2>
+            <p class="text-muted mb-0">View and filter system logs</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
+            <button type="button" class="btn btn-primary" onclick="refreshLogs()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Logs" class="row g-3">
+                <div class="col-md-4">
+                    <label for="level" class="form-label">Log Level</label>
+                    <select name="level" id="level" class="form-select">
+                        <option value="">All Levels</option>
+                        <option value="Trace" selected="@(Model.FilterLevel == "Trace")">Trace</option>
+                        <option value="Debug" selected="@(Model.FilterLevel == "Debug")">Debug</option>
+                        <option value="Information" selected="@(Model.FilterLevel == "Information")">Information</option>
+                        <option value="Warning" selected="@(Model.FilterLevel == "Warning")">Warning</option>
+                        <option value="Error" selected="@(Model.FilterLevel == "Error")">Error</option>
+                        <option value="Critical" selected="@(Model.FilterLevel == "Critical")">Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="count" class="form-label">Number of Logs</label>
+                    <select name="count" id="count" class="form-select">
+                        <option value="50">50</option>
+                        <option value="100" selected>100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                Showing <strong>@Model.TotalCount</strong> log entries
+                @if (!string.IsNullOrEmpty(Model.FilterLevel))
+                {
+                    <span>filtered by level: <strong>@Model.FilterLevel</strong></span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Log Entries</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Logs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">Timestamp</th>
+                                <th style="width: 120px;">Level</th>
+                                <th style="width: 150px;">Source</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.Logs)
+                            {
+                                <tr class="@GetLogRowClass(log.Level)">
+                                    <td>
+                                        <small>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</small>
+                                    </td>
+                                    <td>
+                                        @GetLogLevelBadge(log.Level)
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@(log.Source ?? "N/A")</small>
+                                    </td>
+                                    <td>
+                                        <div>@log.Message</div>
+                                        @if (!string.IsNullOrEmpty(log.Exception))
+                                        {
+                                            <details class="mt-2">
+                                                <summary class="text-danger" style="cursor: pointer;">
+                                                    <small>View Exception Details</small>
+                                                </summary>
+                                                <pre class="mt-2 p-2 bg-light border rounded"><code>@log.Exception</code></pre>
+                                            </details>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">No logs found matching the current filters.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetLogRowClass(string level)
+    {
+        return level switch
+        {
+            "Error" => "table-danger",
+            "Critical" => "table-danger",
+            "Warning" => "table-warning",
+            _ => ""
+        };
+    }
+
+    private IHtmlContent GetLogLevelBadge(string level)
+    {
+        var badgeClass = level switch
+        {
+            "Trace" => "bg-secondary",
+            "Debug" => "bg-info",
+            "Information" => "bg-primary",
+            "Warning" => "bg-warning",
+            "Error" => "bg-danger",
+            "Critical" => "bg-danger",
+            _ => "bg-secondary"
+        };
+
+        return new HtmlString($"<span class=\"badge {badgeClass}\">{level}</span>");
+    }
+}
+
+@section Scripts {
+    <script>
+        function refreshLogs() {
+            location.reload();
+        }
+    </script>
+}

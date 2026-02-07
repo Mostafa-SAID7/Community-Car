@@ -1,0 +1,88 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SecurityTrendsViewModel
+@{
+    ViewData["Title"] = "Security Trends";
+    Layout = "~/Areas/Dashboard/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Security Trends</h2>
+            <p class="text-muted mb-0">Security alert trends and statistics</p>
+        </div>
+        <div>
+            <a asp-action="Index" asp-route-days="@Model.SelectedDays" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">@Model.Statistics.TotalAlerts</h3>
+                    <p class="text-muted mb-0">Total Alerts</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">@Model.Statistics.ResolvedAlerts</h3>
+                    <p class="text-muted mb-0">Resolved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">@Model.Statistics.UnresolvedAlerts</h3>
+                    <p class="text-muted mb-0">Unresolved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">@((Model.Statistics.TotalAlerts > 0 ? (Model.Statistics.ResolvedAlerts / (double)Model.Statistics.TotalAlerts * 100) : 0).ToString("F1"))%</h3>
+                    <p class="text-muted mb-0">Resolution Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Alerts by Day</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Trends.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th class="text-end">Alerts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var trend in Model.Trends.OrderByDescending(x => x.Key).Take(30))
+                            {
+                                <tr>
+                                    <td>@trend.Key</td>
+                                    <td class="text-end">@trend.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">No trend data available for the selected period.</p>
+            }
+        </div>
+    </div>
+</div>

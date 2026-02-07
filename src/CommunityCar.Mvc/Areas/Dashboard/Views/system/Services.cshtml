@@ -1,0 +1,146 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SystemServicesViewModel
+@{
+    ViewData["Title"] = "System Services";
+    Layout = "~/Areas/Dashboard/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">System Services</h2>
+            <p class="text-muted mb-0">Monitor the status of system services and dependencies</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Overview
+            </a>
+            <button type="button" class="btn btn-primary" onclick="refreshServices()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Last Checked Info -->
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle"></i>
+        Last checked: <strong>@Model.LastChecked.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+    </div>
+
+    <!-- Services Status -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Services Status</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Status</th>
+                            <th>Version</th>
+                            <th>Description</th>
+                            <th>Last Checked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var service in Model.Services)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@service.Name</strong>
+                                </td>
+                                <td>
+                                    @if (service.Status == "Running")
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Running
+                                        </span>
+                                    }
+                                    else if (service.Status == "Stopped")
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Stopped
+                                        </span>
+                                    }
+                                    else if (service.Status == "Warning")
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-exclamation-triangle"></i> Warning
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-question-circle"></i> @service.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>@service.Version</td>
+                                <td>@service.Description</td>
+                                <td>
+                                    @if (service.LastChecked.HasValue)
+                                    {
+                                        @service.LastChecked.Value.ToString("HH:mm:ss")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">@Model.Services.Count(s => s.Status == "Running")</h3>
+                    <p class="text-muted mb-0">Running</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger">@Model.Services.Count(s => s.Status == "Stopped")</h3>
+                    <p class="text-muted mb-0">Stopped</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">@Model.Services.Count(s => s.Status == "Warning")</h3>
+                    <p class="text-muted mb-0">Warning</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">@Model.Services.Count</h3>
+                    <p class="text-muted mb-0">Total Services</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function refreshServices() {
+            location.reload();
+        }
+
+        // Auto-refresh every 60 seconds
+        setInterval(refreshServices, 60000);
+    </script>
+}

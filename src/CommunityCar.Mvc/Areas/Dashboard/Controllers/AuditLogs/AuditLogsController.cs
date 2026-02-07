@@ -1,7 +1,7 @@
 using System.Text.Json;
 using CommunityCar.Domain.DTOs.Dashboard;
 using CommunityCar.Domain.Interfaces.Dashboard;
-using CommunityCar.Web.Areas.Dashboard.ViewModels;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
