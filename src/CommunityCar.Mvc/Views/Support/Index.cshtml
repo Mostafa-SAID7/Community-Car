@@ -1,0 +1,188 @@
+@{
+    ViewData["Title"] = "Support Center";
+}
+
+@section Styles {
+    <style>
+        .support-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .support-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .support-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="support-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-life-ring me-3"></i>Support Center
+                </h1>
+                <p class="lead mb-0">We're here to help you get the most out of CommunityCar</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-life-ring fa-8x opacity-25"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Quick Links -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 col-md-6">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon text-primary">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">FAQ</h4>
+                    <p class="text-muted mb-4">Find answers to commonly asked questions</p>
+                    <a asp-action="FAQ" class="btn btn-primary">
+                        Browse FAQ <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon text-success">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Contact Us</h4>
+                    <p class="text-muted mb-4">Send us a message and we'll respond soon</p>
+                    <a asp-action="Contact" class="btn btn-success">
+                        Contact Support <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon text-warning">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Documentation</h4>
+                    <p class="text-muted mb-4">Learn how to use all features</p>
+                    <a asp-controller="Guides" asp-action="Index" class="btn btn-warning">
+                        View Guides <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Topics -->
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-header bg-white border-bottom">
+            <h4 class="mb-0">
+                <i class="fas fa-fire me-2 text-danger"></i>Popular Topics
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                How to create your first post
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Managing your profile settings
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Connecting with other members
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Writing effective reviews
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Privacy and security settings
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Earning badges and achievements
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Organizing community events
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-chevron-right me-2 text-primary"></i>
+                                Reporting inappropriate content
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-5">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="fw-bold mb-3">Still need help?</h3>
+                    <p class="text-muted mb-0">
+                        Our support team is available Monday through Friday, 9 AM to 6 PM EST. 
+                        We typically respond within 24 hours.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a asp-action="Contact" class="btn btn-primary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

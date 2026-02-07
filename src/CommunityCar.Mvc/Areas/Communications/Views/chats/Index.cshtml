@@ -1,0 +1,100 @@
+@model List<CommunityCar.Domain.DTOs.Communications.ChatConversationDto>
+@{
+    ViewData["Title"] = "Messages";
+    var unreadCount = ViewBag.UnreadCount ?? 0;
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>Messages
+                        @if (unreadCount > 0)
+                        {
+                            <span class="badge bg-danger ms-2">@unreadCount</span>
+                        }
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No conversations yet</p>
+                            <p class="text-muted small">Start chatting with other users to see your conversations here</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var conversation in Model)
+                            {
+                                <a href="@Url.Action("Conversation", new { userId = conversation.UserId })" 
+                                   class="list-group-item list-group-item-action">
+                                    <div class="d-flex align-items-center">
+                                        <div class="position-relative me-3">
+                                            @if (!string.IsNullOrEmpty(conversation.ProfilePicture))
+                                            {
+                                                <img src="@conversation.ProfilePicture" 
+                                                     alt="@conversation.UserName" 
+                                                     class="rounded-circle" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                                                     style="width: 50px; height: 50px;">
+                                                    <span class="fw-bold">@conversation.UserName.Substring(0, 1).ToUpper()</span>
+                                                </div>
+                                            }
+                                            @if (conversation.IsOnline)
+                                            {
+                                                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" 
+                                                      style="width: 12px; height: 12px;"></span>
+                                            }
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <h6 class="mb-1 fw-bold">@conversation.UserName</h6>
+                                                @if (conversation.LastMessageTime.HasValue)
+                                                {
+                                                    <small class="text-muted">
+                                                        @conversation.LastMessageTime.Value.ToString("MMM dd, HH:mm")
+                                                    </small>
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="mb-0 text-muted small text-truncate" style="max-width: 300px;">
+                                                    @(conversation.LastMessage ?? "No messages yet")
+                                                </p>
+                                                @if (conversation.UnreadCount > 0)
+                                                {
+                                                    <span class="badge bg-danger rounded-pill">@conversation.UnreadCount</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh unread count every 30 seconds
+        setInterval(function() {
+            $.get('@Url.Action("GetUnreadCount")', function(data) {
+                if (data.success && data.count > 0) {
+                    $('.badge.bg-danger').text(data.count);
+                }
+            });
+        }, 30000);
+    </script>
+}

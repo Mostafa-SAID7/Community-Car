@@ -1,0 +1,337 @@
+@{
+    ViewData["Title"] = "Badges & Achievements";
+}
+
+@section Styles {
+    <style>
+        .badges-hero {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .badge-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .badge-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 3rem;
+            position: relative;
+        }
+        
+        .badge-tier-bronze { background: linear-gradient(135deg, #cd7f32 0%, #8b5a2b 100%); }
+        .badge-tier-silver { background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%); }
+        .badge-tier-gold { background: linear-gradient(135deg, #ffd700 0%, #daa520 100%); }
+        .badge-tier-platinum { background: linear-gradient(135deg, #e5e4e2 0%, #b0b0b0 100%); }
+        .badge-tier-diamond { background: linear-gradient(135deg, #b9f2ff 0%, #00bfff 100%); }
+        
+        .badge-locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+        
+        .badge-earned-mark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #10b981;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .category-filter-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .category-filter-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .progress-bar-animated {
+            animation: progress-animation 2s ease-in-out;
+        }
+        
+        @@keyframes progress-animation {
+            from { width: 0; }
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="badges-hero">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-trophy me-3"></i>Badges & Achievements
+            </h1>
+            <p class="lead">Earn badges by contributing to the CommunityCar community</p>
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <a href="@Url.Action("MyBadges")" class="btn btn-light btn-lg mt-3">
+                    <i class="fas fa-award me-2"></i>View My Badges
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <h3 class="text-primary mb-2">48</h3>
+                <p class="text-muted mb-0">Total Badges</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <h3 class="text-success mb-2">12</h3>
+                <p class="text-muted mb-0">Earned</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <h3 class="text-warning mb-2">36</h3>
+                <p class="text-muted mb-0">Locked</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <h3 class="text-info mb-2">25%</h3>
+                <p class="text-muted mb-0">Completion</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="fw-bold me-2">
+                    <i class="fas fa-filter me-1"></i>Category:
+                </span>
+                <button class="btn btn-sm category-filter-btn btn-primary" data-category="all">
+                    <i class="fas fa-th me-1"></i>All
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="contributor">
+                    <i class="fas fa-pen me-1"></i>Contributor
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="expert">
+                    <i class="fas fa-graduation-cap me-1"></i>Expert
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="social">
+                    <i class="fas fa-users me-1"></i>Social
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="reviewer">
+                    <i class="fas fa-star me-1"></i>Reviewer
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="helper">
+                    <i class="fas fa-hands-helping me-1"></i>Helper
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="creator">
+                    <i class="fas fa-lightbulb me-1"></i>Creator
+                </button>
+                <button class="btn btn-sm category-filter-btn btn-outline-primary" data-category="veteran">
+                    <i class="fas fa-medal me-1"></i>Veteran
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Grid -->
+    <div class="row g-4">
+        <!-- Bronze Badges -->
+        <div class="col-12">
+            <h3 class="mb-3"><i class="fas fa-medal text-warning me-2"></i>Bronze Badges</h3>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="contributor">
+            <div class="card badge-card">
+                <div class="badge-earned-mark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-bronze text-white">
+                        <i class="fas fa-pen"></i>
+                    </div>
+                    <h5 class="mb-2">First Post</h5>
+                    <p class="text-muted small mb-3">Create your first post</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                    <small class="text-success">Earned!</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="social">
+            <div class="card badge-card">
+                <div class="badge-earned-mark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-bronze text-white">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h5 class="mb-2">Friendly</h5>
+                    <p class="text-muted small mb-3">Make your first friend</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                    <small class="text-success">Earned!</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="reviewer">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-bronze text-white">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h5 class="mb-2">Critic</h5>
+                    <p class="text-muted small mb-3">Write your first review</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-warning progress-bar-animated" style="width: 60%"></div>
+                    </div>
+                    <small class="text-muted">0/1 reviews</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="helper">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-bronze text-white">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h5 class="mb-2">Helpful</h5>
+                    <p class="text-muted small mb-3">Answer 5 questions</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-info progress-bar-animated" style="width: 40%"></div>
+                    </div>
+                    <small class="text-muted">2/5 answers</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Silver Badges -->
+        <div class="col-12 mt-5">
+            <h3 class="mb-3"><i class="fas fa-medal text-secondary me-2"></i>Silver Badges</h3>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="contributor">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-silver text-white">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h5 class="mb-2">Active Member</h5>
+                    <p class="text-muted small mb-3">Post 50 times</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-primary progress-bar-animated" style="width: 24%"></div>
+                    </div>
+                    <small class="text-muted">12/50 posts</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="expert">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-silver text-white">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h5 class="mb-2">Guide Writer</h5>
+                    <p class="text-muted small mb-3">Create 10 guides</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success progress-bar-animated" style="width: 30%"></div>
+                    </div>
+                    <small class="text-muted">3/10 guides</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gold Badges -->
+        <div class="col-12 mt-5">
+            <h3 class="mb-3"><i class="fas fa-medal text-warning me-2"></i>Gold Badges</h3>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="expert">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-gold text-white">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h5 class="mb-2">Expert</h5>
+                    <p class="text-muted small mb-3">Reach 10,000 reputation points</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-warning progress-bar-animated" style="width: 15%"></div>
+                    </div>
+                    <small class="text-muted">1,500/10,000 points</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6" data-category="veteran">
+            <div class="card badge-card badge-locked">
+                <div class="card-body text-center p-4">
+                    <div class="badge-icon badge-tier-gold text-white">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h5 class="mb-2">Veteran</h5>
+                    <p class="text-muted small mb-3">Member for 1 year</p>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-info progress-bar-animated" style="width: 25%"></div>
+                    </div>
+                    <small class="text-muted">3/12 months</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Category filtering
+            $('.category-filter-btn').on('click', function() {
+                $('.category-filter-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+                $(this).removeClass('btn-outline-primary').addClass('btn-primary');
+                
+                var category = $(this).data('category');
+                
+                if (category === 'all') {
+                    $('[data-category]').parent().show();
+                } else {
+                    $('[data-category]').parent().hide();
+                    $('[data-category="' + category + '"]').parent().show();
+                }
+            });
+        });
+    </script>
+}

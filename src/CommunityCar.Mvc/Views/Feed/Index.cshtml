@@ -1,130 +1,289 @@
+@model CommunityCar.Mvc.ViewModels.Feed.FeedViewModel
+@using CommunityCar.Mvc.ViewModels.Feed
 @{
-    ViewData["Title"] = "Community Car - Home";
+    ViewData["Title"] = "Community Feed";
 }
-
-<div class="py-2">
-    <!-- Hero Section -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3">Welcome to Community Car</h1>
-        <p class="lead text-muted mb-4">Your automotive community hub for questions, events, and connections</p>
-    </div>
-
-    <!-- Quick Links Section -->
-    <div class="row g-4 mb-5">
-        <!-- Questions & Answers -->
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-question-circle fa-3x text-primary"></i>
-                    </div>
-                    <h5 class="card-title">Questions & Answers</h5>
-                    <p class="card-text text-muted">Get help from the community or share your knowledge</p>
-                    <a asp-controller="Questions" asp-action="Index" class="btn btn-primary mt-2">
-                        Browse Questions
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Friends -->
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-users fa-3x text-success"></i>
-                    </div>
-                    <h5 class="card-title">Friends</h5>
-                    <p class="card-text text-muted">Connect with other car enthusiasts</p>
-                    <a asp-controller="Friends" asp-action="Index" class="btn btn-success mt-2">
-                        Find Friends
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Events -->
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-calendar-alt fa-3x text-warning"></i>
-                    </div>
-                    <h5 class="card-title">Events</h5>
-                    <p class="card-text text-muted">Discover and join automotive events</p>
-                    <a asp-controller="Events" asp-action="Index" class="btn btn-warning mt-2">
-                        View Events
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reviews -->
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-star fa-3x text-info"></i>
-                    </div>
-                    <h5 class="card-title">Reviews</h5>
-                    <p class="card-text text-muted">Read and write car reviews</p>
-                    <a asp-controller="Reviews" asp-action="Index" class="btn btn-info mt-2">
-                        Browse Reviews
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="d-flex align-items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-comments fa-2x text-primary me-3"></i>
-                </div>
-                <div>
-                    <h5>Community Driven</h5>
-                    <p class="text-muted">Join a vibrant community of car enthusiasts sharing knowledge and experiences.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="d-flex align-items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-shield-alt fa-2x text-success me-3"></i>
-                </div>
-                <div>
-                    <h5>Trusted Information</h5>
-                    <p class="text-muted">Get reliable answers and reviews from verified community members.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="d-flex align-items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-bolt fa-2x text-warning me-3"></i>
-                </div>
-                <div>
-                    <h5>Stay Updated</h5>
-                    <p class="text-muted">Never miss important automotive events and community activities.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section RightSidebar {
     <partial name="Sidebars/_RightSidebar_Feed" />
 }
 
-<style>
-    .hover-lift {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+@section Styles {
+    <link rel="stylesheet" href="~/css/feed.css" />
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Community Feed</h2>
+    <div class="btn-group" role="group">
+        <a asp-action="Index" asp-route-sortBy="Recent" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Recent ? "btn-primary" : "btn-outline-primary")">
+            <i class="fas fa-clock"></i> Recent
+        </a>
+        <a asp-action="Popular" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Popular ? "btn-primary" : "btn-outline-primary")">
+            <i class="fas fa-fire"></i> Popular
+        </a>
+        <a asp-action="Trending" class="btn btn-sm @(Model.Filters.SortBy == FeedSortType.Trending ? "btn-primary" : "btn-outline-primary")">
+            <i class="fas fa-chart-line"></i> Trending
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Content Type</label>
+                <select name="type" class="form-select form-select-sm">
+                    <option value="">All Content</option>
+                    <option value="@((int)FeedItemType.Post)" selected="@(Model.Filters.ContentType == FeedItemType.Post)">Posts</option>
+                    <option value="@((int)FeedItemType.Question)" selected="@(Model.Filters.ContentType == FeedItemType.Question)">Questions</option>
+                    <option value="@((int)FeedItemType.Event)" selected="@(Model.Filters.ContentType == FeedItemType.Event)">Events</option>
+                    <option value="@((int)FeedItemType.News)" selected="@(Model.Filters.ContentType == FeedItemType.News)">News</option>
+                    <option value="@((int)FeedItemType.Guide)" selected="@(Model.Filters.ContentType == FeedItemType.Guide)">Guides</option>
+                    <option value="@((int)FeedItemType.Review)" selected="@(Model.Filters.ContentType == FeedItemType.Review)">Reviews</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date Filter</label>
+                <select name="dateFilter" class="form-select form-select-sm">
+                    <option value="@((int)DateFilterType.All)" selected="@(Model.Filters.DateFilter == DateFilterType.All)">All Time</option>
+                    <option value="@((int)DateFilterType.Today)" selected="@(Model.Filters.DateFilter == DateFilterType.Today)">Today</option>
+                    <option value="@((int)DateFilterType.ThisWeek)" selected="@(Model.Filters.DateFilter == DateFilterType.ThisWeek)">This Week</option>
+                    <option value="@((int)DateFilterType.ThisMonth)" selected="@(Model.Filters.DateFilter == DateFilterType.ThisMonth)">This Month</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search content..." value="@Model.Filters.SearchTerm" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Feed Items -->
+@if (Model.Items.Any())
+{
+    <div class="feed-items">
+        @foreach (var item in Model.Items)
+        {
+            <div class="card mb-3 feed-item" data-type="@item.Type">
+                <div class="card-body">
+                    <!-- Header -->
+                    <div class="d-flex align-items-start mb-3">
+                        <img src="@(item.AuthorAvatar ?? "/images/default-avatar.png")" 
+                             alt="@item.AuthorName" 
+                             class="rounded-circle me-3" 
+                             style="width: 48px; height: 48px; object-fit: cover;" />
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-0">@item.AuthorName</h6>
+                                    <small class="text-muted">
+                                        <span class="badge bg-@item.TypeColor me-1">
+                                            <i class="fas @item.TypeIcon"></i> @item.TypeName
+                                        </span>
+                                        @item.TimeAgo
+                                        @if (!string.IsNullOrEmpty(item.Category))
+                                        {
+                                            <span class="mx-1">•</span>
+                                            <span class="badge bg-secondary">@item.Category</span>
+                                        }
+                                    </small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i>Save</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i>Share</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Report</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="feed-content">
+                        <h5 class="card-title mb-2">
+                            <a href="@item.ActionUrl" class="text-decoration-none text-dark">
+                                @item.Title
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">@item.Content</p>
+
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Title" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                        }
+
+                        @if (!string.IsNullOrEmpty(item.Tags))
+                        {
+                            <div class="mb-2">
+                                @foreach (var tag in item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <span class="badge bg-light text-dark me-1">#@tag.Trim()</span>
+                                }
+                            </div>
+                        }
+
+                        <!-- Type-specific info -->
+                        @if (item.Type == FeedItemType.Question && item.IsResolved.HasValue)
+                        {
+                            <div class="mb-2">
+                                @if (item.IsResolved.Value)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Resolved
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-question-circle"></i> Open
+                                    </span>
+                                }
+                                @if (item.AnswerCount.HasValue && item.AnswerCount.Value > 0)
+                                {
+                                    <span class="ms-2 text-muted">
+                                        <i class="fas fa-comments"></i> @item.AnswerCount answers
+                                    </span>
+                                }
+                            </div>
+                        }
+
+                        @if (item.Type == FeedItemType.Event && item.EventStartTime.HasValue)
+                        {
+                            <div class="alert alert-info mb-2 py-2">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                <strong>@item.EventStartTime.Value.ToString("MMM dd, yyyy 'at' h:mm tt")</strong>
+                                @if (!string.IsNullOrEmpty(item.EventLocation))
+                                {
+                                    <span class="ms-3">
+                                        <i class="fas fa-map-marker-alt me-1"></i>@item.EventLocation
+                                    </span>
+                                }
+                            </div>
+                        }
+
+                        @if (item.Type == FeedItemType.Review && item.Rating.HasValue)
+                        {
+                            <div class="mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="fas fa-star @(i <= item.Rating.Value ? "text-warning" : "text-muted")"></i>
+                                }
+                                @if (item.IsRecommended.HasValue && item.IsRecommended.Value)
+                                {
+                                    <span class="badge bg-success ms-2">
+                                        <i class="fas fa-thumbs-up"></i> Recommended
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex gap-3">
+                            <span class="text-muted">
+                                <i class="fas fa-eye me-1"></i> @item.ViewCount
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-heart me-1"></i> @item.LikeCount
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-comment me-1"></i> @item.CommentCount
+                            </span>
+                        </div>
+                        <a href="@item.ActionUrl" class="btn btn-sm btn-outline-primary">
+                            @item.ActionText <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Feed pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" 
+                       asp-action="Index" 
+                       asp-route-page="@(Model.CurrentPage - 1)"
+                       asp-route-type="@Model.Filters.ContentType"
+                       asp-route-search="@Model.Filters.SearchTerm"
+                       asp-route-dateFilter="@Model.Filters.DateFilter"
+                       asp-route-sortBy="@Model.Filters.SortBy">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                </li>
+
+                @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@i"
+                           asp-route-type="@Model.Filters.ContentType"
+                           asp-route-search="@Model.Filters.SearchTerm"
+                           asp-route-dateFilter="@Model.Filters.DateFilter"
+                           asp-route-sortBy="@Model.Filters.SortBy">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" 
+                       asp-action="Index" 
+                       asp-route-page="@(Model.CurrentPage + 1)"
+                       asp-route-type="@Model.Filters.ContentType"
+                       asp-route-search="@Model.Filters.SearchTerm"
+                       asp-route-dateFilter="@Model.Filters.DateFilter"
+                       asp-route-sortBy="@Model.Filters.SortBy">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     }
-    
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-</style>
+}
+else
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No content found</h5>
+            <p class="text-muted">Try adjusting your filters or check back later for new content.</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/feed.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Smooth scroll to top when pagination is clicked
+            $('.pagination a').on('click', function() {
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+
+            // Add hover effect to feed items
+            $('.feed-item').hover(
+                function() { $(this).addClass('shadow-sm'); },
+                function() { $(this).removeClass('shadow-sm'); }
+            );
+        });
+    </script>
+}

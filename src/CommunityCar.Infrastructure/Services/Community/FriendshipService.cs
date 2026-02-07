@@ -107,4 +107,22 @@ public class FriendshipService : IFriendshipService
         return await _friendshipRepository.WhereAsync(f => 
             f.FriendId == userId && f.Status == FriendshipStatus.Pending);
     }
+
+    public async Task UnblockUserAsync(Guid userId, Guid friendId)
+    {
+        var friendship = await _friendshipRepository.FirstOrDefaultAsync(f =>
+            f.UserId == userId && f.FriendId == friendId && f.Status == FriendshipStatus.Blocked);
+
+        if (friendship == null) return;
+
+        _friendshipRepository.Delete(friendship);
+        await _uow.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Friendship>> GetBlockedUsersAsync(Guid userId)
+    {
+        return await _friendshipRepository.WhereAsync(f =>
+            f.UserId == userId && f.Status == FriendshipStatus.Blocked);
+    }
+
 }

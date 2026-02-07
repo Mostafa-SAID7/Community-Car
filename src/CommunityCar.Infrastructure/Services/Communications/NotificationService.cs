@@ -63,6 +63,16 @@ public class NotificationService : INotificationService
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Notification>> GetUserNotificationsPaginatedAsync(Guid userId, int page = 1, int pageSize = 20)
+    {
+        return await _notificationRepository.GetQueryable()
+            .Where(n => n.UserId == userId)
+            .OrderByDescending(n => n.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
     public async Task MarkAsReadAsync(Guid notificationId)
     {
         var notification = await _notificationRepository.GetByIdAsync(notificationId);
@@ -88,6 +98,36 @@ public class NotificationService : INotificationService
     public async Task<int> GetUnreadCountAsync(Guid userId)
     {
         return await _notificationRepository.CountAsync(n => n.UserId == userId && !n.IsRead);
+    }
+
+    public async Task DeleteNotificationAsync(Guid notificationId)
+    {
+        var notification = await _notificationRepository.GetByIdAsync(notificationId);
+        if (notification != null)
+        {
+            _notificationRepository.Delete(notification);
+            await _uow.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteAllNotificationsAsync(Guid userId)
+    {
+        var notifications = await _notificationRepository.WhereAsync(n => n.UserId == userId);
+        foreach (var notification in notifications)
+        {
+            _notificationRepository.Delete(notification);
+        }
+        await _uow.SaveChangesAsync();
+    }
+
+    public async Task DeleteReadNotificationsAsync(Guid userId)
+    {
+        var readNotifications = await _notificationRepository.WhereAsync(n => n.UserId == userId && n.IsRead);
+        foreach (var notification in readNotifications)
+        {
+            _notificationRepository.Delete(notification);
+        }
+        await _uow.SaveChangesAsync();
     }
 
     public async Task NotifyFriendsOfNewQuestionAsync(Guid authorId, Question question)
@@ -208,5 +248,32 @@ public class NotificationService : INotificationService
             : $"/Questions/Details/{comment.AnswerId}";
         
         await CreateNotificationAsync(answerAuthorId, title, message, link);
+    }
+
+    public async Task NotifyUserOfNewMessageAsync(Guid userId, Guid senderId, string senderName, string messagePreview)
+    {
+        var title = "New Message";
+        var message = $"{senderName}: {messagePreview}";
+        var link = $"/Communications/Chats/Conversation/{senderId}";
+        
+        await CreateNotificationAsync(userId, title, message, link);
+    }
+
+    public async Task NotifyUserOfFriendRequestAsync(Guid userId, Guid requesterId, string requesterName)
+    {
+        var title = "New Friend Request";
+        var message = $"{requesterName} sent you a friend request";
+        var link = $"/Identity/Profiles/Index/{requesterId}";
+        
+        await CreateNotificationAsync(userId, title, message, link);
+    }
+
+    public async Task NotifyUserOfFriendRequestAcceptedAsync(Guid userId, Guid accepterId, string accepterName)
+    {
+        var title = "Friend Request Accepted";
+        var message = $"{accepterName} accepted your friend request";
+        var link = $"/Identity/Profiles/Index/{accepterId}";
+        
+        await CreateNotificationAsync(userId, title, message, link);
     }
 }

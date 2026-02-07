@@ -1,0 +1,120 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.EditLocalizationViewModel
+@{
+    ViewData["Title"] = "Edit Translation";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-edit me-2"></i>
+                Edit Translation
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Localization</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">Details</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Key</label>
+                            <input type="text" class="form-control" value="@Model.Key" disabled />
+                            <small class="form-text text-muted">Key cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-control" value="@Model.Category" disabled />
+                            <small class="form-text text-muted">Category cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Culture Code</label>
+                            <input type="text" class="form-control" value="@Model.CultureCode" disabled />
+                            <small class="form-text text-muted">Culture code cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Value" class="form-label">Translation Value <span class="text-danger">*</span></label>
+                            <textarea asp-for="Value" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Value" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsActive" class="form-check-label">
+                                    Active
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">Inactive translations won't be used in the application</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Translation Info</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Key:</dt>
+                        <dd class="col-sm-8"><code>@Model.Key</code></dd>
+
+                        <dt class="col-sm-4">Category:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-secondary">@Model.Category</span></dd>
+
+                        <dt class="col-sm-4">Culture:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-primary">@Model.CultureCode</span></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Note</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-0">
+                        Changes to translations will take effect immediately after syncing to JSON files.
+                        Remember to click "Sync to Files" on the main page after making changes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

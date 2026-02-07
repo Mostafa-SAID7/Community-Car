@@ -1,108 +1,263 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.LocalizationIndexViewModel
 @{
-    var currentPart = ViewBag.CurrentPart as string ?? "Main";
-    ViewData["Title"] = $"Localization Management - {currentPart}";
+    ViewData["Title"] = "Localization Management";
 }
 
-<div class="container-fluid py-4">
-    <partial name="_LocalizationNav" />
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Localization Manager</h1>
-            <p class="text-muted small">Manage translations, find missing keys, and sync resource files for the <strong>@currentPart</strong> area.</p>
-        </div>
-        <div>
-            <button class="btn btn-primary btn-sm shadow-sm">
-                <i class="fas fa-sync-alt me-2"></i>Scan Resources
-            </button>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2 border-0">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 small">Total Keys</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">142</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-key fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2 border-0">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1 small">Translated (AR)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">92%</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2 border-0">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1 small">Missing Keys</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-language me-2"></i>
+                    Localization Management
+                </h2>
+                <div>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Translation
+                    </a>
+                    <a asp-action="BulkImport" class="btn btn-info">
+                        <i class="fas fa-file-import me-1"></i> Bulk Import
+                    </a>
+                    <a asp-action="Export" class="btn btn-success">
+                        <i class="fas fa-file-export me-1"></i> Export
+                    </a>
+                    <form asp-action="SyncToFiles" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-sync me-1"></i> Sync to Files
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-header bg-white py-3 border-0">
-            <h6 class="m-0 font-weight-bold text-primary">Translation Status: @currentPart</h6>
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Keys</h5>
+                    <h2>@Model.Statistics.TotalKeys</h2>
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Translations</h5>
+                    <h2>@Model.Statistics.TotalTranslations</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Missing</h5>
+                    <h2>@Model.Statistics.MissingTranslations</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Completion</h5>
+                    <h2>@Model.Statistics.CompletionPercentage%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Key</label>
+                        <input type="text" name="key" class="form-control" value="@Model.Filter.Key" placeholder="Search by key..." />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            @foreach (var cat in Model.AvailableCategories)
+                            {
+                                <option value="@cat" selected="@(Model.Filter.Category == cat)">@cat</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Culture</label>
+                        <select name="cultureCode" class="form-select">
+                            <option value="">All Cultures</option>
+                            @foreach (var culture in Model.AvailableCultures)
+                            {
+                                <option value="@culture" selected="@(Model.Filter.CultureCode == culture)">@culture</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select name="isActive" class="form-select">
+                            <option value="">All</option>
+                            <option value="true" selected="@(Model.Filter.IsActive == true)">Active</option>
+                            <option value="false" selected="@(Model.Filter.IsActive == false)">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="searchTerm" class="form-control" value="@Model.Filter.SearchTerm" placeholder="Search..." />
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i> Filter
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Clear
+                        </a>
+                        <a asp-action="Statistics" class="btn btn-info">
+                            <i class="fas fa-chart-bar me-1"></i> Statistics
+                        </a>
+                        <a asp-action="MissingTranslations" class="btn btn-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Missing Translations
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resources Table -->
+    <div class="card">
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <th class="border-0 px-4">Key Name</th>
-                            <th class="border-0">Source (EN)</th>
-                            <th class="border-0">Translation (AR)</th>
-                            <th class="border-0 text-end px-4">Actions</th>
+                            <th>Key</th>
+                            <th>Category</th>
+                            <th>Culture</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Last Modified</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="px-4 font-monospace small">WelcomeMessage</td>
-                            <td>Welcome to Community Car</td>
-                            <td>أهلاً بك في كوميونيتي كار</td>
-                            <td class="text-end px-4">
-                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3"><i class="fas fa-edit"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 font-monospace small text-danger font-weight-bold">LogoutConfirm</td>
-                            <td>Are you sure you want to logout?</td>
-                            <td class="text-muted italic small"><i class="fas fa-times me-1"></i> Missing</td>
-                            <td class="text-end px-4">
-                                <button class="btn btn-primary btn-sm rounded-pill px-3"><i class="fas fa-plus"></i> Translate</button>
-                            </td>
-                        </tr>
+                        @if (Model.Resources.Any())
+                        {
+                            @foreach (var resource in Model.Resources)
+                            {
+                                <tr>
+                                    <td><code>@resource.Key</code></td>
+                                    <td><span class="badge bg-secondary">@resource.Category</span></td>
+                                    <td><span class="badge bg-primary">@resource.CultureCode</span></td>
+                                    <td>
+                                        <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            @resource.Value
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (resource.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (resource.LastModifiedAt.HasValue)
+                                        {
+                                            <small>@resource.LastModifiedAt.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">Never</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="Details" asp-route-id="@resource.Id" class="btn btn-info" title="Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@resource.Id" class="btn btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@resource.Id" method="post" class="d-inline" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this resource?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No localization resources found.</p>
+                                    <a asp-action="Create" class="btn btn-primary">Add First Translation</a>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(!Model.Pagination.HasPreviousPage ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage - 1)"
+                               asp-route-key="@Model.Filter.Key"
+                               asp-route-category="@Model.Filter.Category"
+                               asp-route-cultureCode="@Model.Filter.CultureCode"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-isActive="@Model.Filter.IsActive">
+                                Previous
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@i"
+                                   asp-route-key="@Model.Filter.Key"
+                                   asp-route-category="@Model.Filter.Category"
+                                   asp-route-cultureCode="@Model.Filter.CultureCode"
+                                   asp-route-searchTerm="@Model.Filter.SearchTerm"
+                                   asp-route-isActive="@Model.Filter.IsActive">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(!Model.Pagination.HasNextPage ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.Pagination.CurrentPage + 1)"
+                               asp-route-key="@Model.Filter.Key"
+                               asp-route-category="@Model.Filter.Category"
+                               asp-route-cultureCode="@Model.Filter.CultureCode"
+                               asp-route-searchTerm="@Model.Filter.SearchTerm"
+                               asp-route-isActive="@Model.Filter.IsActive">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
         </div>
     </div>
 </div>

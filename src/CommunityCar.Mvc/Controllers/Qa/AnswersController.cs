@@ -1,189 +1,225 @@
-using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Web.ViewModels.Community.Qa;
-using CommunityCar.Domain.Enums.Community.qa;
+using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-using Microsoft.AspNetCore.SignalR;
-using CommunityCar.Web.Hubs;
-using CommunityCar.Domain.DTOs.Community; // Added for AnswerDto
-
-namespace CommunityCar.Web.Controllers;
+namespace CommunityCar.Mvc.Controllers.Qa;
 
 [Route("Answers")]
 [Authorize]
 public class AnswersController : Controller
 {
     private readonly IQuestionService _questionService;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IHubContext<QuestionHub> _hubContext;
+    private readonly ILogger<AnswersController> _logger;
 
     public AnswersController(
         IQuestionService questionService,
-        ICurrentUserService currentUserService,
-        IHubContext<QuestionHub> hubContext)
+        ILogger<AnswersController> logger)
     {
         _questionService = questionService;
-        _currentUserService = currentUserService;
-        _hubContext = hubContext;
+        _logger = logger;
     }
 
+    // POST: Answers/Create
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateAnswerViewModel model)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        var answer = await _questionService.AddAnswerAsync(model.QuestionId, model.Content, userId.Value);
-
-        // Real-time broadcast
-        if (answer != null)
+        try
         {
-            await _hubContext.Clients.All.SendAsync("ReceiveAnswer", new { 
-                questionId = model.QuestionId, 
-                answerId = answer.Id 
-            });
-        }
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Please provide valid answer content";
+                return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
+            }
 
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            var userId = GetCurrentUserId();
+            await _questionService.AddAnswerAsync(model.QuestionId, model.Content, userId);
+
+            TempData["Success"] = "Answer posted successfully";
+            return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
+        }
+        catch (Exception ex)
         {
-            return Ok(new { success = true, message = "Answer posted successfully." });
+            _logger.LogError(ex, "Error creating answer for question {QuestionId}", model.QuestionId);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
         }
-
-        return RedirectToAction("Details", "Questions", new { idOrSlug = model.QuestionId });
     }
 
-    [HttpGet("GetAnswerCard/{id}")]
-    public async Task<IActionResult> GetAnswerCard(Guid id)
-    {
-        var answer = await _questionService.GetAnswerByIdAsync(id, _currentUserService.UserId);
-        if (answer == null) return NotFound();
-
-        return Ok(answer);
-    }
-
-    [HttpGet("Edit/{id}")]
+    // GET: Answers/Edit/{id}
+    [HttpGet("Edit/{id:guid}")]
     public async Task<IActionResult> Edit(Guid id)
     {
-        // We don't have GetAnswerById anymore, we get it via the question's answers
-        // This is a bit inefficient but for now it works as we're simplified
-        var questionsResult = await _questionService.GetQuestionsAsync(new Domain.Base.QueryParameters { PageSize = 100 }); // Hacky way to find it
-        // Better: add GetAnswerById to IQuestionService or just search by ID if we had the question ID
-        // For now, let's assume we need to add a specialized method if this becomes a bottleneck.
-        
-        // Actually, let's just use the repo if we really needed it, but we should stick to the service.
-        // Let's assume for now that Edit is always called with context.
-        
-        return NotFound("Edit answer requires question context in the current service implementation.");
+        try
+        {
+            var userId = GetCurrentUserId();
+            var answer = await _questionService.GetAnswerByIdAsync(id, userId);
+            
+            if (answer == null)
+            {
+                TempData["Error"] = "Answer not found";
+                return RedirectToAction("Index", "Questions");
+            }
+
+            if (answer.AuthorId != userId)
+            {
+                TempData["Error"] = "You can only edit your own answers";
+                return RedirectToAction("Details", "Questions", new { id = answer.QuestionId });
+            }
+
+            var model = new EditAnswerViewModel
+            {
+                Id = answer.Id,
+                QuestionId = answer.QuestionId,
+                Content = answer.Content
+            };
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading answer for edit {AnswerId}", id);
+            TempData["Error"] = "Failed to load answer";
+            return RedirectToAction("Index", "Questions");
+        }
     }
 
-    [HttpPost("Edit/{id}")]
+    // POST: Answers/Edit/{id}
+    [HttpPost("Edit/{id:guid}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Guid id, EditAnswerViewModel model)
     {
-        if (id != model.Id)
-            return BadRequest();
+        try
+        {
+            if (id != model.Id)
+                return BadRequest();
 
-        if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var userId = GetCurrentUserId();
+            var answer = await _questionService.GetAnswerByIdAsync(id, userId);
+            
+            if (answer == null)
+            {
+                TempData["Error"] = "Answer not found";
+                return RedirectToAction("Index", "Questions");
+            }
+
+            if (answer.AuthorId != userId)
+            {
+                TempData["Error"] = "You can only edit your own answers";
+                return RedirectToAction("Details", "Questions", new { id = answer.QuestionId });
+            }
+
+            await _questionService.UpdateAnswerAsync(id, model.Content);
+
+            TempData["Success"] = "Answer updated successfully";
+            return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating answer {AnswerId}", id);
+            ModelState.AddModelError("", ex.Message);
             return View(model);
-
-        var userId = _currentUserService.UserId;
-        // In a real app we'd check ownership here via service
-        await _questionService.UpdateAnswerAsync(id, model.Content);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        {
-            return Ok(new { success = true, message = "Answer updated." });
         }
-
-        TempData["SuccessToast"] = "Answer updated successfully!";
-        return RedirectToAction("Details", "Questions", new { idOrSlug = model.QuestionId });
     }
 
-    [HttpPost("Delete/{id}")]
+    // POST: Answers/Delete/{id}
+    [HttpPost("Delete/{id:guid}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(Guid id, [FromForm] Guid questionId)
+    public async Task<IActionResult> Delete(Guid id, Guid questionId)
     {
-        var userId = _currentUserService.UserId;
-        // Ownership check should be in service
-        await _questionService.DeleteAnswerAsync(id);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        try
         {
-            return Ok(new { success = true, message = "Answer deleted." });
-        }
+            var userId = GetCurrentUserId();
+            var answer = await _questionService.GetAnswerByIdAsync(id, userId);
+            
+            if (answer == null)
+                return Json(new { success = false, message = "Answer not found" });
 
-        TempData["SuccessToast"] = "Answer deleted successfully!";
-        return RedirectToAction("Details", "Questions", new { idOrSlug = questionId });
+            if (answer.AuthorId != userId)
+                return Json(new { success = false, message = "You can only delete your own answers" });
+
+            await _questionService.DeleteAnswerAsync(id);
+
+            return Json(new { success = true, message = "Answer deleted successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting answer {AnswerId}", id);
+            return Json(new { success = false, message = ex.Message });
+        }
     }
 
-    [HttpPost("Vote/{id}")]
+    // POST: Answers/Vote/{id}
+    [HttpPost("Vote/{id:guid}")]
     public async Task<IActionResult> Vote(Guid id, bool isUpvote)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.VoteAnswerAsync(id, userId, isUpvote);
 
-        await _questionService.VoteAnswerAsync(id, userId.Value, isUpvote);
-
-        var answer = await _questionService.GetAnswerByIdAsync(id, userId.Value);
-        return Ok(new { 
-            voteCount = answer?.VoteCount ?? 0,
-            userVote = answer?.CurrentUserVote ?? 0
-        });
+            return Json(new { success = true, message = "Vote recorded" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error voting on answer {AnswerId}", id);
+            return Json(new { success = false, message = ex.Message });
+        }
     }
 
-    [HttpPost("RemoveVote/{id}")]
+    // POST: Answers/RemoveVote/{id}
+    [HttpPost("RemoveVote/{id:guid}")]
     public async Task<IActionResult> RemoveVote(Guid id)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.RemoveAnswerVoteAsync(id, userId);
 
-        await _questionService.RemoveAnswerVoteAsync(id, userId.Value);
-
-        return Ok();
+            return Json(new { success = true, message = "Vote removed" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing vote from answer {AnswerId}", id);
+            return Json(new { success = false, message = ex.Message });
+        }
     }
 
-    // Reaction actions
-    [HttpPost("React/{id}")]
-    public async Task<IActionResult> React(Guid id, int reactionType)
+    // POST: Answers/AddComment
+    [HttpPost("AddComment")]
+    public async Task<IActionResult> AddComment(Guid answerId, string content)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                return Json(new { success = false, message = "Comment content is required" });
 
-        await _questionService.ReactToAnswerAsync(id, userId.Value, (ReactionType)reactionType);
+            var userId = GetCurrentUserId();
+            var comment = await _questionService.AddAnswerCommentAsync(answerId, content, userId);
 
-        var summary = await _questionService.GetAnswerReactionSummaryAsync(id, userId.Value);
-        return Ok(summary);
+            return Json(new { success = true, comment });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding comment to answer {AnswerId}", answerId);
+            return Json(new { success = false, message = ex.Message });
+        }
     }
 
-    [HttpPost("RemoveReaction/{id}")]
-    public async Task<IActionResult> RemoveReaction(Guid id)
+    private Guid GetCurrentUserId()
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
 
-        await _questionService.RemoveAnswerReactionAsync(id, userId.Value);
-
-        var summary = await _questionService.GetAnswerReactionSummaryAsync(id, userId.Value);
-        return Ok(summary);
-    }
-
-    [HttpGet("Reactions/{id}")]
-    public async Task<IActionResult> GetReactions(Guid id)
-    {
-        var userId = _currentUserService.UserId;
-        var summary = await _questionService.GetAnswerReactionSummaryAsync(id, userId);
-
-        return Ok(summary);
+        return userId;
     }
 }

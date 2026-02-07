@@ -101,7 +101,8 @@ app.MapControllerRoute(
     pattern: "{controller=Feed}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.MapHub<CommunityCar.Web.Hubs.QuestionHub>("/questionHub");
+app.MapHub<CommunityCar.Mvc.Hubs.QuestionHub>("/questionHub");
 app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
+app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/chatHub");
 
 app.Run();

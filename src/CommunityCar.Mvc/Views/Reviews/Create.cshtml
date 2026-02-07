@@ -1,0 +1,216 @@
+@model CreateReviewViewModel
+@using CommunityCar.Mvc.ViewModels.Reviews
+@using CommunityCar.Domain.Enums.Community.reviews
+
+@{
+    ViewData["Title"] = "Write a Review";
+    var types = ViewBag.Types as ReviewType[];
+}
+
+@section Styles {
+    <style>
+        .create-review-hero {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .star-rating-input {
+            font-size: 2rem;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+        
+        .star-rating-input i {
+            transition: all 0.2s ease;
+        }
+        
+        .star-rating-input i:hover,
+        .star-rating-input i.active {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+        
+        .pros-cons-section {
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+    </style>
+}
+
+<div class="create-review-hero">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-2">
+            <i class="fas fa-star me-3"></i>Write a Review
+        </h1>
+        <p class="lead mb-0">Share your experience with the community</p>
+    </div>
+</div>
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Reviews</a></li>
+            <li class="breadcrumb-item active">Create Review</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="EntityId" class="form-label fw-bold">Entity ID</label>
+                            <input asp-for="EntityId" class="form-control" placeholder="Enter entity ID" />
+                            <span asp-validation-for="EntityId" class="text-danger"></span>
+                            <small class="form-text text-muted">The ID of the item you're reviewing (car, guide, etc.)</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="EntityType" class="form-label fw-bold">Entity Type</label>
+                            <input asp-for="EntityType" class="form-control" placeholder="e.g., Car, Guide, Event" />
+                            <span asp-validation-for="EntityType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Type" class="form-label fw-bold">Review Type</label>
+                            <select asp-for="Type" class="form-select">
+                                <option value="">Select review type</option>
+                                @if (types != null)
+                                {
+                                    @foreach (var type in types)
+                                    {
+                                        <option value="@type">@type</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Rating <span class="text-danger">*</span></label>
+                            <div class="star-rating-input" id="starRating">
+                                <i class="fas fa-star" data-rating="1"></i>
+                                <i class="fas fa-star" data-rating="2"></i>
+                                <i class="fas fa-star" data-rating="3"></i>
+                                <i class="fas fa-star" data-rating="4"></i>
+                                <i class="fas fa-star" data-rating="5"></i>
+                            </div>
+                            <input asp-for="Rating" type="hidden" id="ratingValue" />
+                            <span asp-validation-for="Rating" class="text-danger d-block"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-bold">Review Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="Summarize your review in one line" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label fw-bold">Review Content <span class="text-danger">*</span></label>
+                            <textarea asp-for="Content" class="form-control" rows="8" placeholder="Share your detailed experience (minimum 50 characters)"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                            <small class="form-text text-muted">Minimum 50 characters, maximum 5000 characters</small>
+                        </div>
+
+                        <div class="pros-cons-section mb-4">
+                            <h5 class="mb-3"><i class="fas fa-balance-scale me-2"></i>Pros & Cons</h5>
+                            
+                            <div class="mb-3">
+                                <label asp-for="Pros" class="form-label fw-bold text-success">
+                                    <i class="fas fa-plus-circle me-1"></i>Pros
+                                </label>
+                                <textarea asp-for="Pros" class="form-control" rows="3" placeholder="What did you like?"></textarea>
+                                <span asp-validation-for="Pros" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-0">
+                                <label asp-for="Cons" class="form-label fw-bold text-danger">
+                                    <i class="fas fa-minus-circle me-1"></i>Cons
+                                </label>
+                                <textarea asp-for="Cons" class="form-control" rows="3" placeholder="What could be improved?"></textarea>
+                                <span asp-validation-for="Cons" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input asp-for="IsVerifiedPurchase" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsVerifiedPurchase" class="form-check-label">
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                    This is a verified purchase
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input asp-for="IsRecommended" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="IsRecommended" class="form-check-label">
+                                    <i class="fas fa-thumbs-up text-info me-1"></i>
+                                    I recommend this
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            const stars = $('#starRating i');
+            const ratingInput = $('#ratingValue');
+            
+            // Initialize rating if value exists
+            const currentRating = parseInt(ratingInput.val()) || 0;
+            if (currentRating > 0) {
+                updateStars(currentRating);
+            }
+            
+            stars.on('click', function() {
+                const rating = $(this).data('rating');
+                ratingInput.val(rating);
+                updateStars(rating);
+            });
+            
+            stars.on('mouseenter', function() {
+                const rating = $(this).data('rating');
+                updateStars(rating);
+            });
+            
+            $('#starRating').on('mouseleave', function() {
+                const currentRating = parseInt(ratingInput.val()) || 0;
+                updateStars(currentRating);
+            });
+            
+            function updateStars(rating) {
+                stars.each(function() {
+                    const starRating = $(this).data('rating');
+                    if (starRating <= rating) {
+                        $(this).addClass('active');
+                    } else {
+                        $(this).removeClass('active');
+                    }
+                });
+            }
+        });
+    </script>
+}

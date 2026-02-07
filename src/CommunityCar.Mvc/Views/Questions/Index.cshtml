@@ -3,541 +3,499 @@
     ViewData["Title"] = "Questions & Answers";
     var currentTag = ViewBag.CurrentTag as string;
     var isResolved = ViewBag.IsResolved as bool?;
-    var searchTerm = ViewBag.SearchTerm as string;
-    var sortBy = ViewBag.SortBy as string ?? "created";
-    var sortDesc = ViewBag.SortDesc as bool? ?? true;
-    var currentTab = ViewBag.CurrentTab as string ?? "all";
-}
-
-<link rel="stylesheet" href="~/css/pages/qa.css" />
-
-<div class="qa-container">
-    <!-- Header -->
-    <div class="qa-header">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="h2 mb-2">Questions & Answers</h1>
-                <p class="mb-0 opacity-90">Get help from the community or share your knowledge</p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a asp-action="Create" class="btn btn-light btn-lg">
-                    <i class="fas fa-plus me-2"></i>Ask Question
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tab Navigation -->
-    <div class="qa-tabs mb-4">
-        <ul class="nav nav-tabs qa-nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link @(currentTab == "all" ? "active" : "")" 
-                   asp-action="Index" 
-                   asp-route-tab="all"
-                   asp-route-search="@searchTerm"
-                   asp-route-tag="@currentTag"
-                   asp-route-sortBy="@sortBy"
-                   asp-route-sortDesc="@sortDesc">
-                    <i class="fas fa-list me-2"></i>All Questions
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link @(currentTab == "trending" ? "active" : "")" 
-                   asp-action="Index" 
-                   asp-route-tab="trending"
-                   asp-route-search="@searchTerm"
-                   asp-route-tag="@currentTag"
-                   asp-route-sortBy="@sortBy"
-                   asp-route-sortDesc="@sortDesc">
-                    <i class="fas fa-fire me-2"></i>Trending
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link @(currentTab == "recent" ? "active" : "")" 
-                   asp-action="Index" 
-                   asp-route-tab="recent"
-                   asp-route-search="@searchTerm"
-                   asp-route-tag="@currentTag"
-                   asp-route-sortBy="@sortBy"
-                   asp-route-sortDesc="@sortDesc">
-                    <i class="fas fa-clock me-2"></i>Recent
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link @(currentTab == "unanswered" ? "active" : "")" 
-                   asp-action="Index" 
-                   asp-route-tab="unanswered"
-                   asp-route-search="@searchTerm"
-                   asp-route-tag="@currentTag"
-                   asp-route-sortBy="@sortBy"
-                   asp-route-sortDesc="@sortDesc">
-                    <i class="fas fa-question-circle me-2"></i>Unanswered
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link @(currentTab == "answered" ? "active" : "")" 
-                   asp-action="Index" 
-                   asp-route-tab="answered"
-                   asp-route-search="@searchTerm"
-                   asp-route-tag="@currentTag"
-                   asp-route-sortBy="@sortBy"
-                   asp-route-sortDesc="@sortDesc">
-                    <i class="fas fa-check-circle me-2"></i>Answered
-                </a>
-            </li>
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link @(currentTab == "myquestions" ? "active" : "")" 
-                       asp-action="Index" 
-                       asp-route-tab="myquestions"
-                       asp-route-search="@searchTerm"
-                       asp-route-tag="@currentTag"
-                       asp-route-sortBy="@sortBy"
-                       asp-route-sortDesc="@sortDesc">
-                        <i class="fas fa-user me-2"></i>My Questions
-                    </a>
-                </li>
-            }
-        </ul>
-    </div>
-
-    <!-- Search and Sort -->
-    <div class="qa-search-section mb-4">
-        <form asp-action="Index" method="get" id="searchForm">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <input type="text" 
-                               class="form-control" 
-                               name="search" 
-                               id="searchInput"
-                               value="@searchTerm"
-                               placeholder="Search questions by title, content, or tags...">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                        @if (!string.IsNullOrEmpty(searchTerm))
-                        {
-                            <a asp-action="Index" 
-                               asp-route-tab="@currentTab"
-                               asp-route-tag="@currentTag" 
-                               asp-route-isResolved="@isResolved"
-                               asp-route-sortBy="@sortBy"
-                               asp-route-sortDesc="@sortDesc"
-                               class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        }
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="sortBy" id="sortBySelect" onchange="document.getElementById('searchForm').submit()">
-                        <option value="created" selected="@(sortBy == "created")">Newest</option>
-                        <option value="votes" selected="@(sortBy == "votes")">Most Votes</option>
-                        <option value="answers" selected="@(sortBy == "answers")">Most Answers</option>
-                        <option value="views" selected="@(sortBy == "views")">Most Views</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="pageSize" id="pageSizeSelect" onchange="document.getElementById('searchForm').submit()">
-                        <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
-                        <option value="20" selected="@(Model.PageSize == 20)">20 per page</option>
-                        <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
-                        <option value="100" selected="@(Model.PageSize == 100)">100 per page</option>
-                    </select>
-                </div>
-            </div>
-            <input type="hidden" name="tab" value="@currentTab" />
-            <input type="hidden" name="tag" value="@currentTag" />
-            <input type="hidden" name="isResolved" value="@isResolved" />
-            <input type="hidden" name="sortDesc" value="@sortDesc" />
-        </form>
-    </div>
-
-    <!-- Dynamic List Container -->
-    <div id="questionListContainer">
-        <partial name="_QuestionList" model="Model" />
-    </div>
-</div>
-
-@section Scripts {
-    <style>
-        .vote-active-up { color: #f48024 !important; }
-        .vote-active-down { color: #f48024 !important; }
-        .bookmark-active { color: #0d6efd !important; }
-        .dropdown-toggle-no-caret::after { display: none; }
-        .x-small { font-size: 0.75rem; }
-        
-        /* Reaction Tooltip Logic */
-        .reaction-popup {
-            display: none;
-        }
-        .reaction-container.show-visible .reaction-popup {
-            display: flex !important;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/questionHub")
-            .build();
-
-        connection.on("ReceiveQuestion", function (question) {
-            fetch(`/Questions/GetQuestionCard/${question.id}`)
-                .then(response => response.text())
-                .then(html => {
-                    const listContainer = document.getElementById('questionListContainer');
-                    if(listContainer) {
-                        listContainer.insertAdjacentHTML('afterbegin', html);
-                        
-                        // Re-init tooltips for new content
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-
-                        Toast.show("New question posted!", "info");
-                    }
-                })
-                .catch(err => console.error("Failed to load new question card", err));
-        });
-
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        let searchTimeout;
-        const searchInput = document.getElementById('searchInput');
-        const searchForm = document.getElementById('searchForm');
-        const listContainer = document.getElementById('questionListContainer');
-
-        // Reaction Dropdown Logic
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.reaction-container')) {
-                document.querySelectorAll('.reaction-container.show-visible').forEach(el => {
-                    el.classList.remove('show-visible');
-                });
-            }
-        });
-
-        listContainer.addEventListener('click', function(e) {
-            const trigger = e.target.closest('.reaction-trigger');
-            if (trigger) {
-                const container = trigger.closest('.reaction-container');
-                document.querySelectorAll('.reaction-container.show-visible').forEach(el => {
-                    if (el !== container) el.classList.remove('show-visible');
-                });
-                container.classList.toggle('show-visible');
-                e.stopPropagation();
-            }
-        });
-
-        // Social Action Handlers for Index
-        const votingLocks = new Set();
-
-        function animateElement(elementId, animationClass = 'scalePop') {
-            const el = document.getElementById(elementId);
-            if (el) {
-                el.classList.remove(animationClass);
-                void el.offsetWidth; // Trigger reflow
-                el.classList.add(animationClass);
-                // Remove class after animation completes
-                setTimeout(() => el.classList.remove(animationClass), 300);
-            }
-        }
-
-        async function voteQuestionIndex(id, isUpVote, btn) {
-            if (votingLocks.has(id)) return;
-            votingLocks.add(id);
-
-            const countEl = document.getElementById(`vote-count-${id}`);
-            const currentScore = countEl ? parseInt(countEl.innerText) : 0;
-
-            try {
-                const response = await fetch(`/Questions/Vote/${id}?isUpvote=${isUpVote}`, { 
-                    method: 'POST', 
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    // Score Floor & Non-Toggle Feedback
-                    if (data.voteCount === currentScore && countEl) {
-                        btn.classList.add('vote-blocked');
-                        setTimeout(() => btn.classList.remove('vote-blocked'), 300);
-                    } else if (countEl) {
-                        countEl.innerText = data.voteCount;
-                        animateElement(`vote-count-${id}`);
-                    }
-
-                    // Toggle button states
-                    const parent = btn.closest('.vote-controls');
-                    if (parent) {
-                        const upBtn = parent.querySelector('.fa-caret-up')?.closest('button');
-                        const downBtn = parent.querySelector('.fa-caret-down')?.closest('button');
-                        
-                        if (upBtn && downBtn) {
-                            upBtn.className = 'btn btn-sm btn-link p-0 link-secondary';
-                            downBtn.className = 'btn btn-sm btn-link p-0 link-secondary';
-
-                            if (data.userVote === 1 || data.UserVote === 1) {
-                                upBtn.classList.remove('link-secondary');
-                                upBtn.classList.add('vote-active-up');
-                            } else if (data.userVote === -1 || data.UserVote === -1) {
-                                downBtn.classList.remove('link-secondary');
-                                downBtn.classList.add('vote-active-down');
-                            }
-                        }
-                    }
-                }
-            } catch (err) { 
-                console.error(err); 
-            } finally {
-                votingLocks.delete(id);
-            }
-        }
-
-        async function bookmarkQuestionIndex(id) {
-            try {
-                const response = await fetch(`/Questions/Bookmark/${id}`, { 
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    const btn = document.getElementById(`btn-bookmark-${id}`);
-                    const icon = btn.querySelector('i');
-                    const countEl = document.getElementById(`bookmark-count-${id}`);
-                    const isActive = data.isBookmarked;
-                    
-                    if (countEl) {
-                        countEl.innerText = data.bookmarkCount;
-                        animateElement(`bookmark-count-${id}`);
-                    }
-
-                    // Update button styling
-                    if (isActive) {
-                        btn.classList.add('text-warning', 'bookmark-active');
-                        btn.classList.remove('text-muted');
-                        icon.className = 'fas fa-bookmark';
-                    } else {
-                        btn.classList.remove('text-warning', 'bookmark-active');
-                        btn.classList.add('text-muted');
-                         icon.className = 'far fa-bookmark';
-                    }
-                    
-                    // Toast.show(isActive ? "Bookmarked!" : "Bookmark removed.", "success");
-                } else {
-                    Toast.show(data.message || "Failed to bookmark", "error");
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        async function reactQuestionIndex(id, type) {
-            try {
-                const response = await fetch(`/Questions/React/${id}?reactionType=${type}`, { 
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    const countEl = document.getElementById(`react-count-${id}`);
-                    if (countEl) {
-                        // Support both camelCase and PascalCase
-                        const total = data.reduce((acc, curr) => acc + (curr.count !== undefined ? curr.count : curr.Count), 0);
-                        
-                        const container = countEl.closest('.reaction-container');
-                        const triggerBtn = container.querySelector('.reaction-trigger');
-                        
-                        if (triggerBtn) {
-                            const userReaction = data.find(r => r.isUserReaction || r.IsUserReaction);
-                            
-                            // Reconstruct HTML maintaining premium classes
-                            if (userReaction) {
-                                const rType = userReaction.reactionType !== undefined ? userReaction.reactionType : userReaction.ReactionType;
-                                const emoji = getEmoji(rType);
-                                triggerBtn.innerHTML = `<span class="fs-6">${emoji}</span> <span class="ms-1 small" id="react-count-${id}">${total}</span>`;
-                                triggerBtn.classList.remove('text-muted');
-                                triggerBtn.classList.add('text-danger');
-                            } else {
-                                triggerBtn.innerHTML = `<i class="far fa-smile"></i> <span class="ms-1 small" id="react-count-${id}">${total}</span>`;
-                                triggerBtn.classList.add('text-muted');
-                                triggerBtn.classList.remove('text-danger');
-                            }
-                            
-                            // Animate the update
-                            animateElement(`react-count-${id}`);
-                        }
-                        
-                        // Hide popup
-                        const popup = container.querySelector('.reaction-popup');
-                        if (popup) popup.style.display = 'none';
-                    }
-                    // Toast.show("Reaction updated!", "success");
-                } else {
-                    Toast.show(data.message || "Reaction failed", "error");
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        function getEmoji(type) {
-            switch(type) {
-                case 1: return '👍';
-                case 2: return '❤️';
-                case 3: return '🙌';
-                case 4: return '🤔';
-                case 5: return '💡';
-                case 6: return '❓';
-                default: return '❓';
-            }
-        }
-
-        // Handle Reaction Popups
-        document.addEventListener('mouseover', function(e) {
-            const trigger = e.target.closest('.reaction-trigger');
-            if (trigger) {
-                const popup = trigger.nextElementSibling;
-                if (popup && popup.classList.contains('reaction-popup')) {
-                    popup.style.display = 'flex';
-                }
-            }
-        });
-
-        document.addEventListener('mouseout', function(e) {
-            const container = e.target.closest('.reaction-container');
-            if (container && !container.contains(e.relatedTarget)) {
-                const popup = container.querySelector('.reaction-popup');
-                if (popup) popup.style.display = 'none';
-            }
-        });
-
-        // Close on ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.reaction-popup').forEach(p => p.style.display = 'none');
-            }
-        });
-
-        function shareQuestionIndex(id, platform) {
-            const detailLink = document.querySelector(`.question-card a[href*="${id}"]`) || 
-                               document.querySelector(`.question-card a[href*="Details"]`);
-            const url = detailLink ? new URL(detailLink.href, window.location.origin).href : window.location.href;
-
-            fetch(`/Questions/Share/${id}?platform=${platform}&sharedUrl=${encodeURIComponent(url)}`, { 
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(async r => {
-                    const data = await r.json();
-                    if (r.ok) {
-                        const countEl = document.getElementById(`share-count-${id}`);
-                        if (countEl) {
-                            countEl.innerText = data.shareCount;
-                            animateElement(`share-count-${id}`);
-                        }
-
-                        const shareUrl = encodeURIComponent(url);
-                        const shareTitle = encodeURIComponent("Check out this question on Community Car!");
-
-                        switch(platform) {
-                            case 'Facebook':
-                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
-                                break;
-                            case 'Twitter':
-                                window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`, '_blank');
-                                break;
-                            case 'LinkedIn':
-                                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank');
-                                break;
-                            case 'Clipboard':
-                                navigator.clipboard.writeText(url).then(() => {
-                                    Toast.show("Link copied to clipboard!", "success");
-                                });
-                                break;
-                        }
-                    }
-                });
-        }
-
-        // Standardized global Toast is used; local showToast removed.
-
-        // Live Search logic
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                loadQuestions();
-            }, 500);
-        });
-
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            loadQuestions();
-        });
-
-        document.addEventListener('click', function(e) {
-            const link = e.target.closest('a');
-            if (!link) return;
-
-            if (link.href && (link.classList.contains('page-link') || 
-                              link.classList.contains('nav-link') || 
-                              link.classList.contains('tag') || 
-                              link.innerText.includes('Clear All'))) {
-                
-                if (link.getAttribute('href').startsWith('/Questions') || link.href.includes('/Questions')) {
-                    e.preventDefault();
-                    loadQuestions(link.href);
-                }
-            }
-        });
-
-        document.getElementById('sortBySelect').onchange = () => loadQuestions();
-        document.getElementById('pageSizeSelect').onchange = () => loadQuestions();
-
-        async function loadQuestions(url = null) {
-            if (!url) {
-                const formData = new FormData(searchForm);
-                const params = new URLSearchParams(formData);
-                params.set('search', searchInput.value);
-                params.set('sortBy', document.getElementById('sortBySelect').value);
-                params.set('pageSize', document.getElementById('pageSizeSelect').value);
-                url = `${searchForm.action}?${params.toString()}`;
-            }
-
-            listContainer.style.opacity = '0.5';
-
-            try {
-                const response = await fetch(url, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-
-                if (response.ok) {
-                    const html = await response.text();
-                    listContainer.innerHTML = html;
-                    window.history.pushState({ path: url }, '', url);
-                    
-                    const newUrl = new URL(url, window.location.origin);
-                    const tab = newUrl.searchParams.get('tab') || 'all';
-                    document.querySelectorAll('.qa-nav-tabs .nav-link').forEach(nav => {
-                        nav.classList.remove('active');
-                        if (nav.href.includes(`tab=${tab}`)) nav.classList.add('active');
-                    });
-                }
-            } catch (err) {
-                console.error("Failed to load questions:", err);
-            } finally {
-                listContainer.style.opacity = '1';
-            }
-        }
-
-        window.addEventListener('popstate', function() {
-            location.reload();
-        });
-    </script>
+    var sortBy = ViewBag.SortBy as string ?? "recent";
 }
 
 @section RightSidebar {
     <partial name="Sidebars/_RightSidebar_QA" />
+}
+
+@section Styles {
+    <style>
+        .qa-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .filter-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .filter-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .sort-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .sort-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            background: white;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sort-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .sort-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .question-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .question-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+        
+        .question-stats {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-item {
+            margin-bottom: 0.75rem;
+        }
+        
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #495057;
+        }
+        
+        .stat-number.resolved {
+            color: #28a745;
+        }
+        
+        .stat-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .question-title a {
+            color: #212529;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .question-title a:hover {
+            color: #667eea;
+        }
+        
+        .question-excerpt {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .tag-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            background: #e9ecef;
+            color: #495057;
+            font-size: 0.875rem;
+            text-decoration: none;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tag-badge:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .question-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .badge-resolved {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .badge-open {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .search-input {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+        
+        .btn-filter {
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ask {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ask:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+        
+        @@media (max-width: 768px) {
+            .qa-header {
+                padding: 1.5rem;
+            }
+            
+            .question-stats {
+                min-width: 80px;
+                padding: 0.75rem;
+            }
+            
+            .stat-number {
+                font-size: 1.25rem;
+            }
+            
+            .question-title {
+                font-size: 1.1rem;
+            }
+            
+            .sort-tabs {
+                gap: 0.25rem;
+            }
+            
+            .sort-tab {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+}
+
+<!-- Header -->
+<div class="qa-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="mb-2"><i class="fas fa-question-circle me-2"></i>Questions & Answers</h1>
+            <p class="mb-0 opacity-75">Ask questions and get answers from the community</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-action="Create" class="btn btn-ask">
+                    <i class="fas fa-plus-circle me-2"></i>Ask Question
+                </a>
+                <a asp-action="MyQuestions" class="btn btn-light">
+                    <i class="fas fa-user me-2"></i>My Questions
+                </a>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-light">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Ask
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Sort Tabs -->
+<div class="sort-tabs">
+    <a asp-action="Index" asp-route-sortBy="recent" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
+       class="sort-tab @(sortBy == "recent" ? "active" : "")">
+        <i class="fas fa-clock"></i> Recent
+    </a>
+    <a asp-action="Index" asp-route-sortBy="popular" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
+       class="sort-tab @(sortBy == "popular" ? "active" : "")">
+        <i class="fas fa-fire"></i> Popular
+    </a>
+    <a asp-action="Index" asp-route-sortBy="unanswered" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
+       class="sort-tab @(sortBy == "unanswered" ? "active" : "")">
+        <i class="fas fa-question"></i> Unanswered
+    </a>
+    <a asp-action="Index" asp-route-sortBy="votes" asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" 
+       class="sort-tab @(sortBy == "votes" ? "active" : "")">
+        <i class="fas fa-arrow-up"></i> Most Votes
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="filter-card card">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <input type="hidden" name="sortBy" value="@sortBy" />
+            <div class="col-md-4">
+                <label class="form-label fw-bold small text-secondary">
+                    <i class="fas fa-tag me-1"></i>Filter by Tag
+                </label>
+                <input type="text" name="tag" class="form-control search-input" placeholder="Enter tag name" value="@currentTag" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold small text-secondary">
+                    <i class="fas fa-filter me-1"></i>Status
+                </label>
+                <select name="isResolved" class="form-select search-input">
+                    <option value="">All Questions</option>
+                    <option value="false" selected="@(isResolved == false)">Open</option>
+                    <option value="true" selected="@(isResolved == true)">Resolved</option>
+                </select>
+            </div>
+            <div class="col-md-5 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary btn-filter flex-grow-1">
+                    <i class="fas fa-search me-2"></i>Apply Filters
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-filter">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Questions List -->
+@if (Model.Items.Any())
+{
+    foreach (var question in Model.Items)
+    {
+        <div class="question-card card">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <div class="question-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">@question.VoteCount</span>
+                                <span class="stat-label">Votes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number @(question.IsResolved ? "resolved" : "")">@question.AnswerCount</span>
+                                <span class="stat-label">Answers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">@question.ViewCount</span>
+                                <span class="stat-label">Views</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="question-title">
+                            <a asp-action="Details" asp-route-slug="@question.Slug">
+                                @question.Title
+                            </a>
+                            @if (question.IsResolved)
+                            {
+                                <span class="badge badge-resolved ms-2">
+                                    <i class="fas fa-check-circle me-1"></i>Resolved
+                                </span>
+                            }
+                            else if (question.AnswerCount == 0)
+                            {
+                                <span class="badge badge-open ms-2">
+                                    <i class="fas fa-clock me-1"></i>Open
+                                </span>
+                            }
+                        </div>
+                        
+                        <p class="question-excerpt">
+                            @(question.Content.Length > 200 ? question.Content.Substring(0, 200) + "..." : question.Content)
+                        </p>
+                        
+                        @if (!string.IsNullOrEmpty(question.Tags))
+                        {
+                            <div class="mb-3">
+                                @foreach (var tag in question.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <a asp-action="Index" asp-route-tag="@tag.Trim()" class="tag-badge">
+                                        <i class="fas fa-tag me-1"></i>@tag.Trim()
+                                    </a>
+                                }
+                            </div>
+                        }
+                        
+                        <div class="question-meta">
+                            <div class="author-info">
+                                <img src="@(question.AuthorProfilePicture ?? $"https://ui-avatars.com/api/?name={question.AuthorName}&background=random")" 
+                                     alt="@question.AuthorName" 
+                                     class="author-avatar" />
+                                <small class="text-muted">
+                                    <strong>@question.AuthorName</strong> asked @question.CreatedAt.ToTimeAgo()
+                                </small>
+                            </div>
+                            @if (question.Category != null)
+                            {
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-folder me-1"></i>@question.Category.Name
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Questions pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" 
+                       asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
+                        <i class="fas fa-chevron-left me-1"></i>Previous
+                    </a>
+                </li>
+                
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" 
+                           asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
+                            @i
+                        </a>
+                    </li>
+                }
+                
+                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" 
+                       asp-route-tag="@currentTag" asp-route-isResolved="@isResolved" asp-route-sortBy="@sortBy">
+                        Next<i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <h4 class="mb-2">No Questions Found</h4>
+        <p class="text-muted mb-3">
+            @if (!string.IsNullOrEmpty(currentTag) || isResolved.HasValue)
+            {
+                <span>Try adjusting your filters or</span>
+            }
+            else
+            {
+                <span>Be the first to ask a question!</span>
+            }
+        </p>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-action="Create" class="btn btn-ask">
+                <i class="fas fa-plus-circle me-2"></i>Ask the First Question
+            </a>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Smooth scroll to top on pagination
+            $('.pagination a').on('click', function() {
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+        });
+    </script>
 }

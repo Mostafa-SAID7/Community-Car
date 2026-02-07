@@ -1,13 +1,113 @@
+@model List<CommunityCar.Web.ViewModels.Groups.GroupViewModel>
 @{
     ViewData["Title"] = "Groups";
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+    var totalCount = ViewBag.TotalCount ?? 0;
 }
 
-<div class="container-fluid py-4">
-    <div class="card border-0 shadow-sm rounded-4 text-center py-5">
-        <div class="card-body">
-            <i class="fas fa-users fa-4x text-primary mb-3"></i>
-            <h2 class="fw-bold">Groups Coming Soon</h2>
-            <p class="text-muted">Join communities of like-minded enthusiasts.</p>
-        </div>
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_Social" />
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users me-2"></i>Groups</h2>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="btn-group">
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Group
+                </a>
+                <a asp-action="MyGroups" class="btn btn-outline-primary">
+                    <i class="fas fa-user me-2"></i>My Groups
+                </a>
+            </div>
+        }
     </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var group in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(group.ImageUrl))
+                        {
+                            <img src="@group.ImageUrl" class="card-img-top" alt="@group.Name" style="height: 200px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-users fa-4x text-white"></i>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a asp-action="Details" asp-route-slug="@group.Slug" class="text-decoration-none">
+                                    @group.Name
+                                </a>
+                                @if (group.IsPrivate)
+                                {
+                                    <i class="fas fa-lock text-muted ms-2" title="Private Group"></i>
+                                }
+                            </h5>
+                            <p class="card-text text-muted">@group.Description</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>@group.MemberCount members
+                                </small>
+                                @if (group.IsMember)
+                                {
+                                    <span class="badge bg-success">Member</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a asp-action="Details" asp-route-slug="@group.Slug" class="btn btn-sm btn-outline-primary w-100">
+                                View Group
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No groups found</h5>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <p class="text-muted">Be the first to create a group!</p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Group
+                    </a>
+                }
+            </div>
+        </div>
+    }
 </div>

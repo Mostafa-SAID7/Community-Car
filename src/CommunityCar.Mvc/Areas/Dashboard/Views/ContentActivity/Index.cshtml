@@ -1,23 +1,357 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.ContentActivityViewModel
 @{
     ViewData["Title"] = "Content Activity";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid py-4">
-    <partial name="_UserActivityNav" />
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Content Activity</h1>
-            <p class="text-muted small">Track content creation, updates, and moderation history.</p>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-3">
+                <i class="bi bi-activity"></i> Content Activity
+            </h1>
+            <p class="text-muted">Track user interactions with content across the platform</p>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-5 text-center">
-             <div class="mb-4">
-                <i class="fas fa-edit fa-3x text-primary opacity-25"></i>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-bar-chart fs-2 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Total Activities</h6>
+                            <h3 class="mb-0">@Model.TotalCount.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h5 class="fw-bold">Content Activity Log</h5>
-            <p class="text-muted">History of content modifications and deletions will be listed here.</p>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-eye fs-2 text-info"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Views</h6>
+                            <h3 class="mb-0">@Model.Activities.Count(a => a.Action == "View").ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-plus-circle fs-2 text-success"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Creates</h6>
+                            <h3 class="mb-0">@Model.Activities.Count(a => a.Action == "Create").ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-pencil-square fs-2 text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Updates</h6>
+                            <h3 class="mb-0">@Model.Activities.Count(a => a.Action == "Update").ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel"></i> Filters
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">User ID</label>
+                        <input type="text" class="form-control" name="userId" value="@Model.UserId" placeholder="Filter by user..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Content Type</label>
+                        <select class="form-select" name="contentType">
+                            <option value="">All Types</option>
+                            <option value="Question" selected="@(Model.ContentType == "Question")">Question</option>
+                            <option value="Post" selected="@(Model.ContentType == "Post")">Post</option>
+                            <option value="Event" selected="@(Model.ContentType == "Event")">Event</option>
+                            <option value="News" selected="@(Model.ContentType == "News")">News</option>
+                            <option value="Guide" selected="@(Model.ContentType == "Guide")">Guide</option>
+                            <option value="Review" selected="@(Model.ContentType == "Review")">Review</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Page Size</label>
+                        <select class="form-select" name="pageSize">
+                            <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                            <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                            <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                            <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search"></i> Filter
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="@Url.Action("Statistics")" class="btn btn-info me-2">
+                            <i class="bi bi-graph-up"></i> Statistics
+                        </a>
+                        <a href="@Url.Action("Export", new { userId = Model.UserId, contentType = Model.ContentType })" class="btn btn-success">
+                            <i class="bi bi-download"></i> Export
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Activity Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Activity Log
+            </h5>
+            <form method="post" asp-action="BulkDelete" id="bulkDeleteForm">
+                <button type="button" class="btn btn-sm btn-danger" onclick="confirmBulkDelete()">
+                    <i class="bi bi-trash"></i> Delete Selected
+                </button>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Activities.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="40">
+                                    <input type="checkbox" id="selectAll" class="form-check-input" />
+                                </th>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Content Type</th>
+                                <th>Content</th>
+                                <th>IP Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var activity in Model.Activities)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="ids" value="@activity.Id" class="form-check-input activity-checkbox" form="bulkDeleteForm" />
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            @activity.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("UserActivities", new { userId = activity.UserId })" class="text-decoration-none">
+                                            <span class="badge bg-info">@activity.UserName</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetActionColor(activity.Action)">
+                                            <i class="bi bi-@GetActionIcon(activity.Action)"></i> @activity.Action
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <code class="text-primary">@activity.ContentType</code>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="@activity.ContentTitle">
+                                            @activity.ContentTitle
+                                        </div>
+                                        <small class="text-muted">ID: @activity.ContentId</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted font-monospace">@(activity.IpAddress ?? "-")</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="@Url.Action("Details", new { id = activity.Id })" class="btn btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" onclick="confirmDelete(@activity.Id)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <div class="card-footer bg-white">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, userId = Model.UserId, contentType = Model.ContentType })">
+                                        Previous
+                                    </a>
+                                </li>
+
+                                @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                                {
+                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = Model.PageSize, userId = Model.UserId, contentType = Model.ContentType })">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, userId = Model.UserId, contentType = Model.ContentType })">
+                                        Next
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="text-center text-muted mt-2">
+                            <small>Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount) of @Model.TotalCount entries</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">No content activities found.</p>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this activity record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-action="Delete" id="deleteForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            document.getElementById('deleteId').value = id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function confirmBulkDelete() {
+            const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one activity to delete.');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete ${checkboxes.length} activity record(s)?`)) {
+                document.getElementById('bulkDeleteForm').submit();
+            }
+        }
+
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.activity-checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+}
+
+@functions {
+    string GetActionIcon(string action)
+    {
+        return action.ToLower() switch
+        {
+            "create" => "plus-circle",
+            "update" => "pencil-square",
+            "delete" => "trash",
+            "view" => "eye",
+            "like" => "heart",
+            "comment" => "chat",
+            "share" => "share",
+            _ => "circle"
+        };
+    }
+
+    string GetActionColor(string action)
+    {
+        return action.ToLower() switch
+        {
+            "create" => "success",
+            "update" => "warning",
+            "delete" => "danger",
+            "view" => "primary",
+            "like" => "danger",
+            "comment" => "info",
+            "share" => "secondary",
+            _ => "secondary"
+        };
+    }
+}

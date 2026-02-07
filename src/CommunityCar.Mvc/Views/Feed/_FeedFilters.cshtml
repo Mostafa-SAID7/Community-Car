@@ -1,0 +1,40 @@
+@model CommunityCar.Mvc.ViewModels.Feed.FeedFilterViewModel
+@using CommunityCar.Mvc.ViewModels.Feed
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Content Type</label>
+                <select name="type" class="form-select form-select-sm">
+                    <option value="">All Content</option>
+                    <option value="@((int)FeedItemType.Post)" selected="@(Model.ContentType == FeedItemType.Post)">Posts</option>
+                    <option value="@((int)FeedItemType.Question)" selected="@(Model.ContentType == FeedItemType.Question)">Questions</option>
+                    <option value="@((int)FeedItemType.Event)" selected="@(Model.ContentType == FeedItemType.Event)">Events</option>
+                    <option value="@((int)FeedItemType.News)" selected="@(Model.ContentType == FeedItemType.News)">News</option>
+                    <option value="@((int)FeedItemType.Guide)" selected="@(Model.ContentType == FeedItemType.Guide)">Guides</option>
+                    <option value="@((int)FeedItemType.Review)" selected="@(Model.ContentType == FeedItemType.Review)">Reviews</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date Filter</label>
+                <select name="dateFilter" class="form-select form-select-sm">
+                    <option value="@((int)DateFilterType.All)" selected="@(Model.DateFilter == DateFilterType.All)">All Time</option>
+                    <option value="@((int)DateFilterType.Today)" selected="@(Model.DateFilter == DateFilterType.Today)">Today</option>
+                    <option value="@((int)DateFilterType.ThisWeek)" selected="@(Model.DateFilter == DateFilterType.ThisWeek)">This Week</option>
+                    <option value="@((int)DateFilterType.ThisMonth)" selected="@(Model.DateFilter == DateFilterType.ThisMonth)">This Month</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search content..." value="@Model.SearchTerm" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+        </form>
+    </div>
+</div>

@@ -40,3 +40,41 @@ public class FriendRequestViewModel
     [Required]
     public DateTimeOffset ReceivedAt { get; set; }
 }
+
+public class UserSearchViewModel
+{
+    [Required]
+    public Guid UserId { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(50)]
+    public string UserName { get; set; } = string.Empty;
+
+    public string? ProfilePictureUrl { get; set; }
+    
+    [Required]
+    public string Slug { get; set; } = string.Empty;
+
+    [Required]
+    public FriendshipStatus FriendshipStatus { get; set; }
+}
+
+public class BlockedUserViewModel
+{
+    [Required]
+    public Guid UserId { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string UserName { get; set; } = string.Empty;
+
+    public string? ProfilePictureUrl { get; set; }
+    public string? Slug { get; set; }
+
+    [Required]
+    public DateTimeOffset BlockedAt { get; set; }
+}

@@ -30,6 +30,9 @@ public class ApplicationUser : IdentityUser<Guid>, IEntity, IAuditable, ISoftDel
     
     public int Points { get; set; }
     
+    public bool IsActive { get; set; } = true;
+    public DateTime? LastLoginAt { get; set; }
+    
     public UserRank Rank => Points switch
     {
         >= 10000 => UserRank.Master,

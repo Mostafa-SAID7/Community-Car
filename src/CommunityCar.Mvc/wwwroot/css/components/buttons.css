@@ -158,3 +158,31 @@
     color: var(--color-primary);
     border-color: var(--color-primary);
 }
+
+
+/* Purple Button Styles for Posts */
+.btn-purple {
+    background-color: #8b5cf6;
+    color: white;
+    border: 2px solid #8b5cf6;
+}
+
+.btn-purple:hover:not(:disabled) {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
+}
+
+.btn-outline-purple {
+    background-color: transparent;
+    color: #8b5cf6;
+    border: 2px solid #8b5cf6;
+}
+
+.btn-outline-purple:hover:not(:disabled) {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+.bg-purple {
+    background-color: #8b5cf6;
+}

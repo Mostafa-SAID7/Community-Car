@@ -1,0 +1,287 @@
+@{
+    ViewData["Title"] = "Frequently Asked Questions";
+}
+
+@section Styles {
+    <style>
+        .faq-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .faq-category {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: #f0f4ff;
+            color: #667eea;
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="faq-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-question-circle me-3"></i>FAQ
+                </h1>
+                <p class="lead mb-0">Find answers to commonly asked questions</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-question-circle fa-8x opacity-25"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Search Box -->
+    <div class="card mb-5 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="faqSearch" placeholder="Search FAQ...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Getting Started -->
+    <div class="faq-category">
+        <h3 class="fw-bold mb-4">
+            <i class="fas fa-rocket me-2 text-primary"></i>Getting Started
+        </h3>
+        <div class="accordion mb-4" id="gettingStarted">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#gs1">
+                        How do I create an account?
+                    </button>
+                </h2>
+                <div id="gs1" class="accordion-collapse collapse show" data-bs-parent="#gettingStarted">
+                    <div class="accordion-body">
+                        Click the "Sign Up" button in the top right corner, fill in your details (name, email, password), 
+                        and verify your email address. Once verified, you can start using all features of CommunityCar.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gs2">
+                        How do I complete my profile?
+                    </button>
+                </h2>
+                <div id="gs2" class="accordion-collapse collapse" data-bs-parent="#gettingStarted">
+                    <div class="accordion-body">
+                        Go to your profile page, click "Edit Profile", and add information like your bio, location, 
+                        profile picture, and vehicle details. A complete profile helps you connect better with the community.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gs3">
+                        What can I do on CommunityCar?
+                    </button>
+                </h2>
+                <div id="gs3" class="accordion-collapse collapse" data-bs-parent="#gettingStarted">
+                    <div class="accordion-body">
+                        You can create posts, write reviews, share guides, ask questions, organize events, connect with friends, 
+                        join groups, chat with members, and earn badges for your contributions.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Creation -->
+    <div class="faq-category">
+        <h3 class="fw-bold mb-4">
+            <i class="fas fa-edit me-2 text-success"></i>Content Creation
+        </h3>
+        <div class="accordion mb-4" id="contentCreation">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cc1">
+                        How do I create a post?
+                    </button>
+                </h2>
+                <div id="cc1" class="accordion-collapse collapse" data-bs-parent="#contentCreation">
+                    <div class="accordion-body">
+                        Navigate to the Posts section and click "Create Post". Choose a post type, add a title and content, 
+                        optionally add images or videos, and click "Publish". Your post will be visible to the community immediately.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cc2">
+                        How do I write a review?
+                    </button>
+                </h2>
+                <div id="cc2" class="accordion-collapse collapse" data-bs-parent="#contentCreation">
+                    <div class="accordion-body">
+                        Go to Reviews and click "Write Review". Select the review type (car, service, product), 
+                        rate it with stars, write your title and detailed review, add pros and cons, and submit. 
+                        Reviews help other members make informed decisions.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cc3">
+                        Can I edit or delete my content?
+                    </button>
+                </h2>
+                <div id="cc3" class="accordion-collapse collapse" data-bs-parent="#contentCreation">
+                    <div class="accordion-body">
+                        Yes! You can edit or delete any content you've created. Go to your content, click the menu icon (three dots), 
+                        and select "Edit" or "Delete". Note that deleted content cannot be recovered.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Community Features -->
+    <div class="faq-category">
+        <h3 class="fw-bold mb-4">
+            <i class="fas fa-users me-2 text-warning"></i>Community Features
+        </h3>
+        <div class="accordion mb-4" id="community">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cf1">
+                        How do I connect with other members?
+                    </button>
+                </h2>
+                <div id="cf1" class="accordion-collapse collapse" data-bs-parent="#community">
+                    <div class="accordion-body">
+                        Visit a member's profile and click "Add Friend". Once they accept, you can chat with them, 
+                        see their activity in your feed, and collaborate on content. You can also join groups to connect 
+                        with members who share similar interests.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cf2">
+                        What are badges and how do I earn them?
+                    </button>
+                </h2>
+                <div id="cf2" class="accordion-collapse collapse" data-bs-parent="#community">
+                    <div class="accordion-body">
+                        Badges are achievements you earn by contributing to the community. Create posts, write reviews, 
+                        help others, organize events, and more to unlock badges. Visit the Badges page to see all available 
+                        badges and your progress toward earning them.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cf3">
+                        How do I organize an event?
+                    </button>
+                </h2>
+                <div id="cf3" class="accordion-collapse collapse" data-bs-parent="#community">
+                    <div class="accordion-body">
+                        Go to Events and click "Create Event". Fill in the event details (title, description, date, time, location), 
+                        add an image, and publish. Members can RSVP to your event, and you'll receive notifications about attendees.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy & Security -->
+    <div class="faq-category">
+        <h3 class="fw-bold mb-4">
+            <i class="fas fa-shield-alt me-2 text-danger"></i>Privacy & Security
+        </h3>
+        <div class="accordion mb-4" id="privacy">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ps1">
+                        How is my data protected?
+                    </button>
+                </h2>
+                <div id="ps1" class="accordion-collapse collapse" data-bs-parent="#privacy">
+                    <div class="accordion-body">
+                        We use industry-standard encryption and security measures to protect your data. 
+                        Your password is encrypted, and we never share your personal information with third parties 
+                        without your consent. Read our <a asp-controller="Legal" asp-action="Privacy">Privacy Policy</a> for details.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ps2">
+                        Can I control who sees my content?
+                    </button>
+                </h2>
+                <div id="ps2" class="accordion-collapse collapse" data-bs-parent="#privacy">
+                    <div class="accordion-body">
+                        Yes! You can adjust your privacy settings to control who can see your posts, profile information, 
+                        and activity. Go to Settings > Privacy to customize your preferences.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ps3">
+                        How do I report inappropriate content?
+                    </button>
+                </h2>
+                <div id="ps3" class="accordion-collapse collapse" data-bs-parent="#privacy">
+                    <div class="accordion-body">
+                        Click the flag icon on any post, comment, or review to report it. Our moderation team will review 
+                        the report and take appropriate action. You can also block users who are bothering you.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Still Have Questions -->
+    <div class="card border-0 shadow-sm bg-light">
+        <div class="card-body p-5 text-center">
+            <i class="fas fa-question-circle fa-3x text-primary mb-3"></i>
+            <h3 class="fw-bold mb-3">Still have questions?</h3>
+            <p class="text-muted mb-4">Can't find what you're looking for? Contact our support team.</p>
+            <a asp-action="Contact" class="btn btn-primary btn-lg">
+                <i class="fas fa-envelope me-2"></i>Contact Support
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // FAQ Search
+            $('#faqSearch').on('keyup', function() {
+                var searchText = $(this).val().toLowerCase();
+                
+                $('.accordion-item').each(function() {
+                    var questionText = $(this).find('.accordion-button').text().toLowerCase();
+                    var answerText = $(this).find('.accordion-body').text().toLowerCase();
+                    
+                    if (questionText.includes(searchText) || answerText.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,945 +1,475 @@
-@using CommunityCar.Domain.DTOs.Community
-@model QuestionDto
+@model CommunityCar.Domain.DTOs.Community.QuestionDto
 @{
     ViewData["Title"] = Model.Title;
-    var answers = ViewBag.Answers as IEnumerable<AnswerDto> ?? new List<AnswerDto>();
+    var answers = ViewBag.Answers as IEnumerable<CommunityCar.Domain.DTOs.Community.AnswerDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Community.AnswerDto>();
+    var currentUserId = ViewBag.CurrentUserId as Guid?;
+    var isAuthor = currentUserId.HasValue && Model.AuthorId == currentUserId.Value;
 }
 
-<link rel="stylesheet" href="~/css/pages/qa.css" />
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_QA" />
+}
 
-<div class="container qa-container py-4">
-    <div class="row">
-        <div class="col-12">
-            <!-- Quick Tip Alert -->
-            <div class="alert alert-info border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%); border-left: 4px solid var(--bs-info) !important;">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-lightbulb text-info fs-4 me-3 mt-1"></i>
-                    <div>
-                        <h6 class="alert-heading fw-bold mb-1">Quick Tip</h6>
-                        <p class="mb-0 small">Be detailed and specific when providing answers to help the community better.</p>
-                    </div>
-                </div>
+@section Styles {
+    <style>
+        .question-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        .question-card, .answer-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question-card:hover, .answer-card:hover {
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        .vote-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .vote-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+        .vote-btn:hover {
+            transform: scale(1.1);
+        }
+        .vote-btn.upvote {
+            border-color: #28a745;
+            color: #28a745;
+        }
+        .vote-btn.upvote:hover {
+            background: #28a745;
+            color: white;
+        }
+        .vote-btn.downvote {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        .vote-btn.downvote:hover {
+            background: #dc3545;
+            color: white;
+        }
+        .vote-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #495057;
+            display: block;
+            margin: 12px 0;
+        }
+        .tag-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px;
+            transition: all 0.3s ease;
+        }
+        .tag-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .accepted-answer {
+            border: 3px solid #28a745 !important;
+            background: linear-gradient(to right, rgba(40, 167, 69, 0.05), transparent);
+        }
+        .accepted-badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .answer-form-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: linear-gradient(to bottom, white, #f8f9fa);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 32px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .author-info {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .stats-badge {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+}
+
+<!-- Question Header -->
+<div class="question-header">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+            <h1 class="mb-3 fw-bold">
+                @Model.Title
+            </h1>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="stats-badge">
+                    <i class="fas fa-eye me-1"></i> @Model.ViewCount views
+                </span>
+                <span class="stats-badge">
+                    <i class="fas fa-comment me-1"></i> @Model.AnswerCount answers
+                </span>
+                <span class="stats-badge">
+                    <i class="fas fa-arrow-up me-1"></i> @Model.VoteCount votes
+                </span>
+                @if (Model.IsResolved)
+                {
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="fas fa-check-circle me-1"></i> Resolved
+                    </span>
+                }
             </div>
         </div>
     </div>
+</div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="question-header mb-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h1 class="h2 mb-2">@Model.Title</h1>
-                        <div class="text-secondary small d-flex gap-3">
-                            <span>Asked @Model.CreatedAt.ToString("MMM dd, yyyy")</span>
-                            <span>Viewed @Model.ViewCount times</span>
-                            @if (Model.IsResolved)
-                            {
-                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Resolved</span>
-                            }
-                        </div>
-                    </div>
-                    @if (Model.Category != null)
+<!-- Question Card -->
+<div class="card question-card">
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-auto">
+                <div class="vote-section">
+                    <button class="vote-btn upvote" data-type="question" data-id="@Model.Id" data-vote="up">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <span class="vote-count">@Model.VoteCount</span>
+                    <button class="vote-btn downvote" data-type="question" data-id="@Model.Id" data-vote="down">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col">
+                <div class="author-info mb-3">
+                    <i class="fas fa-user-circle me-2 text-primary"></i>
+                    <strong>@Model.AuthorName</strong>
+                    <span class="text-muted ms-2">
+                        • @Model.CreatedAt.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                    </span>
+                    @if (Model.UpdatedAt.HasValue)
                     {
-                        <span class="badge" style="background-color: @(Model.Category.Color ?? "#6c757d"); color: white; padding: 0.5em 1em;">
-                            <i class="@Model.Category.Icon me-1"></i> @Model.Category.Name
+                        <span class="text-muted">
+                            • <i class="fas fa-edit"></i> Updated @Model.UpdatedAt.Value.ToString("MMM dd, yyyy")
                         </span>
                     }
                 </div>
-            </div>
 
-            <div class="question-detail">
-                <div class="question-detail-header">
-                    <div class="d-flex gap-3">
-                        <div class="vote-controls d-flex flex-column align-items-center" style="width: 50px;">
-                            <button class="btn btn-link p-0 fs-3 @(Model.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteQuestion('@Model.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
-                            <span class="fw-bold fs-4">@Model.VoteCount</span>
-                            <button class="btn btn-link p-0 fs-3 @(Model.CurrentUserVote == -1 ? "vote-active-down" : "link-secondary")" onclick="voteQuestion('@Model.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
-                            
-                            <hr class="w-100 my-2" />
-                            
-                            <button class="btn btn-link link-secondary p-0 fs-4 mb-2" onclick="bookmarkQuestion('@Model.Id')" id="btnBookmark">
-                                <i class="bi bi-bookmark"></i>
-                            </button>
-                            
-                            <div class="dropdown">
-                                <button class="btn btn-link link-secondary p-0 fs-4 mb-2 dropdown-toggle-no-caret" data-bs-toggle="dropdown">
-                                    <i class="bi bi-emoji-smile"></i>
-                                </button>
-                                <ul class="dropdown-menu p-2">
-                                    <li class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 1)" title="Like">👍</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 2)" title="Love">❤️</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 3)" title="Celebrate">🙌</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 4)" title="Think">🤔</button>
-                                        <button class="btn btn-sm btn-light" onclick="reactQuestion('@Model.Id', 5)" title="Insightful">💡</button>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="dropdown d-inline-block">
-                                <button class="btn btn-link link-secondary p-0 fs-4 dropdown-toggle-no-caret" 
-                                        type="button" 
-                                        data-bs-toggle="dropdown" 
-                                        aria-expanded="false" 
-                                        title="Share">
-                                    <i class="bi bi-share"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="min-width: 150px;">
-                                    <li>
-                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'Facebook')">
-                                            <i class="fab fa-facebook text-primary me-2"></i>Facebook
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'Twitter')">
-                                            <i class="fab fa-x-twitter text-dark me-2"></i>Twitter
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item rounded small mb-1" onclick="shareQuestion('@Model.Id', 'LinkedIn')">
-                                            <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
-                                        </button>
-                                    </li>
-                                    <li><hr class="dropdown-divider my-1"></li>
-                                    <li>
-                                        <button class="dropdown-item rounded small" onclick="shareQuestion('@Model.Id', 'Clipboard')">
-                                            <i class="fas fa-link text-secondary me-2"></i>Copy Link
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="reaction-summary mb-2" id="questionReactions">
-                                <!-- Populated via JS -->
-                            </div>
-                            <div class="question-detail-content">
-                                @Html.Raw(Model.Content.Replace("\n", "<br/>"))
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-4">
-                                <div class="tags">
-                                    @if (!string.IsNullOrEmpty(Model.Tags))
-                                    {
-                                        foreach (var tag in Model.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                        {
-                                            <a href="@Url.Action("Index", new { tag = tag.Trim() })" class="badge bg-light text-secondary text-decoration-none me-1">@tag.Trim()</a>
-                                        }
-                                    }
-                                </div>
-                                <div class="author-info p-2 bg-light rounded" style="min-width: 200px;">
-                                    <div class="text-secondary smallest mb-1">Asked by</div>
-                                        <div>
-                                            <div class="fw-bold small">
-                                                @(Model.AuthorName ?? "User")
-                                                @if (Model.AuthorRankName != "Standard")
-                                                {
-                                                    var iconClass = Model.AuthorRankName switch
-                                                    {
-                                                        "Master" => "fa-star-of-life text-danger",
-                                                        "Moderator" => "fa-shield-halved text-dark",
-                                                        "Author" => "fa-pen-nib text-info",
-                                                        "Reviewer" => "fa-star text-success",
-                                                        "Expert" => "fa-crown text-warning",
-                                                        _ => "fa-certificate text-secondary"
-                                                    };
-                                                    <i class="fas @iconClass ms-1 x-small" title="@Model.AuthorRankName Member"></i>
-                                                }
-                                            </div>
-                                            {
-                                                <div class="mt-1 d-flex gap-2 align-items-center">
-                                                    <a asp-controller="Questions" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-link p-0 text-secondary smallest text-decoration-none hover-primary">
-                                                        <i class="bi bi-pencil me-1"></i>Edit
-                                                    </a>
-                                                    <form asp-controller="Questions" asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirmDeleteWithSweetAlert(event)">
-                                                        <button type="submit" class="btn btn-link p-0 text-secondary smallest text-decoration-none hover-danger border-0 bg-transparent">
-                                                            <i class="bi bi-trash me-1"></i>Delete
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            }
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="question-content mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+                    @Html.Raw(Model.Content.Replace("\n", "<br/>"))
                 </div>
-            </div>
 
-            <div class="answers-section">
-                <h3 class="answers-header">@answers.Count() Answers</h3>
-                <div id="answersList">
-                @foreach (var answer in answers)
+                @if (!string.IsNullOrEmpty(Model.Tags))
                 {
-                    <div class="card mb-3 @(answer.IsAccepted ? "border-success" : "")" id="answer-@answer.Id">
-                        <div class="card-body">
-                            <div class="d-flex gap-3">
-                                <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
-                                    <button class="btn btn-link p-0 fs-4 @(answer.CurrentUserVote == 1 ? "vote-active-up" : "link-secondary")" onclick="voteAnswer('@answer.Id', true)"><i class="bi bi-caret-up-fill"></i></button>
-                                    <span class="fw-bold">@answer.VoteCount</span>
-                                    <button class="btn btn-link p-0 fs-4 @(answer.CurrentUserVote == -1 ? "vote-active-down" : "link-secondary")" onclick="voteAnswer('@answer.Id', false)"><i class="bi bi-caret-down-fill"></i></button>
-                                    
-                                    @if (User.Identity?.IsAuthenticated == true && Model.AuthorId == Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString()))
-                                    {
-                                        <button class="btn btn-link p-0 mt-2 @(answer.IsAccepted ? "text-success" : "text-secondary")" 
-                                                onclick="toggleAcceptAnswer('@Model.Id', '@answer.Id', @(answer.IsAccepted.ToString().ToLower()))"
-                                                title="@(answer.IsAccepted ? "Unaccept this answer" : "Accept this answer")">
-                                            <i class="bi @(answer.IsAccepted ? "bi-check-circle-fill" : "bi-check-circle") fs-3"></i>
-                                        </button>
-                                    }
-                                    else if (answer.IsAccepted)
-                                    {
-                                        <i class="bi bi-check-circle-fill text-success fs-3 mt-2" title="Accepted Answer"></i>
-                                    }
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="answer-content">
-                                        @Html.Raw(answer.Content.Replace("\n", "<br/>"))
-                                    </div>
-                                    <div class="d-flex justify-content-end mt-3">
-                                        <div class="author-info p-2" style="min-width: 150px;">
-                                            <div class="text-secondary smallest mb-1">Answered @answer.CreatedAt.ToString("MMM dd, yyyy")</div>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <a asp-area="Identity" asp-controller="Profiles" asp-action="Index" asp-route-userId="@answer.AuthorId" class="fw-bold small text-primary text-decoration-none hover-opacity">
-                                                    @(answer.AuthorName ?? "User")
-                                                    @if (answer.AuthorRankName != "Standard")
-                                                    {
-                                                        var iconClass = answer.AuthorRankName switch
-                                                        {
-                                                            "Master" => "fa-star-of-life text-danger",
-                                                            "Moderator" => "fa-shield-halved text-dark",
-                                                            "Author" => "fa-pen-nib text-info",
-                                                            "Reviewer" => "fa-star text-success",
-                                                            "Expert" => "fa-crown text-warning",
-                                                            _ => "fa-certificate text-secondary"
-                                                        };
-                                                        <i class="fas @iconClass ms-1 x-small" title="@answer.AuthorRankName Member"></i>
-                                                    }
-                                                </a>
-                                                @if (User.Identity?.IsAuthenticated == true && answer.AuthorId == Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString()))
-                                                {
-                                                    <span class="text-muted d-none d-sm-inline">•</span>
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" onclick="editAnswer('@answer.Id')">Edit</button>
-                                                    <span class="text-muted d-none d-sm-inline">•</span>
-                                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="confirmDeleteAnswer('@Model.Id', '@answer.Id')">Delete</button>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Comments Section -->
-                            <div class="comments-section mt-3 ps-5 border-start-0">
-                                <div id="comments-list-@answer.Id" class="comments-list bg-light rounded-3 p-2 mb-2" style="@(answer.Comments != null && answer.Comments.Any() ? "" : "display:none;")">
-                                    @if (answer.Comments != null)
-                                    {
-                                        foreach (var comment in answer.Comments)
-                                        {
-                                            <partial name="_CommentItem" model="comment" />
-                                        }
-                                    }
-                                </div>
-                                
-                                <button class="btn btn-link btn-sm text-decoration-none p-0 text-muted" onclick="toggleCommentForm('@answer.Id')">
-                                    <i class="fas fa-comment-alt me-1"></i>Add a comment
-                                </button>
-                                
-                                <div id="comment-form-@answer.Id" class="comment-form mt-2 d-none">
-                                    <form class="submit-comment-form" data-answer-id="@answer.Id">
-                                        <input type="hidden" name="AnswerId" value="@answer.Id" />
-                                        <input type="hidden" name="QuestionId" value="@Model.Id" />
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" name="Content" class="form-control" placeholder="Add a comment..." required minlength="5">
-                                            <button class="btn btn-primary" type="submit">Post</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        @foreach (var tag in Model.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <a asp-action="Index" asp-route-tag="@tag.Trim()" class="tag-badge">
+                                <i class="fas fa-tag me-1"></i>@tag.Trim()
+                            </a>
+                        }
                     </div>
                 }
-                </div>
-            </div>
 
-            <div class="post-answer mt-5">
-                <h4 class="h5 fw-bold mb-3">Your Answer</h4>
-                <form id="answerForm" asp-controller="Answers" asp-action="Create" method="post">
-                    <input type="hidden" name="QuestionId" value="@Model.Id" />
-                    <div id="answerValidationErrors" class="alert alert-danger d-none mb-3"></div>
-                    <div class="form-group mb-3">
-                        <textarea name="Content" class="form-control" rows="8" placeholder="Type your answer here (min 20 chars)..."></textarea>
+                @if (isAuthor)
+                {
+                    <div class="mt-4 pt-3 border-top">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary rounded-pill px-4">
+                            <i class="fas fa-edit me-2"></i>Edit Question
+                        </a>
+                        <button class="btn btn-outline-danger rounded-pill px-4" onclick="deleteQuestion('@Model.Id')">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </button>
                     </div>
-                    <button type="submit" id="btnPostAnswer" class="btn btn-primary">
-                        <span class="spinner-border spinner-border-sm d-none mr-2" role="status" aria-hidden="true"></span>
-                        Post Your Answer
-                    </button>
-                </form>
+                }
             </div>
         </div>
     </div>
+</div>
 
-    @* Related Questions Section *@
-    @if (ViewBag.RelatedQuestions != null && ((List<QuestionDto>)ViewBag.RelatedQuestions).Any())
+<!-- Answers Section -->
+<div class="mb-4">
+    <h3 class="mb-4 fw-bold">
+        <i class="fas fa-comments me-2 text-primary"></i>
+        @answers.Count() Answer@(answers.Count() != 1 ? "s" : "")
+    </h3>
+
+    @if (answers.Any())
     {
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="h5 fw-bold mb-0">Related Questions</h4>
-                </div>
-                
-                <div class="row g-3 related-questions">
-                    @foreach (var relatedQuestion in (List<QuestionDto>)ViewBag.RelatedQuestions)
-                    {
-                        <div class="col-md-6">
-                            <div class="card h-100 hover-lift">
-                                <div class="card-body">
-                                    <h5 class="h6 card-title mb-2">
-                                        <a href="@Url.Action("Details", "Questions", new { idOrSlug = relatedQuestion.Slug ?? relatedQuestion.Id.ToString() })" class="text-decoration-none text-dark">
-                                            @relatedQuestion.Title
-                                        </a>
-                                    </h5>
-                                    
-                                    <div class="d-flex gap-3 text-muted small mt-2">
-                                        <span title="Vote Count">
-                                            <i class="bi bi-arrow-up-circle"></i> @relatedQuestion.VoteCount
-                                        </span>
-                                        <span title="Answer Count">
-                                            <i class="bi bi-chat-left-text"></i> @relatedQuestion.AnswerCount
-                                        </span>
-                                        <span title="View Count">
-                                            <i class="bi bi-eye"></i> @relatedQuestion.ViewCount
-                                        </span>
-                                    </div>
-                                    
-                                    @if (relatedQuestion.TagList != null && relatedQuestion.TagList.Any())
-                                    {
-                                        <div class="mt-2">
-                                            @foreach (var tag in relatedQuestion.TagList.Take(3))
-                                            {
-                                                <span class="badge bg-light text-secondary me-1">@tag.Name</span>
-                                            }
-                                        </div>
-                                    }
-                                    
-                                    <div class="d-flex align-items-center gap-2 mt-3 text-muted smallest">
-                                        <span>by</span>
-                                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = relatedQuestion.AuthorId })" class="text-primary text-decoration-none fw-bold">
-                                            @relatedQuestion.AuthorName
-                                        </a>
-                                        <span class="text-muted">• @relatedQuestion.CreatedAt.ToString("MMM dd, yyyy")</span>
-                                    </div>
-                                </div>
+        foreach (var answer in answers.OrderByDescending(a => a.IsAccepted).ThenByDescending(a => a.VoteCount))
+        {
+            <div class="card answer-card @(answer.IsAccepted ? "accepted-answer" : "")">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-auto">
+                            <div class="vote-section">
+                                <button class="vote-btn upvote" data-type="answer" data-id="@answer.Id" data-vote="up">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <span class="vote-count">@answer.VoteCount</span>
+                                <button class="vote-btn downvote" data-type="answer" data-id="@answer.Id" data-vote="down">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                                @if (isAuthor && !Model.IsResolved)
+                                {
+                                    <button class="btn btn-success rounded-circle mt-3" style="width: 45px; height: 45px;" 
+                                            onclick="acceptAnswer('@Model.Id', '@answer.Id')" 
+                                            title="Accept this answer">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                }
                             </div>
                         </div>
-                    }
+                        <div class="col">
+                            @if (answer.IsAccepted)
+                            {
+                                <div class="accepted-badge">
+                                    <i class="fas fa-check-circle me-2"></i>Accepted Answer
+                                </div>
+                            }
+                            
+                            <div class="answer-content mb-3" style="font-size: 1.05rem; line-height: 1.7;">
+                                @Html.Raw(answer.Content.Replace("\n", "<br/>"))
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <div class="author-info">
+                                    <i class="fas fa-user-circle me-2 text-primary"></i>
+                                    <strong>@answer.AuthorName</strong>
+                                    <span class="text-muted ms-2">
+                                        • @answer.CreatedAt.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                    </span>
+                                </div>
+                                @if (currentUserId.HasValue && answer.AuthorId == currentUserId.Value)
+                                {
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <i class="fas fa-edit me-1"></i>Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info rounded-4 p-4">
+            <div class="text-center">
+                <i class="fas fa-info-circle fa-3x mb-3 text-info"></i>
+                <h5>No answers yet</h5>
+                <p class="mb-0">Be the first to help by posting an answer!</p>
             </div>
         </div>
     }
 </div>
 
-
-
+<!-- Add Answer Form -->
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="card answer-form-card">
+        <div class="card-header bg-transparent border-0 pt-4 px-4">
+            <h4 class="mb-0 fw-bold">
+                <i class="fas fa-pen me-2 text-primary"></i>Your Answer
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-controller="Answers" asp-action="Create" method="post">
+                <input type="hidden" name="QuestionId" value="@Model.Id" />
+                <div class="mb-3">
+                    <textarea name="Content" class="form-control" rows="8" 
+                              style="border-radius: 12px; border: 2px solid #e9ecef; font-size: 1.05rem;"
+                              placeholder="Write your answer here...&#10;&#10;• Be clear and concise&#10;• Provide examples if possible&#10;• Explain your reasoning" 
+                              required></textarea>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Please be respectful and constructive in your answer
+                    </small>
+                    <button type="submit" class="btn btn-gradient px-5">
+                        <i class="fas fa-paper-plane me-2"></i>Post Answer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning rounded-4 p-4">
+        <div class="text-center">
+            <i class="fas fa-lock fa-2x mb-3"></i>
+            <h5>Login Required</h5>
+            <p class="mb-3">Please login to post an answer and help the community</p>
+            <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-gradient px-4">
+                <i class="fas fa-sign-in-alt me-2"></i>Login Now
+            </a>
+        </div>
+    </div>
+}
 
 @section Scripts {
-    <style>
-        .vote-active-up { color: #f48024 !important; }
-        .vote-active-down { color: #f48024 !important; }
-        .bookmark-active { color: #0d6efd !important; }
-        .dropdown-toggle-no-caret::after { display: none; }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Tag Suggestions for Edit Modal
-        window.tagSuggestions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.TagSuggestions ?? new List<TagDto>()));
-
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/questionHub")
-            .build();
-
-        connection.on("ReceiveAnswer", function (data) {
-            // Check if this answer belongs to the current question
-            if (data.questionId === '@Model.Id') {
-                fetch(`/Answers/GetAnswerCard/${data.answerId}`)
-                    .then(response => response.json())
-                    .then(answer => {
-                        const listContainer = document.getElementById('answersList');
-                        if(listContainer) {
-                            // Build answer HTML from JSON
-                            const answerHtml = buildAnswerHtml(answer);
-                            listContainer.insertAdjacentHTML('beforeend', answerHtml);
-                            
-                            // Update count text if exists
-                            const header = document.querySelector('h3.h5.mb-3');
-                            if (header && header.innerText.includes('Answers')) {
-                                const currentCount = parseInt(header.innerText) || 0;
-                                header.innerText = `${currentCount + 1} Answers`;
-                            }
-
-                            Toast.show("New answer received!", "info");
-                        }
-                    })
-                    .catch(err => console.error("Failed to load new answer card", err));
-            }
-        });
-
-        connection.on("ReceiveComment", function (data) {
-            // Find the comment list for this answer
-            const commentList = document.getElementById(`comments-${data.answerId}`);
-            if (commentList) {
-                // Build comment HTML from JSON
-                const commentHtml = buildCommentHtml(data.comment);
-                commentList.insertAdjacentHTML('beforeend', commentHtml);
-                Toast.show("New comment received!", "info");
-            }
-        });
-
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        // Helper function to build answer HTML from JSON
-        function buildAnswerHtml(answer) {
-            const isAuthor = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value' === answer.authorId;
-            const isQuestionAuthor = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value' === '@Model.AuthorId';
-            
-            return `
-                <div class="answer-item d-flex gap-3 p-3 border rounded mb-3" id="answer-${answer.id}">
-                    <div class="vote-controls d-flex flex-column align-items-center" style="width: 40px;">
-                        <button class="btn btn-link p-0 fs-4 link-secondary" onclick="voteAnswer('${answer.id}', true)"><i class="bi bi-caret-up-fill"></i></button>
-                        <span class="fw-bold">${answer.voteCount}</span>
-                        <button class="btn btn-link p-0 fs-4 link-secondary" onclick="voteAnswer('${answer.id}', false)"><i class="bi bi-caret-down-fill"></i></button>
-                        ${isQuestionAuthor ? `
-                            <button class="btn btn-link p-0 mt-2 text-secondary" onclick="toggleAcceptAnswer('@Model.Id', '${answer.id}', false)" title="Accept this answer">
-                                <i class="bi bi-check-circle fs-3"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="answer-content mb-3">${answer.content}</div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-2">
-                                <a href="/Profiles/Index/${answer.authorId}" class="fw-bold small text-primary text-decoration-none hover-opacity">
-                                    ${answer.authorName}
-                                </a>
-                                ${isAuthor ? `
-                                    <span class="text-muted d-none d-sm-inline">•</span>
-                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-primary" onclick="editAnswer('${answer.id}')">Edit</button>
-                                    <span class="text-muted d-none d-sm-inline">•</span>
-                                    <button type="button" class="btn-link p-0 border-0 bg-transparent text-secondary smallest text-decoration-none hover-danger" onclick="deleteAnswer('@Model.Id', '${answer.id}')">Delete</button>
-                                ` : ''}
-                            </div>
-                            <span class="text-muted smallest">Just now</span>
-                        </div>
-                        <div class="mt-2">
-                            <button onclick="toggleCommentForm('${answer.id}')" class="btn btn-link btn-sm p-0 text-secondary"><i class="bi bi-chat"></i> Add Comment</button>
-                        </div>
-                        <div id="comment-form-${answer.id}" class="comment-form mt-2 d-none">
-                            <form class="submit-comment-form">
-                                <input type="hidden" name="AnswerId" value="${answer.id}" />
-                                <div class="input-group">
-                                    <input type="text" name="Content" class="form-control form-control-sm" placeholder="Write a comment..." required />
-                                    <button type="submit" class="btn btn-primary btn-sm">Post</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div id="comments-${answer.id}" class="mt-2"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Helper function to build comment HTML from JSON
-        function buildCommentHtml(comment) {
-            return `
-                <div class="comment-item border-start border-2 border-info ps-2 py-1 mb-1">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="fw-bold smallest">${comment.authorName}</span>
-                            <span class="text-muted smallest ms-2">${comment.content}</span>
-                        </div>
-                        <span class="text-muted x-small">Just now</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleCommentForm(answerId) {
-            const form = document.getElementById(`comment-form-${answerId}`);
-            form.classList.toggle('d-none');
-            if (!form.classList.contains('d-none')) {
-                form.querySelector('input[name="Content"]').focus();
-            }
-        }
-
-        // Delegate comment submission
-        document.addEventListener('submit', async function(e) {
-            if (e.target.matches('.submit-comment-form')) {
-                e.preventDefault();
-                const form = e.target;
-                const btn = form.querySelector('button');
-                const input = form.querySelector('input[name="Content"]');
-                
-                btn.disabled = true;
-                
-                try {
-                    const formData = new FormData(form);
-                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-                     
-                    const response = await fetch('/Comments/Create', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'RequestVerificationToken': token,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+        $(document).ready(function() {
+            $('.vote-btn').click(function() {
+                if (!@(User.Identity?.IsAuthenticated == true ? "true" : "false")) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Login Required',
+                        text: 'Please login to vote',
+                        confirmButtonColor: '#667eea'
                     });
-
-                    if (response.ok) {
-                        input.value = '';
-                        form.closest('.comment-form').classList.add('d-none');
-                    } else {
-                        const data = await response.json();
-                        Toast.show(data.message || "Failed to post comment", "error");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    Toast.show("Error posting comment", "error");
-                } finally {
-                    btn.disabled = false;
+                    return;
                 }
-            }
-        });
 
-        const votingLocks = new Set();
-        async function voteQuestion(id, isUpvote) {
-            if (votingLocks.has(id)) return;
-            votingLocks.add(id);
-
-            const btnUp = document.querySelector(`.question-detail button[onclick*="voteQuestion('${id}', true)"]`);
-            const btnDown = document.querySelector(`.question-detail button[onclick*="voteQuestion('${id}', false)"]`);
-            const countSpan = btnUp.nextElementSibling;
-            
-            const currentScore = parseInt(countSpan.innerText);
-            
-            try {
-                const response = await fetch(`/Questions/Vote/${id}?isUpvote=${isUpvote}`, { 
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
+                const type = $(this).data('type');
+                const id = $(this).data('id');
+                const isUpvote = $(this).data('vote') === 'up';
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // If backend return same count and userVote as before, it means toggle-off was blocked or score floor hit
-                    if (data.voteCount === currentScore) {
-                        // Minimal feedback: just a slight shake if it was a "no-change" event
-                        const activeBtn = isUpvote ? btnUp : btnDown;
-                        activeBtn.classList.add('vote-blocked');
-                        setTimeout(() => activeBtn.classList.remove('vote-blocked'), 300);
-                        
-                        // If it's already active, we don't need a toast, just stay active.
-                    } else {
-                        countSpan.innerText = data.voteCount;
-                        animateElement(countSpan, 'pop');
-                    }
-                    
-                    btnUp.classList.remove('vote-active-up');
-                    btnUp.classList.add('link-secondary');
-                    btnDown.classList.remove('vote-active-down');
-                    btnDown.classList.add('link-secondary');
-
-                    if (data.userVote === 1 || data.UserVote === 1) {
-                        btnUp.classList.add('vote-active-up');
-                        btnUp.classList.remove('link-secondary');
-                    } else if (data.userVote === -1 || data.UserVote === -1) {
-                        btnDown.classList.add('vote-active-down');
-                        btnDown.classList.remove('link-secondary');
-                    }
-                }
-            } catch (err) { 
-                console.error(err); 
-            } finally {
-                votingLocks.delete(id);
-            }
-        }
-
-        async function voteAnswer(id, isUpvote) {
-            if (votingLocks.has(id)) return;
-            votingLocks.add(id);
-
-            const btnUp = document.querySelector(`button[onclick="voteAnswer('${id}', true)"]`);
-            const btnDown = document.querySelector(`button[onclick="voteAnswer('${id}', false)"]`);
-            const countSpan = btnUp.nextElementSibling;
-
-            try {
-                const response = await fetch(`/Answers/Vote/${id}?isUpvote=${isUpvote}`, { 
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    countSpan.innerText = data.voteCount;
-                    
-                    btnUp.classList.remove('vote-active-up');
-                    btnUp.classList.add('link-secondary');
-                    btnDown.classList.remove('vote-active-down');
-                    btnDown.classList.add('link-secondary');
-
-                    if (data.userVote === 1) {
-                        btnUp.classList.add('vote-active-up');
-                        btnUp.classList.remove('link-secondary');
-                    } else if (data.userVote === -1) {
-                        btnDown.classList.add('vote-active-down');
-                        btnDown.classList.remove('link-secondary');
-                    }
-                    
-                    let message = data.userVote === 1 ? "Upvoted!" : (data.userVote === -1 ? "Downvoted!" : "Vote removed.");
-                    Toast.show(message, "success");
-                } else {
-                    const data = await response.json();
-                    Toast.show(data.message || "Operation failed", "error");
-                }
-            } catch (err) { 
-                console.error(err); 
-        function bookmarkQuestion(id) {
-            const btn = document.getElementById('btnBookmark');
-            const icon = btn.querySelector('i');
-            
-            fetch(`/Questions/Bookmark/${id}`, { 
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(async r => {
-                    const data = await r.json();
-                    if (r.ok) {
-                        if (data.isBookmarked) {
-                            icon.className = 'bi bi-bookmark-fill bookmark-active';
-                            // Toast.show("Bookmarked successfully!", "success");
+                $.post(`/${type === 'question' ? 'Questions' : 'Answers'}/Vote/${id}`, 
+                    { isUpvote: isUpvote },
+                    function(response) {
+                        if (response.success) {
+                            location.reload();
                         } else {
-                            icon.className = 'bi bi-bookmark';
-                            // Toast.show("Bookmark removed.", "success");
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message,
+                                confirmButtonColor: '#667eea'
+                            });
                         }
-                    } else {
-                        Toast.show(data.message || "Failed to bookmark", "error");
                     }
-                });
-        }
-
-        function reactQuestion(id, type) {
-            fetch(`/Questions/React/${id}?reactionType=${type}`, { 
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(async r => {
-                    const data = await r.json();
-                    if (r.ok) {
-                        updateReactionSummary(data);
-                    } else {
-                        Toast.show(data.message || "Reaction failed", "error");
-                    }
-                });
-        }
-
-        function shareQuestion(id, platform) {
-            const url = window.location.href;
-            
-            fetch(`/Questions/Share/${id}?platform=${platform}&sharedUrl=${encodeURIComponent(url)}`, { 
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(async r => {
-                    if (r.ok) {
-                        const shareUrl = encodeURIComponent(url);
-                        const title = encodeURIComponent(document.title);
-                        
-                        switch(platform) {
-                            case 'Facebook':
-                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
-                                break;
-                            case 'Twitter':
-                                window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${title}`, '_blank');
-                                break;
-                            case 'LinkedIn':
-                                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank');
-                                break;
-                            case 'Clipboard':
-                                navigator.clipboard.writeText(url).then(() => {
-                                    Toast.show("Link copied to clipboard!", "success");
-                                });
-                                break;
-                        }
-                    } else {
-                        Toast.show("Share failed", "error");
-                    }
-                });
-        }
-
-        function updateReactionSummary(summary) {
-            const container = document.getElementById('questionReactions');
-            if (!container) return;
-            
-            let html = '';
-            summary.forEach(s => {
-                const rType = s.reactionType !== undefined ? s.reactionType : s.ReactionType;
-                const count = s.count !== undefined ? s.count : s.Count;
-                const isUser = s.isUserReaction !== undefined ? s.isUserReaction : s.IsUserReaction;
-                
-                const emoji = getEmoji(rType);
-                const label = getReactionLabel(rType);
-                html += `<span class="badge bg-light text-dark border me-1 ${isUser ? 'border-primary' : ''}" 
-                                style="cursor:pointer" 
-                                data-bs-toggle="tooltip" title="${label}"
-                                onclick="reactQuestion('@Model.Id', ${rType})">
-                            ${emoji} ${count}
-                         </span>`;
+                );
             });
-            container.innerHTML = html;
-
-            var tooltipTriggerList = [].slice.call(container.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        }
-
-        function getEmoji(type) {
-            switch(type) {
-                case 1: return '👍';
-                case 2: return '❤️';
-                case 3: return '🙌';
-                case 4: return '🤔';
-                case 5: return '💡';
-                case 6: return '❓';
-                default: return '❓';
-            }
-        }
-
-        function getReactionLabel(type) {
-            switch(type) {
-                case 1: return 'Like';
-                case 2: return 'Love';
-                case 3: return 'Celebrate';
-                case 4: return 'Think';
-                case 5: return 'Insightful';
-                case 6: return 'Curious';
-                default: return 'React';
-            }
-        }
-
-        // Removed local showToast function as it's now global
-        
-        fetch(`/Questions/Reactions/@Model.Id`)
-            .then(r => r.json())
-            .then(data => updateReactionSummary(data));
-
-        // Answer acceptance logic
-        async function toggleAcceptAnswer(qId, aId, isCurrentlyAccepted) {
-            const endpoint = isCurrentlyAccepted ? '/Questions/UnacceptAnswer' : '/Questions/AcceptAnswer';
-            const formData = new FormData();
-            formData.append('questionId', qId);
-            if (!isCurrentlyAccepted) formData.append('answerId', aId);
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-
-                if (response.ok) {
-                    Toast.show(isCurrentlyAccepted ? "Answer unaccepted" : "Answer accepted!", "success");
-                    location.reload(); // Quick refresh to update indicators
-                } else {
-                    Toast.show("Failed to update answer acceptance", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("Error processing request", "error");
-            }
-        }
-
-        function editAnswer(aId) {
-            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
-            if (!answerItem) return;
-
-            const contentDiv = answerItem.querySelector('.answer-content');
-            if (contentDiv.querySelector('textarea')) return; // Already editing
-
-            const originalHtml = contentDiv.innerHTML;
-            const originalContent = originalHtml.replace(/<br\s*\/?>/gi, '\n').trim();
-            
-            contentDiv.innerHTML = `
-                <div class="edit-answer-container mt-2">
-                    <textarea class="form-control bg-light border-0 mb-2" rows="5" style="border-radius: 0.75rem;">${originalContent}</textarea>
-                    <div class="d-flex gap-2 justify-content-end">
-                        <button class="btn btn-sm btn-light px-3" onclick="cancelAnswerEdit('${aId}', '${encodeURIComponent(originalHtml)}')">Cancel</button>
-                        <button class="btn btn-sm btn-primary px-3" onclick="saveAnswerEdit('${aId}')">Save</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function cancelAnswerEdit(aId, encodedHtml) {
-            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
-            if (!answerItem) return;
-            const contentDiv = answerItem.querySelector('.answer-content');
-            contentDiv.innerHTML = decodeURIComponent(encodedHtml);
-        }
-
-        async function saveAnswerEdit(aId) {
-            const answerItem = document.getElementById(`answer-${aId}`) || document.querySelector(`.card:has(button[onclick*="deleteAnswer('@Model.Id', '${aId}')"])`);
-            const textarea = answerItem.querySelector('textarea');
-            const newContent = textarea.value.trim();
-
-            if (newContent.length < 20) {
-                Toast.show("Answer must be at least 20 characters.", "error");
-                return;
-            }
-
-            const btn = textarea.nextElementSibling.querySelector('.btn-primary');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving';
-
-            try {
-                const formData = new FormData();
-                formData.append('id', aId);
-                formData.append('content', newContent);
-                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-                const response = await fetch(`/Answers/Edit/${aId}`, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 
-                        'RequestVerificationToken': token,
-                        'X-Requested-With': 'XMLHttpRequest' 
-                    }
-                });
-
-                if (response.ok) {
-                    const contentDiv = answerItem.querySelector('.answer-content');
-                    contentDiv.innerHTML = newContent.replace(/\n/g, '<br/>');
-                    Toast.show("Answer updated!", "success");
-                } else {
-                    Toast.show("Failed to update answer", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("Error saving answer", "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Save";
-            }
-        }
-
-
-
-        const answerForm = document.getElementById('answerForm');
-        const answerErrorContainer = document.getElementById('answerValidationErrors');
-        const btnPostAnswer = document.getElementById('btnPostAnswer');
-
-        answerForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const btnSpinner = btnPostAnswer.querySelector('.spinner-border');
-            btnPostAnswer.disabled = true;
-            btnSpinner.classList.remove('d-none');
-
-            const formData = new FormData(this);
-            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-            try {
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'RequestVerificationToken': token,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok) {
-                    Toast.show("Answer posted successfully!", "success");
-                    this.reset();
-                    // If real-time broadcast is slow or fails, reload to show the answer
-                    setTimeout(() => {
-                        if (document.getElementById('answersList').children.length === 0) {
-                             location.reload();
-                        }
-                    }, 1000);
-                } else {
-                    let errorMessage = "Failed to post answer";
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.message || (errorData.Content ? errorData.Content[0] : errorMessage);
-                    } catch (pErr) {
-                         // Likely HTML response (e.g. 500)
-                         const rawText = await response.text();
-                         console.error("Server returned non-JSON error:", rawText.substring(0, 500));
-                    }
-                    Toast.show(errorMessage, "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("An unexpected error occurred", "error");
-            } finally {
-                btnPostAnswer.disabled = false;
-                btnSpinner.classList.add('d-none');
-            }
         });
-        function confirmDeleteAnswer(qId, aId) {
-            window.Modal.confirm(
-                'Delete Answer?',
-                'Are you sure you want to delete this answer? This action cannot be undone.',
-                'Delete Permanently'
-            ).then((result) => {
+
+        function acceptAnswer(questionId, answerId) {
+            Swal.fire({
+                title: 'Accept Answer?',
+                text: 'Mark this answer as the solution to your question?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, accept it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
                 if (result.isConfirmed) {
-                    performDeleteAnswer(qId, aId);
+                    $.post('/Questions/AcceptAnswer', 
+                        { questionId: questionId, answerId: answerId },
+                        function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Answer Accepted!',
+                                    text: 'This answer has been marked as the solution',
+                                    confirmButtonColor: '#667eea'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message,
+                                    confirmButtonColor: '#667eea'
+                                });
+                            }
+                        }
+                    );
                 }
             });
         }
 
-        async function performDeleteAnswer(qId, aId) {
-            const formData = new FormData();
-            formData.append('questionId', qId);
-            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-            
-            try {
-                const response = await fetch(`/Answers/Delete/${aId}`, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 
-                        'RequestVerificationToken': token,
-                        'X-Requested-With': 'XMLHttpRequest' 
-                    }
-                });
-                
-                if (response.ok) {
-                    Toast.show("Answer deleted!", "success");
-                    location.reload();
-                } else {
-                    Toast.show("Failed to delete answer", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                Toast.show("Error deleting answer", "error");
-            }
-        }
-
-        function confirmDeleteWithSweetAlert(e) {
-            e.preventDefault();
-            const form = e.target;
-            
-            window.Modal.confirm(
-                'Delete Question?',
-                'Are you sure you want to permanently delete this question? This action cannot be undone.',
-                'Delete Permanently'
-            ).then((result) => {
+        function deleteQuestion(id) {
+            Swal.fire({
+                title: 'Delete Question?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
                 if (result.isConfirmed) {
-                    form.submit();
+                    $.post(`/Questions/Delete/${id}`, 
+                        { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                        function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Question has been deleted',
+                                    confirmButtonColor: '#667eea'
+                                }).then(() => {
+                                    window.location.href = '/Questions';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message,
+                                    confirmButtonColor: '#667eea'
+                                });
+                            }
+                        }
+                    );
                 }
             });
-            return false;
         }
     </script>
 }

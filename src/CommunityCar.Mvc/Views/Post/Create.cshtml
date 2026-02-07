@@ -1,0 +1,249 @@
+@model CreatePostViewModel
+@using CommunityCar.Mvc.ViewModels.Post
+@using CommunityCar.Domain.Enums.Community.post
+
+@{
+    ViewData["Title"] = "Create Post";
+    var postTypes = ViewBag.PostTypes as PostType[];
+}
+
+@section Styles {
+    <style>
+        .create-post-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .post-type-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .post-type-card {
+            flex: 1;
+            min-width: 150px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .post-type-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .post-type-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .post-type-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .media-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+}
+
+<div class="create-post-hero">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-2">
+            <i class="fas fa-pen me-3"></i>Create Post
+        </h1>
+        <p class="lead mb-0">Share your thoughts with the community</p>
+    </div>
+</div>
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Posts</a></li>
+            <li class="breadcrumb-item active">Create Post</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Post Type <span class="text-danger">*</span></label>
+                            <div class="post-type-selector">
+                                @if (postTypes != null)
+                                {
+                                    @foreach (var type in postTypes)
+                                    {
+                                        var icon = type switch {
+                                            PostType.Text => "fa-align-left",
+                                            PostType.Image => "fa-image",
+                                            PostType.Video => "fa-video",
+                                            PostType.Link => "fa-link",
+                                            PostType.Poll => "fa-poll",
+                                            _ => "fa-file"
+                                        };
+                                        
+                                        <div class="post-type-card" data-type="@type">
+                                            <i class="fas @icon"></i>
+                                            <div class="fw-bold">@type</div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <input asp-for="Type" type="hidden" id="postTypeInput" />
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter an engaging title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label fw-bold">Content <span class="text-danger">*</span></label>
+                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="Share your thoughts..."></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4" id="imageUrlField" style="display: none;">
+                            <label asp-for="ImageUrl" class="form-label fw-bold">
+                                <i class="fas fa-image me-1"></i>Image URL
+                            </label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4" id="videoUrlField" style="display: none;">
+                            <label asp-for="VideoUrl" class="form-label fw-bold">
+                                <i class="fas fa-video me-1"></i>Video URL
+                            </label>
+                            <input asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/watch?v=..." />
+                            <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                        </div>
+
+                        <div id="linkFields" style="display: none;">
+                            <div class="mb-4">
+                                <label asp-for="LinkUrl" class="form-label fw-bold">
+                                    <i class="fas fa-link me-1"></i>Link URL
+                                </label>
+                                <input asp-for="LinkUrl" class="form-control" placeholder="https://example.com" />
+                                <span asp-validation-for="LinkUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="LinkTitle" class="form-label fw-bold">Link Title</label>
+                                <input asp-for="LinkTitle" class="form-control" placeholder="Title of the linked content" />
+                                <span asp-validation-for="LinkTitle" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="LinkDescription" class="form-label fw-bold">Link Description</label>
+                                <textarea asp-for="LinkDescription" class="form-control" rows="3" placeholder="Brief description of the link"></textarea>
+                                <span asp-validation-for="LinkDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Tags" class="form-label fw-bold">
+                                <i class="fas fa-tags me-1"></i>Tags
+                            </label>
+                            <input asp-for="Tags" class="form-control" placeholder="Separate tags with commas (e.g., cars, maintenance, tips)" />
+                            <span asp-validation-for="Tags" class="text-danger"></span>
+                            <small class="form-text text-muted">Add relevant tags to help others find your post</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="GroupId" class="form-label fw-bold">
+                                <i class="fas fa-users me-1"></i>Post to Group (Optional)
+                            </label>
+                            <input asp-for="GroupId" class="form-control" placeholder="Enter group ID if posting to a specific group" />
+                            <span asp-validation-for="GroupId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="PublishImmediately" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="PublishImmediately" class="form-check-label">
+                                    <i class="fas fa-rocket me-1"></i>Publish immediately
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">Uncheck to save as draft</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Create Post
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            const postTypeCards = $('.post-type-card');
+            const postTypeInput = $('#postTypeInput');
+            const imageUrlField = $('#imageUrlField');
+            const videoUrlField = $('#videoUrlField');
+            const linkFields = $('#linkFields');
+            
+            // Initialize with default type
+            const currentType = postTypeInput.val() || 'Text';
+            updatePostType(currentType);
+            
+            postTypeCards.on('click', function() {
+                const type = $(this).data('type');
+                updatePostType(type);
+            });
+            
+            function updatePostType(type) {
+                postTypeInput.val(type);
+                postTypeCards.removeClass('active');
+                postTypeCards.filter('[data-type="' + type + '"]').addClass('active');
+                
+                // Show/hide relevant fields
+                imageUrlField.hide();
+                videoUrlField.hide();
+                linkFields.hide();
+                
+                switch(type) {
+                    case 'Image':
+                        imageUrlField.show();
+                        break;
+                    case 'Video':
+                        videoUrlField.show();
+                        break;
+                    case 'Link':
+                        linkFields.show();
+                        break;
+                }
+            }
+        });
+    </script>
+}

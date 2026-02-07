@@ -1,0 +1,130 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.CreateLocalizationViewModel
+@{
+    ViewData["Title"] = "Create Translation";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-plus-circle me-2"></i>
+                Create Translation
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Localization</a></li>
+                    <li class="breadcrumb-item active">Create</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Key" class="form-label">Key <span class="text-danger">*</span></label>
+                            <input asp-for="Key" class="form-control" placeholder="e.g., Dashboard.Title" />
+                            <span asp-validation-for="Key" class="text-danger"></span>
+                            <small class="form-text text-muted">Unique identifier for this translation (e.g., Dashboard.Title, Common.Save)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <input asp-for="Category" class="form-control" list="categoryList" placeholder="e.g., Dashboard, Common, Validation" />
+                            <datalist id="categoryList">
+                                @foreach (var category in ViewBag.Categories as List<string> ?? new List<string>())
+                                {
+                                    <option value="@category"></option>
+                                }
+                            </datalist>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                            <small class="form-text text-muted">Group translations by category (e.g., Dashboard, Common, Validation)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CultureCode" class="form-label">Culture Code <span class="text-danger">*</span></label>
+                            <select asp-for="CultureCode" class="form-select">
+                                <option value="">-- Select Culture --</option>
+                                <option value="en">English (en)</option>
+                                <option value="ar">Arabic (ar)</option>
+                                @foreach (var culture in ViewBag.Cultures as List<string> ?? new List<string>())
+                                {
+                                    if (culture != "en" && culture != "ar")
+                                    {
+                                        <option value="@culture">@culture</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="CultureCode" class="text-danger"></span>
+                            <small class="form-text text-muted">Language/culture code (e.g., en, ar, fr, de)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Value" class="form-label">Translation Value <span class="text-danger">*</span></label>
+                            <textarea asp-for="Value" class="form-control" rows="4" placeholder="Enter the translated text..."></textarea>
+                            <span asp-validation-for="Value" class="text-danger"></span>
+                            <small class="form-text text-muted">The actual translated text for this key</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="Optional description or context..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <small class="form-text text-muted">Optional notes about this translation</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Create Translation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Key Naming Convention</h6>
+                    <ul class="small">
+                        <li>Use dot notation: <code>Category.SubCategory.Name</code></li>
+                        <li>Be descriptive and consistent</li>
+                        <li>Examples: <code>Dashboard.Title</code>, <code>Common.Save</code></li>
+                    </ul>
+
+                    <h6 class="mt-3">Categories</h6>
+                    <ul class="small">
+                        <li><strong>Common:</strong> Shared across the app</li>
+                        <li><strong>Dashboard:</strong> Admin dashboard</li>
+                        <li><strong>Validation:</strong> Form validation messages</li>
+                        <li><strong>Errors:</strong> Error messages</li>
+                    </ul>
+
+                    <h6 class="mt-3">Culture Codes</h6>
+                    <ul class="small">
+                        <li><strong>en:</strong> English</li>
+                        <li><strong>ar:</strong> Arabic (RTL)</li>
+                        <li><strong>fr:</strong> French</li>
+                        <li><strong>de:</strong> German</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

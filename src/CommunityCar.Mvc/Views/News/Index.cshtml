@@ -1,13 +1,301 @@
+@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.NewsArticleDto>
 @{
-    ViewData["Title"] = "News";
+    ViewData["Title"] = "Automotive News";
+    var currentCategory = ViewBag.CurrentCategory as CommunityCar.Domain.Enums.Community.news.NewsCategory?;
+    var featured = ViewBag.Featured as bool?;
+    var categories = ViewBag.Categories as Array;
 }
 
-<div class="container-fluid py-4">
-    <div class="card border-0 shadow-sm rounded-4 text-center py-5">
-        <div class="card-body">
-            <i class="fas fa-newspaper fa-4x text-info mb-3"></i>
-            <h2 class="fw-bold">News Coming Soon</h2>
-            <p class="text-muted">Stay updated with the latest automotive news.</p>
+@section Styles {
+    <style>
+        .news-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .news-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .news-image {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .news-category-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1;
+        }
+        
+        .category-filter-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .category-filter-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .news-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        
+        .news-title {
+            font-weight: 600;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+        
+        .news-summary {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="news-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-newspaper me-3"></i>Automotive News
+                </h1>
+                <p class="lead mb-4">Stay updated with the latest automotive news, reviews, and industry insights</p>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Create Article
+                    </a>
+                    <a asp-action="MyArticles" class="btn btn-outline-light btn-lg ms-2">
+                        <i class="fas fa-user-edit me-2"></i>My Articles
+                    </a>
+                }
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-newspaper fa-8x opacity-25"></i>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="container">
+    <!-- Category Filters -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="fw-bold me-2">
+                    <i class="fas fa-filter me-1"></i>Categories:
+                </span>
+                <a asp-action="Index" 
+                   class="btn btn-sm category-filter-btn @(currentCategory == null ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-th me-1"></i>All
+                </a>
+                @if (categories != null)
+                {
+                    @foreach (var category in categories)
+                    {
+                        var categoryValue = (CommunityCar.Domain.Enums.Community.news.NewsCategory)category;
+                        <a asp-action="Index" 
+                           asp-route-category="@categoryValue" 
+                           class="btn btn-sm category-filter-btn @(currentCategory == categoryValue ? "btn-primary" : "btn-outline-primary")">
+                            @categoryValue.ToString()
+                        </a>
+                    }
+                }
+                <div class="ms-auto">
+                    <a asp-action="Featured" 
+                       class="btn btn-sm @(featured == true ? "btn-warning" : "btn-outline-warning")">
+                        <i class="fas fa-star me-1"></i>Featured
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Grid -->
+    @if (Model.Items.Any())
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var article in Model.Items)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card news-card">
+                        <div class="position-relative">
+                            @if (article.IsFeatured)
+                            {
+                                <span class="badge bg-warning text-dark featured-badge">
+                                    <i class="fas fa-star me-1"></i>Featured
+                                </span>
+                            }
+                            <span class="badge bg-primary news-category-badge">
+                                @article.Category
+                            </span>
+                            <img src="@(article.ImageUrl ?? "/images/news-placeholder.jpg")" 
+                                 alt="@article.Title" 
+                                 class="card-img-top news-image" />
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="news-meta mb-2">
+                                <i class="fas fa-user me-1"></i>@article.AuthorName
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-calendar me-1"></i>@article.PublishedAt?.ToString("MMM dd, yyyy")
+                            </div>
+                            <h5 class="news-title mb-2">
+                                <a href="@Url.Action("Details", new { slug = article.Slug })" 
+                                   class="text-decoration-none text-dark stretched-link">
+                                    @article.Title
+                                </a>
+                            </h5>
+                            <p class="news-summary mb-3 flex-grow-1">
+                                @(article.Summary?.Length > 120 ? article.Summary.Substring(0, 120) + "..." : article.Summary)
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <div class="d-flex gap-3 text-muted small">
+                                    <span><i class="fas fa-eye me-1"></i>@article.ViewCount</span>
+                                    <span><i class="fas fa-heart me-1"></i>@article.LikeCount</span>
+                                    <span><i class="fas fa-comment me-1"></i>@article.CommentCount</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(article.Source))
+                                {
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fas fa-link me-1"></i>@article.Source
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="News pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageNumber - 1)"
+                           asp-route-category="@currentCategory"
+                           asp-route-featured="@featured">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+
+                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="@i"
+                               asp-route-category="@currentCategory"
+                               asp-route-featured="@featured">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageNumber + 1)"
+                           asp-route-category="@currentCategory"
+                           asp-route-featured="@featured">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-newspaper fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted mb-3">No News Articles Found</h4>
+                <p class="text-muted mb-4">
+                    @if (currentCategory != null)
+                    {
+                        <text>No articles found in the @currentCategory category.</text>
+                    }
+                    else
+                    {
+                        <text>Be the first to share automotive news with the community!</text>
+                    }
+                </p>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Create First Article
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Create Articles
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Smooth scroll to top when pagination is clicked
+            $('.pagination a').on('click', function() {
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+
+            // Add animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            entry.target.style.transition = 'all 0.5s ease';
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.news-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+}

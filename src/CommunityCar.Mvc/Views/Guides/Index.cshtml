@@ -1,13 +1,338 @@
+@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.GuideDto>
 @{
-    ViewData["Title"] = "Guides";
+    ViewData["Title"] = "Guides & Tutorials";
+    var currentDifficulty = ViewBag.CurrentDifficulty as CommunityCar.Domain.Enums.Community.guides.GuideDifficulty?;
+    var currentCategory = ViewBag.CurrentCategory as string;
+    var difficulties = ViewBag.Difficulties as Array;
+    var categories = ViewBag.Categories as List<string>;
 }
 
-<div class="container-fluid py-4">
-    <div class="card border-0 shadow-sm rounded-4 text-center py-5">
-        <div class="card-body">
-            <i class="fas fa-book-open fa-4x text-success mb-3"></i>
-            <h2 class="fw-bold">Guides Coming Soon</h2>
-            <p class="text-muted">Exclusive guides and tutorials for car maintenance and upgrades.</p>
+@section Styles {
+    <style>
+        .guides-hero {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .guide-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .guide-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .guide-image {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1;
+        }
+        
+        .category-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1;
+        }
+        
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .guide-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        
+        .guide-title {
+            font-weight: 600;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+        
+        .guide-summary {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        .difficulty-beginner { background-color: #48bb78; }
+        .difficulty-intermediate { background-color: #ed8936; }
+        .difficulty-advanced { background-color: #f56565; }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="guides-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-book-open me-3"></i>Guides & Tutorials
+                </h1>
+                <p class="lead mb-4">Learn car maintenance, upgrades, and repairs with our comprehensive step-by-step guides</p>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Create Guide
+                    </a>
+                    <a asp-action="MyGuides" class="btn btn-outline-light btn-lg ms-2">
+                        <i class="fas fa-user-edit me-2"></i>My Guides
+                    </a>
+                }
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-book-open fa-8x opacity-25"></i>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="container">
+    <!-- Filters -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="fw-bold me-2">
+                            <i class="fas fa-signal me-1"></i>Difficulty:
+                        </span>
+                        <a asp-action="Index" 
+                           class="btn btn-sm filter-btn @(currentDifficulty == null ? "btn-success" : "btn-outline-success")">
+                            <i class="fas fa-th me-1"></i>All
+                        </a>
+                        @if (difficulties != null)
+                        {
+                            @foreach (var difficulty in difficulties)
+                            {
+                                var difficultyValue = (CommunityCar.Domain.Enums.Community.guides.GuideDifficulty)difficulty;
+                                <a asp-action="Index" 
+                                   asp-route-difficulty="@difficultyValue" 
+                                   asp-route-category="@currentCategory"
+                                   class="btn btn-sm filter-btn @(currentDifficulty == difficultyValue ? "btn-success" : "btn-outline-success")">
+                                    @difficultyValue.ToString()
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="fw-bold me-2">
+                            <i class="fas fa-folder me-1"></i>Category:
+                        </span>
+                        <a asp-action="Index" 
+                           asp-route-difficulty="@currentDifficulty"
+                           class="btn btn-sm filter-btn @(string.IsNullOrEmpty(currentCategory) ? "btn-primary" : "btn-outline-primary")">
+                            <i class="fas fa-th me-1"></i>All
+                        </a>
+                        @if (categories != null)
+                        {
+                            @foreach (var category in categories)
+                            {
+                                <a asp-action="Index" 
+                                   asp-route-difficulty="@currentDifficulty"
+                                   asp-route-category="@category" 
+                                   class="btn btn-sm filter-btn @(currentCategory == category ? "btn-primary" : "btn-outline-primary")">
+                                    @category
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guides Grid -->
+    @if (Model.Items.Any())
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var guide in Model.Items)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card guide-card">
+                        <div class="position-relative">
+                            <span class="badge text-white category-badge">
+                                <i class="fas fa-folder me-1"></i>@guide.Category
+                            </span>
+                            <span class="badge text-white difficulty-badge difficulty-@guide.Difficulty.ToString().ToLower()">
+                                <i class="fas fa-signal me-1"></i>@guide.DifficultyName
+                            </span>
+                            <img src="@(guide.ImageUrl ?? "/images/guide-placeholder.jpg")" 
+                                 alt="@guide.Title" 
+                                 class="card-img-top guide-image" />
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="guide-meta mb-2">
+                                <i class="fas fa-user me-1"></i>@guide.AuthorName
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-clock me-1"></i>@guide.EstimatedTimeMinutes min
+                            </div>
+                            <h5 class="guide-title mb-2">
+                                <a href="@Url.Action("Details", new { slug = guide.Slug })" 
+                                   class="text-decoration-none text-dark stretched-link">
+                                    @guide.Title
+                                </a>
+                            </h5>
+                            <p class="guide-summary mb-3 flex-grow-1">
+                                @(guide.Summary?.Length > 120 ? guide.Summary.Substring(0, 120) + "..." : guide.Summary)
+                            </p>
+                            
+                            @if (!string.IsNullOrEmpty(guide.Tags))
+                            {
+                                <div class="mb-3">
+                                    @foreach (var tag in guide.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark me-1">#@tag.Trim()</span>
+                                    }
+                                </div>
+                            }
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <div class="d-flex gap-3 text-muted small">
+                                    <span><i class="fas fa-eye me-1"></i>@guide.ViewCount</span>
+                                    <span><i class="fas fa-heart me-1"></i>@guide.LikeCount</span>
+                                    <span><i class="fas fa-bookmark me-1"></i>@guide.BookmarkCount</span>
+                                </div>
+                                @if (guide.AverageRating > 0)
+                                {
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <span class="text-dark ms-1">@guide.AverageRating.ToString("F1")</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Guides pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageNumber - 1)"
+                           asp-route-difficulty="@currentDifficulty"
+                           asp-route-category="@currentCategory">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+
+                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="@i"
+                               asp-route-difficulty="@currentDifficulty"
+                               asp-route-category="@currentCategory">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageNumber + 1)"
+                           asp-route-difficulty="@currentDifficulty"
+                           asp-route-category="@currentCategory">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted mb-3">No Guides Found</h4>
+                <p class="text-muted mb-4">
+                    @if (currentDifficulty != null || !string.IsNullOrEmpty(currentCategory))
+                    {
+                        <text>No guides found with the selected filters. Try adjusting your search.</text>
+                    }
+                    else
+                    {
+                        <text>Be the first to share a guide with the community!</text>
+                    }
+                </p>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-2"></i>Create First Guide
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-success">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Create Guides
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Smooth scroll to top when pagination is clicked
+            $('.pagination a').on('click', function() {
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+
+            // Add animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            entry.target.style.transition = 'all 0.5s ease';
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.guide-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+}

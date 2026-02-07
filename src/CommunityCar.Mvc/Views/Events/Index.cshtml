@@ -1,15 +1,144 @@
+@model PagedResult<EventDto>
+@using CommunityCar.Domain.Base
+@using CommunityCar.Domain.DTOs.Community
+@using CommunityCar.Domain.Enums.Community.events
+
 @{
-    ViewData["Title"] = "Events";
+    ViewData["Title"] = "Community Events";
+    var categories = ViewBag.Categories as EventCategory[];
+    var currentCategory = ViewBag.CurrentCategory as EventCategory?;
+    var isUpcoming = ViewBag.IsUpcoming as bool? ?? true;
 }
 
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3">Community Events</h1>
-        <p class="lead text-muted mb-4">Discover and join upcoming automotive events</p>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Community Events</h1>
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <div>
+                <a asp-action="MyEvents" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-calendar-check"></i> My Events
+                </a>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create Event
+                </a>
+            </div>
+        }
     </div>
 
-    <div class="alert alert-info text-center">
-        <i class="fas fa-info-circle me-2"></i>
-        This section is currently under development. Check back soon for exciting events!
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @if (categories != null)
+                        {
+                            @foreach (var cat in categories)
+                            {
+                                <option value="@cat" selected="@(currentCategory == cat)">@cat</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Time</label>
+                    <select name="upcoming" class="form-select" onchange="this.form.submit()">
+                        <option value="true" selected="@isUpcoming">Upcoming Events</option>
+                        <option value="false" selected="@(!isUpcoming)">All Events</option>
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
+
+    @if (Model.Items.Any())
+    {
+        <div class="row g-4">
+            @foreach (var evt in Model.Items)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(evt.ImageUrl))
+                        {
+                            <img src="@evt.ImageUrl" class="card-img-top" alt="@evt.Title" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-calendar-event" style="font-size: 3rem; color: #dee2e6;"></i>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-primary">@evt.CategoryName</span>
+                                @if (evt.IsFeatured)
+                                {
+                                    <span class="badge bg-warning text-dark">Featured</span>
+                                }
+                            </div>
+                            <h5 class="card-title">
+                                <a asp-action="Details" asp-route-slug="@evt.Slug" class="text-decoration-none text-dark">
+                                    @evt.Title
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small">
+                                @evt.Description.Substring(0, Math.Min(100, evt.Description.Length))@(evt.Description.Length > 100 ? "..." : "")
+                            </p>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> @evt.StartTime.ToString("MMM dd, yyyy")
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> @evt.StartTime.ToString("hh:mm tt")
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt"></i> @evt.Location
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-people"></i> @evt.AttendeeCount @(evt.MaxAttendees > 0 ? $"/ {evt.MaxAttendees}" : "") going
+                                </small>
+                                <a asp-action="Details" asp-route-slug="@evt.Slug" class="btn btn-sm btn-outline-primary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-category="@currentCategory" asp-route-upcoming="@isUpcoming">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-category="@currentCategory" asp-route-upcoming="@isUpcoming">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-category="@currentCategory" asp-route-upcoming="@isUpcoming">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No events found. @if (User.Identity?.IsAuthenticated ?? false) { <a asp-action="Create">Create the first event!</a> }
+        </div>
+    }
 </div>

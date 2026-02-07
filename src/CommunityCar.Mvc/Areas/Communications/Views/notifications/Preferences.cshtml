@@ -1,0 +1,166 @@
+@{
+    ViewData["Title"] = "Notification Preferences";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Notification Preferences
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                        </div>
+                    }
+
+                    <form method="post" asp-action="UpdatePreferences">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-users me-2"></i>Social Notifications
+                            </h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="friendRequests" name="FriendRequests" checked>
+                                <label class="form-check-label" for="friendRequests">
+                                    <strong>Friend Requests</strong>
+                                    <br><small class="text-muted">Get notified when someone sends you a friend request</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="friendActivity" name="FriendActivity" checked>
+                                <label class="form-check-label" for="friendActivity">
+                                    <strong>Friend Activity</strong>
+                                    <br><small class="text-muted">Get notified about your friends' posts and questions</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-question-circle me-2"></i>Q&A Notifications
+                            </h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="newAnswers" name="NewAnswers" checked>
+                                <label class="form-check-label" for="newAnswers">
+                                    <strong>New Answers</strong>
+                                    <br><small class="text-muted">Get notified when someone answers your question</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="newComments" name="NewComments" checked>
+                                <label class="form-check-label" for="newComments">
+                                    <strong>New Comments</strong>
+                                    <br><small class="text-muted">Get notified when someone comments on your answer</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="votes" name="Votes" checked>
+                                <label class="form-check-label" for="votes">
+                                    <strong>Votes</strong>
+                                    <br><small class="text-muted">Get notified when someone votes on your content</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="reactions" name="Reactions" checked>
+                                <label class="form-check-label" for="reactions">
+                                    <strong>Reactions</strong>
+                                    <br><small class="text-muted">Get notified when someone reacts to your content</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="bookmarks" name="Bookmarks" checked>
+                                <label class="form-check-label" for="bookmarks">
+                                    <strong>Bookmarks & Shares</strong>
+                                    <br><small class="text-muted">Get notified when someone bookmarks or shares your question</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-comments me-2"></i>Chat Notifications
+                            </h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="newMessages" name="NewMessages" checked>
+                                <label class="form-check-label" for="newMessages">
+                                    <strong>New Messages</strong>
+                                    <br><small class="text-muted">Get notified when you receive a new chat message</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-envelope me-2"></i>Email Notifications
+                            </h5>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailDigest" name="EmailDigest">
+                                <label class="form-check-label" for="emailDigest">
+                                    <strong>Daily Digest</strong>
+                                    <br><small class="text-muted">Receive a daily email summary of your notifications</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailImportant" name="EmailImportant" checked>
+                                <label class="form-check-label" for="emailImportant">
+                                    <strong>Important Notifications</strong>
+                                    <br><small class="text-muted">Receive emails for important notifications only</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Notifications
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add visual feedback when toggling switches
+            $('.form-check-input').on('change', function() {
+                const label = $(this).next('label');
+                if ($(this).is(':checked')) {
+                    label.removeClass('text-muted');
+                } else {
+                    label.addClass('text-muted');
+                }
+            });
+        });
+    </script>
+}

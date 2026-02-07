@@ -1,419 +1,393 @@
 using CommunityCar.Domain.Base;
-using CommunityCar.Domain.Enums.Community.qa;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Domain.DTOs.Community;
-using CommunityCar.Web.ViewModels.Community.Qa;
+using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-using Microsoft.AspNetCore.SignalR;
-using CommunityCar.Web.Hubs;
-
-namespace CommunityCar.Web.Controllers;
+namespace CommunityCar.Mvc.Controllers.Qa;
 
 [Route("Questions")]
 public class QuestionsController : Controller
 {
     private readonly IQuestionService _questionService;
-    private readonly ITagService _tagService;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IHubContext<QuestionHub> _hubContext;
+    private readonly ILogger<QuestionsController> _logger;
 
     public QuestionsController(
         IQuestionService questionService,
-        ITagService tagService,
         ICurrentUserService currentUserService,
-        IHubContext<QuestionHub> hubContext)
+        ILogger<QuestionsController> logger)
     {
         _questionService = questionService;
-        _tagService = tagService;
         _currentUserService = currentUserService;
-        _hubContext = hubContext;
+        _logger = logger;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Index(
-        int page = 1, 
-        int pageSize = 20, 
-        string? search = null, 
-        string? tag = null, 
-        bool? isResolved = null,
-        string? sortBy = null,
-        bool sortDesc = true,
-        string tab = "all")
+    // GET: Questions
+    [HttpGet("")]
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? tag = null, bool? isResolved = null)
     {
-        var parameters = new QueryParameters 
-        { 
-            PageNumber = page, 
-            PageSize = pageSize,
-            SearchTerm = search,
-            SortBy = sortBy ?? "created",
-            SortDescending = sortDesc
-        };
-        
-        var userId = _currentUserService.UserId;
-        
-        var result = tab.ToLower() switch
+        try
         {
-            "myquestions" when userId.HasValue => await _questionService.GetUserQuestionsAsync(userId.Value, parameters),
-            "bookmarks" when userId.HasValue => await _questionService.GetBookmarkedQuestionsAsync(userId.Value, parameters),
-            "answered" => await _questionService.GetQuestionsAsync(parameters, search, tag, hasAnswers: true, currentUserId: userId),
-            "unanswered" => await _questionService.GetQuestionsAsync(parameters, search, tag, hasAnswers: false, currentUserId: userId),
-            "trending" => await _questionService.GetTrendingQuestionsAsync(parameters, search, tag, currentUserId: userId),
-            "recent" => await _questionService.GetRecentQuestionsAsync(parameters, search, tag, currentUserId: userId),
-            _ => await _questionService.GetQuestionsAsync(parameters, search, tag, isResolved, currentUserId: userId)
-        };
-        
-        ViewBag.SearchTerm = search;
-        ViewBag.CurrentTag = tag;
-        ViewBag.IsResolved = isResolved;
-        ViewBag.SortBy = sortBy ?? "created";
-        ViewBag.SortDesc = sortDesc;
-        ViewBag.CurrentTab = tab;
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        {
-            return PartialView("_QuestionList", result);
+            var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
+            var result = await _questionService.GetQuestionsAsync(parameters, searchTerm: null, tag: tag, isResolved: isResolved);
+            
+            ViewBag.CurrentTag = tag;
+            ViewBag.IsResolved = isResolved;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            
+            return View(result);
         }
-        
-        return View(result);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading questions");
+            TempData["Error"] = "Failed to load questions";
+            return View(new PagedResult<Domain.DTOs.Community.QuestionDto>(
+                new List<Domain.DTOs.Community.QuestionDto>(), 0, page, pageSize));
+        }
     }
 
-    [HttpGet("{idOrSlug}")]
-    public async Task<IActionResult> Details(string idOrSlug)
+    // GET: Questions/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Details(Guid id)
     {
-        QuestionDto? question = null;
-        
-        if (Guid.TryParse(idOrSlug, out var id))
+        try
         {
-            question = await _questionService.GetQuestionByIdAsync(id, _currentUserService.UserId);
-            // If found by ID and has a slug, redirect to slug URL for better SEO
-            if (question != null && !string.IsNullOrEmpty(question.Slug))
+            var question = await _questionService.GetQuestionByIdAsync(id);
+            if (question == null)
             {
-                return RedirectToActionPermanent(nameof(Details), new { idOrSlug = question.Slug });
+                TempData["Error"] = "Question not found";
+                return RedirectToAction(nameof(Index));
             }
+
+            await _questionService.IncrementViewCountAsync(id);
+            
+            var answers = await _questionService.GetAnswersAsync(id);
+            
+            ViewBag.Answers = answers;
+            ViewBag.CurrentUserId = User.Identity?.IsAuthenticated == true ? GetCurrentUserId() : (Guid?)null;
+            
+            return View(question);
         }
-        else
+        catch (Exception ex)
         {
-            question = await _questionService.GetQuestionBySlugAsync(idOrSlug, _currentUserService.UserId);
+            _logger.LogError(ex, "Error loading question {QuestionId}", id);
+            TempData["Error"] = "Failed to load question";
+            return RedirectToAction(nameof(Index));
         }
-
-        if (question == null)
-            return NotFound();
-
-        await _questionService.IncrementViewCountAsync(question.Id);
-        
-        var answers = await _questionService.GetAnswersAsync(question.Id, _currentUserService.UserId);
-        var relatedQuestions = await _questionService.GetRelatedQuestionsAsync(question.Id, 4);
-        var categories = await _questionService.GetCategoriesAsync();
-        
-        ViewBag.Answers = answers;
-        ViewBag.RelatedQuestions = relatedQuestions;
-        ViewBag.Categories = categories;
-        return View(question);
     }
 
-
-
+    // GET: Questions/Create
     [Authorize]
     [HttpGet("Create")]
     public async Task<IActionResult> Create()
     {
-        var popularTags = await _tagService.GetPopularTagsAsync(20);
-        ViewBag.TagSuggestions = popularTags.IsSuccess ? popularTags.Value : new List<TagDto>();
-
-        var model = new CreateQuestionViewModel
+        try
         {
-            Categories = await _questionService.GetCategoriesAsync()
-        };
-        return View(model);
+            var viewModel = new CreateQuestionViewModel
+            {
+                Title = string.Empty,
+                Content = string.Empty,
+                Tags = string.Empty,
+                CategoryId = null,
+                Categories = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
+            };
+            
+            return View(viewModel);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading create question page");
+            TempData["Error"] = "Failed to load create question page";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
+    // POST: Questions/Create
     [Authorize]
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateQuestionViewModel model)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            model.Categories = await _questionService.GetCategoriesAsync();
+            if (!ModelState.IsValid)
+            {
+                // Ensure Categories is initialized before returning to view
+                model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+                return View(model);
+            }
+
+            var userId = GetCurrentUserId();
+
+            var question = await _questionService.CreateQuestionAsync(
+                model.Title, 
+                model.Content, 
+                userId, 
+                categoryId: null,
+                tags: model.Tags);
+
+            TempData["Success"] = "Question created successfully";
+            return RedirectToAction(nameof(Details), new { id = question.Id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating question");
+            ModelState.AddModelError("", "Failed to create question");
+            model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
             return View(model);
         }
-
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        var question = await _questionService.CreateQuestionAsync(
-            model.Title, 
-            model.Content, 
-            userId.Value, 
-            model.CategoryId,
-            model.Tags);
-
-        // Real-time broadcast
-        await _hubContext.Clients.All.SendAsync("ReceiveQuestion", question);
-
-        TempData["SuccessToast"] = "Question published successfully!";
-        return RedirectToAction(nameof(Details), new { idOrSlug = question.Slug ?? question.Id.ToString() });
     }
 
+    // GET: Questions/Edit/{id}
     [Authorize]
-    [HttpGet("Edit/{id}")]
+    [HttpGet("Edit/{id:guid}")]
     public async Task<IActionResult> Edit(Guid id)
     {
-        var question = await _questionService.GetQuestionByIdAsync(id);
-        if (question == null)
-            return NotFound();
-
-        var userId = _currentUserService.UserId;
-        if (question.AuthorId != userId)
-            return Forbid();
-
-        var popularTags = await _tagService.GetPopularTagsAsync(20);
-        ViewBag.TagSuggestions = popularTags.IsSuccess ? popularTags.Value : new List<TagDto>();
-
-        var model = new EditQuestionViewModel
+        try
         {
-            Id = question.Id,
-            Title = question.Title,
-            Content = question.Content,
-            CategoryId = question.CategoryId,
-            Tags = question.Tags,
-            Categories = await _questionService.GetCategoriesAsync()
-        };
+            var question = await _questionService.GetQuestionByIdAsync(id);
+            if (question == null)
+            {
+                TempData["Error"] = "Question not found";
+                return RedirectToAction(nameof(Index));
+            }
 
-        return View(model);
+            var userId = GetCurrentUserId();
+            if (question.AuthorId != userId)
+            {
+                TempData["Error"] = "You can only edit your own questions";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var model = new EditQuestionViewModel
+            {
+                Id = question.Id,
+                Title = question.Title,
+                Content = question.Content,
+                Tags = question.Tags,
+                CategoryId = null,
+                Categories = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
+            };
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading question for edit {QuestionId}", id);
+            TempData["Error"] = "Failed to load question";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
+    // POST: Questions/Edit/{id}
     [Authorize]
-    [HttpPost("Edit/{id}")]
+    [HttpPost("Edit/{id:guid}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Guid id, EditQuestionViewModel model)
     {
-        if (id != model.Id)
-            return BadRequest();
-
-        if (!ModelState.IsValid)
+        try
         {
-            model.Categories = await _questionService.GetCategoriesAsync();
+            if (id != model.Id)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+            {
+                // Ensure Categories is initialized before returning to view
+                model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+                return View(model);
+            }
+
+            var question = await _questionService.GetQuestionByIdAsync(id);
+            if (question == null)
+            {
+                TempData["Error"] = "Question not found";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = GetCurrentUserId();
+            if (question.AuthorId != userId)
+            {
+                TempData["Error"] = "You can only edit your own questions";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, categoryId: null, tags: model.Tags);
+
+            TempData["Success"] = "Question updated successfully";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating question {QuestionId}", id);
+            ModelState.AddModelError("", "Failed to update question");
+            model.Categories ??= new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
             return View(model);
         }
-
-        var question = await _questionService.GetQuestionByIdAsync(id);
-        if (question == null)
-            return NotFound();
-
-        var userId = _currentUserService.UserId;
-        if (question.AuthorId != userId)
-            return Forbid();
-
-        var updatedQuestion = await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, model.CategoryId, model.Tags);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        {
-            return Ok(new { success = true, slug = updatedQuestion.Slug });
-        }
-
-        TempData["SuccessToast"] = "Question updated successfully!";
-        return RedirectToAction(nameof(Details), new { idOrSlug = updatedQuestion.Slug ?? id.ToString() });
     }
 
+    // POST: Questions/Delete/{id}
     [Authorize]
-    [HttpPost("Delete/{id}")]
+    [HttpPost("Delete/{id:guid}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var question = await _questionService.GetQuestionByIdAsync(id);
-        if (question == null)
-            return NotFound();
-
-        var userId = _currentUserService.UserId;
-        if (question.AuthorId != userId)
-            return Forbid();
-
-        await _questionService.DeleteQuestionAsync(id);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        try
         {
-            return Ok(new { success = true, message = "Question deleted." });
-        }
+            var question = await _questionService.GetQuestionByIdAsync(id);
+            if (question == null)
+                return Json(new { success = false, message = "Question not found" });
 
-        TempData["SuccessToast"] = "Question deleted successfully!";
-        return RedirectToAction(nameof(Index));
+            var userId = GetCurrentUserId();
+            if (question.AuthorId != userId)
+                return Json(new { success = false, message = "You can only delete your own questions" });
+
+            await _questionService.DeleteQuestionAsync(id);
+
+            return Json(new { success = true, message = "Question deleted successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting question {QuestionId}", id);
+            return Json(new { success = false, message = "Failed to delete question" });
+        }
     }
 
+    // POST: Questions/Vote/{id}
     [Authorize]
-    [HttpPost("Vote/{id}")]
+    [HttpPost("Vote/{id:guid}")]
     public async Task<IActionResult> Vote(Guid id, bool isUpvote)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.VoteQuestionAsync(id, userId, isUpvote);
 
-        await _questionService.VoteQuestionAsync(id, userId.Value, isUpvote);
-
-        var question = await _questionService.GetQuestionByIdAsync(id, userId.Value);
-        return Ok(new { 
-            voteCount = question?.VoteCount ?? 0,
-            userVote = question?.CurrentUserVote ?? 0
-        });
+            return Json(new { success = true, message = "Vote recorded" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error voting on question {QuestionId}", id);
+            return Json(new { success = false, message = "Failed to vote" });
+        }
     }
 
+    // POST: Questions/RemoveVote/{id}
     [Authorize]
-    [HttpPost("RemoveVote/{id}")]
+    [HttpPost("RemoveVote/{id:guid}")]
     public async Task<IActionResult> RemoveVote(Guid id)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.RemoveQuestionVoteAsync(id, userId);
 
-        await _questionService.RemoveQuestionVoteAsync(id, userId.Value);
-
-        return Ok();
+            return Json(new { success = true, message = "Vote removed" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing vote from question {QuestionId}", id);
+            return Json(new { success = false, message = "Failed to remove vote" });
+        }
     }
 
+    // POST: Questions/AcceptAnswer
     [Authorize]
     [HttpPost("AcceptAnswer")]
     public async Task<IActionResult> AcceptAnswer(Guid questionId, Guid answerId)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.AcceptAnswerAsync(questionId, answerId, userId);
 
-        await _questionService.AcceptAnswerAsync(questionId, answerId, userId.Value);
-
-        return Ok();
+            return Json(new { success = true, message = "Answer accepted" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting answer {AnswerId} for question {QuestionId}", answerId, questionId);
+            return Json(new { success = false, message = "Failed to accept answer" });
+        }
     }
 
+    // POST: Questions/UnacceptAnswer
     [Authorize]
     [HttpPost("UnacceptAnswer")]
     public async Task<IActionResult> UnacceptAnswer(Guid questionId)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _questionService.UnacceptAnswerAsync(questionId, userId);
 
-        await _questionService.UnacceptAnswerAsync(questionId, userId.Value);
-
-        return Ok();
+            return Json(new { success = true, message = "Answer unaccepted" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error unaccepting answer for question {QuestionId}", questionId);
+            return Json(new { success = false, message = "Failed to unaccept answer" });
+        }
     }
 
-    // Bookmark actions
+    // GET: Questions/MyQuestions
     [Authorize]
-    [HttpPost("Bookmark/{id}")]
-    public async Task<IActionResult> Bookmark(Guid id, string? notes = null)
+    [HttpGet("MyQuestions")]
+    public async Task<IActionResult> MyQuestions(int page = 1, int pageSize = 20)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        await _questionService.BookmarkQuestionAsync(id, userId.Value, notes);
-
-        var isBookmarked = await _questionService.GetBookmarkAsync(id, userId.Value) != null;
-        var bookmarkCount = (await _questionService.GetQuestionByIdAsync(id))?.BookmarkCount ?? 0;
-
-        return Ok(new { 
-            message = isBookmarked ? "Question bookmarked successfully" : "Bookmark removed successfully",
-            isBookmarked,
-            bookmarkCount
-        });
+        try
+        {
+            var userId = GetCurrentUserId();
+            var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
+            var result = await _questionService.GetUserQuestionsAsync(userId, parameters);
+            
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            
+            return View(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading user questions");
+            TempData["Error"] = "Failed to load your questions";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
-    [Authorize]
-    [HttpPost("RemoveBookmark/{id}")]
-    public async Task<IActionResult> RemoveBookmark(Guid id)
+    // GET: Questions/Search
+    [HttpGet("Search")]
+    public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 20)
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        await _questionService.RemoveBookmarkAsync(id, userId.Value);
-
-        var bookmarkCount = (await _questionService.GetQuestionByIdAsync(id))?.BookmarkCount ?? 0;
-
-        return Ok(new { 
-            message = "Bookmark removed successfully",
-            isBookmarked = false,
-            bookmarkCount
-        });
+        try
+        {
+            var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
+            var result = await _questionService.GetQuestionsAsync(parameters, tag: query);
+            
+            ViewBag.SearchQuery = query;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            
+            return View("Index", result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching questions with query {Query}", query);
+            TempData["Error"] = "Failed to search questions";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
-    [Authorize]
-    [HttpGet("Bookmarks")]
-    public async Task<IActionResult> Bookmarks(int page = 1, int pageSize = 20)
+    private Guid GetCurrentUserId()
     {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
 
-        var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
-        var result = await _questionService.GetUserBookmarksAsync(userId.Value, parameters);
-
-        return View(result);
-    }
-
-    // Reaction actions
-    [Authorize]
-    [HttpPost("React/{id}")]
-    public async Task<IActionResult> React(Guid id, int reactionType)
-    {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        await _questionService.ReactToQuestionAsync(id, userId.Value, (ReactionType)reactionType);
-
-        var summary = await _questionService.GetQuestionReactionSummaryAsync(id, userId.Value);
-        return Ok(summary);
-    }
-
-    [Authorize]
-    [HttpPost("RemoveReaction/{id}")]
-    public async Task<IActionResult> RemoveReaction(Guid id)
-    {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        await _questionService.RemoveQuestionReactionAsync(id, userId.Value);
-
-        var summary = await _questionService.GetQuestionReactionSummaryAsync(id, userId.Value);
-        return Ok(summary);
-    }
-
-    [HttpGet("Reactions/{id}")]
-    public async Task<IActionResult> GetReactions(Guid id)
-    {
-        var userId = _currentUserService.UserId;
-        var summary = await _questionService.GetQuestionReactionSummaryAsync(id, userId);
-
-        return Ok(summary);
-    }
-
-    // Share actions
-    [Authorize]
-    [HttpPost("Share/{id}")]
-    public async Task<IActionResult> Share(Guid id, string? platform = null, string? sharedUrl = null)
-    {
-        var userId = _currentUserService.UserId;
-        if (!userId.HasValue)
-            return Unauthorized();
-
-        await _questionService.ShareQuestionAsync(id, userId.Value, platform, sharedUrl);
-
-        var shareCount = await _questionService.GetQuestionShareCountAsync(id);
-        return Ok(new { message = "Question shared successfully", shareCount });
-    }
-
-    [HttpGet("GetQuestionCard/{id}")]
-    public async Task<IActionResult> GetQuestionCard(Guid id)
-    {
-        var question = await _questionService.GetQuestionByIdAsync(id, _currentUserService.UserId);
-        if (question == null) return NotFound();
-
-        // Wrap in PagedResult to reuse _QuestionList
-        var result = new PagedResult<QuestionDto>(new List<QuestionDto> { question }, 1, 1, 1);
-        return PartialView("_QuestionList", result);
+        return userId;
     }
 }

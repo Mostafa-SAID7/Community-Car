@@ -9,8 +9,10 @@ public interface IFriendshipService
     Task AcceptRequestAsync(Guid userId, Guid friendId);
     Task RejectRequestAsync(Guid userId, Guid friendId);
     Task BlockUserAsync(Guid userId, Guid friendId);
+    Task UnblockUserAsync(Guid userId, Guid friendId);
     Task RemoveFriendAsync(Guid userId, Guid friendId);
     Task<FriendshipStatus> GetFriendshipStatusAsync(Guid userId, Guid friendId);
     Task<IEnumerable<Friendship>> GetFriendsAsync(Guid userId);
     Task<IEnumerable<Friendship>> GetPendingRequestsAsync(Guid userId);
+    Task<IEnumerable<Friendship>> GetBlockedUsersAsync(Guid userId);
 }

@@ -1,0 +1,91 @@
+@model CommunityCar.Mvc.ViewModels.Feed.FeedViewModel
+
+<!-- Quick Stats -->
+<div class="card mb-3">
+    <div class="card-header bg-white">
+        <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Feed Stats</h6>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Total Items</span>
+            <strong>@Model.TotalCount</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Current Page</span>
+            <strong>@Model.CurrentPage / @Model.TotalPages</strong>
+        </div>
+    </div>
+</div>
+
+<!-- Content Type Legend -->
+<div class="card mb-3">
+    <div class="card-header bg-white">
+        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Content Types</h6>
+    </div>
+    <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-primary me-2"><i class="fas fa-file-text"></i></span>
+            <span>Posts</span>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-info me-2"><i class="fas fa-question-circle"></i></span>
+            <span>Questions</span>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-success me-2"><i class="fas fa-calendar"></i></span>
+            <span>Events</span>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-warning me-2"><i class="fas fa-newspaper-o"></i></span>
+            <span>News</span>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-purple me-2"><i class="fas fa-book"></i></span>
+            <span>Guides</span>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-danger me-2"><i class="fas fa-star"></i></span>
+            <span>Reviews</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="card">
+        <div class="card-header bg-white">
+            <h6 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create Content</h6>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-2">
+                <a asp-controller="Posts" asp-action="Create" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-file-text me-1"></i> New Post
+                </a>
+                <a asp-controller="Questions" asp-action="Create" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-question-circle me-1"></i> Ask Question
+                </a>
+                <a asp-controller="Events" asp-action="Create" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-calendar me-1"></i> Create Event
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Trending Tags -->
+<div class="card mt-3">
+    <div class="card-header bg-white">
+        <h6 class="mb-0"><i class="fas fa-hashtag me-2"></i>Trending Tags</h6>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="?search=cars" class="badge bg-light text-dark text-decoration-none">#cars</a>
+            <a href="?search=maintenance" class="badge bg-light text-dark text-decoration-none">#maintenance</a>
+            <a href="?search=tips" class="badge bg-light text-dark text-decoration-none">#tips</a>
+            <a href="?search=community" class="badge bg-light text-dark text-decoration-none">#community</a>
+            <a href="?search=events" class="badge bg-light text-dark text-decoration-none">#events</a>
+            <a href="?search=reviews" class="badge bg-light text-dark text-decoration-none">#reviews</a>
+        </div>
+    </div>
+</div>

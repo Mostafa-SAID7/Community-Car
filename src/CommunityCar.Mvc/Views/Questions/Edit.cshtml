@@ -1,50 +1,154 @@
 @using CommunityCar.Domain.DTOs.Community
-@model CommunityCar.Web.ViewModels.Community.Qa.EditQuestionViewModel
+@model CommunityCar.Mvc.ViewModels.Qa.EditQuestionViewModel
 @{
     ViewData["Title"] = "Edit Question";
 }
 
-<link rel="stylesheet" href="~/css/pages/qa.css" />
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_QA" />
+}
 
-<div class="container" style="max-width: 900px; margin: 40px auto;">
-    <div class="card qa-create-card">
-        <div class="card-header">
-            <h1 class="card-title">Edit Question</h1>
-            <p class="text-white-50 mb-0">Update your question details</p>
-        </div>
+@section Styles {
+    <style>
+        .edit-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        .edit-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 32px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-light-custom {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            color: #495057;
+            font-weight: 600;
+            padding: 12px 32px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .btn-light-custom:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+    </style>
+}
 
-        <div class="card-body">
-            <form asp-action="Edit" method="post">
-                <input type="hidden" asp-for="Id" />
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mb-3">
-                    <label asp-for="Title" class="form-label">Title</label>
-                    <input asp-for="Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-4">
-                    <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
-                    <select asp-for="CategoryId" class="form-select form-select-lg" required asp-items="@(new SelectList(Model.Categories ?? Enumerable.Empty<CategoryDto>(), "Id", "Name"))">
-                        <option value="">-- Select Category --</option>
+<!-- Header -->
+<div class="edit-header">
+    <div class="text-center">
+        <h1 class="mb-2 fw-bold">
+            <i class="fas fa-edit me-2"></i>Edit Question
+        </h1>
+        <p class="mb-0 opacity-90">Update your question details</p>
+    </div>
+</div>
+
+<!-- Edit Form -->
+<div class="card edit-card">
+    <div class="card-body p-4 p-md-5">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+            
+            <div class="mb-4">
+                <label asp-for="Title" class="form-label fw-bold">
+                    <i class="fas fa-heading me-2 text-primary"></i>Question Title
+                </label>
+                <input asp-for="Title" class="form-control form-control-lg" placeholder="What is your question? Be specific and clear." />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="CategoryId" class="form-label fw-bold">
+                    <i class="fas fa-folder me-2 text-primary"></i>Category
+                </label>
+                @if (Model?.Categories != null && Model.Categories.Any())
+                {
+                    <select asp-for="CategoryId" class="form-select form-select-lg" asp-items="Model.Categories">
+                        <option value="">-- Select a Category --</option>
                     </select>
-                    <span asp-validation-for="CategoryId" class="text-danger smallest"></span>
+                }
+                else
+                {
+                    <select name="CategoryId" class="form-select form-select-lg">
+                        <option value="">-- Select a Category --</option>
+                    </select>
+                }
+                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Content" class="form-label fw-bold">
+                    <i class="fas fa-align-left me-2 text-primary"></i>Question Details
+                </label>
+                <textarea asp-for="Content" class="form-control" rows="10" placeholder="Provide more context and details about your question..."></textarea>
+                <span asp-validation-for="Content" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Tags" class="form-label fw-bold">
+                    <i class="fas fa-tags me-2 text-primary"></i>Tags
+                </label>
+                <input asp-for="Tags" class="form-control" placeholder="e.g. engine, maintenance, bmw, oil-change">
+                <span asp-validation-for="Tags" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Separate tags with commas (up to 5 tags)
                 </div>
-                <div class="form-group mb-4">
-                    <label asp-for="Content" class="form-label fw-bold">Details</label>
-                    <textarea asp-for="Content" class="form-control" rows="10"></textarea>
-                    <span asp-validation-for="Content" class="text-danger smallest"></span>
-                </div>
-                <div class="form-group mb-4">
-                    <label asp-for="Tags" class="form-label fw-bold">Tags</label>
-                    <input asp-for="Tags" class="form-control" data-tag-input="true" data-max-tags="5" placeholder="comma separated" />
-                    <span asp-validation-for="Tags" class="text-danger smallest"></span>
-                </div>
-                <div class="d-flex justify-content-end gap-2 pt-3">
-                    <a asp-action="Details" asp-route-idOrSlug="@(Model.Id)" class="btn btn-light px-4 fw-600">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-4 fw-700 shadow-sm">Save Changes</button>
-                </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="alert alert-info rounded-4 mb-4">
+                <h6 class="alert-heading mb-2">
+                    <i class="fas fa-lightbulb me-2"></i>Editing Tips
+                </h6>
+                <ul class="mb-0 small">
+                    <li>Make sure your title is clear and descriptive</li>
+                    <li>Add any new information or clarifications</li>
+                    <li>Update tags to better categorize your question</li>
+                    <li>Fix any typos or formatting issues</li>
+                </ul>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-light-custom btn-lg px-4">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-gradient btn-lg px-5">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -53,4 +157,22 @@
         window.tagSuggestions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.TagSuggestions ?? new List<TagDto>()));
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Character counter for title
+        const titleInput = document.querySelector('input[name="Title"]');
+        if (titleInput) {
+            titleInput.addEventListener('input', function() {
+                const length = this.value.length;
+                const color = length > 100 ? 'text-danger' : length > 50 ? 'text-warning' : 'text-muted';
+                let counter = this.parentElement.querySelector('.char-counter');
+                if (!counter) {
+                    counter = document.createElement('small');
+                    counter.className = 'char-counter d-block mt-1';
+                    this.parentElement.appendChild(counter);
+                }
+                counter.className = `char-counter d-block mt-1 ${color}`;
+                counter.textContent = `${length} characters`;
+            });
+        }
+    </script>
 }

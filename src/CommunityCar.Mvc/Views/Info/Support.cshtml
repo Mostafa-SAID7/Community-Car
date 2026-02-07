@@ -1,0 +1,279 @@
+@{
+    ViewData["Title"] = "Support Center";
+}
+
+@section Styles {
+    <style>
+        .support-hero {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .support-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .support-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem 0;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .faq-question:hover {
+            color: #667eea;
+        }
+        
+        .faq-answer {
+            color: #718096;
+            line-height: 1.8;
+        }
+        
+        .contact-form {
+            background-color: #f7fafc;
+            padding: 2rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="support-hero">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-3">Support Center</h1>
+            <p class="lead">We're here to help you get the most out of CommunityCar</p>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Support Options -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4 class="mb-3">Documentation</h4>
+                    <p class="text-muted mb-4">Browse our comprehensive guides and tutorials</p>
+                    <a href="#faq" class="btn btn-outline-primary">View FAQs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon bg-success-subtle text-success">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="mb-3">Email Support</h4>
+                    <p class="text-muted mb-4">Get help from our support team via email</p>
+                    <a href="#contact" class="btn btn-outline-success">Contact Us</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card support-card">
+                <div class="card-body text-center p-4">
+                    <div class="support-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4 class="mb-3">Community</h4>
+                    <p class="text-muted mb-4">Ask questions and get help from the community</p>
+                    <a href="@Url.Action("Index", "Questions")" class="btn btn-outline-warning">Visit Forum</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mb-5" id="faq">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            How do I create an account?
+                        </h5>
+                        <div class="faq-answer">
+                            Click the "Sign Up" button in the top right corner, fill in your details, and verify your email address. 
+                            Once verified, you'll have full access to all CommunityCar features.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            How do I write a review?
+                        </h5>
+                        <div class="faq-answer">
+                            Navigate to the Reviews section, click "Write Review", select the type of review (car, service, product), 
+                            fill in the details including your rating, pros, cons, and submit. Your review will be visible after approval.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            Can I edit or delete my posts?
+                        </h5>
+                        <div class="faq-answer">
+                            Yes! You can edit or delete any content you've created. Simply navigate to your content, click the menu icon (three dots), 
+                            and select "Edit" or "Delete". Note that some content may require moderator approval after editing.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            How do I report inappropriate content?
+                        </h5>
+                        <div class="faq-answer">
+                            Click the flag icon on any post, review, or comment to report it. Provide a reason for the report, 
+                            and our moderation team will review it within 24 hours.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            How do I change my privacy settings?
+                        </h5>
+                        <div class="faq-answer">
+                            Go to your Profile, click "Settings", then "Privacy". Here you can control who can see your profile, 
+                            send you messages, and view your activity.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            Is CommunityCar free to use?
+                        </h5>
+                        <div class="faq-answer">
+                            Yes! CommunityCar is completely free to use. All core features including posting, reviewing, messaging, 
+                            and accessing guides are available at no cost.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <h5 class="faq-question">
+                            <i class="fas fa-question-circle me-2 text-primary"></i>
+                            How do I reset my password?
+                        </h5>
+                        <div class="faq-answer">
+                            Click "Forgot Password" on the login page, enter your email address, and we'll send you a password reset link. 
+                            Follow the instructions in the email to create a new password.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row" id="contact">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="text-center mb-4">Still Need Help?</h2>
+            <div class="contact-form">
+                <form id="supportForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="subject" class="form-label">Subject</label>
+                            <select class="form-select" id="subject" required>
+                                <option value="">Select a topic...</option>
+                                <option value="account">Account Issues</option>
+                                <option value="technical">Technical Problems</option>
+                                <option value="content">Content Questions</option>
+                                <option value="privacy">Privacy Concerns</option>
+                                <option value="feedback">Feedback & Suggestions</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" rows="6" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <i class="fas fa-clock me-2"></i>We typically respond within 24 hours
+                </p>
+                <p class="text-muted">
+                    <i class="fas fa-envelope me-2"></i>Or email us directly at: 
+                    <a href="mailto:support@communitycar.com">support@communitycar.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // FAQ accordion effect
+            $('.faq-question').on('click', function() {
+                $(this).next('.faq-answer').slideToggle(300);
+                $(this).find('i').toggleClass('fa-question-circle fa-check-circle');
+            });
+
+            // Support form submission
+            $('#supportForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Show success message (in production, this would send to backend)
+                alert('Thank you for contacting us! We will respond to your inquiry within 24 hours.');
+                this.reset();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,323 @@
+@model List<CommunityCar.Domain.DTOs.Communications.ChatConversationDto>
+@{
+    ViewData["Title"] = "Messages";
+    var unreadCount = ViewBag.UnreadCount ?? 0;
+}
+
+@section Styles {
+    <style>
+        .chat-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .conversation-item {
+            transition: all 0.3s ease;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+        }
+        
+        .conversation-item:hover {
+            background-color: #f9fafb;
+            transform: translateX(5px);
+        }
+        
+        .conversation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+        }
+        
+        .user-initial {
+            width: 56px;
+            height: 56px;
+            font-size: 1.5rem;
+        }
+        
+        .online-indicator {
+            width: 14px;
+            height: 14px;
+            bottom: 2px;
+            right: 2px;
+        }
+        
+        .unread-badge {
+            min-width: 24px;
+            height: 24px;
+        }
+        
+        .message-preview {
+            max-width: 400px;
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<div class="chat-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-comments me-3"></i>Messages
+                </h1>
+                <p class="lead mb-0">Connect and chat with the automotive community</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-comments fa-8x opacity-25"></i>
+            </div>
+        </div>
+    </div>
+</div>
+                    else
+                    {
+                        <div class="list-group list-group-flush" id="conversationsList">
+                            @foreach (var conversation in Model)
+                            {
+                                <a href="@Url.Action("Conversation", new { userId = conversation.UserId })" 
+                                   class="list-group-item list-group-item-action conversation-item @(conversation.UnreadCount > 0 ? "unread" : "")"
+                                   data-unread="@(conversation.UnreadCount > 0 ? "true" : "false")">
+                                    <div class="d-flex align-items-center py-2">
+                                        <div class="position-relative me-3">
+                                            @if (!string.IsNullOrEmpty(conversation.ProfilePicture))
+                                            {
+                                                <img src="@conversation.ProfilePicture" 
+                                                     alt="@conversation.UserName" 
+                                                     class="rounded-circle user-avatar">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center user-avatar">
+                                                    <span class="fw-bold fs-4">@conversation.UserName.Substring(0, 1).ToUpper()</span>
+                                                </div>
+                                            }
+                                            @if (conversation.IsOnline)
+                                            {
+                                                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle online-indicator"></span>
+                                            }
+                                        </div>
+                                        <div class="flex-grow-1 min-width-0">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <h6 class="mb-0 fw-bold text-truncate">
+                                                    @conversation.UserName
+                                                    @if (conversation.IsOnline)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success ms-2">Online</span>
+                                                    }
+                                                </h6>
+                                                @if (conversation.LastMessageTime.HasValue)
+                                                {
+                                                    <small class="text-muted ms-2">
+                                                        @conversation.LastMessageTime.Value.ToString("MMM dd, HH:mm")
+                                                    </small>
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="mb-0 text-muted small text-truncate" style="max-width: 400px;">
+                                                    @if (conversation.UnreadCount > 0)
+                                                    {
+                                                        <i class="fas fa-circle text-primary me-2" style="font-size: 0.5rem;"></i>
+                                                    }
+                                                    @(conversation.LastMessage ?? "No messages yet")
+                                                </p>
+                                                @if (conversation.UnreadCount > 0)
+                                                {
+                                                    <span class="badge bg-danger rounded-pill ms-2">@conversation.UnreadCount</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-inbox me-2"></i>Conversations
+                        @if (unreadCount > 0)
+                        {
+                            <span class="badge bg-danger ms-2">@unreadCount unread</span>
+                        }
+                    </h4>
+                    <div class="input-group" style="max-width: 300px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" placeholder="Search..." id="searchConversations">
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted mb-3">No Conversations Yet</h4>
+                            <p class="text-muted">Start chatting with community members</p>
+                            <a href="@Url.Action("Index", "Feed")" class="btn btn-primary mt-3">
+                                <i class="fas fa-users me-2"></i>Explore Community
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="conversation-list">
+                            @foreach (var conversation in Model)
+                            {
+                                <a href="@Url.Action("Conversation", new { userId = conversation.UserId })" 
+                                   class="conversation-item d-block text-decoration-none" data-username="@conversation.UserName.ToLower()">
+                                    <div class="d-flex align-items-center">
+                                        <div class="position-relative me-3">
+                                            @if (!string.IsNullOrEmpty(conversation.ProfilePicture))
+                                            {
+                                                <img src="@conversation.ProfilePicture" 
+                                                     alt="@conversation.UserName" 
+                                                     class="rounded-circle user-avatar">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center user-initial">
+                                                    <span class="fw-bold">@conversation.UserName.Substring(0, 1).ToUpper()</span>
+                                                </div>
+                                            }
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Search functionality
+            $('#searchConversations').on('keyup', function() {
+                var searchText = $(this).val().toLowerCase();
+                $('.conversation-item').each(function() {
+                    var userName = $(this).find('h6').text().toLowerCase();
+                    var lastMessage = $(this).find('.text-truncate').text().toLowerCase();
+                    
+                    if (userName.includes(searchText) || lastMessage.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+            
+            // Filter functionality
+            $('[data-filter]').on('click', function() {
+                var filter = $(this).data('filter');
+                $('[data-filter]').removeClass('active');
+                $(this).addClass('active');
+                
+                if (filter === 'all') {
+                    $('.conversation-item').show();
+                } else if (filter === 'unread') {
+                    $('.conversation-item').each(function() {
+                        if ($(this).data('unread') === true) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                }
+            });
+            
+            // Auto-refresh unread count every 30 seconds
+            setInterval(function() {
+                $.get('@Url.Action("GetUnreadCount")', function(data) {
+                    if (data.success && data.count > 0) {
+                        $('.badge.bg-danger').first().text(data.count + ' new');
+                    }
+                });
+            }, 30000);
+        });
+    </script>
+}
+                                            @if (conversation.IsOnline)
+                                            {
+                                                <span class="position-absolute bg-success border border-2 border-white rounded-circle online-indicator"></span>
+                                            }
+                                        </div>
+                                        <div class="flex-grow-1 min-width-0">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <h6 class="mb-0 fw-bold text-dark">
+                                                    @conversation.UserName
+                                                    @if (conversation.IsOnline)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success ms-2">Online</span>
+                                                    }
+                                                </h6>
+                                                @if (conversation.LastMessageTime.HasValue)
+                                                {
+                                                    <small class="text-muted">
+                                                        @conversation.LastMessageTime.Value.ToString("MMM dd, HH:mm")
+                                                    </small>
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="mb-0 text-muted small text-truncate message-preview">
+                                                    @if (conversation.UnreadCount > 0)
+                                                    {
+                                                        <strong class="text-dark">@(conversation.LastMessage ?? "New message")</strong>
+                                                    }
+                                                    else
+                                                    {
+                                                        @(conversation.LastMessage ?? "No messages yet")
+                                                    }
+                                                </p>
+                                                @if (conversation.UnreadCount > 0)
+                                                {
+                                                    <span class="badge bg-danger rounded-pill unread-badge ms-2">@conversation.UnreadCount</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Search conversations
+            $('#searchConversations').on('keyup', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                $('.conversation-item').each(function() {
+                    var username = $(this).data('username');
+                    if (username.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            // Auto-refresh unread count every 30 seconds
+            setInterval(function() {
+                $.get('@Url.Action("GetUnreadCount")', function(data) {
+                    if (data.success && data.count > 0) {
+                        $('.badge.bg-danger').text(data.count + ' unread');
+                    }
+                });
+            }, 30000);
+        });
+    </script>
+}
