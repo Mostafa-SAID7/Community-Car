@@ -109,8 +109,11 @@ public class FriendshipService : IFriendshipService
 
     public async Task<IEnumerable<Friendship>> GetPendingRequestsAsync(Guid userId)
     {
-        return await _friendshipRepository.WhereAsync(f => 
-            f.FriendId == userId && f.Status == FriendshipStatus.Pending);
+        return await _friendshipRepository
+            .GetQueryable()
+            .Include(f => f.User)
+            .Where(f => f.FriendId == userId && f.Status == FriendshipStatus.Pending)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Friendship>> GetSentRequestsAsync(Guid userId)
@@ -135,7 +138,10 @@ public class FriendshipService : IFriendshipService
 
     public async Task<IEnumerable<Friendship>> GetBlockedUsersAsync(Guid userId)
     {
-        return await _friendshipRepository.WhereAsync(f =>
-            f.UserId == userId && f.Status == FriendshipStatus.Blocked);
+        return await _friendshipRepository
+            .GetQueryable()
+            .Include(f => f.Friend)
+            .Where(f => f.UserId == userId && f.Status == FriendshipStatus.Blocked)
+            .ToListAsync();
     }
 }
