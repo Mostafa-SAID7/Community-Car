@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CommunityCar.Mvc.Controllers.Community;
 
@@ -19,19 +20,22 @@ public class FriendsController : Controller
     private readonly ILogger<FriendsController> _logger;
     private readonly CommunityCar.Domain.Interfaces.Communications.INotificationService _notificationService;
     private readonly IStringLocalizer<FriendsController> _localizer;
+    private readonly IHubContext<CommunityCar.Infrastructure.Hubs.FriendHub> _friendHubContext;
 
     public FriendsController(
         IFriendshipService friendshipService, 
         UserManager<ApplicationUser> userManager,
         ILogger<FriendsController> logger,
         CommunityCar.Domain.Interfaces.Communications.INotificationService notificationService,
-        IStringLocalizer<FriendsController> localizer)
+        IStringLocalizer<FriendsController> localizer,
+        IHubContext<CommunityCar.Infrastructure.Hubs.FriendHub> friendHubContext)
     {
         _friendshipService = friendshipService;
         _userManager = userManager;
         _logger = logger;
         _notificationService = notificationService;
         _localizer = localizer;
+        _friendHubContext = friendHubContext;
     }
 
     private Guid GetCurrentUserId()
@@ -170,10 +174,23 @@ public class FriendsController : Controller
 
             await _friendshipService.SendRequestAsync(userId, friendId);
             
-            // Notify user
+            // Notify user via database notification
             var currentUser = await _userManager.GetUserAsync(User);
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAsync(friendId, userId, currentUserName);
+
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("ReceiveFriendRequest", new
+                {
+                    SenderId = userId,
+                    SenderName = currentUserName,
+                    SenderProfilePicture = currentUser?.ProfilePictureUrl,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
 
             TempData["Success"] = _localizer["FriendRequestSent"].Value;
         }
@@ -201,10 +218,23 @@ public class FriendsController : Controller
 
             await _friendshipService.SendRequestAsync(userId, friendId);
             
-            // Notify user
+            // Notify user via database notification
             var currentUser = await _userManager.GetUserAsync(User);
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAsync(friendId, userId, currentUserName);
+
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("ReceiveFriendRequest", new
+                {
+                    SenderId = userId,
+                    SenderName = currentUserName,
+                    SenderProfilePicture = currentUser?.ProfilePictureUrl,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
 
             return Json(new { success = true, message = "Friend request sent successfully." });
         }
@@ -224,10 +254,23 @@ public class FriendsController : Controller
             var userId = GetCurrentUserId();
             await _friendshipService.AcceptRequestAsync(userId, friendId);
             
-            // Notify user who sent the request
+            // Notify user who sent the request via database notification
             var currentUser = await _userManager.GetUserAsync(User);
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendRequestAccepted", new
+                {
+                    FriendId = userId,
+                    FriendName = currentUserName,
+                    FriendProfilePicture = currentUser?.ProfilePictureUrl,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
 
             TempData["Success"] = _localizer["RequestAccepted"].Value;
         }
@@ -249,10 +292,23 @@ public class FriendsController : Controller
             var userId = GetCurrentUserId();
             await _friendshipService.AcceptRequestAsync(userId, friendId);
             
-            // Notify user who sent the request
+            // Notify user who sent the request via database notification
             var currentUser = await _userManager.GetUserAsync(User);
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendRequestAccepted", new
+                {
+                    FriendId = userId,
+                    FriendName = currentUserName,
+                    FriendProfilePicture = currentUser?.ProfilePictureUrl,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
 
             return Json(new { success = true, message = "Friend request accepted successfully." });
         }
@@ -271,6 +327,21 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RejectRequestAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendRequestRejected", new
+                {
+                    UserId = userId,
+                    UserName = currentUserName,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             TempData["Success"] = _localizer["RequestRejected"].Value;
         }
         catch (Exception ex)
@@ -290,6 +361,21 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RejectRequestAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendRequestRejected", new
+                {
+                    UserId = userId,
+                    UserName = currentUserName,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             return Json(new { success = true, message = _localizer["RequestRejected"].Value });
         }
         catch (Exception ex)
@@ -307,6 +393,21 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RemoveFriendAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendshipRemoved", new
+                {
+                    RemovedBy = userId,
+                    RemovedByName = currentUserName,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             TempData["Success"] = _localizer["FriendRemoved"].Value;
         }
         catch (Exception ex)
@@ -326,6 +427,21 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RemoveFriendAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("FriendshipRemoved", new
+                {
+                    RemovedBy = userId,
+                    RemovedByName = currentUserName,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             return Json(new { success = true, message = _localizer["FriendRemoved"].Value });
         }
         catch (Exception ex)
@@ -350,6 +466,18 @@ public class FriendsController : Controller
             }
 
             await _friendshipService.BlockUserAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("UserBlocked", new
+                {
+                    BlockedBy = userId,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             TempData["Success"] = _localizer["UserBlocked"].Value;
         }
         catch (Exception ex)
@@ -375,6 +503,18 @@ public class FriendsController : Controller
             }
 
             await _friendshipService.BlockUserAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("UserBlocked", new
+                {
+                    BlockedBy = userId,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             return Json(new { success = true, message = _localizer["UserBlocked"].Value });
         }
         catch (Exception ex)
@@ -558,6 +698,18 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.UnblockUserAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("UserUnblocked", new
+                {
+                    UnblockedBy = userId,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             TempData["Success"] = _localizer["UserUnblocked"].Value;
         }
         catch (Exception ex)
@@ -577,6 +729,18 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.UnblockUserAsync(userId, friendId);
+            
+            // Send real-time notification via SignalR
+            var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
+            if (connectionId != null)
+            {
+                await _friendHubContext.Clients.Client(connectionId).SendAsync("UserUnblocked", new
+                {
+                    UnblockedBy = userId,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+            }
+
             return Json(new { success = true, message = _localizer["UserUnblocked"].Value });
         }
         catch (Exception ex)

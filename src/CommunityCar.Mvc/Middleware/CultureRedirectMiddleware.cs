@@ -28,6 +28,7 @@ public class CultureRedirectMiddleware
             path.StartsWith("/questionHub") ||
             path.StartsWith("/notificationHub") ||
             path.StartsWith("/chatHub") ||
+            path.StartsWith("/friendHub") ||
             path.StartsWith("/Culture/SetLanguage") ||
             path.StartsWith("/Error/"))
         {

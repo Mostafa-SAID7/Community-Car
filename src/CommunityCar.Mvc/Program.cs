@@ -133,5 +133,6 @@ app.MapControllerRoute(
 app.MapHub<CommunityCar.Mvc.Hubs.QuestionHub>("/questionHub");
 app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
 app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/chatHub");
+app.MapHub<CommunityCar.Infrastructure.Hubs.FriendHub>("/friendHub");
 
 app.Run();

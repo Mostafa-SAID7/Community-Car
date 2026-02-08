@@ -3,14 +3,18 @@
     ViewData["Title"] = "Friend Requests";
 }
 
-<div class="container py-4">
 @section Styles {
     <link rel="stylesheet" href="~/css/pages/friends.css" />
 }
 
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/components/friend-hub.js"></script>
+}
+
 <partial name="_InnerPageHeader" />
 
-<div class="container py-4">
+<div class="container py-4" data-friend-hub>
 
     <!-- Premium Navigation Tabs -->
     <div class="friends-nav">
