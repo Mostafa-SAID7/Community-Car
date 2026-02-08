@@ -68,6 +68,8 @@
 
 <partial name="_InnerPageHeader" />
 
+@Html.AntiForgeryToken()
+
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8">
@@ -277,24 +279,87 @@
 @section Scripts {
     <script src="~/js/friends.js"></script>
     <script>
+        // Helper function to get culture from URL (always present now due to middleware)
+        function getCulture() {
+            const pathSegments = window.location.pathname.split('/').filter(s => s);
+            return pathSegments.length > 0 ? pathSegments[0] : 'en';
+        }
+
         function toggleLike(id) {
-            $.post('/Guides/ToggleLike/' + id, function(res) {
-                if (res.success) location.reload();
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            
+            const culture = getCulture();
+            const url = `/${culture}/Guides/ToggleLike/${id}`;
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Failed to toggle like');
+                        btn.disabled = false;
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.status, xhr.responseText);
+                    alert('An error occurred while toggling like');
+                    btn.disabled = false;
+                }
             });
         }
 
         function toggleBookmark(id) {
-            $.post('/Guides/ToggleBookmark/' + id, function(res) {
-                if (res.success) location.reload();
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            
+            const culture = getCulture();
+            const url = `/${culture}/Guides/ToggleBookmark/${id}`;
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Failed to toggle bookmark');
+                        btn.disabled = false;
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.status, xhr.responseText);
+                    alert('An error occurred while toggling bookmark');
+                    btn.disabled = false;
+                }
             });
         }
 
         function shareGuide(id, title) {
             if (navigator.share) {
-                navigator.share({ title: title, url: window.location.href });
+                navigator.share({ 
+                    title: title, 
+                    url: window.location.href 
+                }).catch(err => {
+                    if (err.name !== 'AbortError') {
+                        console.error('Share failed:', err);
+                    }
+                });
             } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert('Guide link copied to clipboard!');
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Guide link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Copy failed:', err);
+                    alert('Failed to copy link');
+                });
             }
         }
     </script>

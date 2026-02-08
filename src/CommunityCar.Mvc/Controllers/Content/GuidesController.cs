@@ -59,7 +59,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guides");
-            TempData["Error"] = _localizer["FailedToLoadGuides"];
+            TempData["Error"] = _localizer["FailedToLoadGuides"].Value;
             return View(new PagedResult<Domain.DTOs.Community.GuideDto>(
                 new List<Domain.DTOs.Community.GuideDto>(), 0, page, pageSize));
         }
@@ -77,7 +77,7 @@ public class GuidesController : Controller
 
             if (guideDto == null)
             {
-                TempData["Error"] = _localizer["GuideNotFound"];
+                TempData["Error"] = _localizer["GuideNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -105,7 +105,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guide {Slug}", slug);
-            TempData["Error"] = _localizer["FailedToLoadGuide"];
+            TempData["Error"] = _localizer["FailedToLoadGuide"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -146,7 +146,7 @@ public class GuidesController : Controller
                 model.Difficulty,
                 model.EstimatedTimeMinutes);
 
-            TempData["Success"] = _localizer["GuideCreated"];
+            TempData["Success"] = _localizer["GuideCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = guide.Slug });
         }
         catch (Exception ex)
@@ -171,13 +171,13 @@ public class GuidesController : Controller
 
             if (guideDto == null)
             {
-                TempData["Error"] = _localizer["GuideNotFound"];
+                TempData["Error"] = _localizer["GuideNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             if (!guideDto.IsAuthor)
             {
-                TempData["Error"] = _localizer["OnlyAuthorCanEditGuide"];
+                TempData["Error"] = _localizer["OnlyAuthorCanEditGuide"].Value;
                 return RedirectToAction(nameof(Details), new { slug = guideDto.Slug });
             }
 
@@ -202,7 +202,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guide for edit {GuideId}", id);
-            TempData["Error"] = _localizer["FailedToLoadGuide"];
+            TempData["Error"] = _localizer["FailedToLoadGuide"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -234,7 +234,7 @@ public class GuidesController : Controller
                 model.Difficulty,
                 model.EstimatedTimeMinutes);
 
-            TempData["Success"] = _localizer["GuideUpdated"];
+            TempData["Success"] = _localizer["GuideUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = guide.Slug });
         }
         catch (Exception ex)
@@ -301,7 +301,8 @@ public class GuidesController : Controller
 
     // POST: Guides/ToggleLike/{id}
     [Authorize]
-    [HttpPost("ToggleLike/{id:guid}")]
+    [HttpPost]
+    [Route("ToggleLike/{id:guid}")]
     public async Task<IActionResult> ToggleLike(Guid id)
     {
         try
@@ -320,7 +321,8 @@ public class GuidesController : Controller
 
     // POST: Guides/ToggleBookmark/{id}
     [Authorize]
-    [HttpPost("ToggleBookmark/{id:guid}")]
+    [HttpPost]
+    [Route("ToggleBookmark/{id:guid}")]
     public async Task<IActionResult> ToggleBookmark(Guid id)
     {
         try
@@ -353,7 +355,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user guides");
-            TempData["Error"] = _localizer["FailedToLoadMyGuides"];
+            TempData["Error"] = _localizer["FailedToLoadMyGuides"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

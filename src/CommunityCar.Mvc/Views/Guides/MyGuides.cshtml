@@ -1,0 +1,240 @@
+@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.GuideDto>
+@{
+    ViewData["Title"] = "My Guides";
+}
+
+@{
+    ViewData["HeaderTitle"] = "My Guides";
+    ViewData["HeaderDescription"] = "Manage your published guides and tutorials";
+    ViewData["HeaderIcon"] = "fas fa-user-edit";
+    
+    var createUrl = Url.Action("Create");
+    var actionsHtml = "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Create New Guide" +
+                      "</a>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container">
+    @if (Model.Items.Any())
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var guide in Model.Items)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card guide-card">
+                        <div class="position-relative">
+                            <span class="badge text-white category-badge">
+                                <i class="fas fa-folder me-1"></i>@guide.Category
+                            </span>
+                            <span class="badge text-white difficulty-badge difficulty-@guide.Difficulty.ToString().ToLower()">
+                                <i class="fas fa-signal me-1"></i>@guide.DifficultyName
+                            </span>
+                            <span class="badge bg-@(guide.Status.ToString() == "Published" ? "success" : guide.Status.ToString() == "Draft" ? "secondary" : "warning") position-absolute top-0 end-0 m-2">
+                                @guide.StatusName
+                            </span>
+                            <img src="@(guide.ImageUrl ?? "/images/guide-placeholder.jpg")" 
+                                 alt="@guide.Title" 
+                                 class="card-img-top guide-image" />
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="guide-meta mb-2">
+                                <i class="fas fa-clock me-1"></i>@guide.EstimatedTimeMinutes min
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-calendar me-1"></i>@guide.CreatedAt.ToString("MMM dd, yyyy")
+                            </div>
+                            <h5 class="guide-title mb-2">
+                                <a href="@Url.Action("Details", new { slug = guide.Slug })" 
+                                   class="text-decoration-none text-dark">
+                                    @guide.Title
+                                </a>
+                            </h5>
+                            <p class="guide-summary mb-3 flex-grow-1">
+                                @(guide.Summary?.Length > 120 ? guide.Summary.Substring(0, 120) + "..." : guide.Summary)
+                            </p>
+                            
+                            @if (!string.IsNullOrEmpty(guide.Tags))
+                            {
+                                <div class="mb-3">
+                                    @foreach (var tag in guide.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark me-1">#@tag.Trim()</span>
+                                    }
+                                </div>
+                            }
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <div class="d-flex gap-3 text-muted small">
+                                    <span><i class="fas fa-eye me-1"></i>@guide.ViewCount</span>
+                                    <span><i class="fas fa-heart me-1"></i>@guide.LikeCount</span>
+                                    <span><i class="fas fa-bookmark me-1"></i>@guide.BookmarkCount</span>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="@Url.Action("Edit", new { id = guide.Id })" class="btn btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @if (guide.Status.ToString() == "Draft")
+                                    {
+                                        <button type="button" class="btn btn-outline-success" onclick="publishGuide('@guide.Id')" title="Publish">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    }
+                                    else if (guide.Status.ToString() == "Published")
+                                    {
+                                        <button type="button" class="btn btn-outline-warning" onclick="archiveGuide('@guide.Id')" title="Archive">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    }
+                                    <button type="button" class="btn btn-outline-danger" onclick="deleteGuide('@guide.Id')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="My guides pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a class="page-link" asp-action="MyGuides" asp-route-page="@(Model.PageNumber - 1)">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+
+                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" asp-action="MyGuides" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a class="page-link" asp-action="MyGuides" asp-route-page="@(Model.PageNumber + 1)">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted mb-3">No Guides Yet</h4>
+                <p class="text-muted mb-4">
+                    You haven't created any guides yet. Share your automotive knowledge with the community!
+                </p>
+                <a asp-action="Create" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Create Your First Guide
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function publishGuide(guideId) {
+            if (confirm('Are you sure you want to publish this guide?')) {
+                $.ajax({
+                    url: '@Url.Action("Publish")/' + guideId,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message || 'Failed to publish guide');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while publishing the guide');
+                    }
+                });
+            }
+        }
+
+        function archiveGuide(guideId) {
+            if (confirm('Are you sure you want to archive this guide?')) {
+                $.ajax({
+                    url: '@Url.Action("Archive")/' + guideId,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message || 'Failed to archive guide');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while archiving the guide');
+                    }
+                });
+            }
+        }
+
+        function deleteGuide(guideId) {
+            if (confirm('Are you sure you want to delete this guide? This action cannot be undone.')) {
+                $.ajax({
+                    url: '@Url.Action("Delete")/' + guideId,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message || 'Failed to delete guide');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while deleting the guide');
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function() {
+            // Add animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            entry.target.style.transition = 'all 0.5s ease';
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.guide-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+}

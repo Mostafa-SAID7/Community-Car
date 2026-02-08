@@ -8,7 +8,8 @@
 }
 
 @section Styles {
-    }
+    <link rel="stylesheet" href="~/css/pages/reviews.css" asp-append-version="true" />
+}
 
 @{
     ViewData["HeaderTitle"] = "Write a Review";
@@ -30,20 +31,29 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
+                    @if (string.IsNullOrEmpty(Model.EntityType) || Model.EntityId == Guid.Empty)
+                    {
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> To write a review, please navigate to the specific item (car, guide, event, etc.) and click the "Write Review" button from there. This will automatically fill in the required information.
+                        </div>
+                    }
+                    
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-4">
                             <label asp-for="EntityId" class="form-label fw-bold">Entity ID</label>
-                            <input asp-for="EntityId" class="form-control" placeholder="Enter entity ID" />
+                            <input asp-for="EntityId" class="form-control" placeholder="Enter entity ID" readonly />
                             <span asp-validation-for="EntityId" class="text-danger"></span>
-                            <small class="form-text text-muted">The ID of the item you're reviewing (car, guide, etc.)</small>
+                            <small class="form-text text-muted">The ID of the item you're reviewing (automatically filled from the item page)</small>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="EntityType" class="form-label fw-bold">Entity Type</label>
-                            <input asp-for="EntityType" class="form-control" placeholder="e.g., Car, Guide, Event" />
+                            <input asp-for="EntityType" class="form-control" placeholder="e.g., Car, Guide, Event" readonly />
                             <span asp-validation-for="EntityType" class="text-danger"></span>
+                            <small class="form-text text-muted">The type of item being reviewed (automatically filled)</small>
                         </div>
 
                         <div class="mb-4">
@@ -148,24 +158,33 @@
             const ratingInput = $('#ratingValue');
             
             // Initialize rating if value exists
-            const currentRating = parseInt(ratingInput.val()) || 0;
+            let currentRating = parseInt(ratingInput.val()) || 0;
             if (currentRating > 0) {
                 updateStars(currentRating);
             }
             
+            // Click handler
             stars.on('click', function() {
                 const rating = $(this).data('rating');
+                currentRating = rating;
                 ratingInput.val(rating);
                 updateStars(rating);
+                
+                // Clear validation error when rating is selected
+                const validationSpan = $('span[data-valmsg-for="Rating"]');
+                if (validationSpan.length) {
+                    validationSpan.text('').removeClass('field-validation-error').addClass('field-validation-valid');
+                }
             });
             
+            // Hover effect
             stars.on('mouseenter', function() {
                 const rating = $(this).data('rating');
                 updateStars(rating);
             });
             
+            // Reset to current rating on mouse leave
             $('#starRating').on('mouseleave', function() {
-                const currentRating = parseInt(ratingInput.val()) || 0;
                 updateStars(currentRating);
             });
             

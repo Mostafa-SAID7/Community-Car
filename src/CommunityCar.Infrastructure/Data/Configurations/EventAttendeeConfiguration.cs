@@ -29,5 +29,8 @@ public class EventAttendeeConfiguration : IEntityTypeConfiguration<EventAttendee
             .IsUnique();
 
         builder.HasIndex(a => a.Status);
+
+        // Soft delete filter
+        builder.HasQueryFilter(a => !a.IsDeleted);
     }
 }

@@ -356,9 +356,33 @@ public partial class GroupsController : Controller
         }
     }
 
+    [HttpGet("Leave/{id}")]
+    public async Task<IActionResult> Leave(Guid id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var group = await _groupService.GetGroupByIdAsync(id, userId);
+
+            if (group == null)
+            {
+                TempData["Error"] = _localizer["GroupNotFound"];
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(group);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading leave group page: {GroupId}", id);
+            TempData["Error"] = _localizer["FailedToLoadGroup"];
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
     [HttpPost("Leave/{id}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Leave(Guid id)
+    public async Task<IActionResult> LeaveConfirmed(Guid id)
     {
         try
         {

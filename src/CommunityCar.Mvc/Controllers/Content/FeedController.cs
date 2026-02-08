@@ -9,7 +9,6 @@ using System.Security.Claims;
 namespace CommunityCar.Mvc.Controllers.Content;
 
 [Route("{culture:alpha}/[controller]")]
-[Route("[controller]")]
 public class FeedController : Controller
 {
     private readonly IPostService _postService;

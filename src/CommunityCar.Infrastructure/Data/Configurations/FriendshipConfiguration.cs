@@ -22,5 +22,8 @@ public class FriendshipConfiguration : IEntityTypeConfiguration<Friendship>
             .WithMany(u => u.ReceivedFriendships)
             .HasForeignKey(f => f.FriendId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Soft delete filter
+        builder.HasQueryFilter(f => !f.IsDeleted);
     }
 }

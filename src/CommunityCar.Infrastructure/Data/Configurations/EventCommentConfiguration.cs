@@ -28,5 +28,8 @@ public class EventCommentConfiguration : IEntityTypeConfiguration<EventComment>
 
         builder.HasIndex(c => c.EventId);
         builder.HasIndex(c => c.UserId);
+
+        // Soft delete filter
+        builder.HasQueryFilter(c => !c.IsDeleted);
     }
 }

@@ -76,6 +76,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<CultureRedirectMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -65,5 +65,8 @@ public class EventConfiguration : IEntityTypeConfiguration<CommunityEvent>
         builder.HasIndex(e => e.Category);
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.OrganizerId);
+
+        // Soft delete filter
+        builder.HasQueryFilter(e => !e.IsDeleted);
     }
 }

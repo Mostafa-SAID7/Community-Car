@@ -3,6 +3,7 @@ using CommunityCar.Domain.Base;
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Entities.Community.guides;
 using CommunityCar.Domain.Enums.Community.guides;
+using CommunityCar.Domain.Enums.Community.qa;
 using CommunityCar.Domain.Exceptions;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Infrastructure.Data;
@@ -38,6 +39,24 @@ public class GuideService : IGuideService
     {
         var guide = new Guide(title, content, summary, category, authorId, difficulty, estimatedTimeMinutes);
         
+        // Ensure slug is unique
+        var baseSlug = guide.Slug;
+        var slug = baseSlug;
+        var counter = 1;
+        
+        while (await _context.Set<Guide>().AnyAsync(g => g.Slug == slug))
+        {
+            slug = $"{baseSlug}-{counter}";
+            counter++;
+        }
+        
+        if (slug != baseSlug)
+        {
+            // Use reflection to set the slug since it's in BaseEntity
+            var slugProperty = typeof(Guide).BaseType?.GetProperty("Slug");
+            slugProperty?.SetValue(guide, slug);
+        }
+        
         _context.Set<Guide>().Add(guide);
         await _context.SaveChangesAsync();
 
@@ -60,7 +79,33 @@ public class GuideService : IGuideService
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
+        // Store the old slug to check if title changed
+        var oldSlug = guide.Slug;
+        
         guide.Update(title, content, summary, category, difficulty, estimatedTimeMinutes);
+        
+        // If slug changed, check for duplicates and make it unique
+        if (guide.Slug != oldSlug)
+        {
+            var baseSlug = guide.Slug;
+            var slug = baseSlug;
+            var counter = 1;
+            
+            // Check if the new slug already exists (excluding current guide)
+            while (await _context.Set<Guide>()
+                .AnyAsync(g => g.Slug == slug && g.Id != guideId))
+            {
+                slug = $"{baseSlug}-{counter}";
+                counter++;
+            }
+            
+            // Update slug if it was changed
+            if (slug != baseSlug)
+            {
+                guide.GetType().GetProperty("Slug")!.SetValue(guide, slug);
+            }
+        }
+        
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Guide updated: {GuideId}", guideId);
@@ -171,12 +216,45 @@ public class GuideService : IGuideService
 
     public async Task<List<string>> GetCategoriesAsync()
     {
-        return await _context.Set<Guide>()
+        // Predefined categories
+        var predefinedCategories = new List<string>
+        {
+            "Maintenance",
+            "Repair",
+            "Modification",
+            "Detailing",
+            "Performance",
+            "Electrical",
+            "Engine",
+            "Transmission",
+            "Suspension",
+            "Brakes",
+            "Interior",
+            "Exterior",
+            "Audio & Electronics",
+            "Diagnostics",
+            "Tools & Equipment",
+            "Safety",
+            "Fuel System",
+            "Cooling System",
+            "Exhaust",
+            "Wheels & Tires"
+        };
+
+        // Get categories from published guides
+        var usedCategories = await _context.Set<Guide>()
             .Where(g => g.Status == GuideStatus.Published)
             .Select(g => g.Category)
             .Distinct()
-            .OrderBy(c => c)
             .ToListAsync();
+
+        // Combine and remove duplicates
+        var allCategories = predefinedCategories
+            .Union(usedCategories)
+            .OrderBy(c => c)
+            .ToList();
+
+        return allCategories;
     }
 
     public async Task<Dictionary<string, int>> GetCategoryCountsAsync()
@@ -277,20 +355,35 @@ public class GuideService : IGuideService
     }
 
     public async Task ToggleLikeAsync(Guid guideId, Guid userId)
-    {
-        var guide = await _context.Set<Guide>()
-            .FirstOrDefaultAsync(g => g.Id == guideId);
+        {
+            var guide = await _context.Set<Guide>()
+                .FirstOrDefaultAsync(g => g.Id == guideId);
 
-        if (guide == null)
-            throw new NotFoundException("Guide not found");
+            if (guide == null)
+                throw new NotFoundException("Guide not found");
 
-        // In a real implementation, you'd track likes in a separate table
-        // For now, just toggle the count
-        guide.IncrementLikes();
-        await _context.SaveChangesAsync();
+            var existingReaction = await _context.Set<GuideReaction>()
+                .FirstOrDefaultAsync(r => r.GuideId == guideId && r.UserId == userId);
 
-        _logger.LogInformation("Guide {GuideId} liked by user {UserId}", guideId, userId);
-    }
+            if (existingReaction != null)
+            {
+                // Unlike - remove the reaction
+                _context.Set<GuideReaction>().Remove(existingReaction);
+                guide.DecrementLikes();
+            }
+            else
+            {
+                // Like - add new reaction
+                var reaction = new GuideReaction(guideId, userId, ReactionType.Like);
+                await _context.Set<GuideReaction>().AddAsync(reaction);
+                guide.IncrementLikes();
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Guide {GuideId} like toggled by user {UserId}", guideId, userId);
+        }
+
 
     public async Task ToggleBookmarkAsync(Guid guideId, Guid userId)
     {
@@ -300,11 +393,26 @@ public class GuideService : IGuideService
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
-        // In a real implementation, you'd track bookmarks in a separate table
-        guide.IncrementBookmarks();
-        await _context.SaveChangesAsync();
+        var existingBookmark = await _context.Set<GuideBookmark>()
+            .FirstOrDefaultAsync(gb => gb.GuideId == guideId && gb.UserId == userId);
 
-        _logger.LogInformation("Guide {GuideId} bookmarked by user {UserId}", guideId, userId);
+        if (existingBookmark != null)
+        {
+            // Remove bookmark
+            _context.Set<GuideBookmark>().Remove(existingBookmark);
+            guide.DecrementBookmarks();
+            _logger.LogInformation("Guide {GuideId} unbookmarked by user {UserId}", guideId, userId);
+        }
+        else
+        {
+            // Add bookmark
+            var bookmark = new GuideBookmark(guideId, userId);
+            await _context.Set<GuideBookmark>().AddAsync(bookmark);
+            guide.IncrementBookmarks();
+            _logger.LogInformation("Guide {GuideId} bookmarked by user {UserId}", guideId, userId);
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<GuideStep> AddStepAsync(Guid guideId, int stepNumber, string title, string content, int estimatedTimeMinutes)
@@ -448,9 +556,17 @@ public class GuideService : IGuideService
 
     private async Task<GuideDto> MapToDtoAsync(Guide guide, Guid? currentUserId)
     {
-        // In a real implementation, check if user has liked/bookmarked
         var isLiked = false;
         var isBookmarked = false;
+
+        if (currentUserId.HasValue)
+        {
+            isLiked = await _context.Set<GuideReaction>()
+                .AnyAsync(gr => gr.GuideId == guide.Id && gr.UserId == currentUserId.Value);
+            
+            isBookmarked = await _context.Set<GuideBookmark>()
+                .AnyAsync(gb => gb.GuideId == guide.Id && gb.UserId == currentUserId.Value);
+        }
 
         return new GuideDto
         {

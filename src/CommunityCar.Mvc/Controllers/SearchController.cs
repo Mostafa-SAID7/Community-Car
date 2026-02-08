@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace CommunityCar.Mvc.Controllers;
 
 [Route("{culture:alpha}/[controller]")]
-[Route("[controller]")]
 public class SearchController : Controller
 {
     private record DashboardItem(string TitleEn, string TitleAr, string Action, string Controller, string Icon, string? SubArea = null);

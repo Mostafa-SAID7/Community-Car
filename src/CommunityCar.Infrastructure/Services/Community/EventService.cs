@@ -50,10 +50,13 @@ public class EventService : IEventService
             maxAttendees,
             isOnline);
 
+        // Auto-publish the event so it appears in the index immediately
+        communityEvent.Publish();
+
         _context.Set<CommunityEvent>().Add(communityEvent);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Event created: {EventId} by user {UserId}", communityEvent.Id, organizerId);
+        _logger.LogInformation("Event created and published: {EventId} by user {UserId}", communityEvent.Id, organizerId);
         return communityEvent;
     }
 

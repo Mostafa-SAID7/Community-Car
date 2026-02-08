@@ -31,9 +31,13 @@ public class MapService : IMapService
     {
         var location = new Location(latitude, longitude, address);
         var mapPoint = new MapPoint(name, location, type, ownerId, description);
+        
+        // Auto-publish the map point so it appears in the index immediately
+        mapPoint.Publish();
+        
         _context.Set<MapPoint>().Add(mapPoint);
         await _context.SaveChangesAsync();
-        _logger.LogInformation("Map point created: {MapPointId}", mapPoint.Id);
+        _logger.LogInformation("Map point created and published: {MapPointId}", mapPoint.Id);
         return mapPoint;
     }
 

@@ -11,7 +11,6 @@ using System.Security.Claims;
 namespace CommunityCar.Mvc.Controllers.Community;
 
 [Route("{culture:alpha}/[controller]")]
-[Route("[controller]")]
 [Authorize]
 public class FriendsController : Controller
 {

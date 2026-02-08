@@ -124,4 +124,19 @@
   <data name="FailedToSearchGroups" xml:space="preserve">
     <value>Failed to search groups. Please try again.</value>
   </data>
+  <data name="LeaveGroup" xml:space="preserve">
+    <value>Leave Group</value>
+  </data>
+  <data name="AreYouSureLeaveGroup" xml:space="preserve">
+    <value>Are you sure you want to leave</value>
+  </data>
+  <data name="LeaveGroupWarning" xml:space="preserve">
+    <value>You will lose access to all group content and discussions. You can rejoin later if the group is public.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConfirmLeave" xml:space="preserve">
+    <value>Yes, Leave Group</value>
+  </data>
 </root>

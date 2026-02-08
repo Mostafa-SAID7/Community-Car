@@ -124,4 +124,19 @@
   <data name="FailedToSearchGroups" xml:space="preserve">
     <value>فشل البحث عن المجموعات. يرجى المحاولة مرة أخرى.</value>
   </data>
+  <data name="LeaveGroup" xml:space="preserve">
+    <value>مغادرة المجموعة</value>
+  </data>
+  <data name="AreYouSureLeaveGroup" xml:space="preserve">
+    <value>هل أنت متأكد من مغادرة</value>
+  </data>
+  <data name="LeaveGroupWarning" xml:space="preserve">
+    <value>ستفقد الوصول إلى جميع محتويات ومناقشات المجموعة. يمكنك الانضمام مرة أخرى لاحقاً إذا كانت المجموعة عامة.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="ConfirmLeave" xml:space="preserve">
+    <value>نعم، غادر المجموعة</value>
+  </data>
 </root>

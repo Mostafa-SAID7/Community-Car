@@ -66,3 +66,50 @@
     color: var(--text-tertiary);
     opacity: 0.3;
 }
+
+/* Star Rating Input for Create/Edit Forms */
+.star-rating-input {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.star-rating-input i {
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.star-rating-input i:hover,
+.star-rating-input i.active {
+    color: var(--color-warning);
+    transform: scale(1.1);
+}
+
+.star-rating-input i:hover {
+    opacity: 0.8;
+}
+
+/* Pros & Cons Section */
+.pros-cons-section {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-primary);
+}
+
+.pros-cons-section h5 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .star-rating-input i {
+    color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .star-rating-input i:hover,
+[data-theme="dark"] .star-rating-input i.active {
+    color: var(--color-warning);
+}

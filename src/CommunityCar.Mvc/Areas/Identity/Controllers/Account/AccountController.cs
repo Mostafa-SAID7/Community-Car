@@ -39,6 +39,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/{culture:alpha}/Login")]
     [Route("/Login")]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -54,6 +55,7 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Login")]
     [Route("/Login")]
     public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
@@ -103,6 +105,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/{culture:alpha}/Register")]
     [Route("/Register")]
     public IActionResult Register(string? returnUrl = null)
     {
@@ -118,6 +121,7 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Register")]
     [Route("/Register")]
     public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = null)
     {
@@ -617,6 +621,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Logout")]
     [Route("/Logout")]
     public async Task<IActionResult> Logout(string? returnUrl = null)
     {
