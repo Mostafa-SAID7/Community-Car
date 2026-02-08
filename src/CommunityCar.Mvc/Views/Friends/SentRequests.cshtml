@@ -1,6 +1,12 @@
-@model IEnumerable<CommunityCar.Web.ViewModels.Community.BlockedUserViewModel>
+@model IEnumerable<CommunityCar.Web.ViewModels.Community.FriendRequestViewModel>
 @{
-    ViewData["Title"] = "Blocked Users";
+    ViewData["Title"] = "Sent Friend Requests";
+}
+
+@{
+    ViewData["HeaderTitle"] = "Sent Friend Requests";
+    ViewData["HeaderDescription"] = "View friend requests you've sent";
+    ViewData["HeaderIcon"] = "fas fa-paper-plane";
 }
 
 @section Styles {
@@ -18,15 +24,15 @@
         </a>
         <a class="nav-link" asp-action="Requests">
             <i class="fas fa-user-plus"></i> Received
-             @if (ViewBag.RequestCount > 0) { <span class="badge bg-danger ms-2">@ViewBag.RequestCount</span> }
         </a>
-        <a class="nav-link" asp-action="SentRequests">
+        <a class="nav-link active" asp-action="SentRequests">
             <i class="fas fa-paper-plane"></i> Sent
+            @if (ViewBag.SentRequestCount > 0) { <span class="badge bg-white text-primary ms-2">@ViewBag.SentRequestCount</span> }
         </a>
         <a class="nav-link" asp-action="Suggestions">
             <i class="fas fa-lightbulb"></i> Suggestions
         </a>
-        <a class="nav-link active" asp-action="Blocked">
+        <a class="nav-link" asp-action="Blocked">
             <i class="fas fa-ban"></i> Blocked
         </a>
     </div>
@@ -51,55 +57,53 @@
     {
         <div class="friends-empty">
             <div class="friends-empty-icon">
-                <i class="fas fa-shield-alt"></i>
+                <i class="fas fa-paper-plane"></i>
             </div>
-            <h3 class="fw-bold mb-2">No Blocked Users</h3>
-            <p class="text-muted mb-4">You haven't blocked anyone yet.</p>
-            <a href="@Url.Action("Index")" class="btn btn-primary rounded-pill px-4 py-2">
-                <i class="fas fa-users me-2"></i>View My Friends
+            <h3 class="fw-bold mb-2">No Pending Requests</h3>
+            <p class="text-muted mb-4">You haven't sent any friend requests yet.</p>
+            <a href="@Url.Action("Search")" class="btn btn-primary rounded-pill px-4 py-2">
+                <i class="fas fa-search me-2"></i>Find Friends
             </a>
         </div>
     }
     else
     {
-        <div class="alert alert-light border-0 shadow-sm rounded-xl mb-4 d-flex align-items-center gap-3 p-3">
-            <i class="fas fa-info-circle text-primary fs-4"></i>
-            <span class="text-secondary">Blocked users cannot send you friend requests or interact with your content.</span>
-        </div>
-
         <div class="row g-4">
-            @foreach (var user in Model)
+            @foreach (var request in Model)
             {
                 <div class="col-md-6 col-lg-4">
-                    <div class="friend-card" style="border-left: 4px solid var(--red-500);">
-                        <div class="friend-avatar-container">
-                            @if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+                    <div class="friend-card">
+                         <div class="friend-avatar-container">
+                            @if (!string.IsNullOrEmpty(request.ProfilePictureUrl))
                             {
-                                <img src="@user.ProfilePictureUrl" alt="@user.UserName" class="friend-avatar" style="filter: grayscale(100%);">
+                                <img src="@request.ProfilePictureUrl" alt="@request.UserName" class="friend-avatar">
                             }
                             else
                             {
-                                <div class="friend-avatar-placeholder bg-secondary">
-                                    @user.UserName.Substring(0, 1)
+                                <div class="friend-avatar-placeholder">
+                                    @request.UserName.Substring(0, 1)
                                 </div>
                             }
                             
                             <div class="friend-info">
-                                <span class="friend-name text-muted">
-                                    @user.UserName
-                                </span>
-                                <div class="friend-meta text-danger">
-                                    <i class="fas fa-ban"></i> Blocked @user.BlockedAt.ToString("MMM dd")
+                                <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = request.Slug })" class="friend-name">
+                                    @request.UserName
+                                </a>
+                                <div class="friend-meta">
+                                    <i class="fas fa-clock"></i> Sent @request.ReceivedAt.ToString("MMM dd")
                                 </div>
                             </div>
                         </div>
 
                         <div class="friend-actions mt-auto">
-                            <form asp-action="UnblockUser" method="post" class="w-100 ajax-unblock-form">
+                            <div class="text-center text-muted small">
+                                <i class="fas fa-hourglass-half me-1"></i> Pending
+                            </div>
+                            <form asp-action="RemoveFriend" method="post" class="ajax-remove-form">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="friendId" value="@user.UserId" />
-                                <button type="submit" class="btn btn-outline-success w-100 rounded-pill">
-                                    <i class="fas fa-unlock me-2"></i> Unblock User
+                                <input type="hidden" name="friendId" value="@request.UserId" />
+                                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill mt-2">
+                                    <i class="fas fa-times me-2"></i> Cancel Request
                                 </button>
                             </form>
                         </div>

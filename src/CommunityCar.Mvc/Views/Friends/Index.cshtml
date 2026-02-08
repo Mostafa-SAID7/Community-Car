@@ -39,8 +39,11 @@
             <span class="badge bg-white text-primary ms-2">@(ViewBag.FriendCount ?? 0)</span>
         </a>
         <a class="nav-link" asp-action="Requests">
-            <i class="fas fa-user-plus"></i> Requests
+            <i class="fas fa-user-plus"></i> Received
              @if (requestCount > 0) { <span class="badge bg-danger ms-2">@requestCount</span> }
+        </a>
+        <a class="nav-link" asp-action="SentRequests">
+            <i class="fas fa-paper-plane"></i> Sent
         </a>
         <a class="nav-link" asp-action="Suggestions">
             <i class="fas fa-lightbulb"></i> Suggestions

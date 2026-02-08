@@ -14,5 +14,6 @@ public interface IFriendshipService
     Task<FriendshipStatus> GetFriendshipStatusAsync(Guid userId, Guid friendId);
     Task<IEnumerable<Friendship>> GetFriendsAsync(Guid userId);
     Task<IEnumerable<Friendship>> GetPendingRequestsAsync(Guid userId);
+    Task<IEnumerable<Friendship>> GetSentRequestsAsync(Guid userId);
     Task<IEnumerable<Friendship>> GetBlockedUsersAsync(Guid userId);
 }

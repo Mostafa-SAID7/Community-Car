@@ -131,3 +131,12 @@ public class FriendshipService : IFriendshipService
     }
 
 }
+
+    public async Task<IEnumerable<Friendship>> GetSentRequestsAsync(Guid userId)
+    {
+        return await _friendshipRepository
+            .GetQueryable()
+            .Include(f => f.Friend)
+            .Where(f => f.UserId == userId && f.Status == FriendshipStatus.Pending)
+            .ToListAsync();
+    }

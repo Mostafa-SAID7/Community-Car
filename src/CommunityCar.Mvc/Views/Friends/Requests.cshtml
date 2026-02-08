@@ -18,8 +18,11 @@
             <i class="fas fa-user-friends"></i> Friends 
         </a>
         <a class="nav-link active" asp-action="Requests">
-            <i class="fas fa-user-plus"></i> Requests
+            <i class="fas fa-user-plus"></i> Received
              @if (ViewBag.RequestCount > 0) { <span class="badge bg-danger ms-2">@ViewBag.RequestCount</span> }
+        </a>
+        <a class="nav-link" asp-action="SentRequests">
+            <i class="fas fa-paper-plane"></i> Sent
         </a>
         <a class="nav-link" asp-action="Suggestions">
             <i class="fas fa-lightbulb"></i> Suggestions

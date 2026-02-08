@@ -127,6 +127,34 @@ public class FriendsController : Controller
         }
     }
 
+    [HttpGet("SentRequests")]
+    public async Task<IActionResult> SentRequests()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var sentRequests = await _friendshipService.GetSentRequestsAsync(userId);
+            
+            var viewModels = sentRequests.Select(r => new FriendRequestViewModel
+            {
+                UserId = r.FriendId,
+                UserName = $"{r.Friend?.FirstName ?? "Unknown"} {r.Friend?.LastName ?? "User"}",
+                ProfilePictureUrl = r.Friend?.ProfilePictureUrl,
+                Slug = r.Friend?.Slug ?? string.Empty,
+                ReceivedAt = r.CreatedAt
+            }).ToList();
+
+            ViewBag.SentRequestCount = viewModels.Count;
+            return View(viewModels);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading sent friend requests");
+            TempData["Error"] = _localizer["FailedToLoadSentRequests"];
+            return View(new List<FriendRequestViewModel>());
+        }
+    }
+
     [HttpPost("SendRequest")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendRequest(Guid friendId)
