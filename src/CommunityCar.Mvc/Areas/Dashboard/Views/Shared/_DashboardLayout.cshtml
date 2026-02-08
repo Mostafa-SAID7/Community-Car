@@ -10,6 +10,26 @@
     
     <link rel="icon" type="image/png" href="~/images/logo/logo.png" />
 
+    <!-- Inline Theme Loader - Must run before any CSS to prevent flash -->
+    <script>
+        (function() {
+            const THEME_KEY = 'community-car-theme';
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else if (savedTheme === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                // Check system preference if no saved theme
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            }
+        })();
+    </script>
+
     <!-- Libraries CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
