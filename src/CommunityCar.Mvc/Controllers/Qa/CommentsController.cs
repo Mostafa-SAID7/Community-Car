@@ -5,29 +5,33 @@ using CommunityCar.Mvc.Hubs;
 using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Qa;
 
-[Route("Comments")]
+[Route("{culture:alpha}/Comments")]
 [Authorize]
 public class CommentsController : Controller
 {
     private readonly IQuestionService _questionService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IHubContext<QuestionHub> _hubContext;
+    private readonly IStringLocalizer<CommentsController> _localizer;
     private readonly ILogger<CommentsController> _logger;
 
     public CommentsController(
         IQuestionService questionService,
         ICurrentUserService currentUserService,
         IHubContext<QuestionHub> hubContext,
+        IStringLocalizer<CommentsController> localizer,
         ILogger<CommentsController> logger)
     {
         _questionService = questionService;
         _currentUserService = currentUserService;
         _hubContext = hubContext;
+        _localizer = localizer;
         _logger = logger;
     }
 
@@ -42,9 +46,9 @@ public class CommentsController : Controller
             {
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
-                    return BadRequest(new { success = false, message = "Invalid comment data" });
+                    return BadRequest(new { success = false, message = _localizer["InvalidCommentData"].Value });
                 }
-                TempData["Error"] = "Please provide valid comment content";
+                TempData["Error"] = _localizer["ProvideValidContent"].Value;
                 return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
             }
 
@@ -68,12 +72,12 @@ public class CommentsController : Controller
             {
                 return Ok(new { 
                     success = true, 
-                    message = "Comment posted successfully",
+                    message = _localizer["CommentPostedSuccessfully"].Value,
                     comment = comment
                 });
             }
 
-            TempData["Success"] = "Comment posted successfully";
+            TempData["Success"] = _localizer["CommentPostedSuccessfully"].Value;
             return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
         }
         catch (Exception ex)
@@ -82,10 +86,10 @@ public class CommentsController : Controller
             
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return StatusCode(500, new { success = false, message = "Failed to post comment. Please try again." });
+                return StatusCode(500, new { success = false, message = _localizer["FailedToPostComment"].Value });
             }
 
-            TempData["Error"] = "Failed to post comment. Please try again.";
+            TempData["Error"] = _localizer["FailedToPostComment"].Value;
             return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
         }
     }
@@ -135,7 +139,7 @@ public class CommentsController : Controller
         
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            throw new UnauthorizedAccessException(_localizer["UserNotAuthenticated"].Value);
         }
 
         return userId;

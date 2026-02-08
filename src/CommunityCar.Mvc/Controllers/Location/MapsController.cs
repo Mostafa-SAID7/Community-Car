@@ -4,22 +4,26 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Maps;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Location;
 
-[Route("Maps")]
+[Route("{culture:alpha}/Maps")]
 public class MapsController : Controller
 {
     private readonly IMapService _mapService;
     private readonly ILogger<MapsController> _logger;
+    private readonly IStringLocalizer<MapsController> _localizer;
 
     public MapsController(
         IMapService mapService,
-        ILogger<MapsController> logger)
+        ILogger<MapsController> logger,
+        IStringLocalizer<MapsController> localizer)
     {
         _mapService = mapService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Maps
@@ -51,7 +55,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map points");
-            TempData["Error"] = "Failed to load map points";
+            TempData["Error"] = _localizer["FailedToLoadMapPoints"];
             return View(new PagedResult<Domain.DTOs.Community.MapPointDto>(
                 new List<Domain.DTOs.Community.MapPointDto>(), 0, page, pageSize));
         }
@@ -68,7 +72,7 @@ public class MapsController : Controller
 
             if (mapPointDto == null)
             {
-                TempData["Error"] = "Map point not found";
+                TempData["Error"] = _localizer["MapPointNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -99,7 +103,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map point {Slug}", slug);
-            TempData["Error"] = "Failed to load map point";
+            TempData["Error"] = _localizer["FailedToLoadMapPoint"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -138,13 +142,13 @@ public class MapsController : Controller
                 userId,
                 model.Description);
 
-            TempData["Success"] = "Map point created successfully";
+            TempData["Success"] = _localizer["MapPointCreated"];
             return RedirectToAction(nameof(Details), new { slug = mapPoint.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating map point");
-            ModelState.AddModelError("", "Failed to create map point");
+            ModelState.AddModelError("", _localizer["FailedToCreateMapPoint"]);
             ViewBag.Types = Enum.GetValues<MapPointType>();
             return View(model);
         }
@@ -162,13 +166,13 @@ public class MapsController : Controller
 
             if (mapPointDto == null)
             {
-                TempData["Error"] = "Map point not found";
+                TempData["Error"] = _localizer["MapPointNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
             if (!mapPointDto.IsOwner)
             {
-                TempData["Error"] = "You can only edit your own map points";
+                TempData["Error"] = _localizer["OnlyOwnerCanEditMapPoint"];
                 return RedirectToAction(nameof(Details), new { slug = mapPointDto.Slug });
             }
 
@@ -192,7 +196,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map point for edit {MapPointId}", id);
-            TempData["Error"] = "Failed to load map point";
+            TempData["Error"] = _localizer["FailedToLoadMapPoint"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -223,13 +227,13 @@ public class MapsController : Controller
                 model.Type,
                 model.Description);
 
-            TempData["Success"] = "Map point updated successfully";
+            TempData["Success"] = _localizer["MapPointUpdated"];
             return RedirectToAction(nameof(Details), new { slug = mapPoint.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating map point {MapPointId}", id);
-            ModelState.AddModelError("", "Failed to update map point");
+            ModelState.AddModelError("", _localizer["FailedToUpdateMapPoint"]);
             ViewBag.Types = Enum.GetValues<MapPointType>();
             return View(model);
         }
@@ -244,12 +248,12 @@ public class MapsController : Controller
         try
         {
             await _mapService.DeleteMapPointAsync(id);
-            return Json(new { success = true, message = "Map point deleted successfully" });
+            return Json(new { success = true, message = _localizer["MapPointDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting map point {MapPointId}", id);
-            return Json(new { success = false, message = "Failed to delete map point" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteMapPoint"].Value });
         }
     }
 
@@ -263,12 +267,12 @@ public class MapsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _mapService.ToggleFavoriteAsync(id, userId);
 
-            return Json(new { success = true, message = "Favorite toggled successfully" });
+            return Json(new { success = true, message = _localizer["FavoriteToggled"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error toggling favorite for map point {MapPointId}", id);
-            return Json(new { success = false, message = "Failed to toggle favorite" });
+            return Json(new { success = false, message = _localizer["FailedToToggleFavorite"].Value });
         }
     }
 
@@ -282,7 +286,7 @@ public class MapsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _mapService.CheckInAsync(id, userId);
 
-            return Json(new { success = true, message = "Checked in successfully" });
+            return Json(new { success = true, message = _localizer["CheckedIn"].Value });
         }
         catch (Exception ex)
         {
@@ -299,17 +303,17 @@ public class MapsController : Controller
         try
         {
             if (rating < 1 || rating > 5)
-                return Json(new { success = false, message = "Rating must be between 1 and 5" });
+                return Json(new { success = false, message = _localizer["RatingLimit"].Value });
 
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _mapService.AddOrUpdateRatingAsync(id, userId, rating, comment);
 
-            return Json(new { success = true, message = "Rating submitted successfully" });
+            return Json(new { success = true, message = _localizer["RatingSubmitted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rating map point {MapPointId}", id);
-            return Json(new { success = false, message = "Failed to submit rating" });
+            return Json(new { success = false, message = _localizer["FailedToSubmitRating"].Value });
         }
     }
 
@@ -323,12 +327,12 @@ public class MapsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _mapService.DeleteRatingAsync(id, userId);
 
-            return Json(new { success = true, message = "Rating deleted successfully" });
+            return Json(new { success = true, message = _localizer["RatingDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting rating for map point {MapPointId}", id);
-            return Json(new { success = false, message = "Failed to delete rating" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteRating"].Value });
         }
     }
 
@@ -342,12 +346,12 @@ public class MapsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _mapService.AddCommentAsync(mapPointId, userId, content);
 
-            return Json(new { success = true, message = "Comment added successfully" });
+            return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding comment to map point {MapPointId}", mapPointId);
-            return Json(new { success = false, message = "Failed to add comment" });
+            return Json(new { success = false, message = _localizer["FailedToAddComment"].Value });
         }
     }
 
@@ -410,7 +414,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching map points");
-            TempData["Error"] = "Failed to search map points";
+            TempData["Error"] = _localizer["FailedToSearchMapPoints"];
             return View(new PagedResult<Domain.DTOs.Community.MapPointDto>(
                 new List<Domain.DTOs.Community.MapPointDto>(), 0, page, pageSize));
         }
@@ -439,7 +443,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting nearby map points");
-            return Json(new { success = false, message = "Failed to get nearby map points" });
+            return Json(new { success = false, message = _localizer["FailedToGetNearbyMapPoints"].Value });
         }
     }
 
@@ -455,7 +459,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading featured map points");
-            TempData["Error"] = "Failed to load featured map points";
+            TempData["Error"] = _localizer["FailedToLoadFeaturedMapPoints"];
             return View(new List<Domain.DTOs.Community.MapPointDto>());
         }
     }
@@ -481,7 +485,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user map points");
-            TempData["Error"] = "Failed to load your map points";
+            TempData["Error"] = _localizer["FailedToLoadMyMapPoints"];
             return RedirectToAction(nameof(Index));
         }
     }

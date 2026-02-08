@@ -3,12 +3,14 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Web.ViewModels.Community;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace CommunityCar.Web.Controllers.Social;
+namespace CommunityCar.Mvc.Controllers.Community;
 
+[Route("{culture:alpha}/[controller]")]
 [Route("[controller]")]
 [Authorize]
 public class FriendsController : Controller
@@ -17,17 +19,20 @@ public class FriendsController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<FriendsController> _logger;
     private readonly CommunityCar.Domain.Interfaces.Communications.INotificationService _notificationService;
+    private readonly IStringLocalizer<FriendsController> _localizer;
 
     public FriendsController(
         IFriendshipService friendshipService, 
         UserManager<ApplicationUser> userManager,
         ILogger<FriendsController> logger,
-        CommunityCar.Domain.Interfaces.Communications.INotificationService notificationService)
+        CommunityCar.Domain.Interfaces.Communications.INotificationService notificationService,
+        IStringLocalizer<FriendsController> localizer)
     {
         _friendshipService = friendshipService;
         _userManager = userManager;
         _logger = logger;
         _notificationService = notificationService;
+        _localizer = localizer;
     }
 
     private Guid GetCurrentUserId()
@@ -73,7 +78,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading friends list");
-            TempData["Error"] = "Failed to load friends list. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadFriendsList"];
             return View(new List<FriendshipViewModel>());
         }
     }
@@ -117,7 +122,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading friend requests");
-            TempData["Error"] = "Failed to load friend requests. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadFriendRequests"];
             return View(new List<FriendRequestViewModel>());
         }
     }
@@ -132,7 +137,7 @@ public class FriendsController : Controller
             
             if (userId == friendId)
             {
-                TempData["Error"] = "You cannot send a friend request to yourself.";
+                TempData["Error"] = _localizer["CannotSendRequestToSelf"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -143,12 +148,12 @@ public class FriendsController : Controller
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAsync(friendId, userId, currentUserName);
 
-            TempData["Success"] = "Friend request sent successfully.";
+            TempData["Success"] = _localizer["FriendRequestSent"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error sending friend request to {FriendId}", friendId);
-            TempData["Error"] = "Failed to send friend request. Please try again.";
+            TempData["Error"] = _localizer["FailedToSendRequest"];
         }
 
         return RedirectToAction(nameof(Index));
@@ -164,7 +169,7 @@ public class FriendsController : Controller
             
             if (userId == friendId)
             {
-                return Json(new { success = false, message = "You cannot send a friend request to yourself." });
+                return Json(new { success = false, message = _localizer["CannotSendRequestToSelf"].Value });
             }
 
             await _friendshipService.SendRequestAsync(userId, friendId);
@@ -179,7 +184,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error sending friend request to {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to send friend request." });
+            return Json(new { success = false, message = _localizer["FailedToSendRequest"].Value });
         }
     }
 
@@ -197,12 +202,12 @@ public class FriendsController : Controller
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
             await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
 
-            TempData["Success"] = "Friend request accepted successfully.";
+            TempData["Success"] = _localizer["RequestAccepted"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error accepting friend request from {FriendId}", friendId);
-            TempData["Error"] = "Failed to accept friend request. Please try again.";
+            TempData["Error"] = _localizer["FailedToAcceptRequest"];
         }
 
         return RedirectToAction(nameof(Requests));
@@ -227,7 +232,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error accepting friend request from {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to accept friend request." });
+            return Json(new { success = false, message = _localizer["FailedToAcceptRequest"].Value });
         }
     }
 
@@ -239,12 +244,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RejectRequestAsync(userId, friendId);
-            TempData["Success"] = "Friend request rejected.";
+            TempData["Success"] = _localizer["RequestRejected"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rejecting friend request from {FriendId}", friendId);
-            TempData["Error"] = "Failed to reject friend request. Please try again.";
+            TempData["Error"] = _localizer["FailedToRejectRequest"];
         }
 
         return RedirectToAction(nameof(Requests));
@@ -258,12 +263,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RejectRequestAsync(userId, friendId);
-            return Json(new { success = true, message = "Friend request rejected." });
+            return Json(new { success = true, message = _localizer["RequestRejected"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rejecting friend request from {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to reject friend request." });
+            return Json(new { success = false, message = _localizer["FailedToRejectRequest"].Value });
         }
     }
 
@@ -275,12 +280,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RemoveFriendAsync(userId, friendId);
-            TempData["Success"] = "Friend removed successfully.";
+            TempData["Success"] = _localizer["FriendRemoved"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing friend {FriendId}", friendId);
-            TempData["Error"] = "Failed to remove friend. Please try again.";
+            TempData["Error"] = _localizer["FailedToRemoveFriend"];
         }
 
         return RedirectToAction(nameof(Index));
@@ -294,12 +299,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.RemoveFriendAsync(userId, friendId);
-            return Json(new { success = true, message = "Friend removed successfully." });
+            return Json(new { success = true, message = _localizer["FriendRemoved"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing friend {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to remove friend." });
+            return Json(new { success = false, message = _localizer["FailedToRemoveFriend"].Value });
         }
     }
 
@@ -313,17 +318,17 @@ public class FriendsController : Controller
             
             if (userId == friendId)
             {
-                TempData["Error"] = "You cannot block yourself.";
+                TempData["Error"] = _localizer["CannotBlockSelf"];
                 return RedirectToAction(nameof(Index));
             }
 
             await _friendshipService.BlockUserAsync(userId, friendId);
-            TempData["Success"] = "User blocked successfully.";
+            TempData["Success"] = _localizer["UserBlocked"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error blocking user {FriendId}", friendId);
-            TempData["Error"] = "Failed to block user. Please try again.";
+            TempData["Error"] = _localizer["FailedToBlockUser"];
         }
 
         return RedirectToAction(nameof(Index));
@@ -339,16 +344,16 @@ public class FriendsController : Controller
             
             if (userId == friendId)
             {
-                return Json(new { success = false, message = "You cannot block yourself." });
+                return Json(new { success = false, message = _localizer["CannotBlockSelf"].Value });
             }
 
             await _friendshipService.BlockUserAsync(userId, friendId);
-            return Json(new { success = true, message = "User blocked successfully." });
+            return Json(new { success = true, message = _localizer["UserBlocked"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error blocking user {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to block user." });
+            return Json(new { success = false, message = _localizer["FailedToBlockUser"].Value });
         }
     }
 
@@ -364,7 +369,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting friendship status for {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to get friendship status" });
+            return Json(new { success = false, message = _localizer["FailedToGetStatus"].Value });
         }
     }
 
@@ -409,7 +414,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching users with query: {Query}", query);
-            TempData["Error"] = "Failed to search users. Please try again.";
+            TempData["Error"] = _localizer["FailedToSearchUsers"];
             return View(new List<UserSearchViewModel>());
         }
     }
@@ -446,7 +451,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching users with query: {Query}", query);
-            return Json(new { success = false, message = "Failed to search users" });
+            return Json(new { success = false, message = _localizer["FailedToSearchUsers"].Value });
         }
     }
 
@@ -486,7 +491,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading friend suggestions");
-            TempData["Error"] = "Failed to load suggestions. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadSuggestions"];
             return View(new List<UserSearchViewModel>());
         }
     }
@@ -513,7 +518,7 @@ public class FriendsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading blocked users");
-            TempData["Error"] = "Failed to load blocked users. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadBlockedUsers"];
             return View(new List<BlockedUserViewModel>());
         }
     }
@@ -526,12 +531,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.UnblockUserAsync(userId, friendId);
-            TempData["Success"] = "User unblocked successfully.";
+            TempData["Success"] = _localizer["UserUnblocked"];
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error unblocking user {FriendId}", friendId);
-            TempData["Error"] = "Failed to unblock user. Please try again.";
+            TempData["Error"] = _localizer["FailedToUnblockUser"];
         }
 
         return RedirectToAction(nameof(Blocked));
@@ -545,12 +550,12 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             await _friendshipService.UnblockUserAsync(userId, friendId);
-            return Json(new { success = true, message = "User unblocked successfully." });
+            return Json(new { success = true, message = _localizer["UserUnblocked"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error unblocking user {FriendId}", friendId);
-            return Json(new { success = false, message = "Failed to unblock user." });
+            return Json(new { success = false, message = _localizer["FailedToUnblockUser"].Value });
         }
     }
 }

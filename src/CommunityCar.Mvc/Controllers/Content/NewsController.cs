@@ -4,25 +4,29 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.News;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Web.Controllers.Content;
 
-[Route("News")]
+[Route("{culture:alpha}/News")]
 public class NewsController : Controller
 {
     private readonly INewsService _newsService;
     private readonly IFriendshipService _friendshipService;
     private readonly ILogger<NewsController> _logger;
+    private readonly IStringLocalizer<NewsController> _localizer;
 
     public NewsController(
         INewsService newsService,
         IFriendshipService friendshipService,
-        ILogger<NewsController> logger)
+        ILogger<NewsController> logger,
+        IStringLocalizer<NewsController> localizer)
     {
         _newsService = newsService;
         _friendshipService = friendshipService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: News
@@ -54,7 +58,7 @@ public class NewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading news articles");
-            TempData["Error"] = "Failed to load news articles";
+            TempData["Error"] = _localizer["FailedToLoadNewsArticles"];
             return View(new PagedResult<Domain.DTOs.Community.NewsArticleDto>(
                 new List<Domain.DTOs.Community.NewsArticleDto>(), 0, page, pageSize));
         }
@@ -72,7 +76,7 @@ public class NewsController : Controller
 
             if (articleDto == null)
             {
-                TempData["Error"] = "News article not found";
+                TempData["Error"] = _localizer["NewsArticleNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -115,7 +119,7 @@ public class NewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading news article {Slug}", slug);
-            TempData["Error"] = "Failed to load news article";
+            TempData["Error"] = _localizer["FailedToLoadNewsArticle"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -152,13 +156,13 @@ public class NewsController : Controller
                 model.Category,
                 userId);
 
-            TempData["Success"] = "News article created successfully";
+            TempData["Success"] = _localizer["NewsArticleCreated"];
             return RedirectToAction(nameof(Details), new { slug = article.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating news article");
-            ModelState.AddModelError("", "Failed to create news article");
+            ModelState.AddModelError("", _localizer["FailedToCreateNewsArticle"]);
             ViewBag.Categories = Enum.GetValues<NewsCategory>();
             return View(model);
         }
@@ -176,13 +180,13 @@ public class NewsController : Controller
 
             if (articleDto == null)
             {
-                TempData["Error"] = "News article not found";
+                TempData["Error"] = _localizer["NewsArticleNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
             if (!articleDto.IsAuthor)
             {
-                TempData["Error"] = "You can only edit your own articles";
+                TempData["Error"] = _localizer["OnlyAuthorCanEditNews"];
                 return RedirectToAction(nameof(Details), new { slug = articleDto.Slug });
             }
 
@@ -205,7 +209,7 @@ public class NewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading news article for edit {ArticleId}", id);
-            TempData["Error"] = "Failed to load news article";
+            TempData["Error"] = _localizer["FailedToLoadNewsArticle"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -234,13 +238,13 @@ public class NewsController : Controller
                 model.Summary,
                 model.Category);
 
-            TempData["Success"] = "News article updated successfully";
+            TempData["Success"] = _localizer["NewsArticleUpdated"];
             return RedirectToAction(nameof(Details), new { slug = article.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating news article {ArticleId}", id);
-            ModelState.AddModelError("", "Failed to update news article");
+            ModelState.AddModelError("", _localizer["FailedToUpdateNewsArticle"]);
             ViewBag.Categories = Enum.GetValues<NewsCategory>();
             return View(model);
         }
@@ -255,12 +259,12 @@ public class NewsController : Controller
         try
         {
             await _newsService.DeleteNewsArticleAsync(id);
-            return Json(new { success = true, message = "News article deleted successfully" });
+            return Json(new { success = true, message = _localizer["NewsArticleDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting news article {ArticleId}", id);
-            return Json(new { success = false, message = "Failed to delete news article" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteNewsArticle"].Value });
         }
     }
 
@@ -272,12 +276,12 @@ public class NewsController : Controller
         try
         {
             await _newsService.PublishNewsArticleAsync(id);
-            return Json(new { success = true, message = "News article published successfully" });
+            return Json(new { success = true, message = _localizer["NewsArticlePublished"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error publishing news article {ArticleId}", id);
-            return Json(new { success = false, message = "Failed to publish news article" });
+            return Json(new { success = false, message = _localizer["FailedToPublishNewsArticle"].Value });
         }
     }
 
@@ -289,12 +293,12 @@ public class NewsController : Controller
         try
         {
             await _newsService.FeatureNewsArticleAsync(id);
-            return Json(new { success = true, message = "News article featured successfully" });
+            return Json(new { success = true, message = _localizer["NewsArticleFeatured"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error featuring news article {ArticleId}", id);
-            return Json(new { success = false, message = "Failed to feature news article" });
+            return Json(new { success = false, message = _localizer["FailedToFeatureNewsArticle"].Value });
         }
     }
 
@@ -343,12 +347,12 @@ public class NewsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _newsService.AddCommentAsync(articleId, userId, content);
 
-            return Json(new { success = true, message = "Comment added successfully" });
+            return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding comment to news article {ArticleId}", articleId);
-            return Json(new { success = false, message = "Failed to add comment" });
+            return Json(new { success = false, message = _localizer["FailedToAddComment"].Value });
         }
     }
 
@@ -368,7 +372,7 @@ public class NewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user news articles");
-            TempData["Error"] = "Failed to load your articles";
+            TempData["Error"] = _localizer["FailedToLoadMyNewsArticles"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -385,7 +389,7 @@ public class NewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading featured news");
-            TempData["Error"] = "Failed to load featured news";
+            TempData["Error"] = _localizer["FailedToLoadFeaturedNews"];
             return RedirectToAction(nameof(Index));
         }
     }

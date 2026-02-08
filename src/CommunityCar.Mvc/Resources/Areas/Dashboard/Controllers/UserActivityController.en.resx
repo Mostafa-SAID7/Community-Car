@@ -58,31 +58,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="PageTitle" xml:space="preserve">
-    <value>الأصدقاء</value>
+  <data name="FailedToLoadActivities" xml:space="preserve">
+    <value>Failed to load user activities</value>
   </data>
-  <data name="MyFriends" xml:space="preserve">
-    <value>أصدقائي</value>
+  <data name="ActivityNotFound" xml:space="preserve">
+    <value>User activity not found</value>
   </data>
-  <data name="FriendRequests" xml:space="preserve">
-    <value>طلبات الصداقة</value>
+  <data name="FailedToLoadDetails" xml:space="preserve">
+    <value>Failed to load activity details</value>
   </data>
-  <data name="SendRequest" xml:space="preserve">
-    <value>إرسال طلب صداقة</value>
+  <data name="FailedToLoadStatistics" xml:space="preserve">
+    <value>Failed to load statistics</value>
   </data>
-  <data name="Accept" xml:space="preserve">
-    <value>قبول</value>
+  <data name="FailedToLoadTimeline" xml:space="preserve">
+    <value>Failed to load activity timeline</value>
   </data>
-  <data name="Reject" xml:space="preserve">
-    <value>رفض</value>
+  <data name="FailedToExport" xml:space="preserve">
+    <value>Failed to export user activities</value>
   </data>
-  <data name="Block" xml:space="preserve">
-    <value>حظر</value>
+  <data name="ActivityDeleted" xml:space="preserve">
+    <value>User activity deleted successfully</value>
   </data>
-  <data name="NoFriends" xml:space="preserve">
-    <value>ليس لديك أي أصدقاء بعد</value>
+  <data name="FailedToDelete" xml:space="preserve">
+    <value>Failed to delete user activity</value>
   </data>
-  <data name="NoRequests" xml:space="preserve">
-    <value>لا توجد طلبات صداقة معلقة</value>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>An error occurred while processing your request</value>
+  </data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>No activities selected</value>
+  </data>
+  <data name="BulkDeleteSuccess" xml:space="preserve">
+    <value>Successfully deleted {0} user activities</value>
+  </data>
+  <data name="FailedToLoadActiveUsers" xml:space="preserve">
+    <value>Failed to load active users</value>
   </data>
 </root>

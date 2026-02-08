@@ -1,6 +1,6 @@
 @model CommunityCar.Mvc.Areas.Dashboard.ViewModels.UserActivityIndexViewModel
 @{
-    ViewData["Title"] = "User Activity";
+    ViewData["Title"] = Localizer["PageTitle"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,9 +8,9 @@
     <div class="row mb-4">
         <div class="col-12">
             <h1 class="h3 mb-3">
-                <i class="bi bi-person-lines-fill"></i> User Activity
+                <i class="bi bi-shield-check"></i> @Localizer["PageTitle"]
             </h1>
-            <p class="text-muted">Monitor and track user actions across the platform</p>
+            <p class="text-muted">@Localizer["TrackDescription"]</p>
         </div>
     </div>
 
@@ -40,7 +40,7 @@
                             <i class="bi bi-activity fs-2 text-primary"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Total Activities</h6>
+                            <h6 class="text-muted mb-1">@Localizer["TotalActivities"]</h6>
                             <h3 class="mb-0">@Model.Stats.TotalActivities.ToString("N0")</h3>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                             <i class="bi bi-people fs-2 text-info"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Unique Users</h6>
+                            <h6 class="text-muted mb-1">@Localizer["UniqueUsers"]</h6>
                             <h3 class="mb-0">@Model.Stats.UniqueUsers.ToString("N0")</h3>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                             <i class="bi bi-calendar-day fs-2 text-success"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Today</h6>
+                            <h6 class="text-muted mb-1">@Localizer["Today"]</h6>
                             <h3 class="mb-0">@Model.Stats.TodayActivities.ToString("N0")</h3>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <i class="bi bi-graph-up fs-2 text-warning"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Avg/User</h6>
+                            <h6 class="text-muted mb-1">@Localizer["AvgPerUser"]</h6>
                             <h3 class="mb-0">@((Model.Stats.UniqueUsers > 0 ? Model.Stats.TotalActivities / Model.Stats.UniqueUsers : 0).ToString("N0"))</h3>
                         </div>
                     </div>
@@ -98,20 +98,20 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white">
             <h5 class="mb-0">
-                <i class="bi bi-funnel"></i> Filters
+                <i class="bi bi-funnel"></i> @Localizer["Filters"]
             </h5>
         </div>
         <div class="card-body">
             <form method="get" asp-action="Index">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label">Search User</label>
-                        <input type="text" class="form-control" name="searchTerm" value="@Model.Filter.SearchTerm" placeholder="Username or email..." />
+                        <label class="form-label">@Localizer["SearchUser"]</label>
+                        <input type="text" class="form-control" name="searchTerm" value="@Model.Filter.SearchTerm" placeholder="@Localizer["SearchPlaceholder"]" />
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Activity Type</label>
+                        <label class="form-label">@Localizer["ActivityType"]</label>
                         <select class="form-select" name="activityType">
-                            <option value="">All Types</option>
+                            <option value="">@Localizer["AllTypes"]</option>
                             @foreach (var type in Model.Filter.AvailableActivityTypes)
                             {
                                 <option value="@type" selected="@(Model.Filter.ActivityType == type)">@type</option>
@@ -119,19 +119,19 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Start Date</label>
+                        <label class="form-label">@Localizer["StartDate"]</label>
                         <input type="date" class="form-control" name="startDate" value="@Model.Filter.StartDate?.ToString("yyyy-MM-dd")" />
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">End Date</label>
+                        <label class="form-label">@Localizer["EndDate"]</label>
                         <input type="date" class="form-control" name="endDate" value="@Model.Filter.EndDate?.ToString("yyyy-MM-dd")" />
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">
-                            <i class="bi bi-search"></i> Filter
+                            <i class="bi bi-search"></i> @Localizer["FilterButton"]
                         </button>
                         <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle"></i> Clear
+                            <i class="bi bi-x-circle"></i> @Localizer["ClearButton"]
                         </a>
                     </div>
                 </div>
@@ -143,16 +143,16 @@
     <div class="row mb-3">
         <div class="col-12">
             <a href="@Url.Action("Statistics")" class="btn btn-info">
-                <i class="bi bi-graph-up"></i> View Statistics
+                <i class="bi bi-graph-up"></i> @Localizer["ViewStatistics"]
             </a>
             <a href="@Url.Action("ActiveUsers")" class="btn btn-success">
-                <i class="bi bi-person-check"></i> Active Users
+                <i class="bi bi-person-check"></i> @Localizer["ActiveUsers"]
             </a>
             <a href="@Url.Action("Export", new { startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })" class="btn btn-secondary">
-                <i class="bi bi-download"></i> Export
+                <i class="bi bi-download"></i> @Localizer["Export"]
             </a>
             <button type="button" class="btn btn-danger" onclick="bulkDelete()">
-                <i class="bi bi-trash"></i> Delete Selected
+                <i class="bi bi-trash"></i> @Localizer["DeleteSelected"]
             </button>
         </div>
     </div>
@@ -161,7 +161,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
             <h5 class="mb-0">
-                <i class="bi bi-list-ul"></i> Activity Log
+                <i class="bi bi-list-ul"></i> @Localizer["ActivityLog"]
             </h5>
         </div>
         <div class="card-body p-0">
@@ -174,13 +174,13 @@
                                 <th>
                                     <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
                                 </th>
-                                <th>Timestamp</th>
-                                <th>User</th>
-                                <th>Activity Type</th>
-                                <th>Description</th>
-                                <th>IP Address</th>
-                                <th>Location</th>
-                                <th>Actions</th>
+                                <th>@Localizer["Timestamp"]</th>
+                                <th>@Localizer["User"]</th>
+                                <th>@Localizer["ActivityType"]</th>
+                                <th>@Localizer["Description"]</th>
+                                <th>@Localizer["IpAddress"]</th>
+                                <th>@Localizer["Location"]</th>
+                                <th>@Localizer["Actions"]</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -216,13 +216,13 @@
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="@Url.Action("Details", new { id = activity.Id })" class="btn btn-outline-primary">
-                                                <i class="bi bi-eye"></i>
+                                            <a href="@Url.Action("Details", new { id = activity.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> @Localizer["View"]
                                             </a>
                                             <a href="@Url.Action("Timeline", new { userId = activity.UserId })" class="btn btn-outline-info">
                                                 <i class="bi bi-clock-history"></i>
                                             </a>
-                                            <form method="post" asp-action="Delete" asp-route-id="@activity.Id" class="d-inline" onsubmit="return confirm('Delete this activity?');">
+                                            <form method="post" asp-action="Delete" asp-route-id="@activity.Id" class="d-inline" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-outline-danger">
                                                     <i class="bi bi-trash"></i>
@@ -244,7 +244,7 @@
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item @(!Model.Pagination.HasPreviousPage ? "disabled" : "")">
                                     <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, pageSize = Model.Pagination.PageSize, searchTerm = Model.Filter.SearchTerm, activityType = Model.Filter.ActivityType, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })">
-                                        Previous
+                                        @Localizer["Previous"]
                                     </a>
                                 </li>
 
@@ -259,13 +259,13 @@
 
                                 <li class="page-item @(!Model.Pagination.HasNextPage ? "disabled" : "")">
                                     <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, pageSize = Model.Pagination.PageSize, searchTerm = Model.Filter.SearchTerm, activityType = Model.Filter.ActivityType, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })">
-                                        Next
+                                        @Localizer["Next"]
                                     </a>
                                 </li>
                             </ul>
                         </nav>
                         <div class="text-center text-muted mt-2">
-                            <small>Showing @((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize + 1) to @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount) of @Model.Pagination.TotalCount entries</small>
+                            <small>@string.Format(Localizer["ShowingEntries"].Value, (Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize + 1, Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount), Model.Pagination.TotalCount)</small>
                         </div>
                     </div>
                 }
@@ -274,7 +274,7 @@
             {
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="text-muted mt-3">No user activities found.</p>
+                    <p class="text-muted mt-3">@Localizer["NoActivitiesFound"]</p>
                 </div>
             }
         </div>
@@ -291,11 +291,11 @@
         function bulkDelete() {
             const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
             if (checkboxes.length === 0) {
-                alert('Please select at least one activity to delete.');
+                alert('@Localizer["SelectAtLeastOne"]');
                 return;
             }
 
-            if (!confirm(`Are you sure you want to delete ${checkboxes.length} activities?`)) {
+            if (!confirm(`@Localizer["ConfirmBulkDelete"]`.replace('{0}', checkboxes.length))) {
                 return;
             }
 

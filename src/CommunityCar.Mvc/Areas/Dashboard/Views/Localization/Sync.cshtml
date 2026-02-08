@@ -1,0 +1,81 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SyncTranslationsViewModel
+@{
+    ViewData["Title"] = "Sync Translations";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-sync me-2"></i>
+                    Sync Translations
+                </h2>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Sync Missing Keys</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        This tool will copy keys from the source culture to the target culture. 
+                        It is useful for populating a new language with default values (e.g., English) before translation.
+                    </div>
+
+                    <form asp-action="Sync" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="SourceCulture" class="form-label">Source Culture (Reference)</label>
+                            <select asp-for="SourceCulture" class="form-select">
+                                <option value="en">English (en)</option>
+                                @foreach (var culture in Model.AvailableCultures.Where(c => c != "en"))
+                                {
+                                    <option value="@culture">@culture</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SourceCulture" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TargetCulture" class="form-label">Target Culture (Destination)</label>
+                            <select asp-for="TargetCulture" class="form-select">
+                                <option value="">Select Target Culture</option>
+                                @foreach (var culture in Model.AvailableCultures)
+                                {
+                                    <option value="@culture">@culture</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TargetCulture" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="OverwriteExisting" class="form-check-input" />
+                            <label asp-for="OverwriteExisting" class="form-check-label">Overwrite existing translations</label>
+                            <div class="form-text text-danger">Warning: This will replace current values in the target culture with source values.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-sync me-1"></i> Sync Keys
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

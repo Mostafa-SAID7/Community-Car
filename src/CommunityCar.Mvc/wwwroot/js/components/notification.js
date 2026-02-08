@@ -75,7 +75,7 @@ window.loadLatestNotifications = function () {
                 list.innerHTML = `
                     <div class="p-4 text-center text-muted">
                         <i class="fas fa-bell-slash fa-2x mb-2 opacity-25"></i>
-                        <p class="mb-0 small">No new notifications</p>
+                        <p class="mb-0 small">${window.I18n?.translations.notifications.noNewNotifications || 'No new notifications'}</p>
                     </div>`;
                 return;
             }
@@ -104,12 +104,12 @@ window.loadLatestNotifications = function () {
                                 <form action="/Friends/AcceptRequest" method="post" class="ajax-accept-form flex-grow-1" data-notification-id="${n.id}">
                                     <input type="hidden" name="__RequestVerificationToken" value="${document.querySelector('input[name=\'__RequestVerificationToken\']')?.value || ''}" />
                                     <input type="hidden" name="friendId" value="${requesterId}" />
-                                    <button type="submit" class="btn btn-primary btn-xs py-1 rounded-pill w-100 text-xs text-white">Accept</button>
+                                    <button type="submit" class="btn btn-primary btn-xs py-1 rounded-pill w-100 text-xs text-white">${window.I18n?.translations.notifications.accept || 'Accept'}</button>
                                 </form>
                                 <form action="/Friends/RejectRequest" method="post" class="ajax-reject-form flex-grow-1" data-notification-id="${n.id}">
                                     <input type="hidden" name="__RequestVerificationToken" value="${document.querySelector('input[name=\'__RequestVerificationToken\']')?.value || ''}" />
                                     <input type="hidden" name="friendId" value="${requesterId}" />
-                                    <button type="submit" class="btn btn-outline-secondary btn-xs py-1 rounded-pill w-100 text-xs">Decline</button>
+                                    <button type="submit" class="btn btn-outline-secondary btn-xs py-1 rounded-pill w-100 text-xs">${window.I18n?.translations.notifications.decline || 'Decline'}</button>
                                 </form>
                             </div>
                             ` : ''}
@@ -127,8 +127,8 @@ window.loadLatestNotifications = function () {
             list.innerHTML = `
                 <div class="p-4 text-center text-muted">
                     <i class="fas fa-exclamation-circle fa-2x mb-2 text-danger opacity-50"></i>
-                    <p class="mb-0 small">Failed to load notifications</p>
-                    <button class="btn btn-link btn-sm text-primary p-0 mt-1" onclick="loadLatestNotifications()">Try again</button>
+                    <p class="mb-0 small">${window.I18n?.translations.notifications.failedToLoadNotifications || 'Failed to load notifications'}</p>
+                    <button class="btn btn-link btn-sm text-primary p-0 mt-1" onclick="loadLatestNotifications()">${window.I18n?.translations.common.tryAgain || 'Try again'}</button>
                 </div>`;
         });
 };
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof receiverId === 'undefined' || receiverId !== senderId) {
                 window.updateChatUnreadCount();
                 if (window.Toast) {
-                    window.Toast.show("New message received", 'info', "Chat");
+                    window.Toast.show(window.I18n?.translations.chat.newMessage || "New message received", 'info', "Chat");
                 }
             }
         });

@@ -28,14 +28,12 @@ public static class DependencyInjection
     {
         services.AddScoped<CommunityCar.Infrastructure.Data.Interceptors.AuditableEntityInterceptor>();
 
-        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        services.AddDbContext<ApplicationDbContext>(options =>
         {
-            var auditableInterceptor = sp.GetRequiredService<CommunityCar.Infrastructure.Data.Interceptors.AuditableEntityInterceptor>();
-
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
-               .AddInterceptors(auditableInterceptor);
+               .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
         services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -49,8 +47,7 @@ public static class DependencyInjection
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
-
-        // Configure cookie authentication paths
+        
         // Configure cookie authentication paths
         services.PostConfigure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme, options =>
         {
@@ -68,8 +65,8 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-            options.AddPolicy("Moderator", policy => policy.RequireRole("Admin", "Moderator"));
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("SuperAdmin", "Admin"));
+            options.AddPolicy("Moderator", policy => policy.RequireRole("SuperAdmin", "Admin", "Moderator"));
         });
 
         services.AddAuthentication()
@@ -131,6 +128,8 @@ public static class DependencyInjection
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<ISystemSettingService, SystemSettingService>();
         services.AddScoped<ISystemService, SystemService>();
+        services.AddScoped<IUserActivityService, UserActivityService>();
+        services.AddScoped<IContentActivityService, ContentActivityService>();
         services.AddScoped<IFriendshipService, FriendshipService>();
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<ITagService, TagService>();

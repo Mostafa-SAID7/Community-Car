@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadPosts" xml:space="preserve">
+    <value>Failed to load posts</value>
+  </data>
+  <data name="PostNotFound" xml:space="preserve">
+    <value>Post not found</value>
+  </data>
+  <data name="FailedToLoadPost" xml:space="preserve">
+    <value>Failed to load post</value>
+  </data>
+  <data name="PostCreated" xml:space="preserve">
+    <value>Post created successfully</value>
+  </data>
+  <data name="FailedToCreatePost" xml:space="preserve">
+    <value>Failed to create post</value>
+  </data>
+  <data name="OnlyAuthorCanEditPost" xml:space="preserve">
+    <value>You can only edit your own posts</value>
+  </data>
+  <data name="PostUpdated" xml:space="preserve">
+    <value>Post updated successfully</value>
+  </data>
+  <data name="FailedToUpdatePost" xml:space="preserve">
+    <value>Failed to update post</value>
+  </data>
+  <data name="PostDeleted" xml:space="preserve">
+    <value>Post deleted successfully</value>
+  </data>
+  <data name="FailedToDeletePost" xml:space="preserve">
+    <value>Failed to delete post</value>
+  </data>
+  <data name="PostPublished" xml:space="preserve">
+    <value>Post published successfully</value>
+  </data>
+  <data name="FailedToPublishPost" xml:space="preserve">
+    <value>Failed to publish post</value>
+  </data>
+  <data name="PostPinned" xml:space="preserve">
+    <value>Post pinned successfully</value>
+  </data>
+  <data name="FailedToPinPost" xml:space="preserve">
+    <value>Failed to pin post</value>
+  </data>
+  <data name="PostLocked" xml:space="preserve">
+    <value>Post locked successfully</value>
+  </data>
+  <data name="FailedToLockPost" xml:space="preserve">
+    <value>Failed to lock post</value>
+  </data>
+  <data name="LikeToggled" xml:space="preserve">
+    <value>Like toggled successfully</value>
+  </data>
+  <data name="ShareCounted" xml:space="preserve">
+    <value>Share counted</value>
+  </data>
+  <data name="FailedToCountShare" xml:space="preserve">
+    <value>Failed to count share</value>
+  </data>
+  <data name="CommentAdded" xml:space="preserve">
+    <value>Comment added successfully</value>
+  </data>
+  <data name="FailedToAddComment" xml:space="preserve">
+    <value>Failed to add comment</value>
+  </data>
+  <data name="FailedToLoadMyPosts" xml:space="preserve">
+    <value>Failed to load your posts</value>
+  </data>
+  <data name="FailedToLoadFeaturedPosts" xml:space="preserve">
+    <value>Failed to load featured posts</value>
+  </data>
+</root>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadEvents" xml:space="preserve">
+    <value>Failed to load events. Please try again.</value>
+  </data>
+  <data name="EventNotFound" xml:space="preserve">
+    <value>Event not found.</value>
+  </data>
+  <data name="FailedToLoadEvent" xml:space="preserve">
+    <value>Failed to load event. Please try again.</value>
+  </data>
+  <data name="EventCreated" xml:space="preserve">
+    <value>Event created successfully.</value>
+  </data>
+  <data name="FailedToCreateEvent" xml:space="preserve">
+    <value>Failed to create event. Please try again.</value>
+  </data>
+  <data name="OnlyOrganizerCanEdit" xml:space="preserve">
+    <value>You can only edit your own events.</value>
+  </data>
+  <data name="EventUpdated" xml:space="preserve">
+    <value>Event updated successfully.</value>
+  </data>
+  <data name="FailedToUpdateEvent" xml:space="preserve">
+    <value>Failed to update event. Please try again.</value>
+  </data>
+  <data name="EventDeleted" xml:space="preserve">
+    <value>Event deleted successfully.</value>
+  </data>
+  <data name="FailedToDeleteEvent" xml:space="preserve">
+    <value>Failed to delete event. Please try again.</value>
+  </data>
+  <data name="JoinedEvent" xml:space="preserve">
+    <value>Successfully joined event.</value>
+  </data>
+  <data name="LeftEvent" xml:space="preserve">
+    <value>Successfully left event.</value>
+  </data>
+  <data name="FailedToLeaveEvent" xml:space="preserve">
+    <value>Failed to leave event. Please try again.</value>
+  </data>
+  <data name="EventPublished" xml:space="preserve">
+    <value>Event published successfully.</value>
+  </data>
+  <data name="EventCancelled" xml:space="preserve">
+    <value>Event cancelled successfully.</value>
+  </data>
+  <data name="CommentAdded" xml:space="preserve">
+    <value>Comment added successfully.</value>
+  </data>
+  <data name="FailedToAddComment" xml:space="preserve">
+    <value>Failed to add comment. Please try again.</value>
+  </data>
+  <data name="FailedToLoadMyEvents" xml:space="preserve">
+    <value>Failed to load your events. Please try again.</value>
+  </data>
+</root>

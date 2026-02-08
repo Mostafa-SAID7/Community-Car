@@ -195,7 +195,7 @@
 
             // Refresh unread counts periodically
             setInterval(function() {
-                $.get('/chat/GetUnreadCount', function(data) {
+                $.get('/Chats/GetUnreadCount', function(data) {
                     if (data.success && data.count > 0) {
                         // Optional: update UI without reload
                     }

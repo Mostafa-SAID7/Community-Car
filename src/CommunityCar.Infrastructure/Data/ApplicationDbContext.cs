@@ -14,6 +14,7 @@ using CommunityCar.Domain.Entities.Dashboard.KPIs;
 using CommunityCar.Domain.Entities.Dashboard.health;
 using CommunityCar.Domain.Entities.Dashboard.settings;
 using CommunityCar.Domain.Entities.Dashboard.Localization;
+using CommunityCar.Domain.Entities.Dashboard.widgets;
 using CommunityCar.Domain.Entities.Community.friends;
 using CommunityCar.Domain.Entities.Communications.notifications;
 using CommunityCar.Domain.Entities.Communications.chats;
@@ -42,6 +43,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ApplicationSetting> ApplicationSettings => Set<ApplicationSetting>();
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
     public DbSet<LocalizationResource> LocalizationResources => Set<LocalizationResource>();
+    public DbSet<DashboardWidget> DashboardWidgets => Set<DashboardWidget>();
     public DbSet<CommunityCar.Domain.Entities.Community.Common.Category> Categories => Set<CommunityCar.Domain.Entities.Community.Common.Category>();
     
     // Groups

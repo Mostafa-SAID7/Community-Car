@@ -67,20 +67,23 @@ public class EditLocalizationViewModel
 
 public class BulkImportViewModel
 {
-    [Required(ErrorMessage = "Culture code is required")]
-    public string CultureCode { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Culture is required")]
+    public string Culture { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "JSON content is required")]
-    public string JsonContent { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Format is required")]
+    public string Format { get; set; } = "json";
+
+    [Required(ErrorMessage = "Import data is required")]
+    public string ImportData { get; set; } = string.Empty;
 
     public bool OverwriteExisting { get; set; }
 }
 
 public class MissingTranslationsViewModel
 {
-    public string SourceCulture { get; set; } = string.Empty;
-    public string TargetCulture { get; set; } = string.Empty;
-    public List<LocalizationResourceDto> MissingResources { get; set; } = new();
+    public string Culture { get; set; } = string.Empty;
+    public Dictionary<string, List<string>> MissingByCategory { get; set; } = new();
+    public int TotalMissing { get; set; }
 }
 
 public class LocalizationStatisticsViewModel
@@ -92,9 +95,14 @@ public class LocalizationStatisticsViewModel
 
 public class ExportLocalizationViewModel
 {
-    public List<string> SelectedCultures { get; set; } = new();
-    public List<string> SelectedCategories { get; set; } = new();
-    public string ExportFormat { get; set; } = "json";
+    [Required]
+    public string Culture { get; set; } = string.Empty;
+    
+    public string? Category { get; set; }
+    
+    [Required]
+    public string Format { get; set; } = "json";
+    
     public List<string> AvailableCultures { get; set; } = new();
     public List<string> AvailableCategories { get; set; } = new();
 }
@@ -110,3 +118,4 @@ public class SyncTranslationsViewModel
     public bool OverwriteExisting { get; set; }
     public List<string> AvailableCultures { get; set; } = new();
 }
+

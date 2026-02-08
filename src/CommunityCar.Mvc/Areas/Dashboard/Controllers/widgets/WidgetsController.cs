@@ -9,7 +9,7 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.widgets;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/Widgets")]
+[Route("{culture}/Dashboard/Widgets")]
 public class WidgetsController : Controller
 {
     private readonly IWidgetService _widgetService;

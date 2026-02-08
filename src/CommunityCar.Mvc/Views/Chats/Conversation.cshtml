@@ -88,7 +88,7 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
-                                <li><a class="dropdown-item" href="/Identity/Profiles/@otherUser.UserId">View Profile</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Profiles", new { area = "Identity", id = otherUser.UserId })">View Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="#">Block User</a></li>
                             </ul>
@@ -243,7 +243,7 @@
             }
 
             function markAsRead() {
-                $.post('/chat/MarkConversationAsRead/' + receiverId, {
+                $.post('/Chats/MarkConversationAsRead/' + receiverId, {
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 });
             }
@@ -255,7 +255,7 @@
                 if (!content) return;
 
                 const formData = $(this).serialize();
-                $.post('/chat/SendMessage', formData, function(response) {
+                $.post('/Chats/SendMessage', formData, function(response) {
                     if (response.success) {
                         appendMessage(content, new Date(), true);
                         $('#messageInput').val('');

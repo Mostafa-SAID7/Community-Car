@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityCar.Web.Controllers;
 
-[Route("[controller]")]
+[Route("{culture:alpha}/[controller]")]
 public class InfoController : Controller
 {
     // GET: Info/Terms

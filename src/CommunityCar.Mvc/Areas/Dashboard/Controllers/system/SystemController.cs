@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.system;
 
 [Area("Dashboard")]
-[Route("Dashboard/System")]
+[Route("{culture}/Dashboard/System")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class SystemController : Controller
 {

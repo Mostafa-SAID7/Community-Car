@@ -80,7 +80,7 @@
             <div class="card shadow-sm border-0 mb-4 rounded-4">
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-4">
-                        <img src="@(post.AuthorAvatar ?? "/images/default-avatar.png")" alt="@post.AuthorName" class="author-avatar me-3">
+                        <img src="@(post.AuthorAvatar ?? "/images/default-avatar.svg")" alt="@post.AuthorName" class="author-avatar me-3">
                         <div>
                             <h6 class="mb-0 fw-bold">@post.AuthorName</h6>
                             <div class="post-meta">
@@ -190,7 +190,7 @@
                         @foreach (var comment in Model.Comments.Items)
                         {
                             <div class="d-flex mb-4">
-                                <img src="@(comment.UserAvatar ?? "/images/default-avatar.png")" alt="@comment.UserName" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <img src="@(comment.UserAvatar ?? "/images/default-avatar.svg")" alt="@comment.UserName" class="rounded-circle me-3" style="width: 40px; height: 40px;">
                                 <div class="flex-grow-1">
                                     <div class="bg-light p-3 rounded-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -220,12 +220,12 @@
             <div class="card shadow-sm border-0 mb-4 rounded-4 overflow-hidden">
                 <div class="bg-primary p-3"></div>
                 <div class="card-body p-4 text-center mt-n4">
-                    <img src="@(post.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle border border-4 border-white mb-3 shadow-sm" style="width: 80px; height: 80px; margin-top: -50px;">
+                    <img src="@(post.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle border border-4 border-white mb-3 shadow-sm" style="width: 80px; height: 80px; margin-top: -50px;">
                     <h5 class="fw-bold mb-1">@post.AuthorName</h5>
                     <p class="text-muted small mb-3">Community Contributor</p>
                     
                     <div class="d-flex flex-column gap-2 px-3">
-                        <a href="/Identity/Profiles/@post.AuthorId" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
+                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = post.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
                         
                         @if (currentUserId.HasValue && !isAuthor)
                         {

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadReviews" xml:space="preserve">
+    <value>فشل تحميل المراجعات. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ReviewNotFound" xml:space="preserve">
+    <value>المراجعة غير موجودة.</value>
+  </data>
+  <data name="FailedToLoadReview" xml:space="preserve">
+    <value>فشل تحميل المراجعة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ReviewSubmittedForApproval" xml:space="preserve">
+    <value>تم تقديم المراجعة بنجاح وهي قيد الموافقة.</value>
+  </data>
+  <data name="FailedToCreateReview" xml:space="preserve">
+    <value>فشل إنشاء المراجعة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="OnlyReviewerCanEdit" xml:space="preserve">
+    <value>يمكنك فقط تعديل المراجعات الخاصة بك.</value>
+  </data>
+  <data name="ReviewUpdated" xml:space="preserve">
+    <value>تم تحديث المراجعة بنجاح.</value>
+  </data>
+  <data name="FailedToUpdateReview" xml:space="preserve">
+    <value>فشل تحديث المراجعة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ReviewDeleted" xml:space="preserve">
+    <value>تم حذف المراجعة بنجاح.</value>
+  </data>
+  <data name="FailedToDeleteReview" xml:space="preserve">
+    <value>فشل حذف المراجعة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FeedbackReceived" xml:space="preserve">
+    <value>شكراً لتعاونك.</value>
+  </data>
+  <data name="ReactionRemoved" xml:space="preserve">
+    <value>تم إزالة التفاعل.</value>
+  </data>
+  <data name="FailedToRemoveReaction" xml:space="preserve">
+    <value>فشل إزالة التفاعل. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ReviewFlagged" xml:space="preserve">
+    <value>تم الإبلاغ عن المراجعة للمراجعة.</value>
+  </data>
+  <data name="FailedToFlagReview" xml:space="preserve">
+    <value>فشل الإبلاغ عن المراجعة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="CommentAdded" xml:space="preserve">
+    <value>تم إضافة التعليق بنجاح.</value>
+  </data>
+  <data name="FailedToAddComment" xml:space="preserve">
+    <value>فشل إضافة التعليق. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FailedToLoadMyReviews" xml:space="preserve">
+    <value>فشل تحميل المراجعات الخاصة بك. يرجى المحاولة مرة أخرى.</value>
+  </data>
+</root>

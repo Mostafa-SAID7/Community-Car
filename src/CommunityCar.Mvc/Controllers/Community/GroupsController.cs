@@ -3,29 +3,33 @@ using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Enums.Community.groups;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Web.ViewModels.Groups;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace CommunityCar.Web.Controllers.Social;
+namespace CommunityCar.Mvc.Controllers.Community;
 
-[Route("[controller]")]
+[Route("{culture:alpha}/[controller]")]
 [Authorize]
 public partial class GroupsController : Controller
 {
     private readonly IGroupService _groupService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<GroupsController> _logger;
+    private readonly IStringLocalizer<GroupsController> _localizer;
 
     public GroupsController(
         IGroupService groupService,
         UserManager<ApplicationUser> userManager,
-        ILogger<GroupsController> logger)
+        ILogger<GroupsController> logger,
+        IStringLocalizer<GroupsController> localizer)
     {
         _groupService = groupService;
         _userManager = userManager;
         _logger = logger;
+        _localizer = localizer;
     }
 
     private Guid GetCurrentUserId()
@@ -73,7 +77,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading groups");
-            TempData["Error"] = "Failed to load groups. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadGroups"];
             return View(new List<GroupViewModel>());
         }
     }
@@ -112,7 +116,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user groups");
-            TempData["Error"] = "Failed to load your groups. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadMyGroups"];
             return View(new List<GroupViewModel>());
         }
     }
@@ -128,7 +132,7 @@ public partial class GroupsController : Controller
 
             if (group == null)
             {
-                TempData["Error"] = "Group not found.";
+                TempData["Error"] = _localizer["GroupNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -172,7 +176,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading group details for slug: {Slug}", slug);
-            TempData["Error"] = "Failed to load group details. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadGroup"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -203,17 +207,17 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Group created successfully!";
+                TempData["Success"] = _localizer["GroupCreated"];
                 return RedirectToAction(nameof(Details), new { slug = result.Value!.Slug });
             }
 
-            ModelState.AddModelError("", result.Error ?? "Failed to create group");
+            ModelState.AddModelError("", result.Error ?? _localizer["FailedToCreateGroup"]);
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating group");
-            ModelState.AddModelError("", "An error occurred while creating the group. Please try again.");
+            ModelState.AddModelError("", _localizer["FailedToCreateGroupDetail"]);
             return View(model);
         }
     }
@@ -234,7 +238,7 @@ public partial class GroupsController : Controller
 
             if (group.UserRole != GroupMemberRole.Admin && group.CreatorId != userId)
             {
-                TempData["Error"] = "You don't have permission to edit this group.";
+                TempData["Error"] = _localizer["NoPermissionToEditGroup"];
                 return RedirectToAction(nameof(Details), new { slug = group.Slug });
             }
 
@@ -251,7 +255,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading group for edit: {GroupId}", id);
-            TempData["Error"] = "Failed to load group. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadGroup"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -282,17 +286,17 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Group updated successfully!";
+                TempData["Success"] = _localizer["GroupUpdated"];
                 return RedirectToAction(nameof(Details), new { slug = result.Value!.Slug });
             }
 
-            ModelState.AddModelError("", result.Error ?? "Failed to update group");
+            ModelState.AddModelError("", result.Error ?? _localizer["FailedToUpdateGroup"]);
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating group: {GroupId}", id);
-            ModelState.AddModelError("", "An error occurred while updating the group. Please try again.");
+            ModelState.AddModelError("", _localizer["FailedToUpdateGroupDetail"]);
             return View(model);
         }
     }
@@ -308,7 +312,7 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Group deleted successfully.";
+                TempData["Success"] = _localizer["GroupDeleted"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -318,7 +322,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting group: {GroupId}", id);
-            TempData["Error"] = "An error occurred while deleting the group. Please try again.";
+            TempData["Error"] = _localizer["FailedToDeleteGroupDetail"];
             return RedirectToAction(nameof(Details), new { id });
         }
     }
@@ -334,7 +338,7 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "You have joined the group successfully!";
+                TempData["Success"] = _localizer["JoinedGroup"];
             }
             else
             {
@@ -347,7 +351,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error joining group: {GroupId}", id);
-            TempData["Error"] = "An error occurred while joining the group. Please try again.";
+            TempData["Error"] = _localizer["FailedToJoinGroup"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -363,7 +367,7 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "You have left the group.";
+                TempData["Success"] = _localizer["LeftGroup"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -374,7 +378,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error leaving group: {GroupId}", id);
-            TempData["Error"] = "An error occurred while leaving the group. Please try again.";
+            TempData["Error"] = _localizer["FailedToLeaveGroup"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -390,7 +394,7 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Member removed successfully.";
+                TempData["Success"] = _localizer["MemberRemoved"];
             }
             else
             {
@@ -403,7 +407,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing member from group: {GroupId}", groupId);
-            TempData["Error"] = "An error occurred while removing the member. Please try again.";
+            TempData["Error"] = _localizer["FailedToRemoveMember"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -420,7 +424,7 @@ public partial class GroupsController : Controller
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Member role updated successfully.";
+                TempData["Success"] = _localizer["MemberRoleUpdated"];
             }
             else
             {
@@ -433,7 +437,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating member role in group: {GroupId}", groupId);
-            TempData["Error"] = "An error occurred while updating the member role. Please try again.";
+            TempData["Error"] = _localizer["FailedToUpdateMemberRole"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -479,7 +483,7 @@ public partial class GroupsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching groups with query: {Query}", query);
-            TempData["Error"] = "Failed to search groups. Please try again.";
+            TempData["Error"] = _localizer["FailedToSearchGroups"];
             return RedirectToAction(nameof(Index));
         }
     }

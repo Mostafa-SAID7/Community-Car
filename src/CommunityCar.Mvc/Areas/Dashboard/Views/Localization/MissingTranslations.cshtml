@@ -1,0 +1,69 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.MissingTranslationsViewModel
+@{
+    ViewData["Title"] = "Missing Translations";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Missing Translations: @Model.Culture
+                </h2>
+                <div>
+                    <a asp-action="Sync" class="btn btn-warning me-2">
+                        <i class="fas fa-sync me-1"></i> Sync Now
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.TotalMissing > 0)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-info-circle me-1"></i>
+            Found <strong>@Model.TotalMissing</strong> keys missing in <strong>@Model.Culture</strong> compared to English (en).
+        </div>
+
+        @foreach (var category in Model.MissingByCategory)
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@category.Key</h5>
+                    <span class="badge bg-secondary">@category.Value.Count keys</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var key in category.Value)
+                        {
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <code class="me-2 text-dark">@key</code>
+                                    <a asp-action="Create" asp-route-key="@key" asp-route-cultureCode="@Model.Culture" asp-route-category="@category.Key" class="btn btn-sm btn-outline-primary ms-auto">
+                                        <i class="fas fa-plus"></i> Translate
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                <h3>All Caught Up!</h3>
+                <p class="text-muted">No missing translations found for <strong>@Model.Culture</strong>.</p>
+                <a asp-action="Index" class="btn btn-primary mt-3">Back to Management</a>
+            </div>
+        </div>
+    }
+</div>

@@ -3,27 +3,31 @@ using CommunityCar.Domain.Enums.Community.events;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Events;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Community;
 
-[Route("Events")]
+[Route("{culture:alpha}/Events")]
 public class EventsController : Controller
 {
     private readonly IEventService _eventService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<EventsController> _logger;
+    private readonly IStringLocalizer<EventsController> _localizer;
 
     public EventsController(
         IEventService eventService,
         ICurrentUserService currentUserService,
-        ILogger<EventsController> logger)
+        ILogger<EventsController> logger,
+        IStringLocalizer<EventsController> localizer)
     {
         _eventService = eventService;
         _currentUserService = currentUserService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Events
@@ -65,7 +69,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading events");
-            TempData["Error"] = "Failed to load events";
+            TempData["Error"] = _localizer["FailedToLoadEvents"];
             return View(new PagedResult<Domain.DTOs.Community.EventDto>(
                 new List<Domain.DTOs.Community.EventDto>(), 0, page, pageSize));
         }
@@ -112,7 +116,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading event {Slug}", slug);
-            TempData["Error"] = "Failed to load event";
+            TempData["Error"] = _localizer["FailedToLoadEvent"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -153,13 +157,13 @@ public class EventsController : Controller
                 model.MaxAttendees,
                 model.IsOnline);
 
-            TempData["Success"] = "Event created successfully";
+            TempData["Success"] = _localizer["EventCreated"];
             return RedirectToAction(nameof(Details), new { slug = communityEvent.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating event");
-            ModelState.AddModelError("", "Failed to create event");
+            ModelState.AddModelError("", _localizer["FailedToCreateEvent"]);
             ViewBag.Categories = Enum.GetValues<EventCategory>();
             return View(model);
         }
@@ -183,7 +187,7 @@ public class EventsController : Controller
 
             if (!eventDto.IsOrganizer)
             {
-                TempData["Error"] = "You can only edit your own events";
+                TempData["Error"] = _localizer["OnlyOrganizerCanEdit"];
                 return RedirectToAction(nameof(Details), new { slug = eventDto.Slug });
             }
 
@@ -209,7 +213,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading event for edit {EventId}", id);
-            TempData["Error"] = "Failed to load event";
+            TempData["Error"] = _localizer["FailedToLoadEvent"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -242,13 +246,13 @@ public class EventsController : Controller
                 model.MaxAttendees,
                 model.IsOnline);
 
-            TempData["Success"] = "Event updated successfully";
+            TempData["Success"] = _localizer["EventUpdated"];
             return RedirectToAction(nameof(Details), new { slug = communityEvent.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating event {EventId}", id);
-            ModelState.AddModelError("", "Failed to update event");
+            ModelState.AddModelError("", _localizer["FailedToUpdateEvent"]);
             ViewBag.Categories = Enum.GetValues<EventCategory>();
             return View(model);
         }
@@ -263,12 +267,12 @@ public class EventsController : Controller
         try
         {
             await _eventService.DeleteEventAsync(id);
-            return Json(new { success = true, message = "Event deleted successfully" });
+            return Json(new { success = true, message = _localizer["EventDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting event {EventId}", id);
-            return Json(new { success = false, message = "Failed to delete event" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteEvent"].Value });
         }
     }
 
@@ -282,7 +286,7 @@ public class EventsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _eventService.JoinEventAsync(id, userId, status);
 
-            return Json(new { success = true, message = "Successfully joined event" });
+            return Json(new { success = true, message = _localizer["JoinedEvent"].Value });
         }
         catch (Exception ex)
         {
@@ -301,12 +305,12 @@ public class EventsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _eventService.LeaveEventAsync(id, userId);
 
-            return Json(new { success = true, message = "Successfully left event" });
+            return Json(new { success = true, message = _localizer["LeftEvent"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error leaving event {EventId}", id);
-            return Json(new { success = false, message = "Failed to leave event" });
+            return Json(new { success = false, message = _localizer["FailedToLeaveEvent"].Value });
         }
     }
 
@@ -320,7 +324,7 @@ public class EventsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _eventService.PublishEventAsync(id, userId);
 
-            return Json(new { success = true, message = "Event published successfully" });
+            return Json(new { success = true, message = _localizer["EventPublished"].Value });
         }
         catch (Exception ex)
         {
@@ -339,7 +343,7 @@ public class EventsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _eventService.CancelEventAsync(id, userId);
 
-            return Json(new { success = true, message = "Event cancelled successfully" });
+            return Json(new { success = true, message = _localizer["EventCancelled"].Value });
         }
         catch (Exception ex)
         {
@@ -358,12 +362,12 @@ public class EventsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _eventService.AddCommentAsync(eventId, userId, content);
 
-            return Json(new { success = true, message = "Comment added successfully" });
+            return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding comment to event {EventId}", eventId);
-            return Json(new { success = false, message = "Failed to add comment" });
+            return Json(new { success = false, message = _localizer["FailedToAddComment"].Value });
         }
     }
 
@@ -387,7 +391,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user events");
-            TempData["Error"] = "Failed to load your events";
+            TempData["Error"] = _localizer["FailedToLoadMyEvents"];
             return RedirectToAction(nameof(Index));
         }
     }

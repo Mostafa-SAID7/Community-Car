@@ -1,8 +1,11 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+    var isRtl = culture.StartsWith("ar", StringComparison.OrdinalIgnoreCase);
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@culture" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,7 +14,14 @@
     <link rel="icon" type="image/png" href="~/images/logo/logo.png" />
 
     <!-- Libraries CSS -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @if (isRtl)
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    }
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
@@ -52,14 +62,14 @@
                     </div>
                 </div>
 
-                <!-- Main Content (Desktop: 7 cols, Tablet: 9 cols, Mobile: 12 cols) -->
-                <div class="col-md-9 col-lg-7">
+                <!-- Main Content (Desktop: 7 cols, Tablet: 6 cols, Mobile: 12 cols) -->
+                <div class="col-md-6 col-lg-7">
                     @RenderBody()
                 </div>
 
-                <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet/Mobile) -->
-                <div class="col-lg-3 d-none d-lg-block">
-                    <div class="sticky-sidebar">
+                <!-- Right Sidebar (Desktop: 3 cols, Tablet: 3 cols, Hidden on Mobile) -->
+                <div class="col-md-3 col-lg-3 d-none d-md-block sidebar-right">
+                    <div class="sidebar-sticky">
                         @if (IsSectionDefined("RightSidebar"))
                         {
                             @await RenderSectionAsync("RightSidebar", required: false)
@@ -112,6 +122,38 @@
     <!-- Entry Point JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/friends.js" asp-append-version="true"></script>
+
+    <!-- Global I18n for JS -->
+    <script>
+        window.I18n = {
+            culture: '@culture',
+            isRtl: @(isRtl ? "true" : "false"),
+            translations: {
+                notifications: {
+                    newFriendRequest: '@Localizer["New Friend Request"].Value',
+                    noNewNotifications: '@Localizer["No new notifications"].Value',
+                    failedToLoadNotifications: '@Localizer["Failed to load notifications"].Value',
+                    viewAll: '@Localizer["View All Notifications"].Value',
+                    accept: '@Localizer["Accept"].Value',
+                    decline: '@Localizer["Decline"].Value',
+                    markAllRead: '@Localizer["Mark all as read"].Value',
+                    title: '@Localizer["Notifications"].Value'
+                },
+                chat: {
+                    newMessage: '@Localizer["New message received"].Value'
+                },
+                alerts: {
+                    great: '@Localizer["Great!"].Value',
+                    yes: '@Localizer["Yes, do it!"].Value',
+                    cancel: '@Localizer["Cancel"].Value'
+                },
+                common: {
+                    search: '@Localizer["Search..."].Value',
+                    tryAgain: '@Localizer["Try again"].Value'
+                }
+            }
+        };
+    </script>
 
     <!-- TempData Toast Notifications -->
     <script>

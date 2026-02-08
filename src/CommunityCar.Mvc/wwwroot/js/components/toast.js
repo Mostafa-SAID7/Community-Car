@@ -6,7 +6,7 @@ const Toast = {
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
-            "positionClass": "toast-bottom-right",
+            "positionClass": window.I18n?.isRtl ? "toast-bottom-left" : "toast-bottom-right",
             "showDuration": "400",
             "hideDuration": "1000",
             "timeOut": "6000",

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadMapPoints" xml:space="preserve">
+    <value>فشل تحميل نقاط الخريطة</value>
+  </data>
+  <data name="MapPointNotFound" xml:space="preserve">
+    <value>نقطة الخريطة غير موجودة</value>
+  </data>
+  <data name="FailedToLoadMapPoint" xml:space="preserve">
+    <value>فشل تحميل نقطة الخريطة</value>
+  </data>
+  <data name="MapPointCreated" xml:space="preserve">
+    <value>تم إنشاء نقطة الخريطة بنجاح</value>
+  </data>
+  <data name="FailedToCreateMapPoint" xml:space="preserve">
+    <value>فشل إنشاء نقطة الخريطة</value>
+  </data>
+  <data name="OnlyOwnerCanEditMapPoint" xml:space="preserve">
+    <value>يمكنك تعديل نقاط الخريطة الخاصة بك فقط</value>
+  </data>
+  <data name="MapPointUpdated" xml:space="preserve">
+    <value>تم تحديث نقطة الخريطة بنجاح</value>
+  </data>
+  <data name="FailedToUpdateMapPoint" xml:space="preserve">
+    <value>فشل تحديث نقطة الخريطة</value>
+  </data>
+  <data name="MapPointDeleted" xml:space="preserve">
+    <value>تم حذف نقطة الخريطة بنجاح</value>
+  </data>
+  <data name="FailedToDeleteMapPoint" xml:space="preserve">
+    <value>فشل حذف نقطة الخريطة</value>
+  </data>
+  <data name="FavoriteToggled" xml:space="preserve">
+    <value>تم تبديل المفضلة بنجاح</value>
+  </data>
+  <data name="FailedToToggleFavorite" xml:space="preserve">
+    <value>فشل تبديل المفضلة</value>
+  </data>
+  <data name="CheckedIn" xml:space="preserve">
+    <value>تم تسجيل الوصول بنجاح</value>
+  </data>
+  <data name="RatingLimit" xml:space="preserve">
+    <value>يجب أن يكون التقييم بين 1 و 5</value>
+  </data>
+  <data name="RatingSubmitted" xml:space="preserve">
+    <value>تم إرسال التقييم بنجاح</value>
+  </data>
+  <data name="FailedToSubmitRating" xml:space="preserve">
+    <value>فشل إرسال التقييم</value>
+  </data>
+  <data name="RatingDeleted" xml:space="preserve">
+    <value>تم حذف التقييم بنجاح</value>
+  </data>
+  <data name="FailedToDeleteRating" xml:space="preserve">
+    <value>فشل حذف التقييم</value>
+  </data>
+  <data name="CommentAdded" xml:space="preserve">
+    <value>تم إضافة التعليق بنجاح</value>
+  </data>
+  <data name="FailedToAddComment" xml:space="preserve">
+    <value>فشل إضافة التعليق</value>
+  </data>
+  <data name="FailedToSearchMapPoints" xml:space="preserve">
+    <value>فشل البحث عن نقاط الخريطة</value>
+  </data>
+  <data name="FailedToGetNearbyMapPoints" xml:space="preserve">
+    <value>فشل الحصول على نقاط الخريطة القريبة</value>
+  </data>
+  <data name="FailedToLoadFeaturedMapPoints" xml:space="preserve">
+    <value>فشل تحميل نقاط الخريطة المميزة</value>
+  </data>
+  <data name="FailedToLoadMyMapPoints" xml:space="preserve">
+    <value>فشل تحميل نقاط الخريطة الخاصة بك</value>
+  </data>
+</root>

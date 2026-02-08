@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 <!-- Notification Dropdown -->
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -8,9 +10,9 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end notification-dropdown dropdown-menu-xl" aria-labelledby="notificationDropdown">
         <div class="dropdown-header d-flex justify-content-between align-items-center">
-            <span class="fw-bold">Notifications</span>
+            <span class="fw-bold">@Localizer["Notifications"].Value</span>
             <a href="@Url.Action("Index", "Notifications", new { area = "Communications" })" class="btn btn-sm btn-link">
-                View All
+                @Localizer["View All"].Value
             </a>
         </div>
         <div class="dropdown-divider"></div>
@@ -26,7 +28,7 @@
         <div class="dropdown-divider"></div>
         <div class="dropdown-footer text-center">
             <button class="btn btn-sm btn-link" onclick="markAllNotificationsAsRead()">
-                <i class="fas fa-check-double"></i> Mark All as Read
+                <i class="fas fa-check-double"></i> @Localizer["Mark All as Read"].Value
             </button>
         </div>
     </div>
@@ -57,7 +59,7 @@
                     }
                 },
                 error: function() {
-                    $('#notificationList').html('<div class="text-center py-3 text-muted">Failed to load notifications</div>');
+                    $('#notificationList').html('<div class="text-center py-3 text-muted">@Localizer["Failed to load notifications"].Value</div>');
                 }
             });
         }
@@ -75,11 +77,11 @@
             var html = '';
             
             if (notifications.length === 0) {
-                html = '<div class="text-center py-3 text-muted"><i class="fas fa-bell-slash me-2"></i>No notifications</div>';
+                html = '<div class="text-center py-3 text-muted"><i class="fas fa-bell-slash me-2"></i>@Localizer["No notifications"].Value</div>';
             } else {
                 notifications.forEach(function(notification) {
                     var readClass = notification.isRead ? '' : 'bg-light';
-                    var newBadge = notification.isRead ? '' : '<span class="badge bg-primary me-2">New</span>';
+                    var newBadge = notification.isRead ? '' : '<span class="badge bg-primary me-2">@Localizer["New"].Value</span>';
                     var link = notification.link || '#';
                     
                     html += `

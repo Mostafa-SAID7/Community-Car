@@ -1,0 +1,81 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.BulkImportViewModel
+@{
+    ViewData["Title"] = "Bulk Import Translations";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-file-import me-2"></i>
+                    Bulk Import Translations
+                </h2>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Import Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="BulkImport" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Culture" class="form-label">Target Culture</label>
+                            <select asp-for="Culture" class="form-select">
+                                <option value="">Select Culture</option>
+                                @foreach (var culture in ViewBag.AvailableCultures as List<string> ?? new List<string>())
+                                {
+                                    <option value="@culture">@culture</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Culture" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Format" class="form-label">Format</label>
+                            <select asp-for="Format" class="form-select" id="formatSelect">
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </select>
+                            <span asp-validation-for="Format" class="text-danger"></span>
+                            <div class="form-text">
+                                JSON format: {"Key": "Value", ...}<br>
+                                CSV format: Key,Value (with header)
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImportData" class="form-label">Content</label>
+                            <textarea asp-for="ImportData" class="form-control" rows="15" placeholder="Paste your JSON or CSV content here..."></textarea>
+                            <span asp-validation-for="ImportData" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="OverwriteExisting" class="form-check-input" />
+                            <label asp-for="OverwriteExisting" class="form-check-label">Overwrite existing translations</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-1"></i> Import Translations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -4,25 +4,29 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Web.Controllers.Content;
 
-[Route("Posts")]
+[Route("{culture:alpha}/Posts")]
 public class PostsController : Controller
 {
     private readonly IPostService _postService;
     private readonly IFriendshipService _friendshipService;
     private readonly ILogger<PostsController> _logger;
+    private readonly IStringLocalizer<PostsController> _localizer;
 
     public PostsController(
         IPostService postService,
         IFriendshipService friendshipService,
-        ILogger<PostsController> logger)
+        ILogger<PostsController> logger,
+        IStringLocalizer<PostsController> localizer)
     {
         _postService = postService;
         _friendshipService = friendshipService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Posts
@@ -54,7 +58,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading posts");
-            TempData["Error"] = "Failed to load posts";
+            TempData["Error"] = _localizer["FailedToLoadPosts"];
             return View(new PagedResult<Domain.DTOs.Community.PostDto>(
                 new List<Domain.DTOs.Community.PostDto>(), 0, page, pageSize));
         }
@@ -72,7 +76,7 @@ public class PostsController : Controller
 
             if (postDto == null)
             {
-                TempData["Error"] = "Post not found";
+                TempData["Error"] = _localizer["PostNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -115,7 +119,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading post {Slug}", slug);
-            TempData["Error"] = "Failed to load post";
+            TempData["Error"] = _localizer["FailedToLoadPost"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -152,13 +156,13 @@ public class PostsController : Controller
                 userId,
                 model.GroupId);
 
-            TempData["Success"] = "Post created successfully";
+            TempData["Success"] = _localizer["PostCreated"];
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating post");
-            ModelState.AddModelError("", "Failed to create post");
+            ModelState.AddModelError("", _localizer["FailedToCreatePost"]);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
             return View(model);
         }
@@ -176,13 +180,13 @@ public class PostsController : Controller
 
             if (postDto == null)
             {
-                TempData["Error"] = "Post not found";
+                TempData["Error"] = _localizer["PostNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
             if (!postDto.IsAuthor)
             {
-                TempData["Error"] = "You can only edit your own posts";
+                TempData["Error"] = _localizer["OnlyAuthorCanEditPost"];
                 return RedirectToAction(nameof(Details), new { slug = postDto.Slug });
             }
 
@@ -206,7 +210,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading post for edit {PostId}", id);
-            TempData["Error"] = "Failed to load post";
+            TempData["Error"] = _localizer["FailedToLoadPost"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -234,13 +238,13 @@ public class PostsController : Controller
                 model.Content,
                 model.Type);
 
-            TempData["Success"] = "Post updated successfully";
+            TempData["Success"] = _localizer["PostUpdated"];
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating post {PostId}", id);
-            ModelState.AddModelError("", "Failed to update post");
+            ModelState.AddModelError("", _localizer["FailedToUpdatePost"]);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
             return View(model);
         }
@@ -255,12 +259,12 @@ public class PostsController : Controller
         try
         {
             await _postService.DeletePostAsync(id);
-            return Json(new { success = true, message = "Post deleted successfully" });
+            return Json(new { success = true, message = _localizer["PostDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting post {PostId}", id);
-            return Json(new { success = false, message = "Failed to delete post" });
+            return Json(new { success = false, message = _localizer["FailedToDeletePost"].Value });
         }
     }
 
@@ -272,12 +276,12 @@ public class PostsController : Controller
         try
         {
             await _postService.PublishPostAsync(id);
-            return Json(new { success = true, message = "Post published successfully" });
+            return Json(new { success = true, message = _localizer["PostPublished"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error publishing post {PostId}", id);
-            return Json(new { success = false, message = "Failed to publish post" });
+            return Json(new { success = false, message = _localizer["FailedToPublishPost"].Value });
         }
     }
 
@@ -289,12 +293,12 @@ public class PostsController : Controller
         try
         {
             await _postService.PinPostAsync(id);
-            return Json(new { success = true, message = "Post pinned successfully" });
+            return Json(new { success = true, message = _localizer["PostPinned"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error pinning post {PostId}", id);
-            return Json(new { success = false, message = "Failed to pin post" });
+            return Json(new { success = false, message = _localizer["FailedToPinPost"].Value });
         }
     }
 
@@ -306,12 +310,12 @@ public class PostsController : Controller
         try
         {
             await _postService.LockPostAsync(id);
-            return Json(new { success = true, message = "Post locked successfully" });
+            return Json(new { success = true, message = _localizer["PostLocked"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error locking post {PostId}", id);
-            return Json(new { success = false, message = "Failed to lock post" });
+            return Json(new { success = false, message = _localizer["FailedToLockPost"].Value });
         }
     }
 
@@ -325,7 +329,7 @@ public class PostsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _postService.ToggleLikeAsync(id, userId);
 
-            return Json(new { success = true, message = "Like toggled" });
+            return Json(new { success = true, message = _localizer["LikeToggled"].Value });
         }
         catch (Exception ex)
         {
@@ -341,12 +345,12 @@ public class PostsController : Controller
         try
         {
             await _postService.IncrementSharesAsync(id);
-            return Json(new { success = true, message = "Share counted" });
+            return Json(new { success = true, message = _localizer["ShareCounted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error incrementing shares for post {PostId}", id);
-            return Json(new { success = false, message = "Failed to count share" });
+            return Json(new { success = false, message = _localizer["FailedToCountShare"].Value });
         }
     }
 
@@ -360,12 +364,12 @@ public class PostsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _postService.AddCommentAsync(postId, userId, content, parentCommentId);
 
-            return Json(new { success = true, message = "Comment added successfully" });
+            return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding comment to post {PostId}", postId);
-            return Json(new { success = false, message = "Failed to add comment" });
+            return Json(new { success = false, message = _localizer["FailedToAddComment"].Value });
         }
     }
 
@@ -385,7 +389,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user posts");
-            TempData["Error"] = "Failed to load your posts";
+            TempData["Error"] = _localizer["FailedToLoadMyPosts"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -402,7 +406,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading featured posts");
-            TempData["Error"] = "Failed to load featured posts";
+            TempData["Error"] = _localizer["FailedToLoadFeaturedPosts"];
             return RedirectToAction(nameof(Index));
         }
     }

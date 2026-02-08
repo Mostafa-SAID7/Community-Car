@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadQuestions" xml:space="preserve">
+    <value>فشل في تحميل الأسئلة</value>
+  </data>
+  <data name="QuestionNotFound" xml:space="preserve">
+    <value>السؤال غير موجود</value>
+  </data>
+  <data name="FailedToLoadQuestion" xml:space="preserve">
+    <value>فشل في تحميل السؤال</value>
+  </data>
+  <data name="FailedToLoadCreatePage" xml:space="preserve">
+    <value>فشل في تحميل صفحة إنشاء السؤال</value>
+  </data>
+  <data name="QuestionCreatedSuccessfully" xml:space="preserve">
+    <value>تم إنشاء السؤال بنجاح</value>
+  </data>
+  <data name="FailedToCreateQuestion" xml:space="preserve">
+    <value>فشل في إنشاء السؤال</value>
+  </data>
+  <data name="CannotEditOthersQuestion" xml:space="preserve">
+    <value>يمكنك فقط تعديل أسئلتك الخاصة</value>
+  </data>
+  <data name="QuestionUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث السؤال بنجاح</value>
+  </data>
+  <data name="FailedToUpdateQuestion" xml:space="preserve">
+    <value>فشل في تحديث السؤال</value>
+  </data>
+  <data name="CannotDeleteOthersQuestion" xml:space="preserve">
+    <value>يمكنك فقط حذف أسئلتك الخاصة</value>
+  </data>
+  <data name="QuestionDeletedSuccessfully" xml:space="preserve">
+    <value>تم حذف السؤال بنجاح</value>
+  </data>
+  <data name="FailedToDeleteQuestion" xml:space="preserve">
+    <value>فشل في حذف السؤال</value>
+  </data>
+  <data name="VoteRecorded" xml:space="preserve">
+    <value>تم تسجيل التصويت</value>
+  </data>
+  <data name="FailedToVote" xml:space="preserve">
+    <value>فشل في التصويت</value>
+  </data>
+  <data name="VoteRemoved" xml:space="preserve">
+    <value>تم إزالة التصويت</value>
+  </data>
+  <data name="FailedToRemoveVote" xml:space="preserve">
+    <value>فشل في إزالة التصويت</value>
+  </data>
+  <data name="QuestionBookmarked" xml:space="preserve">
+    <value>تم حفظ السؤال في المفضلات</value>
+  </data>
+  <data name="BookmarkRemoved" xml:space="preserve">
+    <value>تمت إزالة السؤال من المفضلات</value>
+  </data>
+  <data name="FailedToToggleBookmark" xml:space="preserve">
+    <value>فشل في تبديل المفضلة</value>
+  </data>
+  <data name="AnswerAccepted" xml:space="preserve">
+    <value>تم قبول الإجابة</value>
+  </data>
+  <data name="FailedToAcceptAnswer" xml:space="preserve">
+    <value>فشل في قبول الإجابة</value>
+  </data>
+  <data name="AnswerUnaccepted" xml:space="preserve">
+    <value>تم إلغاء قبول الإجابة</value>
+  </data>
+  <data name="FailedToUnacceptAnswer" xml:space="preserve">
+    <value>فشل في إلغاء قبول الإجابة</value>
+  </data>
+  <data name="FailedToLoadMyQuestions" xml:space="preserve">
+    <value>فشل في تحميل أسئلتك</value>
+  </data>
+  <data name="FailedToLoadMyBookmarks" xml:space="preserve">
+    <value>فشل في تحميل مفضلاتك</value>
+  </data>
+  <data name="FailedToSearchQuestions" xml:space="preserve">
+    <value>فشل في البحث عن الأسئلة</value>
+  </data>
+  <data name="UserNotAuthenticated" xml:space="preserve">
+    <value>المستخدم غير مسجل الدخول</value>
+  </data>
+</root>

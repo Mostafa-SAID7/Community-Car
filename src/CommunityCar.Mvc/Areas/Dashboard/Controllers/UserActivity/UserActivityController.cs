@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 
@@ -7,17 +8,21 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.UserActivity;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/[controller]")]
 public class UserActivityController : Controller
 {
     private readonly ILogger<UserActivityController> _logger;
     private readonly IUserActivityService _userActivityService;
+    private readonly IStringLocalizer<UserActivityController> _localizer;
 
     public UserActivityController(
         ILogger<UserActivityController> logger,
-        IUserActivityService userActivityService)
+        IUserActivityService userActivityService,
+        IStringLocalizer<UserActivityController> localizer)
     {
         _logger = logger;
         _userActivityService = userActivityService;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -63,7 +68,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user activities");
-            TempData["Error"] = "Failed to load user activities";
+            TempData["Error"] = _localizer["FailedToLoadActivities"].Value;
             return View(new UserActivityIndexViewModel());
         }
     }
@@ -76,7 +81,7 @@ public class UserActivityController : Controller
             var activity = await _userActivityService.GetUserActivityByIdAsync(id);
             if (activity == null)
             {
-                TempData["Error"] = "User activity not found";
+                TempData["Error"] = _localizer["ActivityNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -85,7 +90,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user activity details for ID: {Id}", id);
-            TempData["Error"] = "Failed to load activity details";
+            TempData["Error"] = _localizer["FailedToLoadDetails"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -117,7 +122,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user activity details for user: {UserId}", userId);
-            TempData["Error"] = "Failed to load user activity details";
+            TempData["Error"] = _localizer["FailedToLoadDetails"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -143,7 +148,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user activity statistics");
-            TempData["Error"] = "Failed to load statistics";
+            TempData["Error"] = _localizer["FailedToLoadStatistics"].Value;
             return View(new UserActivityStatisticsViewModel());
         }
     }
@@ -170,7 +175,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user activity timeline for user: {UserId}", userId);
-            TempData["Error"] = "Failed to load activity timeline";
+            TempData["Error"] = _localizer["FailedToLoadTimeline"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -195,7 +200,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error exporting user activities");
-            TempData["Error"] = "Failed to export user activities";
+            TempData["Error"] = _localizer["FailedToExport"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -209,17 +214,17 @@ public class UserActivityController : Controller
             var result = await _userActivityService.DeleteUserActivityAsync(id);
             if (result)
             {
-                TempData["Success"] = "User activity deleted successfully";
+                TempData["Success"] = _localizer["ActivityDeleted"].Value;
             }
             else
             {
-                TempData["Error"] = "Failed to delete user activity";
+                TempData["Error"] = _localizer["FailedToDelete"].Value;
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting user activity: {Id}", id);
-            TempData["Error"] = "An error occurred while deleting the activity";
+            TempData["Error"] = _localizer["ErrorOccurred"].Value;
         }
 
         return RedirectToAction(nameof(Index));
@@ -233,17 +238,17 @@ public class UserActivityController : Controller
         {
             if (ids == null || ids.Length == 0)
             {
-                TempData["Error"] = "No activities selected";
+                TempData["Error"] = _localizer["NoSelection"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             var result = await _userActivityService.BulkDeleteUserActivitiesAsync(ids);
-            TempData["Success"] = $"Successfully deleted {result} user activities";
+            TempData["Success"] = string.Format(_localizer["BulkDeleteSuccess"].Value, result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error bulk deleting user activities");
-            TempData["Error"] = "An error occurred while deleting activities";
+            TempData["Error"] = _localizer["ErrorOccurred"].Value;
         }
 
         return RedirectToAction(nameof(Index));
@@ -266,7 +271,7 @@ public class UserActivityController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading active users");
-            TempData["Error"] = "Failed to load active users";
+            TempData["Error"] = _localizer["FailedToLoadActiveUsers"].Value;
             return View(new ActiveUsersViewModel());
         }
     }

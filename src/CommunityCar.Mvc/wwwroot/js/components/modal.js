@@ -34,7 +34,7 @@ const Modal = {
             title: title,
             text: text,
             icon: icon,
-            confirmButtonText: 'Great!'
+            confirmButtonText: window.I18n?.translations.alerts.great || 'Great!'
         });
     },
 
@@ -46,8 +46,8 @@ const Modal = {
             text: text,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: confirmButtonText,
-            cancelButtonText: 'Cancel'
+            confirmButtonText: confirmButtonText || window.I18n?.translations.alerts.yes || 'Yes, do it!',
+            cancelButtonText: window.I18n?.translations.alerts.cancel || 'Cancel'
         });
     }
 };

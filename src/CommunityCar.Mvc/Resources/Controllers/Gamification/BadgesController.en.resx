@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FirstPostName" xml:space="preserve">
+    <value>First Post</value>
+  </data>
+  <data name="FirstPostDesc" xml:space="preserve">
+    <value>Create your first post</value>
+  </data>
+  <data name="HelpfulMemberName" xml:space="preserve">
+    <value>Helpful Member</value>
+  </data>
+  <data name="HelpfulMemberDesc" xml:space="preserve">
+    <value>Receive 10 helpful votes</value>
+  </data>
+  <data name="ConversationStarterName" xml:space="preserve">
+    <value>Conversation Starter</value>
+  </data>
+  <data name="ConversationStarterDesc" xml:space="preserve">
+    <value>Start 5 discussions</value>
+  </data>
+  <data name="ExpertReviewerName" xml:space="preserve">
+    <value>Expert Reviewer</value>
+  </data>
+  <data name="ExpertReviewerDesc" xml:space="preserve">
+    <value>Write 10 detailed reviews</value>
+  </data>
+  <data name="GuideMasterName" xml:space="preserve">
+    <value>Guide Master</value>
+  </data>
+  <data name="GuideMasterDesc" xml:space="preserve">
+    <value>Create 5 comprehensive guides</value>
+  </data>
+  <data name="SocialButterflyName" xml:space="preserve">
+    <value>Social Butterfly</value>
+  </data>
+  <data name="SocialButterflyDesc" xml:space="preserve">
+    <value>Connect with 20 friends</value>
+  </data>
+  <data name="EventOrganizerName" xml:space="preserve">
+    <value>Event Organizer</value>
+  </data>
+  <data name="EventOrganizerDesc" xml:space="preserve">
+    <value>Host 3 community events</value>
+  </data>
+  <data name="TopContributorName" xml:space="preserve">
+    <value>Top Contributor</value>
+  </data>
+  <data name="TopContributorDesc" xml:space="preserve">
+    <value>Earn 1000 reputation points</value>
+  </data>
+  <data name="EarlyAdopterName" xml:space="preserve">
+    <value>Early Adopter</value>
+  </data>
+  <data name="EarlyAdopterDesc" xml:space="preserve">
+    <value>Join in the first month</value>
+  </data>
+  <data name="VerifiedExpertName" xml:space="preserve">
+    <value>Verified Expert</value>
+  </data>
+  <data name="VerifiedExpertDesc" xml:space="preserve">
+    <value>Get verified by moderators</value>
+  </data>
+  <data name="NewsReporterName" xml:space="preserve">
+    <value>News Reporter</value>
+  </data>
+  <data name="NewsReporterDesc" xml:space="preserve">
+    <value>Share 10 news articles</value>
+  </data>
+  <data name="ProblemSolverName" xml:space="preserve">
+    <value>Problem Solver</value>
+  </data>
+  <data name="ProblemSolverDesc" xml:space="preserve">
+    <value>Answer 20 questions</value>
+  </data>
+  <data name="GettingStartedCat" xml:space="preserve">
+    <value>Getting Started</value>
+  </data>
+  <data name="CommunityCat" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="EngagementCat" xml:space="preserve">
+    <value>Engagement</value>
+  </data>
+  <data name="ContentCat" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="SocialCat" xml:space="preserve">
+    <value>Social</value>
+  </data>
+  <data name="EventsCat" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="AchievementCat" xml:space="preserve">
+    <value>Achievement</value>
+  </data>
+  <data name="SpecialCat" xml:space="preserve">
+    <value>Special</value>
+  </data>
+</root>

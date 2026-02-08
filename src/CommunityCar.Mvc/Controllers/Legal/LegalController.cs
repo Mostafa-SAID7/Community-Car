@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityCar.Mvc.Controllers.Legal;
 
-[Route("Legal")]
+[Route("{culture:alpha}/Legal")]
 public class LegalController : Controller
 {
     [HttpGet("Terms")]

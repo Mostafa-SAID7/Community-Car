@@ -3,10 +3,12 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Feed;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
-namespace CommunityCar.Web.Controllers.Content;
+namespace CommunityCar.Mvc.Controllers.Content;
 
+[Route("{culture:alpha}/[controller]")]
 [Route("[controller]")]
 public class FeedController : Controller
 {
@@ -18,6 +20,7 @@ public class FeedController : Controller
     private readonly IReviewService _reviewService;
     private readonly IGroupService _groupService;
     private readonly ILogger<FeedController> _logger;
+    private readonly IStringLocalizer<FeedController> _localizer;
 
     public FeedController(
         IPostService postService,
@@ -27,7 +30,8 @@ public class FeedController : Controller
         IGuideService guideService,
         IReviewService reviewService,
         IGroupService groupService,
-        ILogger<FeedController> logger)
+        ILogger<FeedController> logger,
+        IStringLocalizer<FeedController> localizer)
     {
         _postService = postService;
         _questionService = questionService;
@@ -37,6 +41,7 @@ public class FeedController : Controller
         _reviewService = reviewService;
         _groupService = groupService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     private Guid? GetCurrentUserId()
@@ -49,8 +54,9 @@ public class FeedController : Controller
         return userId;
     }
 
-    [HttpGet("~/")]
-    [Route("~/")]
+    [HttpGet("/")]
+    [HttpGet("/{culture:alpha}")]
+    [HttpGet("")]
     [AllowAnonymous]
     public async Task<IActionResult> Index(
         FeedItemType? type = null,
@@ -151,7 +157,7 @@ public class FeedController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading feed");
-            TempData["Error"] = "Failed to load feed. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadFeed"];
             return View(new FeedViewModel());
         }
     }
@@ -179,7 +185,7 @@ public class FeedController : Controller
             Content = TruncateContent(post.Content, 200),
             Slug = post.Slug,
             Type = FeedItemType.Post,
-            TypeName = "Post",
+            TypeName = _localizer["Post"].Value,
             TypeIcon = "fa-file-text",
             TypeColor = "primary",
             AuthorId = post.AuthorId,
@@ -194,7 +200,7 @@ public class FeedController : Controller
             CreatedAt = post.CreatedAt,
             TimeAgo = GetTimeAgo(post.CreatedAt),
             ActionUrl = $"/Posts/Details/{post.Slug}",
-            ActionText = "Read More"
+            ActionText = _localizer["ReadMore"].Value
         };
     }
 
@@ -207,7 +213,7 @@ public class FeedController : Controller
             Content = TruncateContent(question.Content, 200),
             Slug = question.Slug ?? string.Empty,
             Type = FeedItemType.Question,
-            TypeName = "Question",
+            TypeName = _localizer["Question"].Value,
             TypeIcon = "fa-question-circle",
             TypeColor = "info",
             AuthorId = question.AuthorId,
@@ -224,7 +230,7 @@ public class FeedController : Controller
             CreatedAt = question.CreatedAt,
             TimeAgo = GetTimeAgo(question.CreatedAt),
             ActionUrl = $"/Questions/Details/{question.Slug}",
-            ActionText = "View Question"
+            ActionText = _localizer["ViewQuestion"].Value
         };
     }
 
@@ -237,7 +243,7 @@ public class FeedController : Controller
             Content = TruncateContent(evt.Description, 200),
             Slug = evt.Slug,
             Type = FeedItemType.Event,
-            TypeName = "Event",
+            TypeName = _localizer["Event"].Value,
             TypeIcon = "fa-calendar",
             TypeColor = "success",
             AuthorId = evt.OrganizerId,
@@ -254,7 +260,7 @@ public class FeedController : Controller
             CreatedAt = evt.CreatedAt,
             TimeAgo = GetTimeAgo(evt.CreatedAt),
             ActionUrl = $"/Events/Details/{evt.Slug}",
-            ActionText = "View Event"
+            ActionText = _localizer["ViewEvent"].Value
         };
     }
 
@@ -267,7 +273,7 @@ public class FeedController : Controller
             Content = TruncateContent(news.Summary, 200),
             Slug = news.Slug,
             Type = FeedItemType.News,
-            TypeName = "News",
+            TypeName = _localizer["News"].Value,
             TypeIcon = "fa-newspaper-o",
             TypeColor = "warning",
             AuthorId = news.AuthorId,
@@ -283,7 +289,7 @@ public class FeedController : Controller
             CreatedAt = news.CreatedAt,
             TimeAgo = GetTimeAgo(news.CreatedAt),
             ActionUrl = $"/News/Details/{news.Slug}",
-            ActionText = "Read Article"
+            ActionText = _localizer["ReadArticle"].Value
         };
     }
 
@@ -296,7 +302,7 @@ public class FeedController : Controller
             Content = TruncateContent(guide.Summary, 200),
             Slug = guide.Slug,
             Type = FeedItemType.Guide,
-            TypeName = "Guide",
+            TypeName = _localizer["Guide"].Value,
             TypeIcon = "fa-book",
             TypeColor = "purple",
             AuthorId = guide.AuthorId,
@@ -312,7 +318,7 @@ public class FeedController : Controller
             CreatedAt = guide.CreatedAt,
             TimeAgo = GetTimeAgo(guide.CreatedAt),
             ActionUrl = $"/Guides/Details/{guide.Slug}",
-            ActionText = "Read Guide"
+            ActionText = _localizer["ReadGuide"].Value
         };
     }
 
@@ -325,7 +331,7 @@ public class FeedController : Controller
             Content = TruncateContent(review.Content, 200),
             Slug = review.Slug,
             Type = FeedItemType.Review,
-            TypeName = "Review",
+            TypeName = _localizer["Review"].Value,
             TypeIcon = "fa-star",
             TypeColor = "danger",
             AuthorId = review.ReviewerId,
@@ -341,7 +347,7 @@ public class FeedController : Controller
             CreatedAt = review.CreatedAt,
             TimeAgo = GetTimeAgo(review.CreatedAt),
             ActionUrl = $"/Reviews/Details/{review.Slug}",
-            ActionText = "Read Review"
+            ActionText = _localizer["ReadReview"].Value
         };
     }
 
@@ -354,7 +360,7 @@ public class FeedController : Controller
             Content = TruncateContent(group.Description, 200),
             Slug = group.Slug ?? string.Empty,
             Type = FeedItemType.Group,
-            TypeName = "Group",
+            TypeName = _localizer["Group"].Value,
             TypeIcon = "fa-users",
             TypeColor = "info",
             AuthorId = group.CreatorId,
@@ -371,7 +377,7 @@ public class FeedController : Controller
             CreatedAt = group.CreatedAt,
             TimeAgo = GetTimeAgo(group.CreatedAt),
             ActionUrl = $"/Groups/Details/{group.Slug}",
-            ActionText = "View Group"
+            ActionText = _localizer["ViewGroup"].Value
         };
     }
 
@@ -417,13 +423,13 @@ public class FeedController : Controller
     {
         var timeSpan = DateTimeOffset.UtcNow - date;
         
-        if (timeSpan.TotalMinutes < 1) return "just now";
-        if (timeSpan.TotalMinutes < 60) return $"{(int)timeSpan.TotalMinutes}m ago";
-        if (timeSpan.TotalHours < 24) return $"{(int)timeSpan.TotalHours}h ago";
-        if (timeSpan.TotalDays < 7) return $"{(int)timeSpan.TotalDays}d ago";
-        if (timeSpan.TotalDays < 30) return $"{(int)(timeSpan.TotalDays / 7)}w ago";
-        if (timeSpan.TotalDays < 365) return $"{(int)(timeSpan.TotalDays / 30)}mo ago";
+        if (timeSpan.TotalMinutes < 1) return _localizer["JustNow"].Value;
+        if (timeSpan.TotalMinutes < 60) return string.Format(_localizer["MinutesAgo"].Value, (int)timeSpan.TotalMinutes);
+        if (timeSpan.TotalHours < 24) return string.Format(_localizer["HoursAgo"].Value, (int)timeSpan.TotalHours);
+        if (timeSpan.TotalDays < 7) return string.Format(_localizer["DaysAgo"].Value, (int)timeSpan.TotalDays);
+        if (timeSpan.TotalDays < 30) return string.Format(_localizer["WeeksAgo"].Value, (int)(timeSpan.TotalDays / 7));
+        if (timeSpan.TotalDays < 365) return string.Format(_localizer["MonthsAgo"].Value, (int)(timeSpan.TotalDays / 30));
         
-        return $"{(int)(timeSpan.TotalDays / 365)}y ago";
+        return string.Format(_localizer["YearsAgo"].Value, (int)(timeSpan.TotalDays / 365));
     }
 }

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PageTitle" xml:space="preserve">
+    <value>إدارة الترجمة</value>
+  </data>
+  <data name="AddTranslation" xml:space="preserve">
+    <value>إضافة ترجمة</value>
+  </data>
+  <data name="BulkImport" xml:space="preserve">
+    <value>استيراد جماعي</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>تصدير</value>
+  </data>
+  <data name="SyncToFiles" xml:space="preserve">
+    <value>مزامنة مع الملفات</value>
+  </data>
+  <data name="TotalKeys" xml:space="preserve">
+    <value>إجمالي المفاتيح</value>
+  </data>
+  <data name="TotalTranslations" xml:space="preserve">
+    <value>إجمالي الترجمات</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>مفقود</value>
+  </data>
+  <data name="Completion" xml:space="preserve">
+    <value>نسبة الإنجاز</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>المفتاح</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>الفئة</value>
+  </data>
+  <data name="Culture" xml:space="preserve">
+    <value>اللغة/الثقافة</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>جميع الفئات</value>
+  </data>
+  <data name="AllCultures" xml:space="preserve">
+    <value>جميع اللغات</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشيط</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>غير نشيط</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>تصفية</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>الإحصائيات</value>
+  </data>
+  <data name="MissingTranslations" xml:space="preserve">
+    <value>التراجم المفقودة</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>القيمة</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>آخر تعديل</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>أبداً</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>هل أنت متأكد أنك تريد حذف هذا المورد؟</value>
+  </data>
+  <data name="NoResourcesFound" xml:space="preserve">
+    <value>لم يتم العثور على موارد ترجمة.</value>
+  </data>
+  <data name="AddFirstTranslation" xml:space="preserve">
+    <value>إضافة أول ترجمة</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>السابق</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+</root>

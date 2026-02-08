@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PageTitle" xml:space="preserve">
+    <value>سجلات التدقيق</value>
+  </data>
+  <data name="TrackDescription" xml:space="preserve">
+    <value>تتبع ومراقبة جميع أنشطة وتغييرات النظام</value>
+  </data>
+  <data name="TotalLogs" xml:space="preserve">
+    <value>إجمالي السجلات</value>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>الفلاتر</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="AllEntities" xml:space="preserve">
+    <value>جميع الكيانات</value>
+  </data>
+  <data name="AllActions" xml:space="preserve">
+    <value>جميع الإجراءات</value>
+  </data>
+  <data name="FilterButton" xml:space="preserve">
+    <value>تصفية</value>
+  </data>
+  <data name="ClearButton" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>تصدير CSV</value>
+  </data>
+  <data name="AuditLogEntries" xml:space="preserve">
+    <value>مدخلات سجل التدقيق</value>
+  </data>
+  <data name="Timestamp" xml:space="preserve">
+    <value>الطابع الزمني</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>الإجراء</value>
+  </data>
+  <data name="Entity" xml:space="preserve">
+    <value>الكيان</value>
+  </data>
+  <data name="EntityID" xml:space="preserve">
+    <value>معرف الكيان</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>الوصف</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>السابق</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+  <data name="ShowingEntries" xml:space="preserve">
+    <value>عرض {0} إلى {1} من أصل {2} مدخلات</value>
+  </data>
+  <data name="NoLogsFound" xml:space="preserve">
+    <value>لم يتم العثور على سجلات تدقيق تطابق معاييرك.</value>
+  </data>
+</root>

@@ -7,7 +7,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.health;
 
 [Area("Dashboard")]
 [Route("Dashboard/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "SuperAdmin,Admin")]
 public class HealthController : Controller
 {
     private readonly IHealthService _healthService;

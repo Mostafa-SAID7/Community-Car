@@ -4,6 +4,7 @@ using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
 
@@ -13,11 +14,16 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
 public class AuditLogsController : Controller
 {
     private readonly IAuditLogService _auditLogService;
+    private readonly IStringLocalizer<AuditLogsController> _localizer;
     private readonly ILogger<AuditLogsController> _logger;
 
-    public AuditLogsController(IAuditLogService auditLogService, ILogger<AuditLogsController> logger)
+    public AuditLogsController(
+        IAuditLogService auditLogService, 
+        IStringLocalizer<AuditLogsController> localizer,
+        ILogger<AuditLogsController> logger)
     {
         _auditLogService = auditLogService;
+        _localizer = localizer;
         _logger = logger;
     }
 
@@ -82,7 +88,7 @@ public class AuditLogsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading audit logs");
-            TempData["Error"] = "Failed to load audit logs. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadLogs"].Value;
             return View(new AuditLogIndexViewModel());
         }
     }
@@ -96,7 +102,7 @@ public class AuditLogsController : Controller
             
             if (auditLog == null)
             {
-                TempData["Error"] = "Audit log not found.";
+                TempData["Error"] = _localizer["LogNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -140,7 +146,7 @@ public class AuditLogsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading audit log details for {Id}", id);
-            TempData["Error"] = "Failed to load audit log details.";
+            TempData["Error"] = _localizer["FailedToLoadDetails"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -176,7 +182,7 @@ public class AuditLogsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error exporting audit logs");
-            TempData["Error"] = "Failed to export audit logs.";
+            TempData["Error"] = _localizer["FailedToExport"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

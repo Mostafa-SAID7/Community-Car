@@ -5,11 +5,12 @@ using CommunityCar.Domain.Interfaces.Communications;
 using CommunityCar.Domain.Interfaces.Community;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Web.Controllers.Communications;
 
-[Route("chat")]
+[Route("{culture:alpha}/Chats")]
 [Authorize]
 public class ChatsController : Controller
 {
@@ -17,17 +18,20 @@ public class ChatsController : Controller
     private readonly ICurrentUserService _currentUserService;
     private readonly IFriendshipService _friendshipService;
     private readonly ILogger<ChatsController> _logger;
+    private readonly IStringLocalizer<ChatsController> _localizer;
 
     public ChatsController(
         IChatService chatService,
         ICurrentUserService currentUserService,
         IFriendshipService friendshipService,
-        ILogger<ChatsController> logger)
+        ILogger<ChatsController> logger,
+        IStringLocalizer<ChatsController> localizer)
     {
         _chatService = chatService;
         _currentUserService = currentUserService;
         _friendshipService = friendshipService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Chats
@@ -48,7 +52,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading chat conversations");
-            TempData["Error"] = "Failed to load conversations";
+            TempData["Error"] = _localizer["FailedToLoadConversations"];
             return View(new List<ChatConversationDto>());
         }
     }
@@ -63,7 +67,7 @@ public class ChatsController : Controller
 
             if (userId == currentUserId)
             {
-                TempData["Error"] = "Cannot chat with yourself";
+                TempData["Error"] = _localizer["CannotChatWithSelf"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -71,7 +75,7 @@ public class ChatsController : Controller
             var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId, userId);
             if (friendshipStatus != FriendshipStatus.Accepted)
             {
-                TempData["Error"] = "You can only chat with accepted friends";
+                TempData["Error"] = _localizer["OnlyAcceptedFriendsCanChat"];
                 return RedirectToAction("Index", "Friends");
             }
 
@@ -89,7 +93,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading conversation with user {UserId}", userId);
-            TempData["Error"] = "Failed to load conversation";
+            TempData["Error"] = _localizer["FailedToLoadConversation"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -103,7 +107,7 @@ public class ChatsController : Controller
         {
             if (!ModelState.IsValid)
             {
-                return Json(new { success = false, message = "Invalid message data" });
+                return Json(new { success = false, message = _localizer["InvalidMessageData"].Value });
             }
 
             var senderId = GetCurrentUserId();
@@ -114,7 +118,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error sending message");
-            return Json(new { success = false, message = "Failed to send message" });
+            return Json(new { success = false, message = _localizer["FailedToSendMessage"].Value });
         }
     }
 
@@ -132,7 +136,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting messages");
-            return Json(new { success = false, message = "Failed to load messages" });
+            return Json(new { success = false, message = _localizer["FailedToLoadMessages"].Value });
         }
     }
 
@@ -184,15 +188,15 @@ public class ChatsController : Controller
 
             if (result)
             {
-                return Json(new { success = true, message = "Message deleted successfully" });
+                return Json(new { success = true, message = _localizer["MessageDeleted"].Value });
             }
 
-            return Json(new { success = false, message = "Failed to delete message" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteMessage"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting message");
-            return Json(new { success = false, message = "Failed to delete message" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteMessage"].Value });
         }
     }
 
@@ -220,7 +224,7 @@ public class ChatsController : Controller
 
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            throw new UnauthorizedAccessException(_localizer["UserNotAuthenticated"]);
         }
 
         return userId;

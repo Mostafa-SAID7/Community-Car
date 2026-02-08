@@ -78,7 +78,7 @@
                             }
                             
                             <div class="friend-info">
-                                <a href="/Identity/Profiles/@request.Slug" class="friend-name">
+                                <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = request.Slug })" class="friend-name">
                                     @request.UserName
                                 </a>
                                 <div class="friend-meta">

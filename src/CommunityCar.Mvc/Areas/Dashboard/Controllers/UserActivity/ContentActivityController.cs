@@ -7,6 +7,7 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.UserActivity;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/[controller]")]
 public class ContentActivityController : Controller
 {
     private readonly ILogger<ContentActivityController> _logger;

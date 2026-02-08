@@ -18,19 +18,19 @@
         </div>
 
         <!-- Center: Pill Navigation (Desktop Only) -->
-        <div class="header-center d-none d-md-flex align-items-center justify-content-center flex-grow-1">
+        <div class="header-center  d-md-flex align-items-center justify-content-center flex-grow-1">
             <div class="header-pill d-flex align-items-center">
                 
                    <!-- Nav Links -->
                 <nav class="pill-nav d-flex align-items-center gap-1">
-                    <a asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="Home">
+                    <a asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="@Localizer["Home"].Value">
                         <i class="fas fa-house fa-lg"></i>
                     </a>
-                    <a asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="Chat">
+                    <a asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Chat"].Value">
                         <i class="fas fa-messages fa-lg"></i>
                         <span id="chatUnreadBadge" class="notification-badge badge-xs bg-primary-premium d-none">0</span>
                     </a>
-                    <a asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="Friends">
+                    <a asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Friends"].Value">
                         <i class="fas fa-user-group fa-lg"></i>
                         <span id="friendRequestBadge" class="notification-badge badge-xs bg-success-premium d-none">0</span>
                     </a>
@@ -38,8 +38,19 @@
 
                 <!-- Search -->
                 <div class="pill-search position-relative">
-                    <i class="fas fa-magnifying-glass search-icon"></i>
-                    <input type="text" class="form-control border-0 bg-transparent shadow-none" placeholder="@Localizer["Search..."]" aria-label="Search">
+                    <form asp-controller="Search" asp-action="Index" method="get" class="d-flex align-items-center w-100">
+                        <i class="fas fa-magnifying-glass search-icon"></i>
+                        <input type="text" name="query" id="globalSearchInput" 
+                               class="form-control border-0 bg-transparent shadow-none" 
+                               placeholder="@Localizer["Search..."].Value" 
+                               aria-label="Search" 
+                               autocomplete="off"
+                               data-see-all-label="@Localizer["See all results for"].Value"
+                               data-no-results-label="@Localizer["No results found"].Value">
+                    </form>
+                    <div id="liveSearchResults" class="live-search-results d-none shadow-premium mt-1 rounded-4">
+                        <!-- Live results will be injected here -->
+                    </div>
                 </div>
                 
             </div>
@@ -49,21 +60,21 @@
         <div class="header-right d-flex align-items-center gap-2 gap-md-3">
             
             <!-- Quick Create -->
-            <a asp-controller="Questions" asp-action="Create" class="btn btn-icon text-primary p-1" title="Ask Question">
+            <a asp-controller="Questions" asp-action="Create" class="btn btn-icon text-primary p-1" title="@Localizer["Ask Question"].Value">
                 <i class="fas fa-circle-plus fa-lg"></i>
             </a>
 
             <!-- Admin Dashboard Link -->
             @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
             {
-                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-icon text-danger p-1" title="Admin Dashboard">
+                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-icon text-danger p-1" title="@Localizer["Admin Dashboard"].Value">
                     <i class="fas fa-gauge-high fa-lg"></i>
                 </a>
             }
 
             <!-- Notifications -->
             <div class="dropdown me-1">
-                <button class="btn btn-icon p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <button class="btn btn-icon p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["Notifications"].Value">
                     <i class="fas fa-bell fa-lg"></i>
                     <span id="notificationBadge" class="notification-badge badge-xs bg-danger d-none">
                         0
@@ -71,34 +82,42 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-320 shadow-lg border-0 mt-2 p-0" aria-labelledby="notificationDropdown">
                     <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-tertiary rounded-top">
-                        <h6 class="mb-0 fw-bold">Notifications</h6>
-                        <a href="javascript:void(0)" onclick="markAllNotificationsAsRead()" class="text-xs text-primary text-decoration-none">Mark all as read</a>
+                        <h6 class="mb-0 fw-bold">@Localizer["Notifications"].Value</h6>
+                        <a href="javascript:void(0)" onclick="markAllNotificationsAsRead()" class="text-xs text-primary text-decoration-none">@Localizer["Mark all as read"].Value</a>
                     </div>
                     <div id="notificationList" class="notification-list">
                         <!-- Notifications will be loaded here via AJAX -->
                         <div class="p-4 text-center text-muted">
                             <i class="fas fa-bell-slash fa-2x mb-2 opacity-25"></i>
-                            <p class="mb-0 small">No new notifications</p>
+                            <p class="mb-0 small">@Localizer["No new notifications"].Value</p>
                         </div>
                     </div>
                     <a asp-area="Communications" asp-controller="Notifications" asp-action="Index" class="dropdown-item text-center p-2 border-top small fw-bold text-primary rounded-bottom">
-                        View All Notifications
+                        @Localizer["View All Notifications"].Value
                     </a>
                 </div>
             </div>
             <!-- Language Toggle -->
-            <button class="btn btn-icon btn-sm text-secondary rounded-circle me-1" title="Switch Language">
-                <i class="fas fa-language fa-lg"></i>
-            </button>
+            @{
+                var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                var targetCulture = currentCulture == "en" ? "ar" : "en";
+            }
+            <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
+                <input type="hidden" name="culture" value="@targetCulture" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                <button type="submit" class="btn btn-icon btn-sm text-secondary rounded-circle me-1" title="@(currentCulture == "en" ? Localizer["Switch to Arabic"].Value : Localizer["التغيير إلى الإنجليزية"].Value)">
+                    <i class="fas fa-language fa-lg"></i>
+                </button>
+            </form>
 
             <!-- Theme Toggle -->
-            <button class="theme-toggle-icon btn btn-icon rounded-circle" aria-label="Toggle theme" title="Toggle Theme">
+            <button class="theme-toggle-icon btn btn-icon rounded-circle" aria-label="@Localizer["Toggle theme"].Value" title="@Localizer["Toggle Theme"].Value">
                 <i class="fas fa-moon theme-icon-moon"></i>
                 <i class="fas fa-sun theme-icon-sun"></i>
             </button>
 
             <!-- Badges/Awards -->
-            <a asp-controller="Badges" asp-action="Index" class="btn btn-icon p-1" title="Badges & Achievements">
+            <a asp-controller="Badges" asp-action="Index" class="btn btn-icon p-1" title="@Localizer["Badges & Achievements"].Value">
                 <i class="fas fa-trophy fa-lg"></i>
             </a>
             
@@ -108,20 +127,20 @@
                     <img src="https://ui-avatars.com/api/?name=User&background=random" alt="mdo" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
-                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Index">Profile</a></li>
-                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Settings">Settings</a></li>
+                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Index">@Localizer["Profile"].Value</a></li>
+                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Settings">@Localizer["Settings"].Value</a></li>
                     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                     {
                         <li>
                             <a class="dropdown-item text-danger" asp-area="Dashboard" asp-controller="Overview" asp-action="Index">
-                                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                                <i class="fas fa-tachometer-alt me-2"></i>@Localizer["Admin Dashboard"].Value
                             </a>
                         </li>
                     }
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form class="form-inline" asp-area="Identity" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Feed", new { area = "" })" method="post">
-                            <button type="submit" class="dropdown-item text-danger">Sign out</button>
+                            <button type="submit" class="dropdown-item text-danger">@Localizer["Sign out"].Value</button>
                         </form>
                     </li>
                 </ul>

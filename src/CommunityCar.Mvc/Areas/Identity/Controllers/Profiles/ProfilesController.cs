@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CommunityCar.Web.Areas.Identity.Controllers.Profiles;
+namespace CommunityCar.Mvc.Areas.Identity.Controllers.Profiles;
 
 [Area("Identity")]
-[Route("Identity/[controller]")]
+[Route("{culture}/Identity/[controller]")]
 public class ProfilesController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;

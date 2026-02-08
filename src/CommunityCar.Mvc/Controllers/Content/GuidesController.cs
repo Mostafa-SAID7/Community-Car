@@ -4,25 +4,29 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Guides;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Content;
 
-[Route("Guides")]
+[Route("{culture:alpha}/Guides")]
 public class GuidesController : Controller
 {
     private readonly IGuideService _guideService;
     private readonly IFriendshipService _friendshipService;
     private readonly ILogger<GuidesController> _logger;
+    private readonly IStringLocalizer<GuidesController> _localizer;
 
     public GuidesController(
         IGuideService guideService,
         IFriendshipService friendshipService,
-        ILogger<GuidesController> logger)
+        ILogger<GuidesController> logger,
+        IStringLocalizer<GuidesController> localizer)
     {
         _guideService = guideService;
         _friendshipService = friendshipService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Guides
@@ -55,7 +59,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guides");
-            TempData["Error"] = "Failed to load guides";
+            TempData["Error"] = _localizer["FailedToLoadGuides"];
             return View(new PagedResult<Domain.DTOs.Community.GuideDto>(
                 new List<Domain.DTOs.Community.GuideDto>(), 0, page, pageSize));
         }
@@ -73,7 +77,7 @@ public class GuidesController : Controller
 
             if (guideDto == null)
             {
-                TempData["Error"] = "Guide not found";
+                TempData["Error"] = _localizer["GuideNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -101,7 +105,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guide {Slug}", slug);
-            TempData["Error"] = "Failed to load guide";
+            TempData["Error"] = _localizer["FailedToLoadGuide"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -142,13 +146,13 @@ public class GuidesController : Controller
                 model.Difficulty,
                 model.EstimatedTimeMinutes);
 
-            TempData["Success"] = "Guide created successfully";
+            TempData["Success"] = _localizer["GuideCreated"];
             return RedirectToAction(nameof(Details), new { slug = guide.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating guide");
-            ModelState.AddModelError("", "Failed to create guide");
+            ModelState.AddModelError("", _localizer["FailedToCreateGuide"]);
             ViewBag.Difficulties = Enum.GetValues<GuideDifficulty>();
             ViewBag.Categories = await _guideService.GetCategoriesAsync();
             return View(model);
@@ -167,13 +171,13 @@ public class GuidesController : Controller
 
             if (guideDto == null)
             {
-                TempData["Error"] = "Guide not found";
+                TempData["Error"] = _localizer["GuideNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
             if (!guideDto.IsAuthor)
             {
-                TempData["Error"] = "You can only edit your own guides";
+                TempData["Error"] = _localizer["OnlyAuthorCanEditGuide"];
                 return RedirectToAction(nameof(Details), new { slug = guideDto.Slug });
             }
 
@@ -198,7 +202,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading guide for edit {GuideId}", id);
-            TempData["Error"] = "Failed to load guide";
+            TempData["Error"] = _localizer["FailedToLoadGuide"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -230,13 +234,13 @@ public class GuidesController : Controller
                 model.Difficulty,
                 model.EstimatedTimeMinutes);
 
-            TempData["Success"] = "Guide updated successfully";
+            TempData["Success"] = _localizer["GuideUpdated"];
             return RedirectToAction(nameof(Details), new { slug = guide.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating guide {GuideId}", id);
-            ModelState.AddModelError("", "Failed to update guide");
+            ModelState.AddModelError("", _localizer["FailedToUpdateGuide"]);
             ViewBag.Difficulties = Enum.GetValues<GuideDifficulty>();
             ViewBag.Categories = await _guideService.GetCategoriesAsync();
             return View(model);
@@ -252,12 +256,12 @@ public class GuidesController : Controller
         try
         {
             await _guideService.DeleteGuideAsync(id);
-            return Json(new { success = true, message = "Guide deleted successfully" });
+            return Json(new { success = true, message = _localizer["GuideDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting guide {GuideId}", id);
-            return Json(new { success = false, message = "Failed to delete guide" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteGuide"].Value });
         }
     }
 
@@ -269,12 +273,12 @@ public class GuidesController : Controller
         try
         {
             await _guideService.PublishGuideAsync(id);
-            return Json(new { success = true, message = "Guide published successfully" });
+            return Json(new { success = true, message = _localizer["GuidePublished"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error publishing guide {GuideId}", id);
-            return Json(new { success = false, message = "Failed to publish guide" });
+            return Json(new { success = false, message = _localizer["FailedToPublishGuide"].Value });
         }
     }
 
@@ -286,12 +290,12 @@ public class GuidesController : Controller
         try
         {
             await _guideService.ArchiveGuideAsync(id);
-            return Json(new { success = true, message = "Guide archived successfully" });
+            return Json(new { success = true, message = _localizer["GuideArchived"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error archiving guide {GuideId}", id);
-            return Json(new { success = false, message = "Failed to archive guide" });
+            return Json(new { success = false, message = _localizer["FailedToArchiveGuide"].Value });
         }
     }
 
@@ -305,12 +309,12 @@ public class GuidesController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _guideService.ToggleLikeAsync(id, userId);
 
-            return Json(new { success = true, message = "Like toggled successfully" });
+            return Json(new { success = true, message = _localizer["LikeToggled"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error toggling like for guide {GuideId}", id);
-            return Json(new { success = false, message = "Failed to toggle like" });
+            return Json(new { success = false, message = _localizer["FailedToToggleLike"].Value });
         }
     }
 
@@ -324,12 +328,12 @@ public class GuidesController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _guideService.ToggleBookmarkAsync(id, userId);
 
-            return Json(new { success = true, message = "Bookmark toggled successfully" });
+            return Json(new { success = true, message = _localizer["BookmarkToggled"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error toggling bookmark for guide {GuideId}", id);
-            return Json(new { success = false, message = "Failed to toggle bookmark" });
+            return Json(new { success = false, message = _localizer["FailedToToggleBookmark"].Value });
         }
     }
 
@@ -349,7 +353,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user guides");
-            TempData["Error"] = "Failed to load your guides";
+            TempData["Error"] = _localizer["FailedToLoadMyGuides"];
             return RedirectToAction(nameof(Index));
         }
     }

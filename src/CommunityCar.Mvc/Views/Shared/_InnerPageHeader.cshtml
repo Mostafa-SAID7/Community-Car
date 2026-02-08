@@ -1,17 +1,19 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    string title = ViewData["HeaderTitle"]?.ToString() ?? ViewData["Title"]?.ToString() ?? "Page";
-    string description = ViewData["HeaderDescription"]?.ToString() ?? "";
+    var title = ViewData["HeaderTitle"] ?? ViewData["Title"] ?? Localizer["Page"];
+    var description = ViewData["HeaderDescription"] ?? "";
     string iconClass = ViewData["HeaderIcon"]?.ToString() ?? "fas fa-info-circle";
     var actions = ViewData["HeaderActions"] as Microsoft.AspNetCore.Html.IHtmlContent;
 }
 
-<div class="qa-header">
+<div class="inner-page-header">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h1 class="mb-2 fw-bold">
                 <i class="@iconClass me-2"></i>@title
             </h1>
-            @if (!string.IsNullOrEmpty(description))
+            @if (description != null && !string.IsNullOrEmpty(description.ToString()))
             {
                 <p class="mb-0 opacity-90">@description</p>
             }

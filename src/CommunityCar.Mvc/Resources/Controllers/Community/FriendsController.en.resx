@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Friends</value>
+  </data>
+  <data name="MyFriends" xml:space="preserve">
+    <value>My Friends</value>
+  </data>
+  <data name="FriendRequests" xml:space="preserve">
+    <value>Friend Requests</value>
+  </data>
+  <data name="SendRequest" xml:space="preserve">
+    <value>Send Friend Request</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="Block" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="NoFriends" xml:space="preserve">
+    <value>You don't have any friends yet</value>
+  </data>
+  <data name="NoRequests" xml:space="preserve">
+    <value>No pending friend requests</value>
+  </data>
+  <data name="FailedToLoadFriendsList" xml:space="preserve">
+    <value>Failed to load friends list. Please try again.</value>
+  </data>
+  <data name="FailedToLoadFriendRequests" xml:space="preserve">
+    <value>Failed to load friend requests. Please try again.</value>
+  </data>
+  <data name="CannotSendRequestToSelf" xml:space="preserve">
+    <value>You cannot send a friend request to yourself.</value>
+  </data>
+  <data name="FriendRequestSent" xml:space="preserve">
+    <value>Friend request sent successfully.</value>
+  </data>
+  <data name="FailedToSendRequest" xml:space="preserve">
+    <value>Failed to send friend request. Please try again.</value>
+  </data>
+  <data name="RequestAccepted" xml:space="preserve">
+    <value>Friend request accepted successfully.</value>
+  </data>
+  <data name="FailedToAcceptRequest" xml:space="preserve">
+    <value>Failed to accept friend request. Please try again.</value>
+  </data>
+  <data name="RequestRejected" xml:space="preserve">
+    <value>Friend request rejected.</value>
+  </data>
+  <data name="FailedToRejectRequest" xml:space="preserve">
+    <value>Failed to reject friend request. Please try again.</value>
+  </data>
+  <data name="FriendRemoved" xml:space="preserve">
+    <value>Friend removed successfully.</value>
+  </data>
+  <data name="FailedToRemoveFriend" xml:space="preserve">
+    <value>Failed to remove friend. Please try again.</value>
+  </data>
+  <data name="CannotBlockSelf" xml:space="preserve">
+    <value>You cannot block yourself.</value>
+  </data>
+  <data name="UserBlocked" xml:space="preserve">
+    <value>User blocked successfully.</value>
+  </data>
+  <data name="FailedToBlockUser" xml:space="preserve">
+    <value>Failed to block user. Please try again.</value>
+  </data>
+  <data name="FailedToGetStatus" xml:space="preserve">
+    <value>Failed to get friendship status.</value>
+  </data>
+  <data name="FailedToSearchUsers" xml:space="preserve">
+    <value>Failed to search users. Please try again.</value>
+  </data>
+  <data name="FailedToLoadSuggestions" xml:space="preserve">
+    <value>Failed to load suggestions. Please try again.</value>
+  </data>
+  <data name="FailedToLoadBlockedUsers" xml:space="preserve">
+    <value>Failed to load blocked users. Please try again.</value>
+  </data>
+  <data name="UserUnblocked" xml:space="preserve">
+    <value>User unblocked successfully.</value>
+  </data>
+  <data name="FailedToUnblockUser" xml:space="preserve">
+    <value>Failed to unblock user. Please try again.</value>
+  </data>
+</root>

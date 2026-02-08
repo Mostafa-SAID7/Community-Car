@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityCar.Mvc.Controllers.Support;
 
-[Route("Support")]
+[Route("{culture:alpha}/Support")]
 public class SupportController : Controller
 {
     [HttpGet("")]

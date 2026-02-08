@@ -94,7 +94,7 @@
             <div class="card shadow-sm border-0 rounded-4 mb-5">
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-5 pb-4 border-bottom">
-                        <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                        <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle me-3" style="width: 50px; height: 50px;">
                         <div>
                             <h6 class="mb-0 fw-bold">@guide.AuthorName</h6>
                             <p class="text-muted small mb-0">Contributor • @guide.CreatedAt.ToString("MMM dd, yyyy")</p>
@@ -196,12 +196,12 @@
             <!-- Author Bio -->
             <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
                 <div class="card-body p-4 text-center">
-                    <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle mb-3 shadow-sm border border-3 border-white" style="width: 80px; height: 80px;">
+                    <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle mb-3 shadow-sm border border-3 border-white" style="width: 80px; height: 80px;">
                     <h6 class="fw-bold mb-1">Written by @guide.AuthorName</h6>
                     <p class="small text-muted mb-3">Professional Mechanic & Enthusiast</p>
                     
                     <div class="d-flex flex-column gap-2">
-                        <a href="/Identity/Profiles/@guide.AuthorId" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
+                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = guide.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
                         
                         @if (currentUserId.HasValue && !guide.IsAuthor)
                         {

@@ -6,25 +6,28 @@ using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.localization;
+namespace CommunityCar.Web.Areas.Dashboard.Controllers.Localization;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/Localization")]
 public class LocalizationController : Controller
 {
     private readonly ILocalizationService _localizationService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IStringLocalizer<LocalizationController> _localizer;
     private readonly ILogger<LocalizationController> _logger;
 
     public LocalizationController(
         ILocalizationService localizationService,
         ICurrentUserService currentUserService,
+        IStringLocalizer<LocalizationController> localizer,
         ILogger<LocalizationController> logger)
     {
         _localizationService = localizationService;
         _currentUserService = currentUserService;
+        _localizer = localizer;
         _logger = logger;
     }
 
@@ -40,9 +43,9 @@ public class LocalizationController : Controller
     {
         try
         {
-            var filter = new LocalizationResourceFilterDto
+            var filter = new LocalizationFilterDto
             {
-                Culture = culture,
+                CultureCode = culture,
                 Category = category,
                 SearchTerm = searchTerm,
                 IsActive = isActive,
@@ -87,7 +90,7 @@ public class LocalizationController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading localization resources");
-            TempData["Error"] = "Failed to load localization resources. Please try again.";
+            TempData["Error"] = _localizer["FailedToLoadResources"].Value;
             return View(new LocalizationIndexViewModel());
         }
     }
@@ -101,11 +104,11 @@ public class LocalizationController : Controller
 
             if (resource == null)
             {
-                TempData["Error"] = "Localization resource not found.";
+                TempData["Error"] = _localizer["ResourceNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
-            var relatedTranslations = await _localizationService.GetResourcesAsync(new LocalizationResourceFilterDto
+            var relatedTranslations = await _localizationService.GetResourcesAsync(new LocalizationFilterDto
             {
                 SearchTerm = resource.Key,
                 Page = 1,
@@ -123,7 +126,7 @@ public class LocalizationController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading localization resource details for {Id}", id);
-            TempData["Error"] = "Failed to load resource details.";
+            TempData["Error"] = _localizer["FailedToLoadDetails"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -169,7 +172,7 @@ public class LocalizationController : Controller
 
             var resource = await _localizationService.CreateResourceAsync(dto);
 
-            TempData["Success"] = $"Localization resource '{resource.Key}' created successfully.";
+            TempData["Success"] = string.Format(_localizer["ResourceCreated"].Value, resource.Key);
             return RedirectToAction(nameof(Details), new { id = resource.Id });
         }
         catch (Exception ex)
@@ -218,7 +221,7 @@ public class LocalizationController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading edit form for {Id}", id);
-            TempData["Error"] = "Failed to load resource.";
+            TempData["Error"] = _localizer["FailedToLoadResource"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -252,7 +255,7 @@ public class LocalizationController : Controller
 
             await _localizationService.UpdateResourceAsync(dto);
 
-            TempData["Success"] = "Localization resource updated successfully.";
+            TempData["Success"] = _localizer["ResourceUpdated"].Value;
             return RedirectToAction(nameof(Details), new { id });
         }
         catch (Exception ex)
@@ -275,13 +278,13 @@ public class LocalizationController : Controller
         {
             await _localizationService.DeleteResourceAsync(id);
 
-            TempData["Success"] = "Localization resource deleted successfully.";
+            TempData["Success"] = _localizer["ResourceDeleted"].Value;
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting localization resource {Id}", id);
-            TempData["Error"] = "Failed to delete resource.";
+            TempData["Error"] = _localizer["FailedToDelete"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -329,14 +332,14 @@ public class LocalizationController : Controller
 
             var dto = new BulkImportDto
             {
-                Culture = model.Culture,
+                CultureCode = model.Culture,
                 Translations = translations,
                 OverwriteExisting = model.OverwriteExisting
             };
 
-            var importedCount = await _localizationService.BulkImportAsync(dto, userId, userName);
+            var importedCount = await _localizationService.BulkImportAsync(dto);
 
-            TempData["Success"] = $"Successfully imported {importedCount} translations.";
+            TempData["Success"] = string.Format(_localizer["BulkImportSuccess"].Value, importedCount);
             return RedirectToAction(nameof(Index), new { culture = model.Culture });
         }
         catch (Exception ex)
@@ -411,7 +414,7 @@ public class LocalizationController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error exporting translations");
-            TempData["Error"] = "Failed to export translations.";
+            TempData["Error"] = _localizer["FailedToExport"].Value;
 
             var cultures = await _localizationService.GetAvailableCulturesAsync();
             var categories = await _localizationService.GetAvailableCategoriesAsync();
@@ -448,16 +451,12 @@ public class LocalizationController : Controller
 
         try
         {
-            var userId = _currentUserService.UserId ?? Guid.Empty;
-            var userName = _currentUserService.UserName ?? "System";
-
             var syncedCount = await _localizationService.SyncMissingKeysAsync(
                 model.SourceCulture,
                 model.TargetCulture,
-                userId,
-                userName);
+                model.OverwriteExisting);
 
-            TempData["Success"] = $"Successfully synced {syncedCount} missing translations from {model.SourceCulture} to {model.TargetCulture}.";
+            TempData["Success"] = string.Format(_localizer["SyncSuccess"].Value, syncedCount, model.SourceCulture, model.TargetCulture);
             return RedirectToAction(nameof(Index), new { culture = model.TargetCulture });
         }
         catch (Exception ex)
@@ -472,18 +471,51 @@ public class LocalizationController : Controller
         }
     }
 
-    [HttpGet("Missing/{culture}")]
-    public async Task<IActionResult> Missing(string culture)
+    [HttpPost("SyncToFiles")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SyncToFiles()
     {
         try
         {
-            var missingTranslations = await _localizationService.GetMissingTranslationsAsync(culture);
+            await _localizationService.SyncToJsonFilesAsync();
+            TempData["Success"] = _localizer["SyncToFilesSuccess"].Value;
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error syncing translations to files");
+            TempData["Error"] = _localizer["SyncToFilesFailed"].Value;
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpGet("MissingTranslations")]
+    public async Task<IActionResult> MissingTranslations(string? culture)
+    {
+        try
+        {
+            var targetCulture = culture ?? "es"; // Default to Spanish or let user choose? 
+            // Better: If culture is null, show a selection view or default to first non-en culture
+            
+            if (string.IsNullOrEmpty(culture))
+            {
+                var cultures = await _localizationService.GetAvailableCulturesAsync();
+                targetCulture = cultures.FirstOrDefault(c => c != "en") ?? "ar";
+            }
+
+            var defaultCulture = "en";
+            var missingResources = await _localizationService.GetMissingTranslationsAsync(defaultCulture, targetCulture);
+            
+            // Group by category for the view model
+            var missingByCategory = missingResources
+                .GroupBy(r => r.Category)
+                .ToDictionary(g => g.Key, g => g.Select(r => r.Key).ToList());
 
             var viewModel = new MissingTranslationsViewModel
             {
-                Culture = culture,
-                MissingByCategory = missingTranslations,
-                TotalMissing = missingTranslations.Values.Sum(list => list.Count)
+                Culture = targetCulture,
+                MissingByCategory = missingByCategory,
+                TotalMissing = missingResources.Count
             };
 
             return View(viewModel);
@@ -491,7 +523,7 @@ public class LocalizationController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading missing translations for {Culture}", culture);
-            TempData["Error"] = "Failed to load missing translations.";
+            TempData["Error"] = _localizer["FailedToLoadMissing"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -502,12 +534,23 @@ public class LocalizationController : Controller
         try
         {
             var statistics = await _localizationService.GetStatisticsAsync();
-            return View(statistics);
+            
+            // LocalizationStatisticsViewModel requires Dictionary properties too
+            // Reuse logic from Service implementation if needed, or just map what we have
+            
+            var viewModel = new LocalizationStatisticsViewModel
+            {
+                Statistics = statistics,
+                TranslationsByCulture = statistics.TranslationsByCulture,
+                TranslationsByCategory = statistics.TranslationsByCategory
+            };
+            
+            return View(viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading statistics");
-            TempData["Error"] = "Failed to load statistics.";
+            TempData["Error"] = _localizer["FailedToLoadStatistics"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -519,13 +562,13 @@ public class LocalizationController : Controller
         try
         {
             await _localizationService.RefreshCacheAsync();
-            TempData["Success"] = "Cache refreshed successfully.";
+            TempData["Success"] = _localizer["CacheRefreshed"].Value;
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error refreshing cache");
-            TempData["Error"] = "Failed to refresh cache.";
+            TempData["Error"] = _localizer["FailedToRefreshCache"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -560,17 +603,17 @@ public class LocalizationController : Controller
         }
     }
 
-    [HttpGet("Api/Resources/{culture}")]
-    public async Task<IActionResult> GetResourcesForCulture(string culture)
+    [HttpGet("Api/Resources/{targetCulture}")]
+    public async Task<IActionResult> GetResourcesForCulture(string targetCulture)
     {
         try
         {
-            var resources = await _localizationService.GetCachedResourcesAsync(culture);
+            var resources = await _localizationService.GetCachedResourcesAsync(targetCulture);
             return Json(resources);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading resources for culture {Culture}", culture);
+            _logger.LogError(ex, "Error loading resources for culture {Culture}", targetCulture);
             return Json(new Dictionary<string, string>());
         }
     }

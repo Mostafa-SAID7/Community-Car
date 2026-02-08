@@ -1,6 +1,6 @@
 @model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
 @{
-    ViewData["Title"] = "Questions & Answers";
+    ViewData["Title"] = Localizer["Questions & Answers"];
     var currentTag = ViewBag.CurrentTag as string;
     var isResolved = ViewBag.IsResolved as bool?;
     var sortBy = ViewBag.SortBy as string ?? "recent";
@@ -53,8 +53,8 @@
 
 
 @{
-    ViewData["HeaderTitle"] = "Questions & Answers";
-    ViewData["HeaderDescription"] = "Ask questions and get answers from the community";
+    ViewData["HeaderTitle"] = Localizer["Questions & Answers"];
+    ViewData["HeaderDescription"] = Localizer["Ask questions and get answers from the community"];
     ViewData["HeaderIcon"] = "fas fa-question-circle";
     
     if (User.Identity?.IsAuthenticated == true)
@@ -63,10 +63,10 @@
         var myQuestionsUrl = Url.Action("MyQuestions");
         var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
                           "<a href='" + createUrl + "' class='btn btn-light'>" +
-                          "<i class='fas fa-plus-circle me-2'></i>Ask Question" +
+                          "<i class='fas fa-plus-circle me-2'></i>" + Localizer["Ask Question"].Value +
                           "</a>" +
                           "<a href='" + myQuestionsUrl + "' class='btn btn-light'>" +
-                          "<i class='fas fa-user me-2'></i>My Questions" +
+                          "<i class='fas fa-user me-2'></i>" + Localizer["My Questions"].Value +
                           "</a>" +
                           "</div>";
         ViewData["HeaderActions"] = Html.Raw(actionsHtml);
@@ -75,7 +75,7 @@
     {
         var loginUrl = Url.Action("Login", "Account", new { area = "Identity" });
         var actionsHtml = "<a href='" + loginUrl + "' class='btn btn-light'>" +
-                          "<i class='fas fa-sign-in-alt me-2'></i>Login to Ask" +
+                          "<i class='fas fa-sign-in-alt me-2'></i>" + Localizer["Login to Ask"].Value +
                           "</a>";
         ViewData["HeaderActions"] = Html.Raw(actionsHtml);
     }
@@ -86,16 +86,16 @@
 <!-- Sort Tabs -->
 <div class="sort-tabs" id="sort-tabs">
     <a href="#" data-sort="recent" class="sort-tab @(sortBy == "recent" ? "active" : "")">
-        <i class="fas fa-clock"></i> Recent
+        <i class="fas fa-clock"></i> @Localizer["Recent"]
     </a>
     <a href="#" data-sort="popular" class="sort-tab @(sortBy == "popular" ? "active" : "")">
-        <i class="fas fa-fire"></i> Popular
+        <i class="fas fa-fire"></i> @Localizer["Popular"]
     </a>
     <a href="#" data-sort="unanswered" class="sort-tab @(sortBy == "unanswered" ? "active" : "")">
-        <i class="fas fa-question"></i> Unanswered
+        <i class="fas fa-question"></i> @Localizer["Unanswered"]
     </a>
     <a href="#" data-sort="votes" class="sort-tab @(sortBy == "votes" ? "active" : "")">
-        <i class="fas fa-arrow-up"></i> Most Votes
+        <i class="fas fa-arrow-up"></i> @Localizer["Most Votes"]
     </a>
 </div>
 
@@ -109,32 +109,32 @@
             
             <div class="col-md-5">
                 <label class="form-label fw-bold small text-secondary">
-                    <i class="fas fa-search me-1"></i>Search
+                    <i class="fas fa-search me-1"></i>@Localizer["Search"]
                 </label>
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0">
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" name="searchTerm" id="searchInput" class="form-control border-start-0 ps-0" 
-                           placeholder="Search questions..." value="@searchTerm" autocomplete="off" />
+                           placeholder="@Localizer["Search questions..."]" value="@searchTerm" autocomplete="off" />
                 </div>
             </div>
             
             <div class="col-md-3">
                 <label class="form-label fw-bold small text-secondary">
-                    <i class="fas fa-tag me-1"></i>Tag
+                    <i class="fas fa-tag me-1"></i>@Localizer["Tag"]
                 </label>
-                <input type="text" name="tag" id="tagInput" class="form-control" placeholder="Filter by tag" value="@currentTag" />
+                <input type="text" name="tag" id="tagInput" class="form-control" placeholder="@Localizer["Filter by tag"]" value="@currentTag" />
             </div>
             
             <div class="col-md-3">
                 <label class="form-label fw-bold small text-secondary">
-                    <i class="fas fa-filter me-1"></i>Status
+                    <i class="fas fa-filter me-1"></i>@Localizer["Status"]
                 </label>
                 <select name="isResolved" id="statusInput" class="form-select">
-                    <option value="">All Questions</option>
-                    <option value="false" selected="@(isResolved == false)">Open</option>
-                    <option value="true" selected="@(isResolved == true)">Resolved</option>
+                    <option value="">@Localizer["All Questions"]</option>
+                    <option value="false" selected="@(isResolved == false)">@Localizer["Open"]</option>
+                    <option value="true" selected="@(isResolved == true)">@Localizer["Resolved"]</option>
                 </select>
             </div>
             

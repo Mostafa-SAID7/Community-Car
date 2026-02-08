@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.trends;
 
 [Area("Dashboard")]
-[Route("Dashboard/Trends")]
+[Route("{culture}/Dashboard/Trends")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class TrendsController : Controller
 {

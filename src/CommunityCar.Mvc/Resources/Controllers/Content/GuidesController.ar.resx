@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadGuides" xml:space="preserve">
+    <value>فشل تحميل الأدلة</value>
+  </data>
+  <data name="GuideNotFound" xml:space="preserve">
+    <value>الدليل غير موجود</value>
+  </data>
+  <data name="FailedToLoadGuide" xml:space="preserve">
+    <value>فشل تحميل الدليل</value>
+  </data>
+  <data name="GuideCreated" xml:space="preserve">
+    <value>تم إنشاء الدليل بنجاح</value>
+  </data>
+  <data name="FailedToCreateGuide" xml:space="preserve">
+    <value>فشل إنشاء الدليل</value>
+  </data>
+  <data name="OnlyAuthorCanEditGuide" xml:space="preserve">
+    <value>يمكنك تعديل أدلتك الخاصة فقط</value>
+  </data>
+  <data name="GuideUpdated" xml:space="preserve">
+    <value>تم تحديث الدليل بنجاح</value>
+  </data>
+  <data name="FailedToUpdateGuide" xml:space="preserve">
+    <value>فشل تحديث الدليل</value>
+  </data>
+  <data name="GuideDeleted" xml:space="preserve">
+    <value>تم حذف الدليل بنجاح</value>
+  </data>
+  <data name="FailedToDeleteGuide" xml:space="preserve">
+    <value>فشل حذف الدليل</value>
+  </data>
+  <data name="GuidePublished" xml:space="preserve">
+    <value>تم نشر الدليل بنجاح</value>
+  </data>
+  <data name="FailedToPublishGuide" xml:space="preserve">
+    <value>فشل نشر الدليل</value>
+  </data>
+  <data name="GuideArchived" xml:space="preserve">
+    <value>تم أرشفة الدليل بنجاح</value>
+  </data>
+  <data name="FailedToArchiveGuide" xml:space="preserve">
+    <value>فشل أرشفة الدليل</value>
+  </data>
+  <data name="LikeToggled" xml:space="preserve">
+    <value>تم تبديل الإعجاب بنجاح</value>
+  </data>
+  <data name="FailedToToggleLike" xml:space="preserve">
+    <value>فشل تبديل الإعجاب</value>
+  </data>
+  <data name="BookmarkToggled" xml:space="preserve">
+    <value>تم تبديل الإشارة المرجعية بنجاح</value>
+  </data>
+  <data name="FailedToToggleBookmark" xml:space="preserve">
+    <value>فشل تبديل الإشارة المرجعية</value>
+  </data>
+  <data name="FailedToLoadMyGuides" xml:space="preserve">
+    <value>فشل تحميل أدلتك الخاصة</value>
+  </data>
+</root>

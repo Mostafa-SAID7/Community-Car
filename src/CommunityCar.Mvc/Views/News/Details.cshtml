@@ -164,14 +164,14 @@
                         <div class="mt-5 p-4 bg-light rounded-4 border-0">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
-                                    <img src="@(article.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <img src="@(article.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                     <div>
                                         <p class="mb-0 text-muted smaller">Written by</p>
                                         <h6 class="fw-bold mb-0">@article.AuthorName</h6>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a href="/Identity/Profiles/@article.AuthorId" class="btn btn-outline-primary btn-sm rounded-pill px-3">Profile</a>
+                                    <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = article.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill px-3">Profile</a>
                                     
                                     @if (friendshipStatus == FriendshipStatus.None)
                                     {
@@ -249,7 +249,7 @@
                             @foreach (var comment in Model.Comments.Items)
                             {
                                 <div class="d-flex mb-4 pb-4 border-bottom last-child-no-border">
-                                    <img src="@(comment.UserAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                    <img src="@(comment.UserAvatar ?? "/images/default-avatar.svg")" class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <span class="fw-bold text-dark">@comment.UserName</span>

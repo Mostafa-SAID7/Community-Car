@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToLoadGroups" xml:space="preserve">
+    <value>Failed to load groups. Please try again.</value>
+  </data>
+  <data name="FailedToLoadMyGroups" xml:space="preserve">
+    <value>Failed to load your groups. Please try again.</value>
+  </data>
+  <data name="GroupNotFound" xml:space="preserve">
+    <value>Group not found.</value>
+  </data>
+  <data name="FailedToLoadGroup" xml:space="preserve">
+    <value>Failed to load group detail. Please try again.</value>
+  </data>
+  <data name="GroupCreated" xml:space="preserve">
+    <value>Group created successfully!</value>
+  </data>
+  <data name="FailedToCreateGroup" xml:space="preserve">
+    <value>Failed to create group.</value>
+  </data>
+  <data name="FailedToCreateGroupDetail" xml:space="preserve">
+    <value>An error occurred while creating the group. Please try again.</value>
+  </data>
+  <data name="NoPermissionToEditGroup" xml:space="preserve">
+    <value>You don't have permission to edit this group.</value>
+  </data>
+  <data name="GroupUpdated" xml:space="preserve">
+    <value>Group updated successfully!</value>
+  </data>
+  <data name="FailedToUpdateGroup" xml:space="preserve">
+    <value>Failed to update group.</value>
+  </data>
+  <data name="FailedToUpdateGroupDetail" xml:space="preserve">
+    <value>An error occurred while updating the group. Please try again.</value>
+  </data>
+  <data name="GroupDeleted" xml:space="preserve">
+    <value>Group deleted successfully.</value>
+  </data>
+  <data name="FailedToDeleteGroupDetail" xml:space="preserve">
+    <value>An error occurred while deleting the group. Please try again.</value>
+  </data>
+  <data name="JoinedGroup" xml:space="preserve">
+    <value>You have joined the group successfully!</value>
+  </data>
+  <data name="FailedToJoinGroup" xml:space="preserve">
+    <value>An error occurred while joining the group. Please try again.</value>
+  </data>
+  <data name="LeftGroup" xml:space="preserve">
+    <value>You have left the group.</value>
+  </data>
+  <data name="FailedToLeaveGroup" xml:space="preserve">
+    <value>An error occurred while leaving the group. Please try again.</value>
+  </data>
+  <data name="MemberRemoved" xml:space="preserve">
+    <value>Member removed successfully.</value>
+  </data>
+  <data name="FailedToRemoveMember" xml:space="preserve">
+    <value>An error occurred while removing the member. Please try again.</value>
+  </data>
+  <data name="MemberRoleUpdated" xml:space="preserve">
+    <value>Member role updated successfully.</value>
+  </data>
+  <data name="FailedToUpdateMemberRole" xml:space="preserve">
+    <value>An error occurred while updating the member role. Please try again.</value>
+  </data>
+  <data name="FailedToSearchGroups" xml:space="preserve">
+    <value>Failed to search groups. Please try again.</value>
+  </data>
+</root>

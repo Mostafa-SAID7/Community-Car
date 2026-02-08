@@ -1,0 +1,133 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.LocalizationStatisticsViewModel
+@{
+    ViewData["Title"] = "Localization Statistics";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Localization Statistics
+                </h2>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Management
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase mb-2">Total Keys</h6>
+                    <h2 class="display-4 mb-0">@Model.Statistics.TotalKeys</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase mb-2">Total Translations</h6>
+                    <h2 class="display-4 mb-0">@Model.Statistics.TotalTranslations</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase mb-2">Missing</h6>
+                    <h2 class="display-4 mb-0">@Model.Statistics.MissingTranslations</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase mb-2">Completion</h6>
+                    <h2 class="display-4 mb-0">@Model.Statistics.CompletionPercentage%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Culture Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Translations by Culture</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Culture</th>
+                                    <th>Count</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var culture in Model.TranslationsByCulture)
+                                {
+                                    var percentage = Model.Statistics.TotalKeys > 0 
+                                        ? (int)((double)culture.Value / Model.Statistics.TotalKeys * 100) 
+                                        : 0;
+                                    <tr>
+                                        <td><span class="badge bg-primary">@culture.Key</span></td>
+                                        <td>@culture.Value</td>
+                                        <td>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar @(percentage == 100 ? "bg-success" : "bg-info")" 
+                                                     role="progressbar" 
+                                                     style="width: @percentage%" 
+                                                     aria-valuenow="@percentage" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">@percentage%</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Translations by Category</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model.TranslationsByCategory)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-secondary">@category.Key</span></td>
+                                        <td>@category.Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

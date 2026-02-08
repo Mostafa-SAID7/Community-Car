@@ -1,21 +1,23 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 <footer class="border-top footer py-3 mt-auto">
     <div class="container">
         <div class="footer-inline">
             <a asp-controller="Info" asp-action="Terms" class="footer-link">
-                <i class="fas fa-file-contract me-1"></i>Terms of Service
+                <i class="fas fa-file-contract me-1"></i>@Localizer["Terms of Service"].Value
             </a>
             <span class="footer-separator">·</span>
             <a asp-controller="Info" asp-action="Privacy" class="footer-link">
-                <i class="fas fa-shield-alt me-1"></i>Privacy Policy
+                <i class="fas fa-shield-alt me-1"></i>@Localizer["Privacy Policy"].Value
             </a>
             <span class="footer-separator">·</span>
             <a asp-controller="Info" asp-action="About" class="footer-link">
-                <i class="fas fa-info-circle me-1"></i>About Us
+                <i class="fas fa-info-circle me-1"></i>@Localizer["About Us"].Value
             </a>
             <span class="footer-separator">·</span>
             <span class="footer-copyright">
-                &copy; @DateTime.Now.Year CommunityCar. All rights reserved. Made with
-                <i class="fas fa-heart text-danger"></i> for car enthusiasts.
+                &copy; @DateTime.Now.Year CommunityCar. @Localizer["All rights reserved. Made with"].Value
+                <i class="fas fa-heart text-danger"></i> @Localizer["for car enthusiasts."].Value
             </span>
         </div>
     </div>

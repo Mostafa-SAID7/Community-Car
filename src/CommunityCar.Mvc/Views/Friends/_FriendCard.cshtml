@@ -15,7 +15,7 @@
         }
         
         <div class="friend-info">
-            <a href="/Identity/Profiles/@Model.Slug" class="friend-name">
+            <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = Model.Slug })" class="friend-name">
                 @Model.FriendName
             </a>
             <div class="friend-meta">
@@ -25,10 +25,10 @@
     </div>
 
     <div class="friend-actions">
-        <a href="/chat/Conversation/@Model.FriendId" class="btn-friend-action btn-friend-message" title="Message">
+        <a href="/Chats/Conversation/@Model.FriendId" class="btn-friend-action btn-friend-message" title="Message">
             <i class="fas fa-comment"></i>
         </a>
-        <a href="/Identity/Profiles/@Model.Slug" class="btn-friend-action btn-friend-view" title="View Profile">
+        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = Model.Slug })" class="btn-friend-action btn-friend-view" title="View Profile">
             <i class="fas fa-user"></i>
         </a>
         

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PageTitle" xml:space="preserve">
+    <value>الأصدقاء</value>
+  </data>
+  <data name="MyFriends" xml:space="preserve">
+    <value>أصدقائي</value>
+  </data>
+  <data name="FriendRequests" xml:space="preserve">
+    <value>طلبات الصداقة</value>
+  </data>
+  <data name="SendRequest" xml:space="preserve">
+    <value>إرسال طلب صداقة</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>قبول</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>رفض</value>
+  </data>
+  <data name="Block" xml:space="preserve">
+    <value>حظر</value>
+  </data>
+  <data name="NoFriends" xml:space="preserve">
+    <value>ليس لديك أي أصدقاء بعد</value>
+  </data>
+  <data name="NoRequests" xml:space="preserve">
+    <value>لا توجد طلبات صداقة معلقة</value>
+  </data>
+  <data name="FailedToLoadFriendsList" xml:space="preserve">
+    <value>فشل تحميل قائمة الأصدقاء. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FailedToLoadFriendRequests" xml:space="preserve">
+    <value>فشل تحميل طلبات الصداقة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="CannotSendRequestToSelf" xml:space="preserve">
+    <value>لا يمكنك إرسال طلب صداقة لنفسك.</value>
+  </data>
+  <data name="FriendRequestSent" xml:space="preserve">
+    <value>تم إرسال طلب الصداقة بنجاح.</value>
+  </data>
+  <data name="FailedToSendRequest" xml:space="preserve">
+    <value>فشل إرسال طلب الصداقة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="RequestAccepted" xml:space="preserve">
+    <value>تم قبول طلب الصداقة بنجاح.</value>
+  </data>
+  <data name="FailedToAcceptRequest" xml:space="preserve">
+    <value>فشل قبول طلب الصداقة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="RequestRejected" xml:space="preserve">
+    <value>تم رفض طلب الصداقة.</value>
+  </data>
+  <data name="FailedToRejectRequest" xml:space="preserve">
+    <value>فشل رفض طلب الصداقة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FriendRemoved" xml:space="preserve">
+    <value>تم إزالة الصديق بنجاح.</value>
+  </data>
+  <data name="FailedToRemoveFriend" xml:space="preserve">
+    <value>فشل إزالة الصديق. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="CannotBlockSelf" xml:space="preserve">
+    <value>لا يمكنك حظر نفسك.</value>
+  </data>
+  <data name="UserBlocked" xml:space="preserve">
+    <value>تم حظر المستخدم بنجاح.</value>
+  </data>
+  <data name="FailedToBlockUser" xml:space="preserve">
+    <value>فشل حظر المستخدم. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FailedToGetStatus" xml:space="preserve">
+    <value>فشل الحصول على حالة الصداقة.</value>
+  </data>
+  <data name="FailedToSearchUsers" xml:space="preserve">
+    <value>فشل البحث عن المستخدمين. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FailedToLoadSuggestions" xml:space="preserve">
+    <value>فشل تحميل الاقتراحات. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="FailedToLoadBlockedUsers" xml:space="preserve">
+    <value>فشل تحميل قائمة المحظورين. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="UserUnblocked" xml:space="preserve">
+    <value>تم إلغاء حظر المستخدم بنجاح.</value>
+  </data>
+  <data name="FailedToUnblockUser" xml:space="preserve">
+    <value>فشل إلغاء حظر المستخدم. يرجى المحاولة مرة أخرى.</value>
+  </data>
+</root>

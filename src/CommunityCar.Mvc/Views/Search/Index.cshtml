@@ -1,0 +1,105 @@
+@model CommunityCar.Mvc.ViewModels.Search.GlobalSearchViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Search Results"];
+}
+
+@{
+    ViewData["HeaderTitle"] = Localizer["Search Results"];
+    ViewData["HeaderDescription"] = string.Format(Localizer["Found {0} results for \"{1}\""].Value, Model.TotalResults, Model.Query);
+    ViewData["HeaderIcon"] = "fas fa-search";
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="search-results-container mt-4">
+    @if (!Model.Results.Any())
+    {
+        <div class="empty-state text-center py-5 bg-white rounded-4 shadow-sm">
+            <div class="empty-icon mb-4">
+                <i class="fas fa-search fa-4x text-muted opacity-25"></i>
+            </div>
+            <h3 class="fw-bold">@Localizer["No results found"]</h3>
+            <p class="text-muted mb-4">@Localizer["We couldn't find anything matching your search."] "@Model.Query"</p>
+            <a asp-controller="Feed" asp-action="Index" class="btn btn-gradient px-4">
+                <i class="fas fa-house me-2"></i>@Localizer["Back to Home"]
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var result in Model.Results)
+            {
+                <div class="col-12">
+                    <div class="card result-card border-0 shadow-sm rounded-4 overflow-hidden h-100 transition-all hover-translate-y">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="result-type-icon size-48 rounded-circle bg-light d-flex align-items-center justify-content-center text-primary-premium">
+                                        @if (!string.IsNullOrEmpty(result.ImageUrl))
+                                        {
+                                            <img src="@result.ImageUrl" class="rounded-circle w-100 h-100 object-fit-cover" alt="@result.Title" />
+                                        }
+                                        else
+                                        {
+                                            <i class="@result.Icon fa-lg"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-tertiary text-primary-premium rounded-pill px-3 py-1 text-xs fw-bold">
+                                            @result.Type
+                                        </span>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>@result.CreatedAt.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                    <h5 class="card-title fw-bold mb-2">
+                                        <a href="@result.Url" class="text-decoration-none text-dark hover-primary">
+                                            @result.Title
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted mb-0 text-truncate-2">
+                                        @result.Description
+                                    </p>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="@result.Url" class="btn btn-icon btn-light rounded-circle shadow-sm" title="@Localizer["View Results"].Value">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .result-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+        }
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .hover-primary:hover {
+            color: var(--bs-primary) !important;
+        }
+        .transition-all {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+}

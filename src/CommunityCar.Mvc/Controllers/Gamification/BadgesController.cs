@@ -1,10 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace CommunityCar.Mvc.Controllers.Gamification;
 
-[Route("Badges")]
+[Route("{culture:alpha}/Badges")]
 public class BadgesController : Controller
 {
+    private readonly IStringLocalizer<BadgesController> _localizer;
+
+    public BadgesController(IStringLocalizer<BadgesController> localizer)
+    {
+        _localizer = localizer;
+    }
+
     // GET: Badges
     [HttpGet("")]
     public IActionResult Index()
@@ -28,18 +36,18 @@ public class BadgesController : Controller
     {
         return new List<BadgeViewModel>
         {
-            new() { Name = "First Post", Description = "Create your first post", IconUrl = "fa-edit", Category = "Getting Started", IsEarned = true, Progress = 100 },
-            new() { Name = "Helpful Member", Description = "Receive 10 helpful votes", IconUrl = "fa-thumbs-up", Category = "Community", IsEarned = true, Progress = 100 },
-            new() { Name = "Conversation Starter", Description = "Start 5 discussions", IconUrl = "fa-comments", Category = "Engagement", IsEarned = false, Progress = 60 },
-            new() { Name = "Expert Reviewer", Description = "Write 10 detailed reviews", IconUrl = "fa-star", Category = "Content", IsEarned = false, Progress = 40 },
-            new() { Name = "Guide Master", Description = "Create 5 comprehensive guides", IconUrl = "fa-book", Category = "Content", IsEarned = false, Progress = 20 },
-            new() { Name = "Social Butterfly", Description = "Connect with 20 friends", IconUrl = "fa-user-friends", Category = "Social", IsEarned = false, Progress = 75 },
-            new() { Name = "Event Organizer", Description = "Host 3 community events", IconUrl = "fa-calendar", Category = "Events", IsEarned = false, Progress = 33 },
-            new() { Name = "Top Contributor", Description = "Earn 1000 reputation points", IconUrl = "fa-trophy", Category = "Achievement", IsEarned = false, Progress = 45 },
-            new() { Name = "Early Adopter", Description = "Join in the first month", IconUrl = "fa-rocket", Category = "Special", IsEarned = true, Progress = 100 },
-            new() { Name = "Verified Expert", Description = "Get verified by moderators", IconUrl = "fa-check-circle", Category = "Special", IsEarned = false, Progress = 0 },
-            new() { Name = "News Reporter", Description = "Share 10 news articles", IconUrl = "fa-newspaper", Category = "Content", IsEarned = false, Progress = 50 },
-            new() { Name = "Problem Solver", Description = "Answer 20 questions", IconUrl = "fa-lightbulb", Category = "Community", IsEarned = false, Progress = 35 }
+            new() { Name = _localizer["FirstPostName"], Description = _localizer["FirstPostDesc"], IconUrl = "fa-edit", Category = _localizer["GettingStartedCat"], IsEarned = true, Progress = 100 },
+            new() { Name = _localizer["HelpfulMemberName"], Description = _localizer["HelpfulMemberDesc"], IconUrl = "fa-thumbs-up", Category = _localizer["CommunityCat"], IsEarned = true, Progress = 100 },
+            new() { Name = _localizer["ConversationStarterName"], Description = _localizer["ConversationStarterDesc"], IconUrl = "fa-comments", Category = _localizer["EngagementCat"], IsEarned = false, Progress = 60 },
+            new() { Name = _localizer["ExpertReviewerName"], Description = _localizer["ExpertReviewerDesc"], IconUrl = "fa-star", Category = _localizer["ContentCat"], IsEarned = false, Progress = 40 },
+            new() { Name = _localizer["GuideMasterName"], Description = _localizer["GuideMasterDesc"], IconUrl = "fa-book", Category = _localizer["ContentCat"], IsEarned = false, Progress = 20 },
+            new() { Name = _localizer["SocialButterflyName"], Description = _localizer["SocialButterflyDesc"], IconUrl = "fa-user-friends", Category = _localizer["SocialCat"], IsEarned = false, Progress = 75 },
+            new() { Name = _localizer["EventOrganizerName"], Description = _localizer["EventOrganizerDesc"], IconUrl = "fa-calendar", Category = _localizer["EventsCat"], IsEarned = false, Progress = 33 },
+            new() { Name = _localizer["TopContributorName"], Description = _localizer["TopContributorDesc"], IconUrl = "fa-trophy", Category = _localizer["AchievementCat"], IsEarned = false, Progress = 45 },
+            new() { Name = _localizer["EarlyAdopterName"], Description = _localizer["EarlyAdopterDesc"], IconUrl = "fa-rocket", Category = _localizer["SpecialCat"], IsEarned = true, Progress = 100 },
+            new() { Name = _localizer["VerifiedExpertName"], Description = _localizer["VerifiedExpertDesc"], IconUrl = "fa-check-circle", Category = _localizer["SpecialCat"], IsEarned = false, Progress = 0 },
+            new() { Name = _localizer["NewsReporterName"], Description = _localizer["NewsReporterDesc"], IconUrl = "fa-newspaper", Category = _localizer["ContentCat"], IsEarned = false, Progress = 50 },
+            new() { Name = _localizer["ProblemSolverName"], Description = _localizer["ProblemSolverDesc"], IconUrl = "fa-lightbulb", Category = _localizer["CommunityCat"], IsEarned = false, Progress = 35 }
         };
     }
 }

@@ -58,31 +58,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="PageTitle" xml:space="preserve">
-    <value>Friends</value>
+  <data name="FailedToLoadResources" xml:space="preserve">
+    <value>Failed to load localization resources. Please try again.</value>
   </data>
-  <data name="MyFriends" xml:space="preserve">
-    <value>My Friends</value>
+  <data name="ResourceNotFound" xml:space="preserve">
+    <value>Localization resource not found.</value>
   </data>
-  <data name="FriendRequests" xml:space="preserve">
-    <value>Friend Requests</value>
+  <data name="FailedToLoadDetails" xml:space="preserve">
+    <value>Failed to load resource details.</value>
   </data>
-  <data name="SendRequest" xml:space="preserve">
-    <value>Send Friend Request</value>
+  <data name="ResourceCreated" xml:space="preserve">
+    <value>Localization resource '{0}' created successfully.</value>
   </data>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="FailedToLoadResource" xml:space="preserve">
+    <value>Failed to load resource.</value>
   </data>
-  <data name="Reject" xml:space="preserve">
-    <value>Reject</value>
+  <data name="ResourceUpdated" xml:space="preserve">
+    <value>Localization resource updated successfully.</value>
   </data>
-  <data name="Block" xml:space="preserve">
-    <value>Block</value>
+  <data name="ResourceDeleted" xml:space="preserve">
+    <value>Localization resource deleted successfully.</value>
   </data>
-  <data name="NoFriends" xml:space="preserve">
-    <value>You don't have any friends yet</value>
+  <data name="FailedToDelete" xml:space="preserve">
+    <value>Failed to delete resource.</value>
   </data>
-  <data name="NoRequests" xml:space="preserve">
-    <value>No pending friend requests</value>
+  <data name="BulkImportSuccess" xml:space="preserve">
+    <value>Successfully imported {0} translations.</value>
+  </data>
+  <data name="FailedToExport" xml:space="preserve">
+    <value>Failed to export translations.</value>
+  </data>
+  <data name="SyncSuccess" xml:space="preserve">
+    <value>Successfully synced {0} missing translations from {1} to {2}.</value>
+  </data>
+  <data name="SyncToFilesSuccess" xml:space="preserve">
+    <value>Successfully synced translations to JSON files.</value>
+  </data>
+  <data name="SyncToFilesFailed" xml:space="preserve">
+    <value>Failed to sync translations to files.</value>
+  </data>
+  <data name="FailedToLoadMissing" xml:space="preserve">
+    <value>Failed to load missing translations.</value>
+  </data>
+  <data name="FailedToLoadStatistics" xml:space="preserve">
+    <value>Failed to load statistics.</value>
+  </data>
+  <data name="CacheRefreshed" xml:space="preserve">
+    <value>Cache refreshed successfully.</value>
+  </data>
+  <data name="FailedToRefreshCache" xml:space="preserve">
+    <value>Failed to refresh cache.</value>
   </data>
 </root>

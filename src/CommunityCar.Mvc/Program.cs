@@ -5,6 +5,7 @@ using CommunityCar.Web.Infrastructure.Localization;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Localization.Routing;
 using CommunityCar.Infrastructure.Mappings;
 using CommunityCar.Web.Filters;
 using CommunityCar.Web.Middleware;
@@ -42,6 +43,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture("en");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
+
+    // Add RouteDataRequestCultureProvider to prioritize culture from URL
+    options.RequestCultureProviders.Insert(0, new RouteDataRequestCultureProvider());
 });
 
 var app = builder.Build();
@@ -52,7 +56,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        var context = services.GetRequiredService<CommunityCar.Infrastructure.Data.ApplicationDbContext>();
         await context.Database.MigrateAsync();
         await services.SeedDatabase(); // Call the extension method on IServiceProvider
         await FriendshipSeeder.SeedAsync(context);
@@ -82,9 +86,11 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedCultures("en", "ar")
     .AddSupportedUICultures("en", "ar");
 
+// Add RouteDataRequestCultureProvider to prioritize culture from URL
+localizationOptions.RequestCultureProviders.Insert(0, new RouteDataRequestCultureProvider());
+
 app.UseRequestLocalization(localizationOptions);
 
-// Handle status code errors (404, 401, etc.)
 // Handle status code errors (404, 401, etc.)
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
@@ -94,8 +100,16 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
+    name: "areas_localized",
+    pattern: "{culture:alpha}/{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "default_localized",
+    pattern: "{culture:alpha}/{controller=Feed}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

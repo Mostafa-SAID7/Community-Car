@@ -2,22 +2,26 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Qa;
 
-[Route("Answers")]
+[Route("{culture:alpha}/Answers")]
 [Authorize]
 public class AnswersController : Controller
 {
     private readonly IQuestionService _questionService;
+    private readonly IStringLocalizer<AnswersController> _localizer;
     private readonly ILogger<AnswersController> _logger;
 
     public AnswersController(
         IQuestionService questionService,
+        IStringLocalizer<AnswersController> localizer,
         ILogger<AnswersController> logger)
     {
         _questionService = questionService;
+        _localizer = localizer;
         _logger = logger;
     }
 
@@ -30,14 +34,14 @@ public class AnswersController : Controller
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Please provide valid answer content";
+                TempData["Error"] = _localizer["ProvideValidContent"].Value;
                 return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
             }
 
             var userId = GetCurrentUserId();
             await _questionService.AddAnswerAsync(model.QuestionId, model.Content, userId);
 
-            TempData["Success"] = "Answer posted successfully";
+            TempData["Success"] = _localizer["AnswerPostedSuccessfully"].Value;
             return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
         }
         catch (Exception ex)
@@ -59,13 +63,13 @@ public class AnswersController : Controller
             
             if (answer == null)
             {
-                TempData["Error"] = "Answer not found";
+                TempData["Error"] = _localizer["AnswerNotFound"].Value;
                 return RedirectToAction("Index", "Questions");
             }
 
             if (answer.AuthorId != userId)
             {
-                TempData["Error"] = "You can only edit your own answers";
+                TempData["Error"] = _localizer["CannotEditOthersAnswer"].Value;
                 return RedirectToAction("Details", "Questions", new { id = answer.QuestionId });
             }
 
@@ -81,7 +85,7 @@ public class AnswersController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading answer for edit {AnswerId}", id);
-            TempData["Error"] = "Failed to load answer";
+            TempData["Error"] = _localizer["FailedToLoadAnswer"].Value;
             return RedirectToAction("Index", "Questions");
         }
     }
@@ -104,19 +108,19 @@ public class AnswersController : Controller
             
             if (answer == null)
             {
-                TempData["Error"] = "Answer not found";
+                TempData["Error"] = _localizer["AnswerNotFound"].Value;
                 return RedirectToAction("Index", "Questions");
             }
 
             if (answer.AuthorId != userId)
             {
-                TempData["Error"] = "You can only edit your own answers";
+                TempData["Error"] = _localizer["CannotEditOthersAnswer"].Value;
                 return RedirectToAction("Details", "Questions", new { id = answer.QuestionId });
             }
 
             await _questionService.UpdateAnswerAsync(id, model.Content);
 
-            TempData["Success"] = "Answer updated successfully";
+            TempData["Success"] = _localizer["AnswerUpdatedSuccessfully"].Value;
             return RedirectToAction("Details", "Questions", new { id = model.QuestionId });
         }
         catch (Exception ex)
@@ -138,14 +142,14 @@ public class AnswersController : Controller
             var answer = await _questionService.GetAnswerByIdAsync(id, userId);
             
             if (answer == null)
-                return Json(new { success = false, message = "Answer not found" });
+                return Json(new { success = false, message = _localizer["AnswerNotFound"].Value });
 
             if (answer.AuthorId != userId)
-                return Json(new { success = false, message = "You can only delete your own answers" });
+                return Json(new { success = false, message = _localizer["CannotDeleteOthersAnswer"].Value });
 
             await _questionService.DeleteAnswerAsync(id);
 
-            return Json(new { success = true, message = "Answer deleted successfully" });
+            return Json(new { success = true, message = _localizer["AnswerDeletedSuccessfully"].Value });
         }
         catch (Exception ex)
         {
@@ -163,7 +167,7 @@ public class AnswersController : Controller
             var userId = GetCurrentUserId();
             await _questionService.VoteAnswerAsync(id, userId, isUpvote);
 
-            return Json(new { success = true, message = "Vote recorded" });
+            return Json(new { success = true, message = _localizer["VoteRecorded"].Value });
         }
         catch (Exception ex)
         {
@@ -181,7 +185,7 @@ public class AnswersController : Controller
             var userId = GetCurrentUserId();
             await _questionService.RemoveAnswerVoteAsync(id, userId);
 
-            return Json(new { success = true, message = "Vote removed" });
+            return Json(new { success = true, message = _localizer["VoteRemoved"].Value });
         }
         catch (Exception ex)
         {
@@ -197,7 +201,7 @@ public class AnswersController : Controller
         try
         {
             if (string.IsNullOrWhiteSpace(content))
-                return Json(new { success = false, message = "Comment content is required" });
+                return Json(new { success = false, message = _localizer["CommentRequired"].Value });
 
             var userId = GetCurrentUserId();
             var comment = await _questionService.AddAnswerCommentAsync(answerId, content, userId);
@@ -217,7 +221,7 @@ public class AnswersController : Controller
         
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            throw new UnauthorizedAccessException(_localizer["UserNotAuthenticated"].Value);
         }
 
         return userId;

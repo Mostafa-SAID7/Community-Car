@@ -2,27 +2,31 @@ using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Reviews;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Community;
 
-[Route("Reviews")]
+[Route("{culture:alpha}/Reviews")]
 public class ReviewsController : Controller
 {
     private readonly IReviewService _reviewService;
     private readonly IFriendshipService _friendshipService;
     private readonly ILogger<ReviewsController> _logger;
+    private readonly IStringLocalizer<ReviewsController> _localizer;
 
     public ReviewsController(
         IReviewService reviewService,
         IFriendshipService friendshipService,
-        ILogger<ReviewsController> logger)
+        ILogger<ReviewsController> logger,
+        IStringLocalizer<ReviewsController> localizer)
     {
         _reviewService = reviewService;
         _friendshipService = friendshipService;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Reviews
@@ -57,7 +61,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading reviews");
-            TempData["Error"] = "Failed to load reviews";
+            TempData["Error"] = _localizer["FailedToLoadReviews"];
             return View(new PagedResult<Domain.DTOs.Community.ReviewDto>(
                 new List<Domain.DTOs.Community.ReviewDto>(), 0, page, pageSize));
         }
@@ -75,7 +79,7 @@ public class ReviewsController : Controller
 
             if (reviewDto == null)
             {
-                TempData["Error"] = "Review not found";
+                TempData["Error"] = _localizer["ReviewNotFound"];
                 return RedirectToAction(nameof(Index));
             }
 
@@ -123,7 +127,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading review {Slug}", slug);
-            TempData["Error"] = "Failed to load review";
+            TempData["Error"] = _localizer["FailedToLoadReview"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -177,13 +181,13 @@ public class ReviewsController : Controller
                 model.IsVerifiedPurchase,
                 model.IsRecommended);
 
-            TempData["Success"] = "Review submitted successfully and is pending approval";
+            TempData["Success"] = _localizer["ReviewSubmittedForApproval"];
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating review");
-            ModelState.AddModelError("", "Failed to create review");
+            ModelState.AddModelError("", _localizer["FailedToCreateReview"]);
             ViewBag.Types = Enum.GetValues<ReviewType>();
             return View(model);
         }
@@ -207,7 +211,7 @@ public class ReviewsController : Controller
 
             if (!reviewDto.IsReviewer)
             {
-                TempData["Error"] = "You can only edit your own reviews";
+                TempData["Error"] = _localizer["OnlyReviewerCanEdit"];
                 return RedirectToAction(nameof(Details), new { slug = reviewDto.Slug });
             }
 
@@ -227,7 +231,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading review for edit {ReviewId}", id);
-            TempData["Error"] = "Failed to load review";
+            TempData["Error"] = _localizer["FailedToLoadReview"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -255,13 +259,13 @@ public class ReviewsController : Controller
                 model.Cons,
                 model.IsRecommended);
 
-            TempData["Success"] = "Review updated successfully";
+            TempData["Success"] = _localizer["ReviewUpdated"];
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating review {ReviewId}", id);
-            ModelState.AddModelError("", "Failed to update review");
+            ModelState.AddModelError("", _localizer["FailedToUpdateReview"]);
             return View(model);
         }
     }
@@ -275,12 +279,12 @@ public class ReviewsController : Controller
         try
         {
             await _reviewService.DeleteReviewAsync(id);
-            return Json(new { success = true, message = "Review deleted successfully" });
+            return Json(new { success = true, message = _localizer["ReviewDeleted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting review {ReviewId}", id);
-            return Json(new { success = false, message = "Failed to delete review" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteReview"].Value });
         }
     }
 
@@ -294,7 +298,7 @@ public class ReviewsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.MarkReviewHelpfulAsync(id, userId, isHelpful);
 
-            return Json(new { success = true, message = "Thank you for your feedback" });
+            return Json(new { success = true, message = _localizer["FeedbackReceived"].Value });
         }
         catch (Exception ex)
         {
@@ -313,12 +317,12 @@ public class ReviewsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.RemoveReviewReactionAsync(id, userId);
 
-            return Json(new { success = true, message = "Reaction removed" });
+            return Json(new { success = true, message = _localizer["ReactionRemoved"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing reaction from review {ReviewId}", id);
-            return Json(new { success = false, message = "Failed to remove reaction" });
+            return Json(new { success = false, message = _localizer["FailedToRemoveReaction"].Value });
         }
     }
 
@@ -332,12 +336,12 @@ public class ReviewsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.FlagReviewAsync(id, userId, reason);
 
-            return Json(new { success = true, message = "Review flagged for moderation" });
+            return Json(new { success = true, message = _localizer["ReviewFlagged"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error flagging review {ReviewId}", id);
-            return Json(new { success = false, message = "Failed to flag review" });
+            return Json(new { success = false, message = _localizer["FailedToFlagReview"].Value });
         }
     }
 
@@ -351,12 +355,12 @@ public class ReviewsController : Controller
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.AddCommentAsync(reviewId, userId, content);
 
-            return Json(new { success = true, message = "Comment added successfully" });
+            return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding comment to review {ReviewId}", reviewId);
-            return Json(new { success = false, message = "Failed to add comment" });
+            return Json(new { success = false, message = _localizer["FailedToAddComment"].Value });
         }
     }
 
@@ -376,7 +380,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user reviews");
-            TempData["Error"] = "Failed to load your reviews";
+            TempData["Error"] = _localizer["FailedToLoadMyReviews"];
             return RedirectToAction(nameof(Index));
         }
     }
@@ -410,7 +414,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading entity reviews");
-            TempData["Error"] = "Failed to load reviews";
+            TempData["Error"] = _localizer["FailedToLoadReviews"];
             return RedirectToAction(nameof(Index));
         }
     }

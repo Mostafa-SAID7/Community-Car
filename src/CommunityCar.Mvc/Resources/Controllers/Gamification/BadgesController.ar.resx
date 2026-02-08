@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FirstPostName" xml:space="preserve">
+    <value>المنشور الأول</value>
+  </data>
+  <data name="FirstPostDesc" xml:space="preserve">
+    <value>قم بإنشاء منشورك الأول</value>
+  </data>
+  <data name="HelpfulMemberName" xml:space="preserve">
+    <value>عضو متعاون</value>
+  </data>
+  <data name="HelpfulMemberDesc" xml:space="preserve">
+    <value>احصل على 10 أصوات إيجابية</value>
+  </data>
+  <data name="ConversationStarterName" xml:space="preserve">
+    <value>مبادر بالمحادثة</value>
+  </data>
+  <data name="ConversationStarterDesc" xml:space="preserve">
+    <value>ابدأ 5 نقاشات</value>
+  </data>
+  <data name="ExpertReviewerName" xml:space="preserve">
+    <value>مراجع خبير</value>
+  </data>
+  <data name="ExpertReviewerDesc" xml:space="preserve">
+    <value>اكتب 10 مراجعات مفصلة</value>
+  </data>
+  <data name="GuideMasterName" xml:space="preserve">
+    <value>سيد الأدلة</value>
+  </data>
+  <data name="GuideMasterDesc" xml:space="preserve">
+    <value>قم بإنشاء 5 أدلة شاملة</value>
+  </data>
+  <data name="SocialButterflyName" xml:space="preserve">
+    <value>فراشة اجتماعية</value>
+  </data>
+  <data name="SocialButterflyDesc" xml:space="preserve">
+    <value>تواصل مع 20 صديقاً</value>
+  </data>
+  <data name="EventOrganizerName" xml:space="preserve">
+    <value>منظم مناسبات</value>
+  </data>
+  <data name="EventOrganizerDesc" xml:space="preserve">
+    <value>استضف 3 مناسبات مجتمعية</value>
+  </data>
+  <data name="TopContributorName" xml:space="preserve">
+    <value>أبرز مساهم</value>
+  </data>
+  <data name="TopContributorDesc" xml:space="preserve">
+    <value>احصل على 1000 نقطة سمعة</value>
+  </data>
+  <data name="EarlyAdopterName" xml:space="preserve">
+    <value>مبادر في الانضمام</value>
+  </data>
+  <data name="EarlyAdopterDesc" xml:space="preserve">
+    <value>انضم في الشهر الأول</value>
+  </data>
+  <data name="VerifiedExpertName" xml:space="preserve">
+    <value>خبير موثق</value>
+  </data>
+  <data name="VerifiedExpertDesc" xml:space="preserve">
+    <value>احصل على توثيق من قبل المشرفين</value>
+  </data>
+  <data name="NewsReporterName" xml:space="preserve">
+    <value>مراسل أخبار</value>
+  </data>
+  <data name="NewsReporterDesc" xml:space="preserve">
+    <value>شارك 10 مقالات إخبارية</value>
+  </data>
+  <data name="ProblemSolverName" xml:space="preserve">
+    <value>حلّال مشاكل</value>
+  </data>
+  <data name="ProblemSolverDesc" xml:space="preserve">
+    <value>أجب على 20 سؤالاً</value>
+  </data>
+  <data name="GettingStartedCat" xml:space="preserve">
+    <value>البداية</value>
+  </data>
+  <data name="CommunityCat" xml:space="preserve">
+    <value>المجتمع</value>
+  </data>
+  <data name="EngagementCat" xml:space="preserve">
+    <value>التفاعل</value>
+  </data>
+  <data name="ContentCat" xml:space="preserve">
+    <value>المحتوى</value>
+  </data>
+  <data name="SocialCat" xml:space="preserve">
+    <value>اجتماعي</value>
+  </data>
+  <data name="EventsCat" xml:space="preserve">
+    <value>المناسبات</value>
+  </data>
+  <data name="AchievementCat" xml:space="preserve">
+    <value>الإنجاز</value>
+  </data>
+  <data name="SpecialCat" xml:space="preserve">
+    <value>خاص</value>
+  </data>
+</root>

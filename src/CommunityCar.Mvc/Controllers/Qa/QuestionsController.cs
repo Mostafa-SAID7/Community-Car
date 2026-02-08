@@ -4,24 +4,28 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Mvc.Controllers.Qa;
 
-[Route("Questions")]
+[Route("{culture:alpha}/Questions")]
 public class QuestionsController : Controller
 {
     private readonly IQuestionService _questionService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IStringLocalizer<QuestionsController> _localizer;
     private readonly ILogger<QuestionsController> _logger;
 
     public QuestionsController(
         IQuestionService questionService,
         ICurrentUserService currentUserService,
+        IStringLocalizer<QuestionsController> localizer,
         ILogger<QuestionsController> logger)
     {
         _questionService = questionService;
         _currentUserService = currentUserService;
+        _localizer = localizer;
         _logger = logger;
     }
 
@@ -54,7 +58,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading questions");
-            TempData["Error"] = "Failed to load questions";
+            TempData["Error"] = _localizer["FailedToLoadQuestions"].Value;
             return View(new PagedResult<Domain.DTOs.Community.QuestionDto>(
                 new List<Domain.DTOs.Community.QuestionDto>(), 0, page, pageSize));
         }
@@ -70,7 +74,7 @@ public class QuestionsController : Controller
             var question = await _questionService.GetQuestionByIdAsync(id, currentUserId);
             if (question == null)
             {
-                TempData["Error"] = "Question not found";
+                TempData["Error"] = _localizer["QuestionNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -86,7 +90,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading question {QuestionId}", id);
-            TempData["Error"] = "Failed to load question";
+            TempData["Error"] = _localizer["FailedToLoadQuestion"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -102,7 +106,7 @@ public class QuestionsController : Controller
             var question = await _questionService.GetQuestionBySlugAsync(slug, currentUserId);
             if (question == null)
             {
-                TempData["Error"] = "Question not found";
+                TempData["Error"] = _localizer["QuestionNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -118,7 +122,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading question {Slug}", slug);
-            TempData["Error"] = "Failed to load question";
+            TempData["Error"] = _localizer["FailedToLoadQuestion"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -145,7 +149,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading create question page");
-            TempData["Error"] = "Failed to load create question page";
+            TempData["Error"] = _localizer["FailedToLoadCreatePage"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -174,13 +178,13 @@ public class QuestionsController : Controller
                 categoryId: model.CategoryId,
                 tags: model.Tags);
 
-            TempData["Success"] = "Question created successfully";
+            TempData["Success"] = _localizer["QuestionCreatedSuccessfully"].Value;
             return RedirectToAction(nameof(Details), new { slug = question.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating question");
-            ModelState.AddModelError("", "Failed to create question");
+            ModelState.AddModelError("", _localizer["FailedToCreateQuestion"].Value);
             model.Categories = (await _questionService.GetCategoriesAsync())
                 .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
             return View(model);
@@ -197,14 +201,14 @@ public class QuestionsController : Controller
             var question = await _questionService.GetQuestionByIdAsync(id);
             if (question == null)
             {
-                TempData["Error"] = "Question not found";
+                TempData["Error"] = _localizer["QuestionNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             var userId = GetCurrentUserId();
             if (question.AuthorId != userId)
             {
-                TempData["Error"] = "You can only edit your own questions";
+                TempData["Error"] = _localizer["CannotEditOthersQuestion"].Value;
                 return RedirectToAction(nameof(Details), new { id });
             }
 
@@ -224,7 +228,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading question for edit {QuestionId}", id);
-            TempData["Error"] = "Failed to load question";
+            TempData["Error"] = _localizer["FailedToLoadQuestion"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -250,26 +254,26 @@ public class QuestionsController : Controller
             var question = await _questionService.GetQuestionByIdAsync(id);
             if (question == null)
             {
-                TempData["Error"] = "Question not found";
+                TempData["Error"] = _localizer["QuestionNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             var userId = GetCurrentUserId();
             if (question.AuthorId != userId)
             {
-                TempData["Error"] = "You can only edit your own questions";
+                TempData["Error"] = _localizer["CannotEditOthersQuestion"].Value;
                 return RedirectToAction(nameof(Details), new { id });
             }
 
             await _questionService.UpdateQuestionAsync(id, model.Title, model.Content, categoryId: model.CategoryId, tags: model.Tags);
 
-            TempData["Success"] = "Question updated successfully";
+            TempData["Success"] = _localizer["QuestionUpdatedSuccessfully"].Value;
             return RedirectToAction(nameof(Details), new { id });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating question {QuestionId}", id);
-            ModelState.AddModelError("", "Failed to update question");
+            ModelState.AddModelError("", _localizer["FailedToUpdateQuestion"].Value);
             model.Categories = (await _questionService.GetCategoriesAsync())
                 .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
             return View(model);
@@ -286,20 +290,20 @@ public class QuestionsController : Controller
         {
             var question = await _questionService.GetQuestionByIdAsync(id);
             if (question == null)
-                return Json(new { success = false, message = "Question not found" });
+                return Json(new { success = false, message = _localizer["QuestionNotFound"].Value });
 
             var userId = GetCurrentUserId();
             if (question.AuthorId != userId)
-                return Json(new { success = false, message = "You can only delete your own questions" });
+                return Json(new { success = false, message = _localizer["CannotDeleteOthersQuestion"].Value });
 
             await _questionService.DeleteQuestionAsync(id);
 
-            return Json(new { success = true, message = "Question deleted successfully" });
+            return Json(new { success = true, message = _localizer["QuestionDeletedSuccessfully"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting question {QuestionId}", id);
-            return Json(new { success = false, message = "Failed to delete question" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteQuestion"].Value });
         }
     }
 
@@ -313,12 +317,12 @@ public class QuestionsController : Controller
             var userId = GetCurrentUserId();
             await _questionService.VoteQuestionAsync(id, userId, isUpvote);
 
-            return Json(new { success = true, message = "Vote recorded" });
+            return Json(new { success = true, message = _localizer["VoteRecorded"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error voting on question {QuestionId}", id);
-            return Json(new { success = false, message = "Failed to vote" });
+            return Json(new { success = false, message = _localizer["FailedToVote"].Value });
         }
     }
 
@@ -332,12 +336,12 @@ public class QuestionsController : Controller
             var userId = GetCurrentUserId();
             await _questionService.RemoveQuestionVoteAsync(id, userId);
 
-            return Json(new { success = true, message = "Vote removed" });
+            return Json(new { success = true, message = _localizer["VoteRemoved"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing vote from question {QuestionId}", id);
-            return Json(new { success = false, message = "Failed to remove vote" });
+            return Json(new { success = false, message = _localizer["FailedToRemoveVote"].Value });
         }
     }
 
@@ -351,12 +355,12 @@ public class QuestionsController : Controller
             var userId = GetCurrentUserId();
             var result = await _questionService.BookmarkQuestionAsync(id, userId);
 
-            return Json(new { success = true, message = result != null ? "Question bookmarked" : "Bookmark removed" });
+            return Json(new { success = true, message = result != null ? _localizer["QuestionBookmarked"].Value : _localizer["BookmarkRemoved"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error toggling bookmark for question {QuestionId}", id);
-            return Json(new { success = false, message = "Failed to toggle bookmark" });
+            return Json(new { success = false, message = _localizer["FailedToToggleBookmark"].Value });
         }
     }
 
@@ -370,12 +374,12 @@ public class QuestionsController : Controller
             var userId = GetCurrentUserId();
             await _questionService.AcceptAnswerAsync(questionId, answerId, userId);
 
-            return Json(new { success = true, message = "Answer accepted" });
+            return Json(new { success = true, message = _localizer["AnswerAccepted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error accepting answer {AnswerId} for question {QuestionId}", answerId, questionId);
-            return Json(new { success = false, message = "Failed to accept answer" });
+            return Json(new { success = false, message = _localizer["FailedToAcceptAnswer"].Value });
         }
     }
 
@@ -389,12 +393,12 @@ public class QuestionsController : Controller
             var userId = GetCurrentUserId();
             await _questionService.UnacceptAnswerAsync(questionId, userId);
 
-            return Json(new { success = true, message = "Answer unaccepted" });
+            return Json(new { success = true, message = _localizer["AnswerUnaccepted"].Value });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error unaccepting answer for question {QuestionId}", questionId);
-            return Json(new { success = false, message = "Failed to unaccept answer" });
+            return Json(new { success = false, message = _localizer["FailedToUnacceptAnswer"].Value });
         }
     }
 
@@ -417,7 +421,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user questions");
-            TempData["Error"] = "Failed to load your questions";
+            TempData["Error"] = _localizer["FailedToLoadMyQuestions"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -441,7 +445,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading bookmarked questions");
-            TempData["Error"] = "Failed to load your bookmarks";
+            TempData["Error"] = _localizer["FailedToLoadMyBookmarks"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -464,7 +468,7 @@ public class QuestionsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching questions with query {Query}", query);
-            TempData["Error"] = "Failed to search questions";
+            TempData["Error"] = _localizer["FailedToSearchQuestions"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -475,7 +479,7 @@ public class QuestionsController : Controller
         
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            throw new UnauthorizedAccessException(_localizer["UserNotAuthenticated"].Value);
         }
 
         return userId;
