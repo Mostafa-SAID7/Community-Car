@@ -68,8 +68,8 @@
         else
         {
             <div class="row g-4">
-                <!-- Left Sidebar (Desktop: 2 cols, Tablet: 3 cols) -->
-                <div class="col-md-3 col-lg-2 sidebar-left">
+                <!-- Left Sidebar (Desktop: 2 cols, Hidden on Tablet and Mobile) -->
+                <div class="col-lg-2 d-none d-lg-block sidebar-left">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("LeftSidebar"))
                         {
@@ -82,13 +82,13 @@
                     </div>
                 </div>
 
-                <!-- Main Content (Desktop: 7 cols, Tablet: 6 cols, Mobile: 12 cols) -->
-                <div class="col-md-6 col-lg-7">
+                <!-- Main Content (Desktop: 7 cols, Tablet: 9 cols, Mobile: 12 cols) -->
+                <div class="col-12 col-lg-7">
                     @RenderBody()
                 </div>
 
-                <!-- Right Sidebar (Desktop: 3 cols, Tablet: 3 cols, Hidden on Mobile) -->
-                <div class="col-md-3 col-lg-3 d-none d-md-block sidebar-right">
+                <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet and Mobile) -->
+                <div class="col-lg-3 d-none d-lg-block sidebar-right">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("RightSidebar"))
                         {
