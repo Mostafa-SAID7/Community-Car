@@ -6,6 +6,7 @@ namespace CommunityCar.Mvc.Controllers;
 public class CultureController : Controller
 {
     [HttpPost]
+    [HttpGet]
     public IActionResult SetLanguage(string culture, string returnUrl)
     {
         Response.Cookies.Append(
@@ -40,7 +41,11 @@ public class CultureController : Controller
                 returnUrl = $"/{culture}/{string.Join("/", segments)}";
             }
         }
+        else
+        {
+            returnUrl = $"/{culture}";
+        }
 
-        return LocalRedirect(returnUrl ?? "/");
+        return LocalRedirect(returnUrl);
     }
 }

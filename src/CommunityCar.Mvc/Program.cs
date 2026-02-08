@@ -99,6 +99,17 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Culture/Language switching route (must be before other routes)
+app.MapControllerRoute(
+    name: "culture_switch",
+    pattern: "Culture/SetLanguage",
+    defaults: new { controller = "Culture", action = "SetLanguage" });
+
+app.MapControllerRoute(
+    name: "culture_switch_localized",
+    pattern: "{culture}/Culture/SetLanguage",
+    defaults: new { controller = "Culture", action = "SetLanguage" });
+
 app.MapControllerRoute(
     name: "areas_localized",
     pattern: "{culture:alpha}/{area:exists}/{controller=Home}/{action=Index}/{id?}");
