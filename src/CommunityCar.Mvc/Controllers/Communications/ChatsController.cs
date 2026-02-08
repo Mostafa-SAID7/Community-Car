@@ -52,7 +52,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading chat conversations");
-            TempData["Error"] = _localizer["FailedToLoadConversations"];
+            TempData["Error"] = _localizer["FailedToLoadConversations"].Value;
             return View(new List<ChatConversationDto>());
         }
     }
@@ -67,7 +67,7 @@ public class ChatsController : Controller
 
             if (userId == currentUserId)
             {
-                TempData["Error"] = _localizer["CannotChatWithSelf"];
+                TempData["Error"] = _localizer["CannotChatWithSelf"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -75,7 +75,7 @@ public class ChatsController : Controller
             var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId, userId);
             if (friendshipStatus != FriendshipStatus.Accepted)
             {
-                TempData["Error"] = _localizer["OnlyAcceptedFriendsCanChat"];
+                TempData["Error"] = _localizer["OnlyAcceptedFriendsCanChat"].Value;
                 return RedirectToAction("Index", "Friends");
             }
 
@@ -93,7 +93,7 @@ public class ChatsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading conversation with user {UserId}", userId);
-            TempData["Error"] = _localizer["FailedToLoadConversation"];
+            TempData["Error"] = _localizer["FailedToLoadConversation"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

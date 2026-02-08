@@ -38,7 +38,7 @@
                             <span class="badge bg-primary news-category-badge">
                                 @article.Category
                             </span>
-                            <img src="@(article.ImageUrl ?? "/images/news-placeholder.jpg")" 
+                            <img src="@(article.ImageUrl ?? "/images/news-placeholder.svg")" 
                                  alt="@article.Title" 
                                  class="card-img-top news-image" />
                         </div>
@@ -147,8 +147,13 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Get current culture from URL
+                    const pathParts = window.location.pathname.split('/').filter(p => p);
+                    const culture = (pathParts.length > 0 && pathParts[0].length === 2) ? pathParts[0] : 'en';
+                    const url = '/' + culture + '/News/Delete/' + id;
+                    
                     $.ajax({
-                        url: '/News/Delete/' + id,
+                        url: url,
                         type: 'POST',
                         data: {
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()

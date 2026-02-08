@@ -58,7 +58,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading posts");
-            TempData["Error"] = _localizer["FailedToLoadPosts"];
+            TempData["Error"] = _localizer["FailedToLoadPosts"].Value;
             return View(new PagedResult<Domain.DTOs.Community.PostDto>(
                 new List<Domain.DTOs.Community.PostDto>(), 0, page, pageSize));
         }
@@ -76,7 +76,7 @@ public class PostsController : Controller
 
             if (postDto == null)
             {
-                TempData["Error"] = _localizer["PostNotFound"];
+                TempData["Error"] = _localizer["PostNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -119,7 +119,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading post {Slug}", slug);
-            TempData["Error"] = _localizer["FailedToLoadPost"];
+            TempData["Error"] = _localizer["FailedToLoadPost"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -156,13 +156,13 @@ public class PostsController : Controller
                 userId,
                 model.GroupId);
 
-            TempData["Success"] = _localizer["PostCreated"];
+            TempData["Success"] = _localizer["PostCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating post");
-            ModelState.AddModelError("", _localizer["FailedToCreatePost"]);
+            ModelState.AddModelError("", _localizer["FailedToCreatePost"].Value);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
             return View(model);
         }
@@ -180,13 +180,13 @@ public class PostsController : Controller
 
             if (postDto == null)
             {
-                TempData["Error"] = _localizer["PostNotFound"];
+                TempData["Error"] = _localizer["PostNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             if (!postDto.IsAuthor)
             {
-                TempData["Error"] = _localizer["OnlyAuthorCanEditPost"];
+                TempData["Error"] = _localizer["OnlyAuthorCanEditPost"].Value;
                 return RedirectToAction(nameof(Details), new { slug = postDto.Slug });
             }
 
@@ -210,7 +210,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading post for edit {PostId}", id);
-            TempData["Error"] = _localizer["FailedToLoadPost"];
+            TempData["Error"] = _localizer["FailedToLoadPost"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -238,13 +238,13 @@ public class PostsController : Controller
                 model.Content,
                 model.Type);
 
-            TempData["Success"] = _localizer["PostUpdated"];
+            TempData["Success"] = _localizer["PostUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating post {PostId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdatePost"]);
+            ModelState.AddModelError("", _localizer["FailedToUpdatePost"].Value);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
             return View(model);
         }
@@ -389,7 +389,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user posts");
-            TempData["Error"] = _localizer["FailedToLoadMyPosts"];
+            TempData["Error"] = _localizer["FailedToLoadMyPosts"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -406,7 +406,7 @@ public class PostsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading featured posts");
-            TempData["Error"] = _localizer["FailedToLoadFeaturedPosts"];
+            TempData["Error"] = _localizer["FailedToLoadFeaturedPosts"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

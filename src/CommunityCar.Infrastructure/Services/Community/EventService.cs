@@ -50,6 +50,20 @@ public class EventService : IEventService
             maxAttendees,
             isOnline);
 
+        // Ensure slug uniqueness
+        var baseSlug = communityEvent.Slug;
+        var slug = baseSlug;
+        var counter = 1;
+        
+        while (await _context.Set<CommunityEvent>().AnyAsync(e => e.Slug == slug && !e.IsDeleted))
+        {
+            slug = $"{baseSlug}-{counter}";
+            counter++;
+        }
+        
+        // Set the unique slug directly (Slug property is public in BaseEntity)
+        communityEvent.Slug = slug;
+
         // Auto-publish the event so it appears in the index immediately
         communityEvent.Publish();
 

@@ -152,7 +152,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating guide");
-            ModelState.AddModelError("", _localizer["FailedToCreateGuide"]);
+            ModelState.AddModelError("", _localizer["FailedToCreateGuide"].Value);
             ViewBag.Difficulties = Enum.GetValues<GuideDifficulty>();
             ViewBag.Categories = await _guideService.GetCategoriesAsync();
             return View(model);
@@ -240,7 +240,7 @@ public class GuidesController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating guide {GuideId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdateGuide"]);
+            ModelState.AddModelError("", _localizer["FailedToUpdateGuide"].Value);
             ViewBag.Difficulties = Enum.GetValues<GuideDifficulty>();
             ViewBag.Categories = await _guideService.GetCategoriesAsync();
             return View(model);

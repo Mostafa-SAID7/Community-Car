@@ -61,7 +61,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading reviews");
-            TempData["Error"] = _localizer["FailedToLoadReviews"];
+            TempData["Error"] = _localizer["FailedToLoadReviews"].Value;
             return View(new PagedResult<Domain.DTOs.Community.ReviewDto>(
                 new List<Domain.DTOs.Community.ReviewDto>(), 0, page, pageSize));
         }
@@ -79,7 +79,7 @@ public class ReviewsController : Controller
 
             if (reviewDto == null)
             {
-                TempData["Error"] = _localizer["ReviewNotFound"];
+                TempData["Error"] = _localizer["ReviewNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -127,7 +127,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading review {Slug}", slug);
-            TempData["Error"] = _localizer["FailedToLoadReview"];
+            TempData["Error"] = _localizer["FailedToLoadReview"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -181,13 +181,13 @@ public class ReviewsController : Controller
                 model.IsVerifiedPurchase,
                 model.IsRecommended);
 
-            TempData["Success"] = _localizer["ReviewSubmittedForApproval"];
+            TempData["Success"] = _localizer["ReviewSubmittedForApproval"].Value;
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating review");
-            ModelState.AddModelError("", _localizer["FailedToCreateReview"]);
+            ModelState.AddModelError("", _localizer["FailedToCreateReview"].Value);
             ViewBag.Types = Enum.GetValues<ReviewType>();
             return View(model);
         }
@@ -211,7 +211,7 @@ public class ReviewsController : Controller
 
             if (!reviewDto.IsReviewer)
             {
-                TempData["Error"] = _localizer["OnlyReviewerCanEdit"];
+                TempData["Error"] = _localizer["OnlyReviewerCanEdit"].Value;
                 return RedirectToAction(nameof(Details), new { slug = reviewDto.Slug });
             }
 
@@ -231,7 +231,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading review for edit {ReviewId}", id);
-            TempData["Error"] = _localizer["FailedToLoadReview"];
+            TempData["Error"] = _localizer["FailedToLoadReview"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -259,13 +259,13 @@ public class ReviewsController : Controller
                 model.Cons,
                 model.IsRecommended);
 
-            TempData["Success"] = _localizer["ReviewUpdated"];
+            TempData["Success"] = _localizer["ReviewUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating review {ReviewId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdateReview"]);
+            ModelState.AddModelError("", _localizer["FailedToUpdateReview"].Value);
             return View(model);
         }
     }
@@ -380,7 +380,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user reviews");
-            TempData["Error"] = _localizer["FailedToLoadMyReviews"];
+            TempData["Error"] = _localizer["FailedToLoadMyReviews"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -414,7 +414,7 @@ public class ReviewsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading entity reviews");
-            TempData["Error"] = _localizer["FailedToLoadReviews"];
+            TempData["Error"] = _localizer["FailedToLoadReviews"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

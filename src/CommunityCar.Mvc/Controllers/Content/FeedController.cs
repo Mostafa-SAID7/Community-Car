@@ -156,7 +156,7 @@ public class FeedController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading feed");
-            TempData["Error"] = _localizer["FailedToLoadFeed"];
+            TempData["Error"] = _localizer["FailedToLoadFeed"].Value;
             return View(new FeedViewModel());
         }
     }

@@ -22,7 +22,8 @@
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 1rem;
-            display: @(!string.IsNullOrEmpty(Model.ImageUrl) ? "block" : "none");
+            border: 2px dashed #dee2e6;
+            background: #f8f9fa;
         }
     </style>
 }
@@ -95,9 +96,20 @@
                                     
                                     <div class="mb-3">
                                         <label asp-for="ImageUrl" class="form-label small fw-bold">Main Image URL</label>
-                                        <img src="@Model.ImageUrl" id="imagePreview" class="image-preview" />
+                                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                        {
+                                            <img src="@Model.ImageUrl" id="imagePreview" class="image-preview" onerror="this.src='/images/news-placeholder.svg'" />
+                                        }
+                                        else
+                                        {
+                                            <img src="/images/news-placeholder.svg" id="imagePreview" class="image-preview" style="display: block;" />
+                                        }
                                         <input asp-for="ImageUrl" class="form-control rounded-3" id="imageUrlInput" placeholder="https://..." />
                                         <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                        <small class="form-text text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Enter a valid image URL. You can upload images to services like Imgur or use direct image links.
+                                        </small>
                                     </div>
 
                                     <div class="mb-3">
@@ -139,11 +151,13 @@
     <script>
         $(document).ready(function() {
             $('#imageUrlInput').on('change input', function() {
-                const url = $(this).val();
+                const url = $(this).val().trim();
+                const preview = $('#imagePreview');
+                
                 if (url) {
-                    $('#imagePreview').attr('src', url).show();
+                    preview.attr('src', url).show();
                 } else {
-                    $('#imagePreview').hide();
+                    preview.attr('src', '/images/news-placeholder.svg').show();
                 }
             });
         });
@@ -159,9 +173,14 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('/News/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                    // Get current culture from URL
+                    const pathParts = window.location.pathname.split('/').filter(p => p);
+                    const culture = (pathParts.length > 0 && pathParts[0].length === 2) ? pathParts[0] : 'en';
+                    const url = '/' + culture + '/News/Delete/' + id;
+                    
+                    $.post(url, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
                         if (res.success) {
-                            window.location.href = '/News';
+                            window.location.href = '/' + culture + '/News';
                         }
                     });
                 }

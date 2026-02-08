@@ -76,10 +76,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.UseMiddleware<CultureRedirectMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseMiddleware<CultureRedirectMiddleware>();
+
 app.UseRouting();
 
 var localizationOptions = new RequestLocalizationOptions()

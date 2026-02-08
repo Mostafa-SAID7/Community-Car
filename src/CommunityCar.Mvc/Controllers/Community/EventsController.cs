@@ -69,7 +69,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading events");
-            TempData["Error"] = _localizer["FailedToLoadEvents"];
+            TempData["Error"] = _localizer["FailedToLoadEvents"].Value;
             return View(new PagedResult<Domain.DTOs.Community.EventDto>(
                 new List<Domain.DTOs.Community.EventDto>(), 0, page, pageSize));
         }
@@ -116,7 +116,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading event {Slug}", slug);
-            TempData["Error"] = _localizer["FailedToLoadEvent"];
+            TempData["Error"] = _localizer["FailedToLoadEvent"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -157,13 +157,13 @@ public class EventsController : Controller
                 model.MaxAttendees,
                 model.IsOnline);
 
-            TempData["Success"] = _localizer["EventCreated"];
+            TempData["Success"] = _localizer["EventCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = communityEvent.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating event");
-            ModelState.AddModelError("", _localizer["FailedToCreateEvent"]);
+            ModelState.AddModelError("", _localizer["FailedToCreateEvent"].Value);
             ViewBag.Categories = Enum.GetValues<EventCategory>();
             return View(model);
         }
@@ -187,7 +187,7 @@ public class EventsController : Controller
 
             if (!eventDto.IsOrganizer)
             {
-                TempData["Error"] = _localizer["OnlyOrganizerCanEdit"];
+                TempData["Error"] = _localizer["OnlyOrganizerCanEdit"].Value;
                 return RedirectToAction(nameof(Details), new { slug = eventDto.Slug });
             }
 
@@ -213,7 +213,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading event for edit {EventId}", id);
-            TempData["Error"] = _localizer["FailedToLoadEvent"];
+            TempData["Error"] = _localizer["FailedToLoadEvent"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -246,13 +246,13 @@ public class EventsController : Controller
                 model.MaxAttendees,
                 model.IsOnline);
 
-            TempData["Success"] = _localizer["EventUpdated"];
+            TempData["Success"] = _localizer["EventUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = communityEvent.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating event {EventId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdateEvent"]);
+            ModelState.AddModelError("", _localizer["FailedToUpdateEvent"].Value);
             ViewBag.Categories = Enum.GetValues<EventCategory>();
             return View(model);
         }
@@ -391,7 +391,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user events");
-            TempData["Error"] = _localizer["FailedToLoadMyEvents"];
+            TempData["Error"] = _localizer["FailedToLoadMyEvents"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

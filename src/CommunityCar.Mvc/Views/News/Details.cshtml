@@ -88,7 +88,7 @@
                             <i class="fas fa-star me-2"></i>FEATURED
                         </div>
                     }
-                    <img src="@(article.ImageUrl ?? "/images/news-placeholder.jpg")" class="news-hero-image" alt="@article.Title">
+                    <img src="@(article.ImageUrl ?? "/images/news-placeholder.svg")" class="news-hero-image" alt="@article.Title">
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-4">
@@ -280,7 +280,7 @@
                     {
                         <div class="col-md-4">
                             <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden related-news-item">
-                                <img src="@(item.ImageUrl ?? "/images/news-placeholder.jpg")" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                <img src="@(item.ImageUrl ?? "/images/news-placeholder.svg")" class="card-img-top" style="height: 150px; object-fit: cover;">
                                 <div class="card-body p-3">
                                     <span class="badge bg-light text-primary mb-2">@item.Category</span>
                                     <h6 class="fw-bold mb-2">
@@ -301,7 +301,7 @@
     <script src="~/js/friends.js"></script>
     <script>
         function toggleLike(articleId) {
-            $.post('/News/ToggleLike/' + articleId, function(res) {
+            $.post(CultureHelper.addCultureToUrl('/News/ToggleLike/' + articleId), function(res) {
                 if (res.success) location.reload();
             });
         }
@@ -318,7 +318,7 @@
         $('#commentForm').submit(function(e) {
             e.preventDefault();
             const data = $(this).serialize();
-            $.post('/News/AddComment', data, function(res) {
+            $.post(CultureHelper.addCultureToUrl('/News/AddComment'), data, function(res) {
                 if (res.success) location.reload();
             });
         });

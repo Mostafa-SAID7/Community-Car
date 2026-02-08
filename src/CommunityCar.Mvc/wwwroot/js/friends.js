@@ -2,14 +2,36 @@
 
 $(document).ready(function () {
 
+    // Get current culture from URL path
+    function getCurrentCulture() {
+        var pathParts = window.location.pathname.split('/').filter(p => p);
+        // Check if first part is a 2-letter culture code
+        if (pathParts.length > 0 && pathParts[0].length === 2 && /^[a-z]{2}$/i.test(pathParts[0])) {
+            return pathParts[0];
+        }
+        return 'en'; // default
+    }
+
     // Helper to handle AJAX form submissions
     function handleAjaxForm(form, options) {
         var btn = form.find('button[type="submit"]');
         var originalBtnContent = btn.html();
 
-        // Append 'Json' to action if not already present, to use the JSON endpoint
+        // Get the action URL from the form
         var url = form.attr('action');
+        
+        // If URL doesn't already end with 'Json', append it
         if (!url.endsWith('Json')) {
+            // Check if URL already has culture prefix
+            var culture = getCurrentCulture();
+            var hasCulturePrefix = url.startsWith('/' + culture + '/');
+            
+            if (!hasCulturePrefix && !url.startsWith('http')) {
+                // Add culture prefix if missing
+                url = '/' + culture + url;
+            }
+            
+            // Append 'Json' to the action name
             url += 'Json';
         }
 

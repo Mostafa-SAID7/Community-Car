@@ -68,8 +68,8 @@
         else
         {
             <div class="row g-4">
-                <!-- Left Sidebar (Desktop: 2 cols, Hidden on Tablet and Mobile) -->
-                <div class="col-lg-2 d-none d-lg-block sidebar-left">
+                <!-- Left Sidebar (Desktop: 2 cols, Mobile: toggleable offcanvas) -->
+                <div class="col-lg-2 sidebar-left">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("LeftSidebar"))
                         {
@@ -83,12 +83,12 @@
                 </div>
 
                 <!-- Main Content (Desktop: 7 cols, Tablet: 9 cols, Mobile: 12 cols) -->
-                <div class="col-12 col-lg-7">
+                <div class="col-12 col-md-9 col-lg-7">
                     @RenderBody()
                 </div>
 
                 <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet and Mobile) -->
-                <div class="col-lg-3 d-none d-lg-block sidebar-right">
+                <div class="col-lg-3 sidebar-right">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("RightSidebar"))
                         {
@@ -115,6 +115,9 @@
     <script src="~/lib/toastr.js/toastr.min.js"></script>
     <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/chart.js/chart.umd.min.js"></script>
+
+    <!-- Culture Helper (must load early) -->
+    <script src="~/js/culture-helper.js"></script>
 
     <!-- Core Modular JS -->
     <script src="~/js/core/config.js"></script>

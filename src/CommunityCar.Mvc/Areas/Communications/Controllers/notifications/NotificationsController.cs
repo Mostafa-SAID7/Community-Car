@@ -8,7 +8,8 @@ using System.Security.Claims;
 namespace CommunityCar.Web.Areas.Communications.Controllers.notifications;
 
 [Area("Communications")]
-[Route("Communications/[controller]")]
+[Route("/{culture:alpha}/Communications/[controller]")]
+[Route("/Communications/[controller]")]
 [Authorize]
 public class NotificationsController : Controller
 {

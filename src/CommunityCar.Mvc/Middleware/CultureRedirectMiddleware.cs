@@ -22,6 +22,7 @@ public class CultureRedirectMiddleware
             path.StartsWith("/js/") || 
             path.StartsWith("/lib/") || 
             path.StartsWith("/images/") ||
+            path.StartsWith("/uploads/") ||
             path.StartsWith("/fonts/") ||
             path.StartsWith("/favicon") ||
             path.StartsWith("/questionHub") ||

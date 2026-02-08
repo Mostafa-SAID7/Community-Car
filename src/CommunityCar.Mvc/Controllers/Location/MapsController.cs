@@ -55,7 +55,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map points");
-            TempData["Error"] = _localizer["FailedToLoadMapPoints"];
+            TempData["Error"] = _localizer["FailedToLoadMapPoints"].Value;
             return View(new PagedResult<Domain.DTOs.Community.MapPointDto>(
                 new List<Domain.DTOs.Community.MapPointDto>(), 0, page, pageSize));
         }
@@ -72,7 +72,7 @@ public class MapsController : Controller
 
             if (mapPointDto == null)
             {
-                TempData["Error"] = _localizer["MapPointNotFound"];
+                TempData["Error"] = _localizer["MapPointNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -103,7 +103,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map point {Slug}", slug);
-            TempData["Error"] = _localizer["FailedToLoadMapPoint"];
+            TempData["Error"] = _localizer["FailedToLoadMapPoint"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -142,13 +142,13 @@ public class MapsController : Controller
                 userId,
                 model.Description);
 
-            TempData["Success"] = _localizer["MapPointCreated"];
+            TempData["Success"] = _localizer["MapPointCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = mapPoint.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating map point");
-            ModelState.AddModelError("", _localizer["FailedToCreateMapPoint"]);
+            ModelState.AddModelError("", _localizer["FailedToCreateMapPoint"].Value);
             ViewBag.Types = Enum.GetValues<MapPointType>();
             return View(model);
         }
@@ -166,13 +166,13 @@ public class MapsController : Controller
 
             if (mapPointDto == null)
             {
-                TempData["Error"] = _localizer["MapPointNotFound"];
+                TempData["Error"] = _localizer["MapPointNotFound"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             if (!mapPointDto.IsOwner)
             {
-                TempData["Error"] = _localizer["OnlyOwnerCanEditMapPoint"];
+                TempData["Error"] = _localizer["OnlyOwnerCanEditMapPoint"].Value;
                 return RedirectToAction(nameof(Details), new { slug = mapPointDto.Slug });
             }
 
@@ -196,7 +196,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading map point for edit {MapPointId}", id);
-            TempData["Error"] = _localizer["FailedToLoadMapPoint"];
+            TempData["Error"] = _localizer["FailedToLoadMapPoint"].Value;
             return RedirectToAction(nameof(Index));
         }
     }
@@ -227,13 +227,13 @@ public class MapsController : Controller
                 model.Type,
                 model.Description);
 
-            TempData["Success"] = _localizer["MapPointUpdated"];
+            TempData["Success"] = _localizer["MapPointUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = mapPoint.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating map point {MapPointId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdateMapPoint"]);
+            ModelState.AddModelError("", _localizer["FailedToUpdateMapPoint"].Value);
             ViewBag.Types = Enum.GetValues<MapPointType>();
             return View(model);
         }
@@ -414,7 +414,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching map points");
-            TempData["Error"] = _localizer["FailedToSearchMapPoints"];
+            TempData["Error"] = _localizer["FailedToSearchMapPoints"].Value;
             return View(new PagedResult<Domain.DTOs.Community.MapPointDto>(
                 new List<Domain.DTOs.Community.MapPointDto>(), 0, page, pageSize));
         }
@@ -459,7 +459,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading featured map points");
-            TempData["Error"] = _localizer["FailedToLoadFeaturedMapPoints"];
+            TempData["Error"] = _localizer["FailedToLoadFeaturedMapPoints"].Value;
             return View(new List<Domain.DTOs.Community.MapPointDto>());
         }
     }
@@ -485,7 +485,7 @@ public class MapsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading user map points");
-            TempData["Error"] = _localizer["FailedToLoadMyMapPoints"];
+            TempData["Error"] = _localizer["FailedToLoadMyMapPoints"].Value;
             return RedirectToAction(nameof(Index));
         }
     }

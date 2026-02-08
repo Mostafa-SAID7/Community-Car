@@ -4,7 +4,6 @@
 .sidebar-sticky {
     position: sticky;
     top: 80px;
-    /* Adjust based on header height */
     height: calc(100vh - 100px);
     overflow-y: auto;
     z-index: 100;
@@ -29,7 +28,8 @@
 }
 
 /* Mobile Sidebar (Offcanvas) behavior */
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
+    /* Left sidebar: hidden by default, slides in when toggled */
     .sidebar-left {
         position: fixed;
         top: 0;
@@ -38,22 +38,27 @@
         height: 100vh;
         background-color: #fff;
         z-index: 1045;
-        /* Above header */
         transition: left 0.3s ease-in-out;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         padding-top: 20px;
         overflow-y: auto;
     }
 
-    /* Force display block when on mobile so it can slide in (bootstrap might hide it with d-none) */
-    .sidebar-left {
-        display: block !important;
-    }
-
-    /* When body has sidebar-open class */
+    /* When body has sidebar-open class, slide left sidebar in */
     body.sidebar-open .sidebar-left {
         left: 0 !important;
         box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Right sidebar: completely hidden on mobile */
+    .sidebar-right {
+        display: none !important;
+    }
+
+    /* Main content takes full width on mobile */
+    .col-12.col-lg-7 {
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 
     /* Backdrop */
@@ -74,20 +79,25 @@
 
     body.sidebar-open {
         overflow: hidden;
-        /* Prevent scrolling when sidebar is open */
     }
 
     body.sidebar-open .sidebar-backdrop {
         display: block !important;
         opacity: 1 !important;
     }
-
-    /* Hide right sidebar on mobile completely */
-    .sidebar-right {
-        display: none !important;
-    }
 }
 
+/* Desktop: Both sidebars visible */
+@media (min-width: 992px) {
+    .sidebar-left,
+    .sidebar-right {
+        display: block !important;
+        position: relative;
+        left: auto;
+        width: auto;
+        height: auto;
+    }
+}
 
 /* Left Sidebar Active State */
 .list-group-item.active {
