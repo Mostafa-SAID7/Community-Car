@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.Localization;
 
 [Area("Dashboard")]
+[Route("Dashboard/Localization")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class LocalizationController : Controller
 {
@@ -31,7 +32,7 @@ public class LocalizationController : Controller
         _logger = logger;
     }
 
-    [HttpGet("")]
+    [HttpGet]
     [HttpGet("Index")]
     public async Task<IActionResult> Index(
         string? culture = null,

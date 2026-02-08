@@ -135,3 +135,36 @@ select.form-control {
     border-radius: var(--radius-md);
     color: var(--text-secondary);
 }
+
+/* Dark Mode Enhancements for Better Text Contrast */
+[data-theme="dark"] .form-label {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control {
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: #808080;
+}
+
+[data-theme="dark"] .form-check-label {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-text {
+    color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .input-group-text {
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
+    border-color: var(--input-border);
+}
+
+[data-theme="dark"] select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23b0b0b0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}

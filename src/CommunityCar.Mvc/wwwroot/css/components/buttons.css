@@ -186,3 +186,56 @@
 .bg-purple {
     background-color: #8b5cf6;
 }
+
+/* Dark Mode Enhancements for Better Text Contrast */
+[data-theme="dark"] .btn-primary {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-secondary {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-outline {
+    color: var(--color-primary);
+}
+
+[data-theme="dark"] .btn-outline:hover:not(:disabled) {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-ghost {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-success {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-danger {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-filter {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-filter.active {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-action {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-purple {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-outline-purple {
+    color: #a78bfa;
+}
+
+[data-theme="dark"] .btn-outline-purple:hover:not(:disabled) {
+    color: #ffffff;
+}
