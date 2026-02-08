@@ -14,11 +14,14 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Domain.Interfaces.Communications;
 using CommunityCar.Domain.Interfaces.Common;
+using CommunityCar.Domain.Interfaces;
+using CommunityCar.Domain.Commands.Community;
 using CommunityCar.Infrastructure.Services.Identity;
 using CommunityCar.Infrastructure.Services.Community;
 using CommunityCar.Infrastructure.Services.Communications;
 using CommunityCar.Infrastructure.Services.Dashboard;
 using CommunityCar.Infrastructure.Services.Common;
+using CommunityCar.Infrastructure.Handlers.Community;
 
 namespace CommunityCar.Infrastructure;
 
@@ -108,6 +111,40 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         
+        // Command Handlers
+        services.AddScoped<ICommandHandler<LikePostCommand, LikePostResult>, LikePostCommandHandler>();
+        services.AddScoped<ICommandHandler<VoteQuestionCommand, VoteResult>, VoteQuestionCommandHandler>();
+        services.AddScoped<ICommandHandler<VoteAnswerCommand, VoteResult>, VoteAnswerCommandHandler>();
+        
+        // Domain Event Handlers - Vote
+        services.AddScoped<CommunityCar.Infrastructure.EventHandlers.VoteAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.VoteCreatedEvent>, CommunityCar.Infrastructure.EventHandlers.VoteAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.VoteChangedEvent>, CommunityCar.Infrastructure.EventHandlers.VoteAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.VoteRemovedEvent>, CommunityCar.Infrastructure.EventHandlers.VoteAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.VoteResurrectedEvent>, CommunityCar.Infrastructure.EventHandlers.VoteAuditEventHandler>();
+        
+        // Domain Event Handlers - Like
+        services.AddScoped<CommunityCar.Infrastructure.EventHandlers.LikeAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.LikeCreatedEvent>, CommunityCar.Infrastructure.EventHandlers.LikeAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.LikeRemovedEvent>, CommunityCar.Infrastructure.EventHandlers.LikeAuditEventHandler>();
+        
+        // Domain Event Handlers - Comment
+        services.AddScoped<CommunityCar.Infrastructure.EventHandlers.CommentAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.CommentCreatedEvent>, CommunityCar.Infrastructure.EventHandlers.CommentAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.CommentUpdatedEvent>, CommunityCar.Infrastructure.EventHandlers.CommentAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.CommentDeletedEvent>, CommunityCar.Infrastructure.EventHandlers.CommentAuditEventHandler>();
+        
+        // Domain Event Handlers - Bookmark
+        services.AddScoped<CommunityCar.Infrastructure.EventHandlers.BookmarkAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.BookmarkCreatedEvent>, CommunityCar.Infrastructure.EventHandlers.BookmarkAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.BookmarkRemovedEvent>, CommunityCar.Infrastructure.EventHandlers.BookmarkAuditEventHandler>();
+        
+        // Domain Event Handlers - Rating
+        services.AddScoped<CommunityCar.Infrastructure.EventHandlers.RatingAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.RatingCreatedEvent>, CommunityCar.Infrastructure.EventHandlers.RatingAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.RatingUpdatedEvent>, CommunityCar.Infrastructure.EventHandlers.RatingAuditEventHandler>();
+        services.AddScoped<CommunityCar.Domain.Interfaces.IDomainEventHandler<CommunityCar.Domain.Events.Community.RatingRemovedEvent>, CommunityCar.Infrastructure.EventHandlers.RatingAuditEventHandler>();
+        
         // Identity Services & Repositories
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
@@ -144,6 +181,9 @@ public static class DependencyInjection
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<IGroupService, GroupService>();
+
+        // MediatR for domain events
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
         return services;
     }

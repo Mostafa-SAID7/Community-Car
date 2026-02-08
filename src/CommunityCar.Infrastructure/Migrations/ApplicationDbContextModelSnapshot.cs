@@ -269,7 +269,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.Common.Category", b =>
@@ -741,7 +741,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("CommunityGroups");
+                    b.ToTable("CommunityGroups", (string)null);
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.groups.GroupMember", b =>
@@ -796,7 +796,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GroupMembers");
+                    b.ToTable("GroupMembers", (string)null);
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.guides.Guide", b =>
@@ -2097,7 +2097,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasIndex("ParentCommentId");
 
-                    b.ToTable("AnswerComment");
+                    b.ToTable("AnswerComment", (string)null);
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Community.qa.AnswerReaction", b =>
@@ -3488,7 +3488,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DashboardWidgets");
+                    b.ToTable("DashboardWidgets", (string)null);
                 });
 
             modelBuilder.Entity("CommunityCar.Domain.Entities.Identity.Roles.ApplicationRole", b =>
@@ -4034,7 +4034,7 @@ namespace CommunityCar.Infrastructure.Migrations
 
                             b1.HasKey("MapPointId");
 
-                            b1.ToTable("MapPoints");
+                            b1.ToTable("MapPoints", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("MapPointId");

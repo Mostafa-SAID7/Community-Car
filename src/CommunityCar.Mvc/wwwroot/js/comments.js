@@ -216,7 +216,8 @@
 
     async function voteComment(commentId, isUpvote) {
         try {
-            const response = await fetch(`/Comments/Vote/${commentId}?isUpvote=${isUpvote}`, {
+            const url = CultureHelper.addCultureToUrl(`/Comments/Vote/${commentId}?isUpvote=${isUpvote}`);
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -235,7 +236,7 @@
                     }
                 }
             } else if (response.status === 401) {
-                window.location.href = '/Identity/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                window.location.href = CultureHelper.addCultureToUrl('/Identity/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname));
             } else {
                 showToast(data.message || 'Failed to vote', 'error');
             }

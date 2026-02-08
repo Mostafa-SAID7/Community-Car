@@ -313,7 +313,8 @@
     <script src="~/js/friends.js"></script>
     <script>
         function toggleLike(postId) {
-            $.post('/Posts/ToggleLike/' + postId, function(res) {
+            const url = CultureHelper.buildUrl('Posts/ToggleLike/' + postId);
+            $.post(url, function(res) {
                 if (res.success) location.reload();
             });
         }
@@ -333,7 +334,8 @@
         $('#commentForm').submit(function(e) {
             e.preventDefault();
             const data = $(this).serialize();
-            $.post('/Posts/AddComment', data, function(res) {
+            const url = CultureHelper.addCultureToUrl('/Posts/AddComment');
+            $.post(url, data, function(res) {
                 if (res.success) location.reload();
             });
         });

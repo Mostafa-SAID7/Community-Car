@@ -154,7 +154,8 @@ public class NewsController : Controller
                 model.Content,
                 model.Summary,
                 model.Category,
-                userId);
+                userId,
+                model.Status);
 
             TempData["Success"] = _localizer["NewsArticleCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = article.Slug });
@@ -197,6 +198,7 @@ public class NewsController : Controller
                 Content = articleDto.Content,
                 Summary = articleDto.Summary,
                 Category = articleDto.Category,
+                Status = articleDto.Status,
                 ImageUrl = articleDto.ImageUrl,
                 Source = articleDto.Source,
                 ExternalUrl = articleDto.ExternalUrl,
@@ -236,7 +238,8 @@ public class NewsController : Controller
                 model.Title,
                 model.Content,
                 model.Summary,
-                model.Category);
+                model.Category,
+                model.Status);
 
             TempData["Success"] = _localizer["NewsArticleUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = article.Slug });

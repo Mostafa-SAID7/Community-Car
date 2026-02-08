@@ -7,7 +7,8 @@ window.updateUnreadCount = function () {
     const badge = document.getElementById('notificationBadge');
     if (!badge) return;
 
-    fetch('/Communications/Notifications/UnreadCount')
+    const url = CultureHelper.addCultureToUrl('/Communications/Notifications/UnreadCount');
+    fetch(url)
         .then(r => r.json())
         .then(data => {
             const count = data.count;
@@ -18,14 +19,15 @@ window.updateUnreadCount = function () {
                 badge.classList.add('d-none');
             }
         })
-        .catch(err => console.error("Failed to update unread count:", err));
+        .catch(err => console.debug("Failed to update unread count:", err));
 };
 
 window.updateChatUnreadCount = function () {
     const badge = document.getElementById('chatUnreadBadge');
     if (!badge) return;
 
-    fetch('/Chats/GetUnreadCount')
+    const url = CultureHelper.addCultureToUrl('/Chats/GetUnreadCount');
+    fetch(url)
         .then(r => r.json())
         .then(data => {
             const count = data.count;
@@ -36,14 +38,15 @@ window.updateChatUnreadCount = function () {
                 badge.classList.add('d-none');
             }
         })
-        .catch(err => console.error("Failed to update chat unread count:", err));
+        .catch(err => console.debug("Failed to update chat unread count:", err));
 };
 
 window.updateFriendRequestCount = function () {
     const badge = document.getElementById('friendRequestBadge');
     if (!badge) return;
 
-    fetch('/Friends/GetPendingRequestCount')
+    const url = CultureHelper.addCultureToUrl('/Friends/GetPendingRequestCount');
+    fetch(url)
         .then(r => r.json())
         .then(data => {
             const count = data.count;
@@ -64,7 +67,8 @@ window.loadLatestNotifications = function () {
     // Show spinner
     list.innerHTML = '<div class="p-4 text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"></div></div>';
 
-    fetch('/Communications/Notifications/Latest')
+    const url = CultureHelper.addCultureToUrl('/Communications/Notifications/Latest');
+    fetch(url)
         .then(r => {
             if (!r.ok) throw new Error('Network response was not ok');
             return r.json();
@@ -135,79 +139,83 @@ window.loadLatestNotifications = function () {
 
 window.markAsRead = function (id, event) {
     if (event) event.stopPropagation();
-    fetch(`/Communications/Notifications/MarkAsRead/${id}`, { method: 'POST' })
+    const url = CultureHelper.addCultureToUrl(`/Communications/Notifications/MarkAsRead/${id}`);
+    fetch(url, { method: 'POST' })
         .then(() => window.updateUnreadCount())
-        .catch(err => console.error("Failed to mark notification as read:", err));
+        .catch(err => console.debug("Failed to mark notification as read:", err));
 };
 
 window.markAllNotificationsAsRead = function () {
-    fetch('/Communications/Notifications/MarkAllAsRead', { method: 'POST' })
+    const url = CultureHelper.addCultureToUrl('/Communications/Notifications/MarkAllAsRead');
+    fetch(url, { method: 'POST' })
         .then(() => {
             window.updateUnreadCount();
             window.loadLatestNotifications();
         })
-        .catch(err => console.error("Failed to mark all as read:", err));
+        .catch(err => console.debug("Failed to mark all as read:", err));
 };
 
 document.addEventListener('DOMContentLoaded', function () {
     const notificationDropdown = document.getElementById('notificationDropdown');
-    if (!notificationDropdown) return;
-
-    // Initialize SignalR connection for notifications
-    const notificationConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/notificationHub")
-        .withAutomaticReconnect()
-        .build();
-
-    notificationConnection.on("ReceiveNotification", function (notification) {
-        window.updateUnreadCount();
-
-        // If it's a friend request, also update the friend request badge
-        if (notification.title === 'New Friend Request' || (notification.Title === 'New Friend Request')) {
-            window.updateFriendRequestCount();
-        }
-
-        // Show a small toast for real-time alert
-        if (window.Toast) {
-            window.Toast.show(notification.message || notification.Message || notification.Title, 'info', notification.title || notification.Title);
-        }
-
-        if (notificationDropdown.classList.contains('show')) {
-            window.loadLatestNotifications();
-        }
-    });
-
-    notificationConnection.start().catch(err => console.error("NotificationHub failed:", err));
-
-    // Initialize SignalR connection for chats (to update badge globally)
-    const chatBadge = document.getElementById('chatUnreadBadge');
-    if (chatBadge) {
-        const chatConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/chatHub")
+    
+    // Only initialize SignalR if user is authenticated (notification dropdown exists)
+    if (notificationDropdown) {
+        // Initialize SignalR connection for notifications
+        const notificationConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
             .withAutomaticReconnect()
             .build();
 
-        chatConnection.on("ReceiveMessage", function (senderId, message) {
-            // Only update if we are NOT on the conversation page with this user
-            // (The conversation page has its own logic)
-            if (typeof receiverId === 'undefined' || receiverId !== senderId) {
-                window.updateChatUnreadCount();
-                if (window.Toast) {
-                    window.Toast.show(window.I18n?.translations.chat.newMessage || "New message received", 'info', "Chat");
-                }
+        notificationConnection.on("ReceiveNotification", function (notification) {
+            window.updateUnreadCount();
+
+            // If it's a friend request, also update the friend request badge
+            if (notification.title === 'New Friend Request' || (notification.Title === 'New Friend Request')) {
+                window.updateFriendRequestCount();
+            }
+
+            // Show a small toast for real-time alert
+            if (window.Toast) {
+                window.Toast.show(notification.message || notification.Message || notification.Title, 'info', notification.title || notification.Title);
+            }
+
+            if (notificationDropdown.classList.contains('show')) {
+                window.loadLatestNotifications();
             }
         });
 
-        chatConnection.start().catch(err => console.error("ChatHub failed:", err));
+        notificationConnection.start().catch(err => console.error("NotificationHub connection failed:", err));
+
+        // Initialize SignalR connection for chats (to update badge globally)
+        const chatBadge = document.getElementById('chatUnreadBadge');
+        if (chatBadge) {
+            const chatConnection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            chatConnection.on("ReceiveMessage", function (senderId, message) {
+                // Only update if we are NOT on the conversation page with this user
+                // (The conversation page has its own logic)
+                if (typeof receiverId === 'undefined' || receiverId !== senderId) {
+                    window.updateChatUnreadCount();
+                    if (window.Toast) {
+                        window.Toast.show(window.I18n?.translations.chat.newMessage || "New message received", 'info', "Chat");
+                    }
+                }
+            });
+
+            chatConnection.start().catch(err => console.error("ChatHub connection failed:", err));
+        }
+
+        // Load unread counts on page load
+        window.updateUnreadCount();
+        window.updateChatUnreadCount();
+        window.updateFriendRequestCount();
+
+        // Load latest notifications when dropdown is opened
+        notificationDropdown.addEventListener('show.bs.dropdown', function () {
+            window.loadLatestNotifications();
+        });
     }
-
-    // Load unread counts on page load
-    window.updateUnreadCount();
-    window.updateChatUnreadCount();
-    window.updateFriendRequestCount();
-
-    // Load latest notifications when dropdown is opened
-    notificationDropdown.addEventListener('show.bs.dropdown', function () {
-        window.loadLatestNotifications();
-    });
 });

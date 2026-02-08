@@ -216,9 +216,10 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('/Posts/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                    const url = CultureHelper.addCultureToUrl('/Posts/Delete/' + id);
+                    $.post(url, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
                         if (res.success) {
-                            window.location.href = '/Posts';
+                            window.location.href = CultureHelper.addCultureToUrl('/Posts');
                         }
                     });
                 }

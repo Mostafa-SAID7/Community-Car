@@ -32,36 +32,41 @@ public class NewsService : INewsService
         string content,
         string summary,
         NewsCategory category,
-        Guid authorId)
+        Guid authorId,
+        NewsStatus status = NewsStatus.Published)
     {
         var article = new NewsArticle(title, content, summary, category, authorId);
+        article.Status = status;
         
         _context.Set<NewsArticle>().Add(article);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("News article created: {ArticleId} by user {UserId}", article.Id, authorId);
+        _logger.LogInformation("News article created: {ArticleId} by user {UserId} with status {Status}", article.Id, authorId, status);
         return article;
     }
 
     public async Task<NewsArticle> UpdateNewsArticleAsync(
-        Guid articleId,
-        string title,
-        string content,
-        string summary,
-        NewsCategory category)
-    {
-        var article = await _context.Set<NewsArticle>()
-            .FirstOrDefaultAsync(a => a.Id == articleId);
+            Guid articleId,
+            string title,
+            string content,
+            string summary,
+            NewsCategory category,
+            NewsStatus status)
+        {
+            var article = await _context.Set<NewsArticle>()
+                .FirstOrDefaultAsync(a => a.Id == articleId);
 
-        if (article == null)
-            throw new NotFoundException("News article not found");
+            if (article == null)
+                throw new NotFoundException("News article not found");
 
-        article.Update(title, content, summary, category);
-        await _context.SaveChangesAsync();
+            article.Update(title, content, summary, category);
+            article.Status = status;
+            await _context.SaveChangesAsync();
 
-        _logger.LogInformation("News article updated: {ArticleId}", articleId);
-        return article;
-    }
+            _logger.LogInformation("News article updated: {ArticleId} with status {Status}", articleId, status);
+            return article;
+        }
+
 
     public async Task DeleteNewsArticleAsync(Guid articleId)
     {

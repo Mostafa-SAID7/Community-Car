@@ -187,8 +187,10 @@ else
                 const type = $(this).data('type');
                 const id = $(this).data('id');
                 const isUpvote = $(this).data('vote') === 'up';
+                const controller = type === 'question' ? 'Questions' : 'Answers';
+                const url = CultureHelper.addCultureToUrl(`/${controller}/Vote/${id}`);
                 
-                $.post(`/${type === 'question' ? 'Questions' : 'Answers'}/Vote/${id}`, 
+                $.post(url, 
                     { isUpvote: isUpvote },
                     function(response) {
                         if (response.success) {
@@ -270,7 +272,8 @@ else
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('/Questions/AcceptAnswer', 
+                    const url = CultureHelper.addCultureToUrl('/Questions/AcceptAnswer');
+                    $.post(url, 
                         { questionId: questionId, answerId: answerId },
                         function(response) {
                             if (response.success) {
@@ -308,7 +311,8 @@ else
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post(`/Questions/Delete/${id}`, 
+                    const url = CultureHelper.addCultureToUrl(`/Questions/Delete/${id}`);
+                    $.post(url, 
                         { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                         function(response) {
                             if (response.success) {
@@ -318,7 +322,7 @@ else
                                     text: 'Question has been deleted',
                                     confirmButtonColor: '#667eea'
                                 }).then(() => {
-                                    window.location.href = '/Questions';
+                                    window.location.href = CultureHelper.addCultureToUrl('/Questions');
                                 });
                             } else {
                                 Swal.fire({
@@ -346,7 +350,8 @@ else
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post(`/Answers/Delete/${id}`, 
+                    const url = CultureHelper.addCultureToUrl(`/Answers/Delete/${id}`);
+                    $.post(url, 
                         { 
                             questionId: questionId,
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() 
@@ -384,7 +389,8 @@ else
             const content = $(`#comment-form-${answerId} textarea`).val();
             if (!content) return;
 
-            $.post('/Answers/AddComment', { answerId: answerId, content: content }, function(response) {
+            const url = CultureHelper.addCultureToUrl('/Answers/AddComment');
+            $.post(url, { answerId: answerId, content: content }, function(response) {
                 if (response.success) {
                     location.reload();
                 } else {

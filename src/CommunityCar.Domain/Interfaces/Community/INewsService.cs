@@ -13,14 +13,16 @@ public interface INewsService
         string content,
         string summary,
         NewsCategory category,
-        Guid authorId);
+        Guid authorId,
+        NewsStatus status = NewsStatus.Published);
     
     Task<NewsArticle> UpdateNewsArticleAsync(
         Guid articleId,
         string title,
         string content,
         string summary,
-        NewsCategory category);
+        NewsCategory category,
+        NewsStatus status);
     
     Task DeleteNewsArticleAsync(Guid articleId);
     

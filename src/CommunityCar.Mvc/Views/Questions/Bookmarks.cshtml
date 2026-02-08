@@ -150,7 +150,8 @@ else
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function removeBookmark(id) {
-            $.post('/Questions/Bookmark/' + id, {
+            const url = CultureHelper.addCultureToUrl('/Questions/Bookmark/' + id);
+            $.post(url, {
                 __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
             }, function(response) {
                 if (response.success) {

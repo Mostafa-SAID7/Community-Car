@@ -289,8 +289,7 @@
             const btn = event.target.closest('button');
             btn.disabled = true;
             
-            const culture = getCulture();
-            const url = `/${culture}/Guides/ToggleLike/${id}`;
+            const url = CultureHelper.addCultureToUrl(`/Guides/ToggleLike/${id}`);
             
             $.ajax({
                 url: url,
@@ -318,8 +317,7 @@
             const btn = event.target.closest('button');
             btn.disabled = true;
             
-            const culture = getCulture();
-            const url = `/${culture}/Guides/ToggleBookmark/${id}`;
+            const url = CultureHelper.addCultureToUrl(`/Guides/ToggleBookmark/${id}`);
             
             $.ajax({
                 url: url,

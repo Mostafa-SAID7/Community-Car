@@ -159,7 +159,7 @@
             // Initialize SignalR connection
             function initializeSignalR() {
                 connection = new signalR.HubConnectionBuilder()
-                    .withUrl("/hubs/chat")
+                    .withUrl("/chatHub")
                     .withAutomaticReconnect()
                     .build();
 
@@ -170,7 +170,8 @@
                         scrollToBottom();
                         
                         // Mark as read
-                        $.post('@Url.Action("MarkConversationAsRead")/' + senderId);
+                        const url = CultureHelper.addCultureToUrl('@Url.Action("MarkConversationAsRead")/' + senderId);
+                        $.post(url);
                     }
                 });
 
@@ -307,7 +308,8 @@
 
             // Mark conversation as read on load
             if (receiverId) {
-                $.post('@Url.Action("MarkConversationAsRead")/' + receiverId);
+                const url = CultureHelper.addCultureToUrl('@Url.Action("MarkConversationAsRead")/' + receiverId);
+                $.post(url);
             }
         });
     </script>

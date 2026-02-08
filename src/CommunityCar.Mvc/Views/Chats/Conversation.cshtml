@@ -243,7 +243,8 @@
             }
 
             function markAsRead() {
-                $.post('/Chats/MarkConversationAsRead/' + receiverId, {
+                const url = CultureHelper.addCultureToUrl('/Chats/MarkConversationAsRead/' + receiverId);
+                $.post(url, {
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 });
             }
@@ -255,7 +256,8 @@
                 if (!content) return;
 
                 const formData = $(this).serialize();
-                $.post('/Chats/SendMessage', formData, function(response) {
+                const url = CultureHelper.addCultureToUrl('/Chats/SendMessage');
+                $.post(url, formData, function(response) {
                     if (response.success) {
                         appendMessage(content, new Date(), true);
                         $('#messageInput').val('');

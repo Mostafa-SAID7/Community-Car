@@ -21,6 +21,9 @@ public class EditNewsViewModel
     [Required(ErrorMessage = "Category is required")]
     public NewsCategory Category { get; set; }
 
+    [Required(ErrorMessage = "Status is required")]
+    public NewsStatus Status { get; set; }
+
     public string? ImageUrl { get; set; }
     public string? Source { get; set; }
     public string? ExternalUrl { get; set; }

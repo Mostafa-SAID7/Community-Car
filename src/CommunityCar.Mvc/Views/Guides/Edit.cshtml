@@ -168,8 +168,11 @@
                 confirmButtonText: 'Yes, delete'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('/Guides/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                        if (res.success) window.location.href = '/Guides';
+                    const url = CultureHelper.addCultureToUrl('/Guides/Delete/' + id);
+                    $.post(url, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) {
+                            window.location.href = CultureHelper.addCultureToUrl('/Guides');
+                        }
                     });
                 }
             });

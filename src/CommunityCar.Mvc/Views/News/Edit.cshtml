@@ -85,6 +85,20 @@
                                     </div>
 
                                     <div class="mb-3">
+                                        <label asp-for="Status" class="form-label small fw-bold">Status <span class="text-danger">*</span></label>
+                                        <select asp-for="Status" class="form-select rounded-3">
+                                            <option value="0">Draft</option>
+                                            <option value="1">Published</option>
+                                            <option value="2">Archived</option>
+                                        </select>
+                                        <span asp-validation-for="Status" class="text-danger"></span>
+                                        <small class="form-text text-muted d-block mt-1">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Control article visibility
+                                        </small>
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label asp-for="Tags" class="form-label small fw-bold">Tags</label>
                                         <input asp-for="Tags" class="form-control rounded-3" placeholder="e.g. EV, Tesla, Review" />
                                         <span asp-validation-for="Tags" class="text-danger"></span>

@@ -21,15 +21,27 @@ using CommunityCar.Domain.Entities.Communications.chats;
 using CommunityCar.Domain.Entities.Community.maps;
 using CommunityCar.Domain.Entities.Community.qa;
 using CommunityCar.Domain.Entities.Community.groups;
+using CommunityCar.Domain.Entities.Community.voting;
 using CommunityCar.Infrastructure.Data.Extensions;
+using MediatR;
 
 namespace CommunityCar.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
+    private readonly IMediator? _mediator;
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+    }
+
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        IMediator mediator)
+        : base(options)
+    {
+        _mediator = mediator;
     }
 
     // Features
@@ -68,11 +80,45 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Answer> Answers => Set<Answer>();
     public DbSet<QuestionVote> QuestionVotes => Set<QuestionVote>();
     public DbSet<AnswerVote> AnswerVotes => Set<AnswerVote>();
+    
+    // Voting Aggregate
+    public DbSet<VoteAggregate> VoteAggregates => Set<VoteAggregate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         modelBuilder.ApplySoftDeleteQueryFilter();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Dispatch domain events before saving
+        if (_mediator != null)
+        {
+            await DispatchDomainEventsAsync(cancellationToken);
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
+    {
+        var aggregates = ChangeTracker
+            .Entries<AggregateRoot>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .Select(e => e.Entity)
+            .ToList();
+
+        var domainEvents = aggregates
+            .SelectMany(a => a.DomainEvents)
+            .ToList();
+
+        aggregates.ForEach(a => a.ClearDomainEvents());
+
+        foreach (var domainEvent in domainEvents)
+        {
+            await _mediator!.Publish(domainEvent, cancellationToken);
+        }
     }
 }

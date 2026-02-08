@@ -4,7 +4,7 @@ using CommunityCar.Domain.Utilities;
 
 namespace CommunityCar.Domain.Entities.Community.qa;
 
-public class Answer : BaseEntity
+public class Answer : AggregateRoot
 {
     public Guid QuestionId { get; private set; }
     public virtual Question Question { get; private set; } = null!;

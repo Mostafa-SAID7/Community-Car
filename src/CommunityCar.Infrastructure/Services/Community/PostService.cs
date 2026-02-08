@@ -1,9 +1,11 @@
 using AutoMapper;
 using CommunityCar.Domain.Base;
+using CommunityCar.Domain.Commands.Community;
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Entities.Community.post;
 using CommunityCar.Domain.Enums.Community.post;
 using CommunityCar.Domain.Exceptions;
+using CommunityCar.Domain.Interfaces;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +18,18 @@ public class PostService : IPostService
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<PostService> _logger;
+    private readonly ICommandHandler<LikePostCommand, LikePostResult> _likePostHandler;
 
     public PostService(
         ApplicationDbContext context,
         IMapper mapper,
-        ILogger<PostService> logger)
+        ILogger<PostService> logger,
+        ICommandHandler<LikePostCommand, LikePostResult> likePostHandler)
     {
         _context = context;
         _mapper = mapper;
         _logger = logger;
+        _likePostHandler = likePostHandler;
     }
 
     public async Task<Post> CreatePostAsync(
@@ -278,19 +283,24 @@ public class PostService : IPostService
         await _context.SaveChangesAsync();
     }
 
-    public async Task ToggleLikeAsync(Guid postId, Guid userId)
+    public async Task<LikePostResult> ToggleLikeAsync(Guid postId, Guid userId)
     {
-        var post = await _context.Set<Post>()
-            .FirstOrDefaultAsync(p => p.Id == postId);
+        var command = new LikePostCommand(postId, userId);
+        var result = await _likePostHandler.HandleAsync(command);
 
-        if (post == null)
-            throw new NotFoundException("Post not found");
+        if (!result.IsSuccess)
+        {
+            throw new InvalidOperationException(result.Error);
+        }
 
-        // In a real implementation, track likes in a separate table
-        post.IncrementLikes();
-        await _context.SaveChangesAsync();
+        _logger.LogInformation(
+            "Post {PostId} like toggled by user {UserId}. IsLiked: {IsLiked}, TotalLikes: {TotalLikes}", 
+            postId, 
+            userId, 
+            result.Value.IsLiked, 
+            result.Value.TotalLikes);
 
-        _logger.LogInformation("Post {PostId} liked by user {UserId}", postId, userId);
+        return result.Value;
     }
 
     public async Task IncrementSharesAsync(Guid postId)

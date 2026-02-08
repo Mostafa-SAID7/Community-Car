@@ -1,4 +1,5 @@
 using CommunityCar.Domain.Base;
+using CommunityCar.Domain.Commands.Community;
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Entities.Community.post;
 using CommunityCar.Domain.Enums.Community.post;
@@ -30,7 +31,7 @@ public interface IPostService
     
     // Engagement
     Task IncrementViewsAsync(Guid postId);
-    Task ToggleLikeAsync(Guid postId, Guid userId);
+    Task<LikePostResult> ToggleLikeAsync(Guid postId, Guid userId);
     Task IncrementSharesAsync(Guid postId);
     
     // Comments

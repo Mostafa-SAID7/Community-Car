@@ -327,9 +327,15 @@ public class PostsController : Controller
         try
         {
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
-            await _postService.ToggleLikeAsync(id, userId);
+            var result = await _postService.ToggleLikeAsync(id, userId);
 
-            return Json(new { success = true, message = _localizer["LikeToggled"].Value });
+            return Json(new 
+            { 
+                success = true, 
+                isLiked = result.IsLiked,
+                totalLikes = result.TotalLikes,
+                message = _localizer["LikeToggled"].Value 
+            });
         }
         catch (Exception ex)
         {

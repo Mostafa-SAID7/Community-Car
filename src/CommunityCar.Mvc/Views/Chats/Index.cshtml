@@ -195,10 +195,14 @@
 
             // Refresh unread counts periodically
             setInterval(function() {
-                $.get('/Chats/GetUnreadCount', function(data) {
+                const url = CultureHelper.addCultureToUrl('/Chats/GetUnreadCount');
+                $.get(url, function(data) {
                     if (data.success && data.count > 0) {
                         // Optional: update UI without reload
                     }
+                }).fail(function(xhr, status, error) {
+                    // Silently handle errors to avoid console spam
+                    console.debug('Failed to fetch unread count:', status);
                 });
             }, 30000);
         });
