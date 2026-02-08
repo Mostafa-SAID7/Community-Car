@@ -1,3 +1,4 @@
+@model CommunityCar.Web.Areas.Identity.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Log in";
     ViewData["HideSidebars"] = true;
@@ -21,13 +22,15 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             
             <div class="form-floating mb-3">
-                <input type="email" name="Email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
-                <label for="floatingInput">Email address</label>
+                <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
+                <label asp-for="Email">Email address</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             
             <div class="form-floating mb-3 position-relative">
-                <input type="password" name="Password" class="form-control" id="floatingPassword" placeholder="Password" required>
-                <label for="floatingPassword">Password</label>
+                <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                <label asp-for="Password">Password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
                 <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3" 
                         onclick="togglePassword()" class="z-10">
                     <i class="fas fa-eye" id="toggleIcon"></i>
@@ -35,8 +38,8 @@
             </div>
 
             <div class="form-check mb-3">
-                <input type="checkbox" name="RememberMe" class="form-check-input" id="rememberMe" value="true">
-                <label class="form-check-label" for="rememberMe">Remember me</label>
+                <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe">
+                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 btn-lg mb-4">Sign In</button>
