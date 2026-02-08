@@ -1,0 +1,228 @@
+@model EditPostViewModel
+@using CommunityCar.Mvc.ViewModels.Post
+@using CommunityCar.Domain.Enums.Community.post
+
+@{
+    ViewData["Title"] = "Edit Post";
+    var postTypes = ViewBag.PostTypes as PostType[];
+
+    ViewData["HeaderTitle"] = "Edit Post";
+    ViewData["HeaderDescription"] = "Update your post content and settings";
+    ViewData["HeaderIcon"] = "fas fa-edit";
+}
+
+@section Styles {
+    <style>
+        .post-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .post-type-card {
+            flex: 1;
+            min-width: 100px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        .post-type-card:hover {
+            border-color: #cbd5e0;
+            background: #f7fafc;
+        }
+        .post-type-card.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+        .post-type-card i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Posts</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Details" asp-route-slug="@Model.Title">@Model.Title</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Post Type <span class="text-danger">*</span></label>
+                            <div class="post-type-selector">
+                                @if (postTypes != null)
+                                {
+                                    @foreach (var type in postTypes)
+                                    {
+                                        var icon = type switch {
+                                            PostType.Text => "fa-align-left",
+                                            PostType.Image => "fa-image",
+                                            PostType.Video => "fa-video",
+                                            PostType.Link => "fa-link",
+                                            PostType.Poll => "fa-poll",
+                                            _ => "fa-file"
+                                        };
+                                        
+                                        <div class="post-type-card @(Model.Type == type ? "active" : "")" data-type="@type">
+                                            <i class="fas @icon"></i>
+                                            <div class="fw-bold small">@type</div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <input asp-for="Type" type="hidden" id="postTypeInput" />
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-lg rounded-3" placeholder="Enter an engaging title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label fw-bold">Content <span class="text-danger">*</span></label>
+                            <textarea asp-for="Content" class="form-control rounded-3" rows="10" placeholder="Share your thoughts...">@Model.Content</textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4" id="imageUrlField" style="display: @(Model.Type == PostType.Image ? "block" : "none")">
+                            <label asp-for="ImageUrl" class="form-label fw-bold">
+                                <i class="fas fa-image me-1"></i>Image URL
+                            </label>
+                            <input asp-for="ImageUrl" class="form-control rounded-3" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4" id="videoUrlField" style="display: @(Model.Type == PostType.Video ? "block" : "none")">
+                            <label asp-for="VideoUrl" class="form-label fw-bold">
+                                <i class="fas fa-video me-1"></i>Video URL
+                            </label>
+                            <input asp-for="VideoUrl" class="form-control rounded-3" placeholder="https://youtube.com/watch?v=..." />
+                            <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                        </div>
+
+                        <div id="linkFields" style="display: @(Model.Type == PostType.Link ? "block" : "none")">
+                            <div class="mb-4">
+                                <label asp-for="LinkUrl" class="form-label fw-bold">
+                                    <i class="fas fa-link me-1"></i>Link URL
+                                </label>
+                                <input asp-for="LinkUrl" class="form-control rounded-3" placeholder="https://example.com" />
+                                <span asp-validation-for="LinkUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="LinkTitle" class="form-label fw-bold">Link Title</label>
+                                <input asp-for="LinkTitle" class="form-control rounded-3" placeholder="Title of the linked content" />
+                                <span asp-validation-for="LinkTitle" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="LinkDescription" class="form-label fw-bold">Link Description</label>
+                                <textarea asp-for="LinkDescription" class="form-control rounded-3" rows="3" placeholder="Brief description of the link">@Model.LinkDescription</textarea>
+                                <span asp-validation-for="LinkDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Tags" class="form-label fw-bold">
+                                <i class="fas fa-tags me-1"></i>Tags
+                            </label>
+                            <input asp-for="Tags" class="form-control rounded-3" placeholder="Separate tags with commas (e.g., cars, maintenance, tips)" />
+                            <span asp-validation-for="Tags" class="text-danger"></span>
+                            <small class="form-text text-muted">Add relevant tags to help others find your post</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                            <a asp-action="Index" class="text-muted text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Feed
+                            </a>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-danger rounded-pill px-4" onclick="deletePost('@Model.Id')">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-5">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            const postTypeCards = $('.post-type-card');
+            const postTypeInput = $('#postTypeInput');
+            const imageUrlField = $('#imageUrlField');
+            const videoUrlField = $('#videoUrlField');
+            const linkFields = $('#linkFields');
+            
+            postTypeCards.on('click', function() {
+                const type = $(this).data('type');
+                updatePostType(type);
+            });
+            
+            function updatePostType(type) {
+                postTypeInput.val(type);
+                postTypeCards.removeClass('active');
+                postTypeCards.filter('[data-type="' + type + '"]').addClass('active');
+                
+                imageUrlField.hide();
+                videoUrlField.hide();
+                linkFields.hide();
+                
+                switch(type) {
+                    case 'Image': imageUrlField.show(); break;
+                    case 'Video': videoUrlField.show(); break;
+                    case 'Link': linkFields.show(); break;
+                }
+            }
+        });
+
+        function deletePost(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/Posts/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) {
+                            window.location.href = '/Posts';
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

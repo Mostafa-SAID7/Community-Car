@@ -83,9 +83,23 @@ $(document).ready(function () {
     // 2. Accept Request
     $(document).on('submit', '.ajax-accept-form', function (e) {
         e.preventDefault();
-        handleAjaxForm($(this), {
+        var form = $(this);
+        var notificationId = form.data('notification-id');
+
+        handleAjaxForm(form, {
             onSuccess: function (form) {
-                // Remove the card
+                // 1. Handle Notification List if applicable
+                if (notificationId) {
+                    if (window.markAsRead) window.markAsRead(notificationId);
+                    var item = form.closest('.notification-item');
+                    item.fadeOut(300, function () {
+                        $(this).remove();
+                        if (window.updateUnreadCount) window.updateUnreadCount();
+                    });
+                    return;
+                }
+
+                // 2. Handle standard friend card
                 var cardCol = form.closest('.col-md-6, .col-lg-4');
                 cardCol.fadeOut(300, function () {
                     $(this).remove();
@@ -98,9 +112,24 @@ $(document).ready(function () {
     // 3. Reject Request
     $(document).on('submit', '.ajax-reject-form', function (e) {
         e.preventDefault();
-        handleAjaxForm($(this), {
+        var form = $(this);
+        var notificationId = form.data('notification-id');
+
+        handleAjaxForm(form, {
             confirmMsg: 'Are you sure you want to decline this request?',
             onSuccess: function (form) {
+                // 1. Handle Notification List if applicable
+                if (notificationId) {
+                    if (window.markAsRead) window.markAsRead(notificationId);
+                    var item = form.closest('.notification-item');
+                    item.fadeOut(300, function () {
+                        $(this).remove();
+                        if (window.updateUnreadCount) window.updateUnreadCount();
+                    });
+                    return;
+                }
+
+                // 2. Handle standard friend card
                 var cardCol = form.closest('.col-md-6, .col-lg-4');
                 cardCol.fadeOut(300, function () {
                     $(this).remove();

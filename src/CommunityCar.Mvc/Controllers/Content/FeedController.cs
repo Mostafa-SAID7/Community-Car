@@ -16,6 +16,7 @@ public class FeedController : Controller
     private readonly INewsService _newsService;
     private readonly IGuideService _guideService;
     private readonly IReviewService _reviewService;
+    private readonly IGroupService _groupService;
     private readonly ILogger<FeedController> _logger;
 
     public FeedController(
@@ -25,6 +26,7 @@ public class FeedController : Controller
         INewsService newsService,
         IGuideService guideService,
         IReviewService reviewService,
+        IGroupService groupService,
         ILogger<FeedController> logger)
     {
         _postService = postService;
@@ -33,6 +35,7 @@ public class FeedController : Controller
         _newsService = newsService;
         _guideService = guideService;
         _reviewService = reviewService;
+        _groupService = groupService;
         _logger = logger;
     }
 
@@ -100,6 +103,12 @@ public class FeedController : Controller
             {
                 var reviews = await _reviewService.GetReviewsAsync(parameters, currentUserId: userId);
                 feedItems.AddRange(reviews.Items.Select(MapReviewToFeedItem));
+            }
+
+            if (type == null || type == FeedItemType.Group)
+            {
+                var groups = await _groupService.GetGroupsAsync(parameters, currentUserId: userId);
+                feedItems.AddRange(groups.Items.Select(MapGroupToFeedItem));
             }
 
             // Apply date filter
@@ -333,6 +342,36 @@ public class FeedController : Controller
             TimeAgo = GetTimeAgo(review.CreatedAt),
             ActionUrl = $"/Reviews/Details/{review.Slug}",
             ActionText = "Read Review"
+        };
+    }
+
+    private FeedItemViewModel MapGroupToFeedItem(Domain.DTOs.Community.GroupDto group)
+    {
+        return new FeedItemViewModel
+        {
+            Id = group.Id,
+            Title = group.Name,
+            Content = TruncateContent(group.Description, 200),
+            Slug = group.Slug ?? string.Empty,
+            Type = FeedItemType.Group,
+            TypeName = "Group",
+            TypeIcon = "fa-users",
+            TypeColor = "info",
+            AuthorId = group.CreatorId,
+            AuthorName = group.CreatorName,
+            AuthorAvatar = null,
+            ImageUrl = group.ImageUrl,
+            ViewCount = 0,
+            LikeCount = 0,
+            CommentCount = 0,
+            InteractionCount = group.MemberCount,
+            MemberCount = group.MemberCount,
+            IsPrivate = group.IsPrivate,
+            IsUserMember = group.IsUserMember,
+            CreatedAt = group.CreatedAt,
+            TimeAgo = GetTimeAgo(group.CreatedAt),
+            ActionUrl = $"/Groups/Details/{group.Slug}",
+            ActionText = "View Group"
         };
     }
 

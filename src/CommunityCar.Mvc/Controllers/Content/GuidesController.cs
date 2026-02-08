@@ -12,13 +12,16 @@ namespace CommunityCar.Mvc.Controllers.Content;
 public class GuidesController : Controller
 {
     private readonly IGuideService _guideService;
+    private readonly IFriendshipService _friendshipService;
     private readonly ILogger<GuidesController> _logger;
 
     public GuidesController(
         IGuideService guideService,
+        IFriendshipService friendshipService,
         ILogger<GuidesController> logger)
     {
         _guideService = guideService;
+        _friendshipService = friendshipService;
         _logger = logger;
     }
 
@@ -76,6 +79,22 @@ public class GuidesController : Controller
 
             // Increment view count
             await _guideService.IncrementViewCountAsync(guideDto.Id);
+
+            if (currentUserId.HasValue)
+            {
+                var status = await _friendshipService.GetFriendshipStatusAsync(currentUserId.Value, guideDto.AuthorId);
+                ViewBag.FriendshipStatus = status;
+                
+                if (status == CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.Pending)
+                {
+                    var pendingRequests = await _friendshipService.GetPendingRequestsAsync(currentUserId.Value);
+                    ViewBag.IsIncomingRequest = pendingRequests.Any(r => r.UserId == guideDto.AuthorId);
+                }
+            }
+            else
+            {
+                ViewBag.FriendshipStatus = CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.None;
+            }
 
             return View(guideDto);
         }

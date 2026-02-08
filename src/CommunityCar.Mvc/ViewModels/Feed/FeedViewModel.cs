@@ -58,6 +58,9 @@ public class FeedItemViewModel
     public string? EventLocation { get; set; } // Events
     public int? Rating { get; set; } // Reviews
     public bool? IsRecommended { get; set; } // Reviews
+    public int? MemberCount { get; set; } // Groups
+    public bool? IsPrivate { get; set; } // Groups
+    public bool? IsUserMember { get; set; } // Groups
 }
 
 public enum FeedItemType
@@ -67,7 +70,8 @@ public enum FeedItemType
     Event,
     News,
     Guide,
-    Review
+    Review,
+    Group
 }
 
 public enum DateFilterType

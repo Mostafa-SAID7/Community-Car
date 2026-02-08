@@ -11,15 +11,17 @@
     var requestCount = ViewBag.RequestCount ?? 0;
     var requestBadge = requestCount > 0 ? $"<span class='badge bg-danger ms-1'>{requestCount}</span>" : "";
     
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <div class='d-flex gap-2 flex-wrap'>
-            <a href='{Url.Action("Search")}' class='btn btn-light'>
-                <i class='fas fa-search me-2'></i>Find Friends
-            </a>
-            <a href='{Url.Action("Requests")}' class='btn btn-light'>
-                <i class='fas fa-user-plus me-2'></i>Requests{requestBadge}
-            </a>
-        </div>");
+    var searchUrl = Url.Action("Search");
+    var requestsUrl = Url.Action("Requests");
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                      "<a href='" + searchUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-search me-2'></i>Find Friends" +
+                      "</a>" +
+                      "<a href='" + requestsUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-user-plus me-2'></i>Requests" + requestBadge +
+                      "</a>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 @section Styles {

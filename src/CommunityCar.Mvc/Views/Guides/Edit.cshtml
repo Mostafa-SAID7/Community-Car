@@ -1,0 +1,178 @@
+@model CommunityCar.Mvc.ViewModels.Guides.EditGuideViewModel
+@using CommunityCar.Domain.Enums.Community.guides
+
+@{
+    ViewData["Title"] = "Edit Guide";
+    var categories = ViewBag.Categories as IEnumerable<string> ?? new List<string>();
+    var difficulties = Enum.GetValues<GuideDifficulty>();
+
+    ViewData["HeaderTitle"] = "Edit Guide";
+    ViewData["HeaderDescription"] = "Refine your step-by-step instructions";
+    ViewData["HeaderIcon"] = "fas fa-edit";
+}
+
+@section Styles {
+    <style>
+        .guide-form-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .difficulty-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .difficulty-option:hover {
+            border-color: #cbd5e0;
+        }
+        .difficulty-option.active[data-val="Easy"] { border-color: #48bb78; background: #f0fff4; color: #48bb78; }
+        .difficulty-option.active[data-val="Intermediate"] { border-color: #ed8936; background: #fffaf0; color: #ed8936; }
+        .difficulty-option.active[data-val="Advanced"] { border-color: #f56565; background: #fff5f5; color: #f56565; }
+    </style>
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Guides</a></li>
+                    <li class="breadcrumb-item active">Edit Guide</li>
+                </ol>
+            </nav>
+
+            <div class="card guide-form-card rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="mb-4">
+                                    <label asp-for="Title" class="form-label fw-bold">Guide Title <span class="text-danger">*</span></label>
+                                    <input asp-for="Title" class="form-control form-control-lg rounded-3" placeholder="e.g. How to change your oil like a pro" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Summary" class="form-label fw-bold">Quick Summary <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Summary" class="form-control rounded-3" rows="3" placeholder="Short description for browsing results">@Model.Summary</textarea>
+                                    <span asp-validation-for="Summary" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Content" class="form-label fw-bold">Guide Content <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Content" class="form-control rounded-3" rows="15" placeholder="Include steps, required tools, and details...">@Model.Content</textarea>
+                                    <span asp-validation-for="Content" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                    <h6 class="fw-bold mb-3">Settings</h6>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-bold">Difficulty <span class="text-danger">*</span></label>
+                                        <div class="d-flex flex-column gap-2">
+                                            @foreach (var diff in difficulties)
+                                            {
+                                                <div class="difficulty-option @(Model.Difficulty == diff ? "active" : "")" data-val="@diff">
+                                                    @diff.ToString()
+                                                </div>
+                                            }
+                                        </div>
+                                        <input type="hidden" asp-for="Difficulty" id="diffInput" />
+                                        <span asp-validation-for="Difficulty" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="EstimatedTimeMinutes" class="form-label small fw-bold">Time (minutes) <span class="text-danger">*</span></label>
+                                        <input asp-for="EstimatedTimeMinutes" type="number" class="form-control rounded-3" />
+                                        <span asp-validation-for="EstimatedTimeMinutes" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Category" class="form-label small fw-bold">Category <span class="text-danger">*</span></label>
+                                        <select asp-for="Category" class="form-select rounded-3">
+                                            @foreach (var cat in categories)
+                                            {
+                                                <option value="@cat">@cat</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="Category" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Tags" class="form-label small fw-bold">Tags</label>
+                                        <input asp-for="Tags" class="form-control rounded-3" placeholder="e.g. BMW, maintenance" />
+                                    </div>
+                                </div>
+
+                                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                    <h6 class="fw-bold mb-3">Media</h6>
+                                    <div class="mb-3">
+                                        <label asp-for="ImageUrl" class="form-label small fw-bold">Cover Image URL</label>
+                                        <input asp-for="ImageUrl" class="form-control rounded-3" />
+                                    </div>
+                                    <div class="mb-0">
+                                        <label asp-for="VideoUrl" class="form-label small fw-bold">Video Embed URL</label>
+                                        <input asp-for="VideoUrl" class="form-control rounded-3" />
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-save me-2"></i>Save Guide
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger rounded-pill" onclick="deleteGuide('@Model.Id')">
+                                        <i class="fas fa-trash-alt me-2"></i>Delete
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-light rounded-pill mt-2">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            $('.difficulty-option').on('click', function() {
+                const val = $(this).data('val');
+                $('#diffInput').val(val);
+                $('.difficulty-option').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+
+        function deleteGuide(id) {
+            Swal.fire({
+                title: 'Delete Guide?',
+                text: "This action cannot be recovered.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/Guides/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) window.location.href = '/Guides';
+                    });
+                }
+            });
+        }
+    </script>
+}

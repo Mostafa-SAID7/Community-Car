@@ -12,13 +12,16 @@ namespace CommunityCar.Mvc.Controllers.Community;
 public class ReviewsController : Controller
 {
     private readonly IReviewService _reviewService;
+    private readonly IFriendshipService _friendshipService;
     private readonly ILogger<ReviewsController> _logger;
 
     public ReviewsController(
         IReviewService reviewService,
+        IFriendshipService friendshipService,
         ILogger<ReviewsController> logger)
     {
         _reviewService = reviewService;
+        _friendshipService = friendshipService;
         _logger = logger;
     }
 
@@ -98,6 +101,22 @@ public class ReviewsController : Controller
                 AverageRating = averageRating,
                 TotalReviews = ratingDistribution.Values.Sum()
             };
+
+            if (currentUserId.HasValue)
+            {
+                var status = await _friendshipService.GetFriendshipStatusAsync(currentUserId.Value, reviewDto.ReviewerId);
+                ViewBag.FriendshipStatus = status;
+                
+                if (status == CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.Pending)
+                {
+                    var pendingRequests = await _friendshipService.GetPendingRequestsAsync(currentUserId.Value);
+                    ViewBag.IsIncomingRequest = pendingRequests.Any(r => r.UserId == reviewDto.ReviewerId);
+                }
+            }
+            else
+            {
+                ViewBag.FriendshipStatus = CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.None;
+            }
 
             return View(viewModel);
         }

@@ -1,0 +1,301 @@
+@model CommunityCar.Domain.DTOs.Community.GuideDto
+@using CommunityCar.Domain.Enums.Community.guides
+
+@{
+    ViewData["Title"] = Model.Title;
+    var guide = Model;
+    var currentUserId = ViewBag.CurrentUserId as Guid?;
+    var friendshipStatus = ViewBag.FriendshipStatus as CommunityCar.Domain.Enums.Community.friends.FriendshipStatus?;
+    var isIncoming = ViewBag.IsIncomingRequest as bool? ?? false;
+}
+@using CommunityCar.Domain.Enums.Community.friends
+
+@section Styles {
+    <style>
+        .guide-header-card {
+            background: #2d3748;
+            color: white;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .difficulty-badge {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        .difficulty-Easy { background: #48bb78; color: white; }
+        .difficulty-Intermediate { background: #ed8936; color: white; }
+        .difficulty-Advanced { background: #f56565; color: white; }
+        
+        .guide-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+        .sidebar-stat-card {
+            border: none;
+            border-radius: 16px;
+            background: #f7fafc;
+            padding: 1.25rem;
+        }
+    </style>
+}
+
+@{
+    ViewData["HeaderTitle"] = guide.Title;
+    ViewData["HeaderIcon"] = "fas fa-book-open";
+    var actionsHtml = "<div class='d-flex gap-3 align-items-center'>" +
+                      "<span><i class='fas fa-clock me-1'></i> " + guide.EstimatedTimeMinutes + " mins</span>" +
+                      "<span><i class='fas fa-signal me-1'></i> " + guide.DifficultyName + "</span>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Hero Card -->
+            <div class="card guide-header-card border-0 mb-4 shadow-sm">
+                @if (!string.IsNullOrEmpty(guide.ImageUrl))
+                {
+                    <img src="@guide.ImageUrl" class="card-img-top" style="height: 300px; object-fit: cover; opacity: 0.8;" alt="@guide.Title">
+                }
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <span class="difficulty-badge difficulty-@guide.DifficultyName">@guide.DifficultyName</span>
+                        <span class="badge bg-light text-dark px-3 rounded-pill d-flex align-items-center">
+                            <i class="fas fa-folder me-2 text-primary"></i>@guide.Category
+                        </span>
+                    </div>
+
+                    <h2 class="display-6 fw-bold mb-4">@guide.Title</h2>
+                    <p class="lead opacity-75 mb-0">@guide.Summary</p>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="card shadow-sm border-0 rounded-4 mb-5">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center mb-5 pb-4 border-bottom">
+                        <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                        <div>
+                            <h6 class="mb-0 fw-bold">@guide.AuthorName</h6>
+                            <p class="text-muted small mb-0">Contributor • @guide.CreatedAt.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        @if (guide.IsAuthor)
+                        {
+                            <div class="ms-auto">
+                                <a asp-action="Edit" asp-route-id="@guide.Id" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                                    <i class="fas fa-edit me-1"></i>Edit Guide
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(guide.VideoUrl))
+                    {
+                        <div class="ratio ratio-16x9 mb-5 rounded-4 overflow-hidden shadow-sm">
+                            <iframe src="@guide.VideoUrl" allowfullscreen></iframe>
+                        </div>
+                    }
+
+                    <div class="guide-content mb-5">
+                        @Html.Raw(guide.Content)
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(guide.Tags))
+                    {
+                        <div class="pt-4 border-top">
+                            <h6 class="fw-bold mb-3 small text-uppercase letter-spacing-1 text-muted">Related Tags</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var tag in guide.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <a href="/Guides?tag=@tag.Trim()" class="btn btn-sm btn-light rounded-pill px-3">#@tag.Trim()</a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Interactions -->
+            <div class="d-flex align-items-center mb-5">
+                <button class="btn @(guide.IsLiked ? "btn-danger" : "btn-outline-danger") rounded-pill px-4 me-3" onclick="toggleLike('@guide.Id')">
+                    <i class="fas fa-heart me-2"></i>@(guide.IsLiked ? "Liked" : "Like") (@guide.LikeCount)
+                </button>
+                <button class="btn @(guide.IsBookmarked ? "btn-warning" : "btn-outline-warning") rounded-pill px-4 me-3" onclick="toggleBookmark('@guide.Id')">
+                    <i class="fas fa-bookmark me-2"></i>@(guide.IsBookmarked ? "Saved" : "Save")
+                </button>
+                <button class="btn btn-outline-primary rounded-pill px-4" onclick="shareGuide('@guide.Id', '@guide.Title')">
+                    <i class="fas fa-share-alt me-2"></i>Share
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Guide Info Sidebar -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4">Guide Details</h6>
+                    
+                    <div class="sidebar-stat-card mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="p-2 bg-white rounded-circle me-3">
+                                <i class="fas fa-clock text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">@guide.EstimatedTimeMinutes mins</h6>
+                                <p class="small text-muted mb-0">Estimated Time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-stat-card mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="p-2 bg-white rounded-circle me-3">
+                                <i class="fas fa-signal text-warning"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">@guide.DifficultyName</h6>
+                                <p class="small text-muted mb-0">Difficulty Level</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-stat-card mb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="p-2 bg-white rounded-circle me-3">
+                                <i class="fas fa-list-ol text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">@guide.StepCount Steps</h6>
+                                <p class="small text-muted mb-0">Content Breakdown</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author Bio -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
+                <div class="card-body p-4 text-center">
+                    <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle mb-3 shadow-sm border border-3 border-white" style="width: 80px; height: 80px;">
+                    <h6 class="fw-bold mb-1">Written by @guide.AuthorName</h6>
+                    <p class="small text-muted mb-3">Professional Mechanic & Enthusiast</p>
+                    
+                    <div class="d-flex flex-column gap-2">
+                        <a href="/Identity/Profiles/@guide.AuthorId" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
+                        
+                        @if (currentUserId.HasValue && !guide.IsAuthor)
+                        {
+                            @if (friendshipStatus == FriendshipStatus.None)
+                            {
+                                <form asp-controller="Friends" asp-action="SendRequest" method="post" class="ajax-add-friend-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="friendId" value="@guide.AuthorId" />
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill w-100">
+                                        <i class="fas fa-user-plus me-1"></i> Add Friend
+                                    </button>
+                                </form>
+                            }
+                            else if (friendshipStatus == FriendshipStatus.Pending)
+                            {
+                                if (isIncoming)
+                                {
+                                    <div class="d-flex gap-2">
+                                        <form asp-controller="Friends" asp-action="AcceptRequest" method="post" class="ajax-accept-form flex-grow-1">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@guide.AuthorId" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill w-100">
+                                                Accept
+                                            </button>
+                                        </form>
+                                        <form asp-controller="Friends" asp-action="RejectRequest" method="post" class="ajax-reject-form flex-grow-1">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@guide.AuthorId" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill w-100">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary btn-sm rounded-pill w-100" disabled>
+                                        <i class="fas fa-clock me-1"></i> Pending
+                                    </button>
+                                }
+                            }
+                            else if (friendshipStatus == FriendshipStatus.Accepted)
+                            {
+                                <button class="btn btn-success btn-sm rounded-pill w-100" disabled>
+                                    <i class="fas fa-check-double me-1"></i> Friends
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Sentiment -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3 text-center">Community Rating</h6>
+                    <div class="text-center">
+                        <h2 class="fw-bold text-primary mb-1">@guide.AverageRating.ToString("F1")</h2>
+                        <div class="text-warning mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= Math.Round(guide.AverageRating) ? "" : "text-light")"></i>
+                            }
+                        </div>
+                        <p class="small text-muted mb-0">Based on @guide.RatingCount ratings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/friends.js"></script>
+    <script>
+        function toggleLike(id) {
+            $.post('/Guides/ToggleLike/' + id, function(res) {
+                if (res.success) location.reload();
+            });
+        }
+
+        function toggleBookmark(id) {
+            $.post('/Guides/ToggleBookmark/' + id, function(res) {
+                if (res.success) location.reload();
+            });
+        }
+
+        function shareGuide(id, title) {
+            if (navigator.share) {
+                navigator.share({ title: title, url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Guide link copied to clipboard!');
+            }
+        }
+    </script>
+}

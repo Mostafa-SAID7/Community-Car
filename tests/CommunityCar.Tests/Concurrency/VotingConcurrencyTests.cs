@@ -1,6 +1,7 @@
 using CommunityCar.Domain.Entities.Community.qa;
 using CommunityCar.Domain.Entities.Community.Common;
 using CommunityCar.Domain.Interfaces.Common;
+using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Communications;
 using CommunityCar.Infrastructure.Data;
 using CommunityCar.Infrastructure.Services.Community;
@@ -57,9 +58,10 @@ public class VotingConcurrencyTests
             var acRepo = new Repository<AnswerComment>(context);
             var userRepo = new Repository<ApplicationUser>(context);
             var notificationService = Mock.Of<INotificationService>();
+            var questionHubService = Mock.Of<IQuestionHubService>();
 
             var service = new QuestionService(
-                qRepo, aRepo, qvRepo, avRepo, qbRepo, qrRepo, arRepo, qsRepo, cRepo, acRepo, userRepo, notificationService, uow, Mock.Of<IMapper>());
+                qRepo, aRepo, qvRepo, avRepo, qbRepo, qrRepo, arRepo, qsRepo, cRepo, acRepo, userRepo, notificationService, uow, Mock.Of<IMapper>(), questionHubService);
 
             // Act
             // Simulate 5 concurrent upvotes from the same user

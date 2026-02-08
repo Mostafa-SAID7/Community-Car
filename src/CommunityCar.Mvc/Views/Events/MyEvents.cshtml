@@ -12,10 +12,11 @@
     ViewData["HeaderDescription"] = "Manage events you're hosting or attending";
     ViewData["HeaderIcon"] = "fas fa-briefcase";
     
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <a href='{Url.Action("Create")}' class='btn btn-light'>
-            <i class='fas fa-plus-circle me-2'></i>Host New Event
-        </a>");
+    var createUrl = Url.Action("Create");
+    var actionsHtml = "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Host New Event" +
+                      "</a>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />

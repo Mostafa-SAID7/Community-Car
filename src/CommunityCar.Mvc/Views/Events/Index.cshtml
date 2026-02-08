@@ -15,15 +15,17 @@
 
     if (User.Identity?.IsAuthenticated ?? false)
     {
-        ViewData["HeaderActions"] = Html.Raw($@"
-            <div class='d-flex gap-2 flex-wrap'>
-                <a href='{Url.Action("Create")}' class='btn btn-light'>
-                    <i class='fas fa-plus-circle me-2'></i>Host Event
-                </a>
-                <a href='{Url.Action("MyEvents")}' class='btn btn-light'>
-                    <i class='fas fa-briefcase me-2'></i>My Events
-                </a>
-            </div>");
+        var createUrl = Url.Action("Create");
+        var myEventsUrl = Url.Action("MyEvents");
+        var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                          "<a href='" + createUrl + "' class='btn btn-light'>" +
+                          "<i class='fas fa-plus-circle me-2'></i>Host Event" +
+                          "</a>" +
+                          "<a href='" + myEventsUrl + "' class='btn btn-light'>" +
+                          "<i class='fas fa-briefcase me-2'></i>My Events" +
+                          "</a>" +
+                          "</div>";
+        ViewData["HeaderActions"] = Html.Raw(actionsHtml);
     }
 }
 

@@ -263,7 +263,7 @@ public class NotificationService : INotificationService
     {
         var title = "New Friend Request";
         var message = $"{requesterName} sent you a friend request";
-        var link = $"/Identity/Profiles/Index/{requesterId}";
+        var link = $"/Identity/Profiles/{requesterId}";
         
         await CreateNotificationAsync(userId, title, message, link);
     }
@@ -272,7 +272,7 @@ public class NotificationService : INotificationService
     {
         var title = "Friend Request Accepted";
         var message = $"{accepterName} accepted your friend request";
-        var link = $"/Identity/Profiles/Index/{accepterId}";
+        var link = $"/Identity/Profiles/{accepterId}";
         
         await CreateNotificationAsync(userId, title, message, link);
     }

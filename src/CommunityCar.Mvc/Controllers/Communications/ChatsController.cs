@@ -1,6 +1,8 @@
 using CommunityCar.Domain.DTOs.Communications;
+using CommunityCar.Domain.Enums.Community.friends;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Communications;
+using CommunityCar.Domain.Interfaces.Community;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -13,15 +15,18 @@ public class ChatsController : Controller
 {
     private readonly IChatService _chatService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IFriendshipService _friendshipService;
     private readonly ILogger<ChatsController> _logger;
 
     public ChatsController(
         IChatService chatService,
         ICurrentUserService currentUserService,
+        IFriendshipService friendshipService,
         ILogger<ChatsController> logger)
     {
         _chatService = chatService;
         _currentUserService = currentUserService;
+        _friendshipService = friendshipService;
         _logger = logger;
     }
 
@@ -34,8 +39,10 @@ public class ChatsController : Controller
             var userId = GetCurrentUserId();
             var conversations = await _chatService.GetConversationsAsync(userId);
             var unreadCount = await _chatService.GetUnreadCountAsync(userId);
+            var friends = await _friendshipService.GetFriendsAsync(userId);
 
             ViewBag.UnreadCount = unreadCount;
+            ViewBag.Friends = friends;
             return View(conversations);
         }
         catch (Exception ex)
@@ -58,6 +65,14 @@ public class ChatsController : Controller
             {
                 TempData["Error"] = "Cannot chat with yourself";
                 return RedirectToAction(nameof(Index));
+            }
+
+            // Verify friendship before allowing chat
+            var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId, userId);
+            if (friendshipStatus != FriendshipStatus.Accepted)
+            {
+                TempData["Error"] = "You can only chat with accepted friends";
+                return RedirectToAction("Index", "Friends");
             }
 
             var messages = await _chatService.GetMessagesAsync(currentUserId, userId);

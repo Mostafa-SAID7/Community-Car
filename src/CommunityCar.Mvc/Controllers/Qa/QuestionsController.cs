@@ -27,8 +27,6 @@ public class QuestionsController : Controller
 
     // GET: Questions
     [HttpGet("")]
-    // GET: Questions
-    [HttpGet("")]
     public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string? tag = null, bool? isResolved = null, string? searchTerm = null, Guid? categoryId = null, string sortBy = "recent")
     {
         try

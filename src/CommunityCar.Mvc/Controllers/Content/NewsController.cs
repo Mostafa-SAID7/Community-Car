@@ -12,13 +12,16 @@ namespace CommunityCar.Web.Controllers.Content;
 public class NewsController : Controller
 {
     private readonly INewsService _newsService;
+    private readonly IFriendshipService _friendshipService;
     private readonly ILogger<NewsController> _logger;
 
     public NewsController(
         INewsService newsService,
+        IFriendshipService friendshipService,
         ILogger<NewsController> logger)
     {
         _newsService = newsService;
+        _friendshipService = friendshipService;
         _logger = logger;
     }
 
@@ -90,6 +93,22 @@ public class NewsController : Controller
                 Comments = comments,
                 RelatedNews = relatedNews.Where(n => n.Id != articleDto.Id).Take(4).ToList()
             };
+
+            if (currentUserId.HasValue)
+            {
+                var status = await _friendshipService.GetFriendshipStatusAsync(currentUserId.Value, articleDto.AuthorId);
+                ViewBag.FriendshipStatus = status;
+                
+                if (status == CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.Pending)
+                {
+                    var pendingRequests = await _friendshipService.GetPendingRequestsAsync(currentUserId.Value);
+                    ViewBag.IsIncomingRequest = pendingRequests.Any(r => r.UserId == articleDto.AuthorId);
+                }
+            }
+            else
+            {
+                ViewBag.FriendshipStatus = CommunityCar.Domain.Enums.Community.friends.FriendshipStatus.None;
+            }
 
             return View(viewModel);
         }

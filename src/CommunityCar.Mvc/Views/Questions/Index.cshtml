@@ -51,9 +51,6 @@
     </style>
 }
 
-@section LeftSidebar {
-    <partial name="Sidebars/_LeftSidebar" />
-}
 
 @{
     ViewData["HeaderTitle"] = "Questions & Answers";
@@ -62,22 +59,25 @@
     
     if (User.Identity?.IsAuthenticated == true)
     {
-        ViewData["HeaderActions"] = Html.Raw($@"
-            <div class='d-flex gap-2 flex-wrap'>
-                <a href='{Url.Action("Create")}' class='btn btn-light'>
-                    <i class='fas fa-plus-circle me-2'></i>Ask Question
-                </a>
-                <a href='{Url.Action("MyQuestions")}' class='btn btn-light'>
-                    <i class='fas fa-user me-2'></i>My Questions
-                </a>
-            </div>");
+        var createUrl = Url.Action("Create");
+        var myQuestionsUrl = Url.Action("MyQuestions");
+        var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                          "<a href='" + createUrl + "' class='btn btn-light'>" +
+                          "<i class='fas fa-plus-circle me-2'></i>Ask Question" +
+                          "</a>" +
+                          "<a href='" + myQuestionsUrl + "' class='btn btn-light'>" +
+                          "<i class='fas fa-user me-2'></i>My Questions" +
+                          "</a>" +
+                          "</div>";
+        ViewData["HeaderActions"] = Html.Raw(actionsHtml);
     }
     else
     {
-        ViewData["HeaderActions"] = Html.Raw($@"
-            <a href='{Url.Action("Login", "Account", new { area = "Identity" })}' class='btn btn-light'>
-                <i class='fas fa-sign-in-alt me-2'></i>Login to Ask
-            </a>");
+        var loginUrl = Url.Action("Login", "Account", new { area = "Identity" });
+        var actionsHtml = "<a href='" + loginUrl + "' class='btn btn-light'>" +
+                          "<i class='fas fa-sign-in-alt me-2'></i>Login to Ask" +
+                          "</a>";
+        ViewData["HeaderActions"] = Html.Raw(actionsHtml);
     }
 }
 

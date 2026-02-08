@@ -1,0 +1,344 @@
+@model CommunityCar.Mvc.ViewModels.Reviews.ReviewDetailsViewModel
+@using CommunityCar.Domain.Enums.Community.reviews
+
+@{
+    var review = Model.Review;
+    var currentUserId = ViewBag.CurrentUserId as Guid?;
+    var friendshipStatus = ViewBag.FriendshipStatus as CommunityCar.Domain.Enums.Community.friends.FriendshipStatus?;
+    var isIncoming = ViewBag.IsIncomingRequest as bool? ?? false;
+    ViewData["Title"] = review.Title + " Review";
+}
+@using CommunityCar.Domain.Enums.Community.friends
+
+@section Styles {
+    <style>
+        .rating-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 24px;
+        }
+        .rating-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .star-rating {
+            color: #f6ad55;
+            font-size: 1.25rem;
+        }
+        .pro-con-card {
+            border: none;
+            border-radius: 16px;
+        }
+        .pro-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .pro-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 0.5rem;
+        }
+        .pro-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+        }
+        .con-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .con-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 0.5rem;
+        }
+        .con-list li:before {
+            content: '\f00d';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #f56565;
+        }
+        .rating-bar {
+            height: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .rating-bar-fill {
+            height: 100%;
+            background: #667eea;
+        }
+    </style>
+}
+
+@{
+    ViewData["HeaderTitle"] = review.Title;
+    ViewData["HeaderIcon"] = "fas fa-star";
+    var actionsHtml = "<div class='d-flex gap-3 align-items-center'>" +
+                      "<span><i class='fas fa-thumbs-up me-1'></i> " + review.HelpfulCount + " Helpful</span>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Review Content -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="rating-hero p-4 p-md-5 mb-0 rounded-top-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <span class="badge bg-white text-primary mb-2 px-3 rounded-pill">@review.EntityType Review</span>
+                            <h2 class="fw-bold mb-3">@review.Title</h2>
+                            <div class="d-flex align-items-center mb-0">
+                                <div class="star-rating me-2">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i <= review.Rating ? "" : "text-white opacity-25")"></i>
+                                    }
+                                </div>
+                                <span class="fw-bold fs-5">@review.Rating / 5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-5 mt-4 mt-md-0">
+                            <div class="rating-box">
+                                <div class="small opacity-75 mb-1">Recommendation</div>
+                                <h4 class="fw-bold mb-0">
+                                    @if (review.IsRecommended)
+                                    {
+                                        <i class="fas fa-check-circle me-1"></i> <span>Highly Recommended</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-exclamation-circle me-1"></i> <span>Not Recommended</span>
+                                    }
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center mb-5 pb-4 border-bottom">
+                        <img src="@(review.ReviewerAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 54px; height: 54px; object-fit: cover;">
+                        <div>
+                            <h6 class="mb-0 fw-bold">@review.AuthorName</h6>
+                            <p class="text-muted small mb-0">Verified Reviewer • @review.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        @if (review.IsReviewer)
+                        {
+                            <div class="ms-auto">
+                                <a asp-action="Edit" asp-route-id="@review.Id" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                                    <i class="fas fa-edit me-1"></i>Edit Review
+                                </a>
+                            </div>
+                        }
+                        else if (currentUserId.HasValue)
+                        {
+                            <div class="ms-auto d-flex gap-2">
+                                @if (friendshipStatus == FriendshipStatus.None)
+                                {
+                                    <form asp-controller="Friends" asp-action="SendRequest" method="post" class="ajax-add-friend-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="friendId" value="@review.ReviewerId" />
+                                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                                            <i class="fas fa-user-plus me-1"></i> Add Friend
+                                        </button>
+                                    </form>
+                                }
+                                else if (friendshipStatus == FriendshipStatus.Pending)
+                                {
+                                    if (isIncoming)
+                                    {
+                                        <form asp-controller="Friends" asp-action="AcceptRequest" method="post" class="ajax-accept-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@review.ReviewerId" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">
+                                                Accept
+                                            </button>
+                                        </form>
+                                        <form asp-controller="Friends" asp-action="RejectRequest" method="post" class="ajax-reject-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@review.ReviewerId" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled>Pending</button>
+                                    }
+                                }
+                                else if (friendshipStatus == FriendshipStatus.Accepted)
+                                {
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                                        <i class="fas fa-check me-1"></i> Friends
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="card pro-con-card bg-success bg-opacity-10 h-100 p-4">
+                                <h6 class="fw-bold text-success mb-3"><i class="fas fa-plus-circle me-2"></i>Pros</h6>
+                                <ul class="pro-list mb-0">
+                                    @if (!string.IsNullOrEmpty(review.Pros))
+                                    {
+                                        @foreach (var pro in review.Pros.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <li>@pro.Trim()</li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li class="text-muted small italic">No pros mentioned</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card pro-con-card bg-danger bg-opacity-10 h-100 p-4">
+                                <h6 class="fw-bold text-danger mb-3"><i class="fas fa-minus-circle me-2"></i>Cons</h6>
+                                <ul class="con-list mb-0">
+                                    @if (!string.IsNullOrEmpty(review.Cons))
+                                    {
+                                        @foreach (var con in review.Cons.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <li>@con.Trim()</li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li class="text-muted small italic">No cons mentioned</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-content fs-5 lh-lg mb-5" style="color: #4a5568;">
+                        @Html.Raw(review.Content)
+                    </div>
+
+                    <div class="d-flex align-items-center pt-4 border-top">
+                        <button class="btn @(review.CurrentUserReaction == true ? "btn-primary" : "btn-outline-primary") rounded-pill px-4 me-3" onclick="toggleHelpful('@review.Id', true)">
+                            <i class="fas fa-thumbs-up me-2"></i>Helpful (@review.HelpfulCount)
+                        </button>
+                        <span class="text-muted small">Was this review helpful to you?</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h4 class="fw-bold mb-4">Comments (@Model.Comments.TotalCount)</h4>
+                
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <div class="card shadow-sm border-0 rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <form id="commentForm">
+                                <input type="hidden" name="reviewId" value="@review.Id" />
+                                <div class="mb-3">
+                                    <textarea name="content" class="form-control rounded-4 border-light p-3" rows="2" placeholder="Share your experience or ask a question..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                <div id="commentsContainer">
+                    @foreach (var comment in Model.Comments.Items)
+                    {
+                        <div class="d-flex mb-4">
+                            <img src="@(comment.UserAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div class="bg-light p-3 rounded-4 flex-grow-1">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-bold small">@comment.UserName</span>
+                                    <span class="text-muted smaller">@comment.CreatedAt.ToString("MMM dd")</span>
+                                </div>
+                                <p class="mb-0 small">@comment.Content</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Entity Details -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-4 text-center">
+                    <div class="p-4 bg-light rounded-4 mb-4 d-inline-block">
+                        <i class="fas fa-car fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">@review.EntityType</h5>
+                    <p class="text-muted small mb-4">@review.EntityType</p>
+                    <a href="/Search?q=@review.EntityType" class="btn btn-primary w-100 rounded-pill">View Similar</a>
+                </div>
+            </div>
+
+            <!-- Community Statistics -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-4">Community Rating</h6>
+                    <div class="text-center mb-4">
+                        <h1 class="display-4 fw-bold mb-0">@Model.AverageRating.ToString("F1")</h1>
+                        <div class="star-rating mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= Math.Round(Model.AverageRating) ? "" : "text-light")"></i>
+                            }
+                        </div>
+                        <p class="text-muted small">Based on @Model.TotalReviews reviews</p>
+                    </div>
+
+                    @for (int i = 5; i >= 1; i--)
+                    {
+                        var count = Model.RatingDistribution.ContainsKey(i) ? Model.RatingDistribution[i] : 0;
+                        var percentage = Model.TotalReviews > 0 ? (count * 100 / Model.TotalReviews) : 0;
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="small me-2" style="width: 50px;">@i Stars</span>
+                            <div class="rating-bar flex-grow-1 mx-2">
+                                <div class="rating-bar-fill" style="width: @percentage%"></div>
+                            </div>
+                            <span class="small text-muted" style="width: 30px;">@count</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/friends.js"></script>
+    <script>
+        function toggleHelpful(reviewId, isHelpful) {
+            $.post('/Reviews/MarkHelpful/' + reviewId, { isHelpful: isHelpful }, function(res) {
+                if (res.success) location.reload();
+            });
+        }
+
+        $('#commentForm').submit(function(e) {
+            e.preventDefault();
+            const data = $(this).serialize();
+            $.post('/Reviews/AddComment', data, function(res) {
+                if (res.success) location.reload();
+            });
+        });
+    </script>
+}

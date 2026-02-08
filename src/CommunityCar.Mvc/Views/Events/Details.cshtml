@@ -12,13 +12,15 @@
     ViewData["HeaderDescription"] = evt.Description?.Length > 150 ? evt.Description.Substring(0, 150) + "..." : evt.Description;
     ViewData["HeaderIcon"] = "fas fa-calendar-alt";
 
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <div class='d-flex gap-2 flex-wrap'>
-            <div class='event-calendar-badge bg-white text-primary rounded px-3 py-2 text-center shadow-sm'>
-                <div class='small fw-bold text-uppercase'>{evt.StartTime:MMM}</div>
-                <div class='h4 fw-bold mb-0'>{evt.StartTime.Day}</div>
-            </div>
-        </div>");
+    var month = evt.StartTime.ToString("MMM");
+    var day = evt.StartTime.Day.ToString();
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                      "<div class='event-calendar-badge bg-white text-primary rounded px-3 py-2 text-center shadow-sm'>" +
+                      "<div class='small fw-bold text-uppercase'>" + month + "</div>" +
+                      "<div class='h4 fw-bold mb-0'>" + day + "</div>" +
+                      "</div>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />

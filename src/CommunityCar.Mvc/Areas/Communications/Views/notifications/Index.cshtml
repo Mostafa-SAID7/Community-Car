@@ -14,19 +14,18 @@
     ViewData["HeaderDescription"] = "Stay updated with your latest activity";
     ViewData["HeaderIcon"] = "fas fa-bell";
     
-    var unreadBadgeContent = unreadCount > 0 ? $"<span class='badge bg-light text-dark fs-6'>{unreadCount} unread</span>" : "";
-    var markAllButtonContent = unreadCount > 0 ? $"<button class='btn btn-light' onclick='markAllAsRead()'><i class='fas fa-check-double me-2'></i>Mark All Read</button>" : "";
+    var unreadBadgeContent = unreadCount > 0 ? "<span class='badge bg-light text-dark fs-6'>" + unreadCount + " unread</span>" : "";
+    var markAllButtonContent = unreadCount > 0 ? "<button class='btn btn-light' onclick='markAllAsRead()'><i class='fas fa-check-double me-2'></i>Mark All Read</button>" : "";
     
-    var headerActionsHtml = $@"
-        <div class='d-flex gap-2 flex-wrap align-items-center'>
-            <span class='text-white'>{unreadBadgeContent}</span>
-            <button class='btn btn-light' onclick='refreshNotifications()'>
-                <i class='fas fa-sync-alt me-2'></i>Refresh
-            </button>
-            {markAllButtonContent}
-        </div>";
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap align-items-center'>" +
+                      "<span class='text-white'>" + unreadBadgeContent + "</span>" +
+                      "<button class='btn btn-light' onclick='refreshNotifications()'>" +
+                      "<i class='fas fa-sync-alt me-2'></i>Refresh" +
+                      "</button>" +
+                      markAllButtonContent +
+                      "</div>";
         
-    ViewData["HeaderActions"] = Html.Raw(headerActionsHtml);
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />
@@ -103,7 +102,8 @@
                                         <div class="btn-group ms-3">
                                             @if (!string.IsNullOrEmpty(notification.Link))
                                             {
-                                                <a href="@notification.Link" 
+                                                var normalizedLink = notification.Link.Replace("/Identity/Profiles/Index/", "/Identity/Profiles/");
+                                                <a href="@normalizedLink" 
                                                    class="btn btn-sm btn-outline-primary"
                                                    onclick="markAsRead('@notification.Id')">
                                                     <i class="fas fa-external-link-alt"></i> View

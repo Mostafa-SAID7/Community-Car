@@ -1,0 +1,171 @@
+@model CommunityCar.Mvc.ViewModels.News.EditNewsViewModel
+@using CommunityCar.Domain.Enums.Community.news
+
+@{
+    ViewData["Title"] = "Edit News Article";
+    var categories = Enum.GetValues<NewsCategory>();
+
+    ViewData["HeaderTitle"] = "Edit Article";
+    ViewData["HeaderDescription"] = "Update your news story and publication settings";
+    ViewData["HeaderIcon"] = "fas fa-edit";
+}
+
+@section Styles {
+    <style>
+        .form-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .image-preview {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: @(!string.IsNullOrEmpty(Model.ImageUrl) ? "block" : "none");
+        }
+    </style>
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">News</a></li>
+                    <li class="breadcrumb-item active">Edit Article</li>
+                </ol>
+            </nav>
+
+            <div class="card form-card rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+
+                        <div class="row g-4">
+                            <!-- Left Column: Primary Content -->
+                            <div class="col-lg-8">
+                                <div class="mb-4">
+                                    <label asp-for="Title" class="form-label fw-bold">Article Title <span class="text-danger">*</span></label>
+                                    <input asp-for="Title" class="form-control form-control-lg rounded-3" placeholder="Enter a compelling headline" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Summary" class="form-label fw-bold">Article Summary <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Summary" class="form-control rounded-3" rows="3" placeholder="Briefly describe the story (shown in listings)">@Model.Summary</textarea>
+                                    <span asp-validation-for="Summary" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Content" class="form-label fw-bold">Article Content <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Content" class="form-control rounded-3" rows="20" placeholder="Write your full story here...">@Model.Content</textarea>
+                                    <span asp-validation-for="Content" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Settings and Metadata -->
+                            <div class="col-lg-4">
+                                <div class="card bg-light border-0 rounded-4 p-3 mb-4">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-cog me-2"></i>Publish Settings</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label asp-for="Category" class="form-label small fw-bold">Category <span class="text-danger">*</span></label>
+                                        <select asp-for="Category" class="form-select rounded-3">
+                                            @foreach (var cat in categories)
+                                            {
+                                                <option value="@cat">@cat.ToString()</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="Category" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Tags" class="form-label small fw-bold">Tags</label>
+                                        <input asp-for="Tags" class="form-control rounded-3" placeholder="e.g. EV, Tesla, Review" />
+                                        <span asp-validation-for="Tags" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="card bg-light border-0 rounded-4 p-3 mb-4">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-image me-2"></i>Media & Sources</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label asp-for="ImageUrl" class="form-label small fw-bold">Main Image URL</label>
+                                        <img src="@Model.ImageUrl" id="imagePreview" class="image-preview" />
+                                        <input asp-for="ImageUrl" class="form-control rounded-3" id="imageUrlInput" placeholder="https://..." />
+                                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Source" class="form-label small fw-bold">Original Source</label>
+                                        <input asp-for="Source" class="form-control rounded-3" placeholder="e.g. Automotive News" />
+                                        <span asp-validation-for="Source" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="ExternalUrl" class="form-label small fw-bold">External URL</label>
+                                        <input asp-for="ExternalUrl" class="form-control rounded-3" placeholder="https://..." />
+                                        <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-save me-2"></i>Update Article
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger rounded-pill" onclick="deleteArticle('@Model.Id')">
+                                        <i class="fas fa-trash-alt me-2"></i>Delete Article
+                                    </button>
+                                    <a asp-action="Details" asp-route-slug="@Model.Title" class="btn btn-light rounded-pill mt-2">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            $('#imageUrlInput').on('change input', function() {
+                const url = $(this).val();
+                if (url) {
+                    $('#imagePreview').attr('src', url).show();
+                } else {
+                    $('#imagePreview').hide();
+                }
+            });
+        });
+
+        function deleteArticle(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/News/Delete/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) {
+                            window.location.href = '/News';
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

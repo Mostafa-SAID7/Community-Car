@@ -1,0 +1,186 @@
+@using CommunityCar.Domain.Enums.Community.news
+@model CommunityCar.Mvc.ViewModels.News.CreateNewsViewModel
+@{
+    ViewData["Title"] = "Create News Article";
+}
+
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_News" />
+}
+
+@section Styles {
+}
+
+@{
+    ViewData["HeaderTitle"] = "Create News Article";
+    ViewData["HeaderDescription"] = "Share the latest automotive news with the community";
+    ViewData["HeaderIcon"] = "fas fa-newspaper";
+}
+
+<partial name="_InnerPageHeader" />
+
+<!-- Create Form -->
+<div class="card create-card">
+    <div class="card-body p-4 p-md-5">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+            
+            <div class="mb-4">
+                <label asp-for="Title" class="form-label fw-bold">
+                    <i class="fas fa-heading me-2 text-primary"></i>Article Title
+                </label>
+                <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter a compelling headline for your news article" />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Write a clear, attention-grabbing title (max 200 characters)
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Category" class="form-label fw-bold">
+                    <i class="fas fa-folder me-2 text-primary"></i>Category
+                </label>
+                <select asp-for="Category" class="form-select form-select-lg">
+                    <option value="">-- Select a Category --</option>
+                    @foreach (NewsCategory category in ViewBag.Categories)
+                    {
+                        <option value="@((int)category)">@category.ToString()</option>
+                    }
+                </select>
+                <span asp-validation-for="Category" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Summary" class="form-label fw-bold">
+                    <i class="fas fa-align-center me-2 text-primary"></i>Summary
+                </label>
+                <textarea asp-for="Summary" class="form-control" rows="3" placeholder="Write a brief summary of the article (max 500 characters)"></textarea>
+                <span asp-validation-for="Summary" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Provide a concise overview that will appear in article listings
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Content" class="form-label fw-bold">
+                    <i class="fas fa-align-left me-2 text-primary"></i>Article Content
+                </label>
+                <textarea asp-for="Content" class="form-control" rows="15" placeholder="Write your full article content here...&#10;&#10;Include all relevant details, facts, and information."></textarea>
+                <span asp-validation-for="Content" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Write the complete article with all details and information
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ImageUrl" class="form-label fw-bold">
+                    <i class="fas fa-image me-2 text-primary"></i>Image URL (Optional)
+                </label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Add a featured image URL for your article
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Source" class="form-label fw-bold">
+                    <i class="fas fa-link me-2 text-primary"></i>Source (Optional)
+                </label>
+                <input asp-for="Source" class="form-control" placeholder="e.g., AutoNews, Car Magazine" />
+                <span asp-validation-for="Source" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ExternalUrl" class="form-label fw-bold">
+                    <i class="fas fa-external-link-alt me-2 text-primary"></i>External URL (Optional)
+                </label>
+                <input asp-for="ExternalUrl" class="form-control" placeholder="https://example.com/original-article" />
+                <span asp-validation-for="ExternalUrl" class="text-danger small"></span>
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Link to the original article if this is a reference or summary
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Tags" class="form-label fw-bold">
+                    <i class="fas fa-tags me-2 text-primary"></i>Tags (Optional)
+                </label>
+                <input asp-for="Tags" class="form-control tag-input" placeholder="e.g., electric-vehicles, tesla, automotive-industry">
+                <div class="form-text small text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Add tags separated by commas to help categorize your article
+                </div>
+            </div>
+
+            <div class="alert alert-info rounded-4 mb-4">
+                <h6 class="alert-heading mb-2">
+                    <i class="fas fa-lightbulb me-2"></i>Tips for Writing Great News Articles
+                </h6>
+                <ul class="mb-0 small">
+                    <li>Use a clear, compelling headline that captures attention</li>
+                    <li>Write a concise summary that highlights the key points</li>
+                    <li>Provide accurate, well-researched information</li>
+                    <li>Include relevant details and context</li>
+                    <li>Add images and sources when available</li>
+                    <li>Use appropriate tags for better discoverability</li>
+                </ul>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <a asp-action="Index" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-gradient btn-lg px-5">
+                    <i class="fas fa-paper-plane me-2"></i>Publish Article
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Add character counter for title
+        const titleInput = document.querySelector('input[name="Title"]');
+        if (titleInput) {
+            titleInput.addEventListener('input', function() {
+                const length = this.value.length;
+                const maxLength = 200;
+                const color = length > maxLength ? 'text-danger' : length > 150 ? 'text-warning' : 'text-muted';
+                let counter = this.parentElement.querySelector('.char-counter');
+                if (!counter) {
+                    counter = document.createElement('small');
+                    counter.className = 'char-counter d-block mt-1';
+                    this.parentElement.appendChild(counter);
+                }
+                counter.className = `char-counter d-block mt-1 ${color}`;
+                counter.textContent = `${length}/${maxLength} characters`;
+            });
+        }
+
+        // Add character counter for summary
+        const summaryInput = document.querySelector('textarea[name="Summary"]');
+        if (summaryInput) {
+            summaryInput.addEventListener('input', function() {
+                const length = this.value.length;
+                const maxLength = 500;
+                const color = length > maxLength ? 'text-danger' : length > 400 ? 'text-warning' : 'text-muted';
+                let counter = this.parentElement.querySelector('.char-counter');
+                if (!counter) {
+                    counter = document.createElement('small');
+                    counter.className = 'char-counter d-block mt-1';
+                    this.parentElement.appendChild(counter);
+                }
+                counter.className = `char-counter d-block mt-1 ${color}`;
+                counter.textContent = `${length}/${maxLength} characters`;
+            });
+        }
+    </script>
+}

@@ -11,15 +11,17 @@
     ViewData["HeaderTitle"] = "Bookmarks";
     ViewData["HeaderDescription"] = "Questions you've saved for later";
     ViewData["HeaderIcon"] = "fas fa-bookmark";
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <div class='d-flex gap-2 flex-wrap'>
-            <a href='{Url.Action("Create")}' class='btn btn-light'>
-                <i class='fas fa-plus-circle me-2'></i>Ask Question
-            </a>
-            <a href='{Url.Action("Index")}' class='btn btn-outline-light'>
-                <i class='fas fa-arrow-left me-2'></i>All Questions
-            </a>
-        </div>");
+    var createUrl = Url.Action("Create");
+    var indexUrl = Url.Action("Index");
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                      "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Ask Question" +
+                      "</a>" +
+                      "<a href='" + indexUrl + "' class='btn btn-outline-light'>" +
+                      "<i class='fas fa-arrow-left me-2'></i>All Questions" +
+                      "</a>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />

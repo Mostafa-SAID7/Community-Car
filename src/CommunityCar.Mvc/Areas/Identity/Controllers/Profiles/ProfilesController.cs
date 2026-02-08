@@ -40,35 +40,47 @@ public class ProfilesController : Controller
     #region Profile View
 
     [HttpGet]
-    [Route("")]
-    [Route("Index")]
-    public async Task<IActionResult> Index(Guid? userId)
+    [Route("{id?}")]
+    [Route("Index/{id?}")]
+    public async Task<IActionResult> Index(string? id)
     {
         var currentUserId = _currentUserService.UserId;
-        var targetUserId = userId ?? currentUserId;
+        ApplicationUser? user = null;
 
-        if (targetUserId == null || targetUserId == Guid.Empty)
+        if (string.IsNullOrEmpty(id))
         {
-            return RedirectToAction("Login", "Account", new { area = "Identity" });
+            if (currentUserId == null || currentUserId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
+            }
+            user = await _userManager.FindByIdAsync(currentUserId.ToString()!);
+        }
+        else if (Guid.TryParse(id, out var userId))
+        {
+            user = await _userManager.FindByIdAsync(userId.ToString());
+        }
+        else
+        {
+            user = await _userManager.Users.FirstOrDefaultAsync(u => u.Slug == id);
         }
 
-        var user = await _userManager.FindByIdAsync(targetUserId.ToString()!);
         if (user == null)
         {
             return NotFound("User not found.");
         }
 
+        var targetUserId = user.Id;
         var isOwnProfile = currentUserId == targetUserId;
         var friendshipStatus = FriendshipStatus.None;
         
         if (!isOwnProfile && currentUserId != null)
         {
-            friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId.Value, targetUserId.Value);
+            friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId.Value, targetUserId);
         }
 
         // Get user statistics
-        var userQuestions = await _questionService.GetUserQuestionsAsync(targetUserId.Value, new CommunityCar.Domain.Base.QueryParameters { PageSize = 100 });
-        var friends = await _friendshipService.GetFriendsAsync(targetUserId.Value);
+        var userQuestions = await _questionService.GetUserQuestionsAsync(targetUserId, new CommunityCar.Domain.Base.QueryParameters { PageSize = 100 });
+        var friends = await _friendshipService.GetFriendsAsync(targetUserId);
         var friendsCount = friends.Count();
 
         var viewModel = new ProfileViewModel

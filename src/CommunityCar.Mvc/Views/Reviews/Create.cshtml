@@ -124,18 +124,7 @@
                                 </label>
                             </div>
                         </div>
-                        @{
-    ViewData["HeaderTitle"] = "My Reviews";
-    ViewData["HeaderDescription"] = "Manage and track your reviews";
-    ViewData["HeaderIcon"] = "fas fa-user-edit";
-    
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <a href='{Url.Action("Create")}' class='btn btn-light'>
-            <i class='fas fa-plus-circle me-2'></i>Write New Review
-        </a>");
-}
 
-<partial name="_InnerPageHeader" />
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="fas fa-times me-2"></i>Cancel

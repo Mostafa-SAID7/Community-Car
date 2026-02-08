@@ -4,6 +4,7 @@ using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Infrastructure.Repos.Common;
 using CommunityCar.Infrastructure.Uow.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunityCar.Infrastructure.Services.Community;
 
@@ -98,8 +99,12 @@ public class FriendshipService : IFriendshipService
 
     public async Task<IEnumerable<Friendship>> GetFriendsAsync(Guid userId)
     {
-        return await _friendshipRepository.WhereAsync(f => 
-            (f.UserId == userId || f.FriendId == userId) && f.Status == FriendshipStatus.Accepted);
+        return await _friendshipRepository
+            .GetQueryable()
+            .Include(f => f.User)
+            .Include(f => f.Friend)
+            .Where(f => (f.UserId == userId || f.FriendId == userId) && f.Status == FriendshipStatus.Accepted)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Friendship>> GetPendingRequestsAsync(Guid userId)

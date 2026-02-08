@@ -1,0 +1,326 @@
+@model CommunityCar.Mvc.ViewModels.News.NewsDetailsViewModel
+@using CommunityCar.Domain.Enums.Community.news
+
+@{
+    ViewData["Title"] = Model.Article.Title;
+    var article = Model.Article;
+    var currentUserId = ViewBag.CurrentUserId as Guid?;
+    var friendshipStatus = ViewBag.FriendshipStatus as CommunityCar.Domain.Enums.Community.friends.FriendshipStatus?;
+    var isIncoming = ViewBag.IsIncomingRequest as bool? ?? false;
+}
+@using CommunityCar.Domain.Enums.Community.friends
+
+@section Styles {
+    <style>
+        .news-article-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #2d3748;
+        }
+        .news-meta {
+            font-size: 0.95rem;
+            color: #718096;
+        }
+        .news-hero-image {
+            height: 400px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .category-badge {
+            background: #ebf8ff;
+            color: #3182ce;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .featured-ribbon {
+            position: absolute;
+            top: 20px;
+            right: -10px;
+            background: #ecc94b;
+            color: #744210;
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .featured-ribbon:after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            border-left: 10px solid #975a16;
+            border-bottom: 10px solid transparent;
+        }
+        .related-news-item {
+            border: none;
+            transition: all 0.2s;
+        }
+        .related-news-item:hover {
+            background: #f7fafc;
+        }
+    </style>
+}
+
+@{
+    ViewData["HeaderTitle"] = article.Title;
+    ViewData["HeaderIcon"] = "fas fa-newspaper";
+    var actionsHtml = "<div class='d-flex gap-3 align-items-center'>" +
+                      "<span><i class='fas fa-eye me-1'></i> " + article.ViewCount + " Views</span>" +
+                      "<span><i class='fas fa-comment me-1'></i> " + article.CommentCount + " Comments</span>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-9 mx-auto">
+            <!-- Hero Section -->
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+                <div class="position-relative">
+                    @if (article.IsFeatured)
+                    {
+                        <div class="featured-ribbon">
+                            <i class="fas fa-star me-2"></i>FEATURED
+                        </div>
+                    }
+                    <img src="@(article.ImageUrl ?? "/images/news-placeholder.jpg")" class="news-hero-image" alt="@article.Title">
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="category-badge me-3">@article.Category</span>
+                        <div class="news-meta d-flex align-items-center gap-3">
+                            <span><i class="fas fa-user-edit me-1"></i> @article.AuthorName</span>
+                            <span><i class="fas fa-calendar-alt me-1"></i> @article.PublishedAt?.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        @if (article.IsAuthor)
+                        {
+                            <div class="ms-auto">
+                                <a asp-action="Edit" asp-route-id="@article.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    <i class="fas fa-edit me-1"></i>Edit Article
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <h2 class="fw-bold mb-4">@article.Title</h2>
+                    
+                    @if (!string.IsNullOrEmpty(article.Summary))
+                    {
+                        <div class="lead fw-normal text-muted mb-4 p-3 bg-light rounded-3 border-start border-primary border-4">
+                            @article.Summary
+                        </div>
+                    }
+
+                    <div class="news-article-content mb-5">
+                        @Html.Raw(article.Content)
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(article.Source))
+                    {
+                        <div class="p-4 bg-light rounded-4 border-0 mb-5 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="mb-1 fw-bold">Source</h6>
+                                <p class="mb-0 text-muted">Originally published via @article.Source</p>
+                            </div>
+                            @if (!string.IsNullOrEmpty(article.ExternalUrl))
+                            {
+                                <a href="@article.ExternalUrl" target="_blank" class="btn btn-primary rounded-pill px-4">
+                                    Read Original <i class="fas fa-external-link-alt ms-2 small"></i>
+                                </a>
+                            }
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(article.Tags))
+                    {
+                        <div class="mb-5">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-tags me-2"></i>Related Topics</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var tag in article.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <a href="/News?tag=@tag.Trim()" class="btn btn-sm btn-outline-secondary rounded-pill px-3">#@tag.Trim()</a>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex align-items-center pt-4 border-top">
+                        <button class="btn @(article.IsLiked ? "btn-danger" : "btn-outline-danger") rounded-pill px-4 me-3" onclick="toggleLike('@article.Id')">
+                            <i class="fas fa-heart me-2"></i>@(article.IsLiked ? "Liked" : "Like") (@article.LikeCount)
+                        </button>
+                        <button class="btn btn-outline-primary rounded-pill px-4" onclick="shareArticle('@article.Id', '@article.Title')">
+                            <i class="fas fa-share-alt me-2"></i>Share Article
+                        </button>
+                    </div>
+
+                    <!-- Author Social Integration -->
+                    @if (currentUserId.HasValue && !article.IsAuthor)
+                    {
+                        <div class="mt-5 p-4 bg-light rounded-4 border-0">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <img src="@(article.AuthorAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div>
+                                        <p class="mb-0 text-muted smaller">Written by</p>
+                                        <h6 class="fw-bold mb-0">@article.AuthorName</h6>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="/Identity/Profiles/@article.AuthorId" class="btn btn-outline-primary btn-sm rounded-pill px-3">Profile</a>
+                                    
+                                    @if (friendshipStatus == FriendshipStatus.None)
+                                    {
+                                        <form asp-controller="Friends" asp-action="SendRequest" method="post" class="ajax-add-friend-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@article.AuthorId" />
+                                            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                                                <i class="fas fa-user-plus me-1"></i> Add Friend
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (friendshipStatus == FriendshipStatus.Pending)
+                                    {
+                                        if (isIncoming)
+                                        {
+                                            <form asp-controller="Friends" asp-action="AcceptRequest" method="post" class="ajax-accept-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="friendId" value="@article.AuthorId" />
+                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">
+                                                    Accept
+                                                </button>
+                                            </form>
+                                            <form asp-controller="Friends" asp-action="RejectRequest" method="post" class="ajax-reject-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="friendId" value="@article.AuthorId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled>Pending</button>
+                                        }
+                                    }
+                                    else if (friendshipStatus == FriendshipStatus.Accepted)
+                                    {
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                                            <i class="fas fa-check me-1"></i> Friends
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card shadow-sm border-0 rounded-4 mb-5">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4">Join the Conversation (@Model.Comments.TotalCount)</h4>
+                    
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <form id="commentForm" class="mb-5">
+                            <input type="hidden" name="articleId" value="@article.Id" />
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control rounded-4 border-light p-3" rows="3" placeholder="What are your thoughts on this story?"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5">Post Comment</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 bg-light rounded-4 mb-5">
+                            <p class="mb-3 text-muted">Sign in to share your perspective</p>
+                            <a href="/Identity/Account/Login" class="btn btn-primary rounded-pill px-4">Sign In</a>
+                        </div>
+                    }
+
+                    <div id="commentsList">
+                        @if (Model.Comments.Items.Any())
+                        {
+                            @foreach (var comment in Model.Comments.Items)
+                            {
+                                <div class="d-flex mb-4 pb-4 border-bottom last-child-no-border">
+                                    <img src="@(comment.UserAvatar ?? "/images/default-avatar.png")" class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-bold text-dark">@comment.UserName</span>
+                                            <span class="text-muted smaller">@comment.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <p class="mb-0 text-secondary">@comment.Content</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-comments fa-3x mb-3 opacity-25"></i>
+                                <p>No comments on this article yet</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related News Grid -->
+            @if (Model.RelatedNews.Any())
+            {
+                <h4 class="fw-bold mb-4 px-2">More Automotive News</h4>
+                <div class="row g-4 mb-5">
+                    @foreach (var item in Model.RelatedNews)
+                    {
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden related-news-item">
+                                <img src="@(item.ImageUrl ?? "/images/news-placeholder.jpg")" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                <div class="card-body p-3">
+                                    <span class="badge bg-light text-primary mb-2">@item.Category</span>
+                                    <h6 class="fw-bold mb-2">
+                                        <a href="/News/Details/@item.Slug" class="text-decoration-none text-dark stretched-link">@item.Title</a>
+                                    </h6>
+                                    <p class="smaller text-muted mb-0">@item.PublishedAt?.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/friends.js"></script>
+    <script>
+        function toggleLike(articleId) {
+            $.post('/News/ToggleLike/' + articleId, function(res) {
+                if (res.success) location.reload();
+            });
+        }
+
+        function shareArticle(articleId, title) {
+            if (navigator.share) {
+                navigator.share({ title: title, url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Article link copied to clipboard!');
+            }
+        }
+
+        $('#commentForm').submit(function(e) {
+            e.preventDefault();
+            const data = $(this).serialize();
+            $.post('/News/AddComment', data, function(res) {
+                if (res.success) location.reload();
+            });
+        });
+    </script>
+}

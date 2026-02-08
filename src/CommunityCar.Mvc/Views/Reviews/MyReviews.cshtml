@@ -11,10 +11,11 @@
     ViewData["HeaderDescription"] = "Manage and track your reviews";
     ViewData["HeaderIcon"] = "fas fa-user-edit";
     
-    ViewData["HeaderActions"] = Html.Raw($@"
-        <a href='{Url.Action("Create")}' class='btn btn-light'>
-            <i class='fas fa-plus-circle me-2'></i>Write New Review
-        </a>");
+    var createUrl = Url.Action("Create");
+    var actionsHtml = "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Write New Review" +
+                      "</a>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />

@@ -3,333 +3,280 @@
     ViewData["Title"] = "Chat";
     var otherUserId = ViewBag.OtherUserId as Guid?;
     var conversations = ViewBag.Conversations as List<CommunityCar.Domain.DTOs.Communications.ChatConversationDto>;
-    var currentConversation = conversations?.FirstOrDefault(c => c.UserId == otherUserId);
+    var otherUser = conversations?.FirstOrDefault(c => c.UserId == otherUserId);
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <!-- Conversations Sidebar -->
-        <div class="col-md-4 col-lg-3 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">
-                        <i class="fas fa-comments me-2"></i>Conversations
-                    </h6>
+<div class="container py-3">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden chat-container">
+        <div class="row g-0 h-100">
+            <!-- Sidebar -->
+            <div class="col-md-4 col-lg-3 border-end d-flex flex-column h-100 bg-white">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Chats</h5>
+                    <a asp-action="Index" class="btn btn-light btn-sm rounded-circle shadow-sm">
+                        <i class="fas fa-search"></i>
+                    </a>
                 </div>
-                <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
-                    @if (conversations != null && conversations.Any())
+                <div class="conversations-list p-2">
+                    @if (conversations != null)
                     {
-                        <div class="list-group list-group-flush">
-                            @foreach (var conv in conversations)
-                            {
-                                var isActive = conv.UserId == otherUserId;
-                                <a href="@Url.Action("Conversation", new { userId = conv.UserId })" 
-                                   class="list-group-item list-group-item-action @(isActive ? "active" : "")">
-                                    <div class="d-flex align-items-center">
-                                        <div class="position-relative me-2">
-                                            @if (!string.IsNullOrEmpty(conv.ProfilePicture))
-                                            {
-                                                <img src="@conv.ProfilePicture" 
-                                                     alt="@conv.UserName" 
-                                                     class="rounded-circle" 
-                                                     style="width: 40px; height: 40px; object-fit: cover;">
-                                            }
-                                            else
-                                            {
-                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" 
-                                                     class="size-40">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                            }
-                                            @if (conv.IsOnline)
-                                            {
-                                                <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-success" 
-                                                      style="width: 10px; height: 10px; padding: 0;"></span>
-                                            }
-                                        </div>
-                                        <div class="flex-grow-1 text-truncate">
-                                            <div class="fw-bold small">@conv.UserName</div>
-                                            <div class="text-muted small text-truncate">
-                                                @(conv.LastMessage ?? "No messages")
-                                            </div>
-                                        </div>
-                                        @if (conv.UnreadCount > 0)
+                        foreach (var conv in conversations)
+                        {
+                            <a href="@Url.Action("Conversation", new { userId = conv.UserId })" 
+                               class="d-block text-decoration-none conv-item p-3 @(conv.UserId == otherUserId ? "active" : "")"
+                               data-user-id="@conv.UserId">
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative me-3">
+                                        @if (!string.IsNullOrEmpty(conv.ProfilePicture))
                                         {
-                                            <span class="badge bg-danger rounded-pill">@conv.UnreadCount</span>
+                                            <img src="@conv.ProfilePicture" class="rounded-circle user-avatar-sm">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm">
+                                                @conv.UserName.Substring(0, 1).ToUpper()
+                                            </div>
+                                        }
+                                        @if (conv.IsOnline)
+                                        {
+                                            <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width:10px; height:10px;"></span>
                                         }
                                     </div>
-                                </a>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-3">
-                            <p class="text-muted small">No conversations</p>
-                        </div>
+                                    <div class="flex-grow-1 text-truncate">
+                                        <div class="fw-bold text-dark small">@conv.UserName</div>
+                                        <div class="text-muted small text-truncate">@(conv.LastMessage ?? "No messages")</div>
+                                    </div>
+                                    @if (conv.UnreadCount > 0)
+                                    {
+                                        <span class="badge bg-danger rounded-pill">@conv.UnreadCount</span>
+                                    }
+                                </div>
+                            </a>
+                        }
                     }
                 </div>
             </div>
-        </div>
 
-        <!-- Chat Area -->
-        <div class="col-md-8 col-lg-9">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <a href="@Url.Action("Index")" class="btn btn-light btn-sm me-3">
-                            <i class="fas fa-arrow-left"></i>
-                        </a>
-                        @if (currentConversation != null)
-                        {
-                            @if (!string.IsNullOrEmpty(currentConversation.ProfilePicture))
-                            {
-                                <img src="@currentConversation.ProfilePicture" 
-                                     alt="@currentConversation.UserName" 
-                                     class="rounded-circle me-2" 
-                                     style="width: 40px; height: 40px; object-fit: cover;">
-                            }
-                            else
-                            {
-                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary me-2" 
-                                     class="size-40">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                            }
-                            <div>
-                                <h5 class="mb-0">@currentConversation.UserName</h5>
-                                @if (currentConversation.IsOnline)
+            <!-- Chat Area -->
+            <div class="col-md-8 col-lg-9 d-flex flex-column h-100 bg-white">
+                @if (otherUser != null)
+                {
+                    <!-- Chat Header -->
+                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-white">
+                        <div class="d-flex align-items-center">
+                            <div class="position-relative me-3">
+                                @if (!string.IsNullOrEmpty(otherUser.ProfilePicture))
                                 {
-                                    <small class="text-white-50">
-                                        <i class="fas fa-circle text-success"></i> Online
-                                    </small>
+                                    <img src="@otherUser.ProfilePicture" class="rounded-circle user-avatar-sm">
                                 }
+                                else
+                                {
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm">
+                                        @otherUser.UserName.Substring(0, 1).ToUpper()
+                                    </div>
+                                }
+                                <div id="statusDot" class="position-absolute bottom-0 end-0 border border-white rounded-circle @(otherUser.IsOnline ? "bg-success" : "bg-secondary")" style="width:12px; height:12px;"></div>
                             </div>
-                        }
+                            <div>
+                                <h6 class="mb-0 fw-bold">@otherUser.UserName</h6>
+                                <small id="statusText" class="text-muted">@(otherUser.IsOnline ? "Online" : "Offline")</small>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-light rounded-circle btn-sm shadow-sm" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                <li><a class="dropdown-item" href="/Identity/Profiles/@otherUser.UserId">View Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#">Block User</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <button class="btn btn-light btn-sm" onclick="refreshMessages()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
 
-                <!-- Chat Messages -->
-                <div class="card-body bg-light" id="chatMessages" style="height: 500px; overflow-y: auto;">
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
-                        </div>
-                    }
-
-                    @if (Model == null || !Model.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No messages yet. Start the conversation!</p>
-                        </div>
-                    }
-                    else
-                    {
+                    <!-- Messages -->
+                    <div class="chat-messages-area p-4" id="chatMessages">
                         @foreach (var message in Model.OrderBy(m => m.CreatedAt))
                         {
                             var isSent = message.SenderId.ToString() == currentUserId;
-                            <div class="mb-3 d-flex @(isSent ? "justify-content-end" : "justify-content-start")">
-                                <div class="@(isSent ? "text-end" : "text-start")" style="max-width: 70%;">
-                                    @if (!isSent)
-                                    {
-                                        <small class="text-muted d-block mb-1">
-                                            <strong>@message.SenderName</strong>
-                                        </small>
-                                    }
-                                    <div class="p-3 rounded shadow-sm @(isSent ? "bg-primary text-white" : "bg-white")">
-                                        <p class="mb-0" style="word-wrap: break-word;">@message.Content</p>
-                                    </div>
-                                    <small class="text-muted d-block mt-1">
-                                        @message.CreatedAt.ToString("MMM dd, HH:mm")
-                                        @if (isSent && message.IsRead)
-                                        {
-                                            <i class="fas fa-check-double text-primary ms-1" title="Read"></i>
-                                        }
-                                        else if (isSent)
-                                        {
-                                            <i class="fas fa-check text-muted ms-1" title="Sent"></i>
-                                        }
-                                    </small>
-                                    @if (isSent)
-                                    {
-                                        <button class="btn btn-sm btn-link text-danger p-0 mt-1" 
-                                                onclick="deleteMessage('@message.Id')" 
-                                                title="Delete message">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    }
+                            <div class="d-flex flex-column @(isSent ? "align-items-end" : "align-items-start") mb-2">
+                                <div class="message-bubble @(isSent ? "message-sent" : "message-received")">
+                                    <p class="mb-0">@message.Content</p>
                                 </div>
+                                <small class="text-muted" style="font-size: 0.7rem;">
+                                    @message.CreatedAt.ToString("HH:mm")
+                                    @if(isSent) {
+                                        <i class="fas @(message.IsRead ? "fa-check-double text-primary" : "fa-check") ms-1"></i>
+                                    }
+                                </small>
                             </div>
                         }
-                    }
-                </div>
+                    </div>
 
-                <!-- Message Input -->
-                <div class="card-footer bg-white border-top">
-                    <form id="sendMessageForm" class="d-flex gap-2">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="ReceiverId" value="@otherUserId" />
-                        <input type="text" 
-                               name="Content" 
-                               id="messageContent" 
-                               class="form-control" 
-                               placeholder="Type your message..." 
-                               required 
-                               maxlength="2000"
-                               autocomplete="off">
-                        <button type="submit" class="btn btn-primary" id="sendBtn">
-                            <i class="fas fa-paper-plane"></i> Send
-                        </button>
-                    </form>
-                    <small class="text-muted">Press Enter to send</small>
-                </div>
+                    <!-- Input Area -->
+                    <div class="p-3 border-top bg-white">
+                        <div id="typingIndicator" class="typing-indicator mb-1 px-2"></div>
+                        <form id="sendMessageForm" class="d-flex gap-2 align-items-center">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ReceiverId" value="@otherUserId" />
+                            <div class="flex-grow-1 position-relative">
+                                <input type="text" name="Content" id="messageInput" class="form-control rounded-pill py-2 border-0 bg-light shadow-none" 
+                                       placeholder="Type a message..." required maxlength="2000" autocomplete="off">
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-circle shadow-sm flex-shrink-0" style="width:40px; height:40px;">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-5">
+                        <i class="fas fa-comments fa-5x opacity-10 mb-4"></i>
+                        <h4 class="fw-bold text-muted">Select a conversation</h4>
+                        <p class="text-muted">Pick a contact from the list to start chatting</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
-        let autoRefreshInterval;
-        let isRefreshing = false;
-
         $(document).ready(function() {
-            // Scroll to bottom of messages
-            scrollToBottom();
+            const receiverId = '@otherUserId';
+            const currentUserId = '@currentUserId';
+            const chatMessages = document.getElementById('chatMessages');
+            let typingTimeout;
 
-            // Handle form submission
-            $('#sendMessageForm').on('submit', function(e) {
-                e.preventDefault();
-                sendMessage();
-            });
+            if (!receiverId) return;
 
-            // Handle Enter key
-            $('#messageContent').on('keypress', function(e) {
-                if (e.which === 13 && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+            // Initialize SignalR
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            // Receive message
+            connection.on("ReceiveMessage", function(senderId, content, timestamp) {
+                if (senderId === receiverId) {
+                    appendMessage(content, timestamp, false);
+                    markAsRead();
+                } else {
+                    // Update unread count in sidebar or show toast
+                    const badge = $('[data-user-id="' + senderId + '"] .badge');
+                    if (badge.length) {
+                        const count = parseInt(badge.text() || "0") + 1;
+                        badge.text(count).show();
+                    }
                 }
             });
 
-            // Mark conversation as read
-            markConversationAsRead();
+            // Message confirmation
+            connection.on("MessageSent", function(receiverId, content, timestamp) {
+                // We handle this via AJAX success for better UX
+            });
 
-            // Auto-refresh messages every 10 seconds
-            startAutoRefresh();
-        });
+            // Status updates
+            connection.on("UserOnline", function(userId) {
+                updateUserStatus(userId, true);
+            });
+            connection.on("UserOffline", function(userId) {
+                updateUserStatus(userId, false);
+            });
 
-        function scrollToBottom() {
-            var chatMessages = document.getElementById('chatMessages');
-            if (chatMessages) {
+            // Typing indicators
+            connection.on("UserTyping", function(userId) {
+                if (userId === receiverId) {
+                    $('#typingIndicator').text('@(otherUser?.UserName) is typing...');
+                }
+            });
+            connection.on("UserStoppedTyping", function(userId) {
+                if (userId === receiverId) {
+                    $('#typingIndicator').text('');
+                }
+            });
+
+            connection.start()
+                .then(() => console.log("ChatHub Connected"))
+                .catch(err => console.error(err));
+
+            // UI Helpers
+            function scrollToBottom() {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-        }
+            scrollToBottom();
 
-        function sendMessage() {
-            var content = $('#messageContent').val().trim();
-            if (!content) return;
-
-            var formData = $('#sendMessageForm').serialize();
-            $('#sendBtn').prop('disabled', true);
-            
-            $.ajax({
-                url: '@Url.Action("SendMessage")',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    if (response.success) {
-                        $('#messageContent').val('');
-                        refreshMessages();
-                    } else {
-                        alert(response.message || 'Failed to send message');
-                    }
-                },
-                error: function() {
-                    alert('Failed to send message. Please try again.');
-                },
-                complete: function() {
-                    $('#sendBtn').prop('disabled', false);
-                    $('#messageContent').focus();
-                }
-            });
-        }
-
-        function refreshMessages() {
-            if (isRefreshing) return;
-            isRefreshing = true;
-
-            var otherUserId = '@otherUserId';
-            $.ajax({
-                url: '@Url.Action("GetMessages")/' + otherUserId,
-                type: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        // Reload page to show new messages
-                        location.reload();
-                    }
-                },
-                complete: function() {
-                    isRefreshing = false;
-                }
-            });
-        }
-
-        function markConversationAsRead() {
-            var otherUserId = '@otherUserId';
-            $.ajax({
-                url: '@Url.Action("MarkConversationAsRead")/' + otherUserId,
-                type: 'POST',
-                headers: {
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                }
-            });
-        }
-
-        function deleteMessage(messageId) {
-            if (!confirm('Are you sure you want to delete this message?')) {
-                return;
+            function appendMessage(content, timestamp, isSent) {
+                const date = new Date(timestamp);
+                const timeStr = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+                
+                const html = `
+                    <div class="d-flex flex-column ${isSent ? 'align-items-end' : 'align-items-start'} mb-2">
+                        <div class="message-bubble ${isSent ? 'message-sent' : 'message-received'}">
+                            <p class="mb-0">${content}</p>
+                        </div>
+                        <small class="text-muted" style="font-size: 0.7rem;">
+                            ${timeStr} ${isSent ? '<i class="fas fa-check ms-1"></i>' : ''}
+                        </small>
+                    </div>`;
+                
+                $(chatMessages).append(html);
+                scrollToBottom();
             }
 
-            $.ajax({
-                url: '@Url.Action("DeleteMessage")/' + messageId,
-                type: 'POST',
-                data: {
+            function updateUserStatus(userId, isOnline) {
+                const indicator = $('[data-user-id="' + userId + '"] .bg-success, [data-user-id="' + userId + '"] .bg-secondary');
+                if (isOnline) {
+                    indicator.removeClass('bg-secondary').addClass('bg-success');
+                } else {
+                    indicator.removeClass('bg-success').addClass('bg-secondary');
+                }
+
+                if (userId === receiverId) {
+                    $('#statusDot').removeClass('bg-secondary bg-success').addClass(isOnline ? 'bg-success' : 'bg-secondary');
+                    $('#statusText').text(isOnline ? 'Online' : 'Offline');
+                }
+            }
+
+            function markAsRead() {
+                $.post('/chat/MarkConversationAsRead/' + receiverId, {
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function(response) {
+                });
+            }
+
+            // Forms & Inputs
+            $('#sendMessageForm').on('submit', function(e) {
+                e.preventDefault();
+                const content = $('#messageInput').val().trim();
+                if (!content) return;
+
+                const formData = $(this).serialize();
+                $.post('/chat/SendMessage', formData, function(response) {
                     if (response.success) {
-                        location.reload();
-                    } else {
-                        alert(response.message || 'Failed to delete message');
+                        appendMessage(content, new Date(), true);
+                        $('#messageInput').val('');
+                        if (connection.state === signalR.HubConnectionState.Connected) {
+                            connection.invoke("SendMessage", receiverId, content);
+                        }
                     }
-                },
-                error: function() {
-                    alert('Failed to delete message. Please try again.');
+                });
+            });
+
+            $('#messageInput').on('input', function() {
+                if (connection.state === signalR.HubConnectionState.Connected) {
+                    connection.invoke("Typing", receiverId);
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        connection.invoke("StopTyping", receiverId);
+                    }, 1000);
                 }
             });
-        }
 
-        function startAutoRefresh() {
-            autoRefreshInterval = setInterval(function() {
-                refreshMessages();
-            }, 10000); // Refresh every 10 seconds
-        }
-
-        function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
-        }
-
-        // Stop auto-refresh when user leaves the page
-        $(window).on('beforeunload', function() {
-            stopAutoRefresh();
+            markAsRead();
         });
     </script>
 }

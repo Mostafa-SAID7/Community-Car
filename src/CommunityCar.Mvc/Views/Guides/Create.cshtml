@@ -1,0 +1,187 @@
+@model CommunityCar.Mvc.ViewModels.Guides.CreateGuideViewModel
+@using CommunityCar.Domain.Enums.Community.guides
+
+@{
+    ViewData["Title"] = "Create Guide";
+    var categories = ViewBag.Categories as IEnumerable<string> ?? new List<string>();
+    var difficulties = Enum.GetValues<GuideDifficulty>();
+
+    ViewData["HeaderTitle"] = "Create Guide";
+    ViewData["HeaderDescription"] = "Share your automotive expertise with step-by-step instructions";
+    ViewData["HeaderIcon"] = "fas fa-book-open";
+}
+
+@section Styles {
+    <style>
+        .guide-form-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .difficulty-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .difficulty-option:hover {
+            border-color: #cbd5e0;
+        }
+        .difficulty-option.active[data-val="Beginner"] { border-color: #48bb78; background: #f0fff4; color: #48bb78; }
+        .difficulty-option.active[data-val="Intermediate"] { border-color: #ed8936; background: #fffaf0; color: #ed8936; }
+        .difficulty-option.active[data-val="Advanced"] { border-color: #f56565; background: #fff5f5; color: #f56565; }
+        .difficulty-option.active[data-val="Expert"] { border-color: #9f7aea; background: #faf5ff; color: #9f7aea; }
+    </style>
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Guides</a></li>
+                    <li class="breadcrumb-item active">Create Guide</li>
+                </ol>
+            </nav>
+
+            <div class="card guide-form-card rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4"></div>
+
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="mb-4">
+                                    <label asp-for="Title" class="form-label fw-bold">Guide Title <span class="text-danger">*</span></label>
+                                    <input asp-for="Title" class="form-control form-control-lg rounded-3" placeholder="e.g. How to change your oil like a pro" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                    <small class="text-muted">Make it clear and descriptive</small>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Summary" class="form-label fw-bold">Quick Summary <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Summary" class="form-control rounded-3" rows="3" placeholder="Short description for browsing results"></textarea>
+                                    <span asp-validation-for="Summary" class="text-danger"></span>
+                                    <small class="text-muted">Brief overview of what this guide covers (max 500 characters)</small>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Content" class="form-label fw-bold">Guide Content <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Content" class="form-control rounded-3" rows="15" placeholder="Include steps, required tools, and details..."></textarea>
+                                    <span asp-validation-for="Content" class="text-danger"></span>
+                                    <small class="text-muted">Write detailed step-by-step instructions</small>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-cog me-2"></i>Settings</h6>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-bold">Difficulty <span class="text-danger">*</span></label>
+                                        <div class="d-flex flex-column gap-2">
+                                            @foreach (var diff in difficulties)
+                                            {
+                                                <div class="difficulty-option" data-val="@diff">
+                                                    <i class="fas fa-@(diff == GuideDifficulty.Beginner ? "seedling" : diff == GuideDifficulty.Intermediate ? "leaf" : diff == GuideDifficulty.Advanced ? "fire" : "crown") me-2"></i>
+                                                    @diff.ToString()
+                                                </div>
+                                            }
+                                        </div>
+                                        <input type="hidden" asp-for="Difficulty" id="diffInput" />
+                                        <span asp-validation-for="Difficulty" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="EstimatedTimeMinutes" class="form-label small fw-bold">Time (minutes) <span class="text-danger">*</span></label>
+                                        <input asp-for="EstimatedTimeMinutes" type="number" class="form-control rounded-3" placeholder="e.g. 30" min="1" max="1440" />
+                                        <span asp-validation-for="EstimatedTimeMinutes" class="text-danger"></span>
+                                        <small class="text-muted">Estimated completion time</small>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Category" class="form-label small fw-bold">Category <span class="text-danger">*</span></label>
+                                        <select asp-for="Category" class="form-select rounded-3">
+                                            <option value="">Select a category...</option>
+                                            @foreach (var cat in categories)
+                                            {
+                                                <option value="@cat">@cat</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="Category" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Tags" class="form-label small fw-bold">Tags</label>
+                                        <input asp-for="Tags" class="form-control rounded-3" placeholder="e.g. BMW, maintenance" />
+                                        <small class="text-muted">Separate with commas</small>
+                                    </div>
+                                </div>
+
+                                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-image me-2"></i>Media</h6>
+                                    <div class="mb-3">
+                                        <label asp-for="ImageUrl" class="form-label small fw-bold">Cover Image URL</label>
+                                        <input asp-for="ImageUrl" class="form-control rounded-3" placeholder="https://..." />
+                                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label asp-for="VideoUrl" class="form-label small fw-bold">Video Embed URL</label>
+                                        <input asp-for="VideoUrl" class="form-control rounded-3" placeholder="https://youtube.com/..." />
+                                        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-paper-plane me-2"></i>Publish Guide
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-light rounded-pill">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Difficulty selection
+            $('.difficulty-option').on('click', function() {
+                const val = $(this).data('val');
+                $('#diffInput').val(val);
+                $('.difficulty-option').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Character counter for title
+            const titleInput = $('#Title');
+            const titleMaxLength = 200;
+            titleInput.after('<small class="text-muted d-block mt-1"><span id="titleCount">0</span>/' + titleMaxLength + ' characters</small>');
+            
+            titleInput.on('input', function() {
+                $('#titleCount').text($(this).val().length);
+            });
+
+            // Character counter for summary
+            const summaryInput = $('#Summary');
+            const summaryMaxLength = 500;
+            summaryInput.after('<small class="text-muted d-block mt-1"><span id="summaryCount">0</span>/' + summaryMaxLength + ' characters</small>');
+            
+            summaryInput.on('input', function() {
+                $('#summaryCount').text($(this).val().length);
+            });
+        });
+    </script>
+}

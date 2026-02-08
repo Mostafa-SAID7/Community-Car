@@ -48,15 +48,23 @@ public class FriendsController : Controller
             var userId = GetCurrentUserId();
             var friendships = await _friendshipService.GetFriendsAsync(userId);
             
-            var viewModels = friendships.Select(f => new FriendshipViewModel
+            // Map friendships correctly regardless of which side the current user is on
+            var viewModels = friendships.Select(f =>
             {
-                Id = f.Id,
-                FriendId = f.FriendId,
-                Slug = f.Friend?.Slug ?? string.Empty,
-                FriendName = $"{f.Friend?.FirstName ?? "Unknown"} {f.Friend?.LastName ?? "User"}",
-                ProfilePictureUrl = f.Friend?.ProfilePictureUrl,
-                Status = f.Status,
-                Since = f.CreatedAt
+                // Determine the actual friend (the other user in the relationship)
+                var friendUser = f.UserId == userId ? f.Friend : f.User;
+                var friendId = f.UserId == userId ? f.FriendId : f.UserId;
+                
+                return new FriendshipViewModel
+                {
+                    Id = f.Id,
+                    FriendId = friendId,
+                    Slug = friendUser?.Slug ?? string.Empty,
+                    FriendName = $"{friendUser?.FirstName ?? "Unknown"} {friendUser?.LastName ?? "User"}",
+                    ProfilePictureUrl = friendUser?.ProfilePictureUrl,
+                    Status = f.Status,
+                    Since = f.CreatedAt
+                };
             }).ToList();
 
             ViewBag.FriendCount = viewModels.Count;
@@ -67,6 +75,22 @@ public class FriendsController : Controller
             _logger.LogError(ex, "Error loading friends list");
             TempData["Error"] = "Failed to load friends list. Please try again.";
             return View(new List<FriendshipViewModel>());
+        }
+    }
+
+    [HttpGet("GetPendingRequestCount")]
+    public async Task<IActionResult> GetPendingRequestCount()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var requests = await _friendshipService.GetPendingRequestsAsync(userId);
+            return Json(new { success = true, count = requests.Count() });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting pending request count");
+            return Json(new { success = false, count = 0 });
         }
     }
 

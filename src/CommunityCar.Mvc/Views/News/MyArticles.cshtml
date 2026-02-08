@@ -1,79 +1,33 @@
 @model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.NewsArticleDto>
 @{
-    ViewData["Title"] = "Automotive News";
-    var currentCategory = ViewBag.CurrentCategory as CommunityCar.Domain.Enums.Community.news.NewsCategory?;
-    var featured = ViewBag.Featured as bool?;
-    var categories = ViewBag.Categories as Array;
-}
-
-@section Styles {
-    }
-
-@{
-    ViewData["HeaderTitle"] = "Automotive News";
-    ViewData["HeaderDescription"] = "Stay updated with the latest automotive news, reviews, and industry insights";
-    ViewData["HeaderIcon"] = "fas fa-newspaper";
+    ViewData["Title"] = "My Articles";
+    ViewData["HeaderTitle"] = "My News Articles";
+    ViewData["HeaderDescription"] = "Manage your published automotive news articles";
+    ViewData["HeaderIcon"] = "fas fa-user-edit";
     
-    if (User.Identity?.IsAuthenticated ?? false)
-    {
-        var createUrl = Url.Action("Create");
-        var myArticlesUrl = Url.Action("MyArticles");
-        var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
-                          "<a href='" + createUrl + "' class='btn btn-light'>" +
-                          "<i class='fas fa-plus-circle me-2'></i>Create Article" +
-                          "</a>" +
-                          "<a href='" + myArticlesUrl + "' class='btn btn-light'>" +
-                          "<i class='fas fa-user-edit me-2'></i>My Articles" +
-                          "</a>" +
-                          "</div>";
-        ViewData["HeaderActions"] = Html.Raw(actionsHtml);
-    }
+    var createUrl = Url.Action("Create");
+    var allArticlesUrl = Url.Action("Index");
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                      "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Create Article" +
+                      "</a>" +
+                      "<a href='" + allArticlesUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-newspaper me-2'></i>All Articles" +
+                      "</a>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
 <partial name="_InnerPageHeader" />
 
 <div class="container">
-    <!-- Category Filters -->
-    <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-body">
-            <div class="d-flex flex-wrap gap-2 align-items-center">
-                <span class="fw-bold me-2">
-                    <i class="fas fa-filter me-1"></i>Categories:
-                </span>
-                <a asp-action="Index" 
-                   class="btn btn-sm category-filter-btn @(currentCategory == null ? "btn-primary" : "btn-outline-primary")">
-                    <i class="fas fa-th me-1"></i>All
-                </a>
-                @if (categories != null)
-                {
-                    @foreach (var category in categories)
-                    {
-                        var categoryValue = (CommunityCar.Domain.Enums.Community.news.NewsCategory)category;
-                        <a asp-action="Index" 
-                           asp-route-category="@categoryValue" 
-                           class="btn btn-sm category-filter-btn @(currentCategory == categoryValue ? "btn-primary" : "btn-outline-primary")">
-                            @categoryValue.ToString()
-                        </a>
-                    }
-                }
-                <div class="ms-auto">
-                    <a asp-action="Featured" 
-                       class="btn btn-sm @(featured == true ? "btn-warning" : "btn-outline-warning")">
-                        <i class="fas fa-star me-1"></i>Featured
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- News Grid -->
     @if (Model.Items.Any())
     {
         <div class="row g-4 mb-4">
             @foreach (var article in Model.Items)
             {
                 <div class="col-lg-4 col-md-6">
-                    <div class="card news-card">
+                    <div class="card news-card h-100">
                         <div class="position-relative">
                             @if (article.IsFeatured)
                             {
@@ -90,13 +44,15 @@
                         </div>
                         <div class="card-body d-flex flex-column">
                             <div class="news-meta mb-2">
-                                <i class="fas fa-user me-1"></i>@article.AuthorName
-                                <span class="mx-2">•</span>
                                 <i class="fas fa-calendar me-1"></i>@article.PublishedAt?.ToString("MMM dd, yyyy")
+                                <span class="mx-2">•</span>
+                                <span class="badge bg-light text-dark">
+                                    @article.StatusName
+                                </span>
                             </div>
                             <h5 class="news-title mb-2">
                                 <a href="@Url.Action("Details", new { slug = article.Slug })" 
-                                   class="text-decoration-none text-dark stretched-link">
+                                   class="text-decoration-none text-dark">
                                     @article.Title
                                 </a>
                             </h5>
@@ -109,12 +65,14 @@
                                     <span><i class="fas fa-heart me-1"></i>@article.LikeCount</span>
                                     <span><i class="fas fa-comment me-1"></i>@article.CommentCount</span>
                                 </div>
-                                @if (!string.IsNullOrEmpty(article.Source))
-                                {
-                                    <span class="badge bg-light text-dark">
-                                        <i class="fas fa-link me-1"></i>@article.Source
-                                    </span>
-                                }
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="@Url.Action("Edit", new { id = article.Id })" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger flex-fill" onclick="deleteArticle('@article.Id', '@article.Title')">
+                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -125,14 +83,12 @@
         <!-- Pagination -->
         @if (Model.TotalPages > 1)
         {
-            <nav aria-label="News pagination" class="mt-4">
+            <nav aria-label="My articles pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
                         <a class="page-link" 
-                           asp-action="Index" 
-                           asp-route-page="@(Model.PageNumber - 1)"
-                           asp-route-category="@currentCategory"
-                           asp-route-featured="@featured">
+                           asp-action="MyArticles" 
+                           asp-route-page="@(Model.PageNumber - 1)">
                             <i class="fas fa-chevron-left"></i> Previous
                         </a>
                     </li>
@@ -141,10 +97,8 @@
                     {
                         <li class="page-item @(i == Model.PageNumber ? "active" : "")">
                             <a class="page-link" 
-                               asp-action="Index" 
-                               asp-route-page="@i"
-                               asp-route-category="@currentCategory"
-                               asp-route-featured="@featured">
+                               asp-action="MyArticles" 
+                               asp-route-page="@i">
                                 @i
                             </a>
                         </li>
@@ -152,10 +106,8 @@
 
                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
                         <a class="page-link" 
-                           asp-action="Index" 
-                           asp-route-page="@(Model.PageNumber + 1)"
-                           asp-route-category="@currentCategory"
-                           asp-route-featured="@featured">
+                           asp-action="MyArticles" 
+                           asp-route-page="@(Model.PageNumber + 1)">
                             Next <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
@@ -168,36 +120,62 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
                 <i class="fas fa-newspaper fa-4x text-muted mb-4"></i>
-                <h4 class="text-muted mb-3">No News Articles Found</h4>
+                <h4 class="text-muted mb-3">No Articles Yet</h4>
                 <p class="text-muted mb-4">
-                    @if (currentCategory != null)
-                    {
-                        <text>No articles found in the @currentCategory category.</text>
-                    }
-                    else
-                    {
-                        <text>Be the first to share automotive news with the community!</text>
-                    }
+                    You haven't published any news articles yet. Start sharing your automotive insights with the community!
                 </p>
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    <a asp-action="Create" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-2"></i>Create First Article
-                    </a>
-                }
-                else
-                {
-                    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login to Create Articles
-                    </a>
-                }
+                <a asp-action="Create" class="btn btn-primary btn-lg rounded-pill px-5">
+                    <i class="fas fa-plus-circle me-2"></i>Create Your First Article
+                </a>
             </div>
         </div>
     }
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function deleteArticle(id, title) {
+            Swal.fire({
+                title: 'Delete Article?',
+                text: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/News/Delete/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Your article has been deleted.',
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error!', response.message || 'Failed to delete article', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error!', 'Failed to delete article', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function() {
             // Smooth scroll to top when pagination is clicked
             $('.pagination a').on('click', function() {
