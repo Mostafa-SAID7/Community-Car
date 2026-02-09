@@ -32,6 +32,20 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    // Configure Kestrel to accept larger requests (for file uploads)
+    builder.WebHost.ConfigureKestrel(serverOptions =>
+    {
+        serverOptions.Limits.MaxRequestBodySize = 52428800; // 50 MB
+    });
+
+    // Configure form options for larger file uploads
+    builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+    {
+        options.MultipartBodyLengthLimit = 52428800; // 50 MB
+        options.ValueLengthLimit = 52428800;
+        options.MultipartHeadersLengthLimit = 52428800;
+    });
+
     // Add services to the container.
     builder.Services.AddControllersWithViews(options =>
     {
