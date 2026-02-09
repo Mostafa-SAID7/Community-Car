@@ -53,7 +53,7 @@ public class ExceptionHandlerMiddleware
                 Detailed = context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment() 
                     ? exception.Message 
                     : null,
-                Errors = exception is ValidationException validationException 
+                Errors = exception is CommunityCar.Domain.Exceptions.ValidationException validationException 
                     ? validationException.Errors 
                     : null
             });
@@ -89,7 +89,7 @@ public class ExceptionHandlerMiddleware
         NotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedException => StatusCodes.Status401Unauthorized,
         ForbiddenException => StatusCodes.Status403Forbidden,
-        ValidationException => StatusCodes.Status400BadRequest,
+        CommunityCar.Domain.Exceptions.ValidationException => StatusCodes.Status400BadRequest,
         ConflictException => StatusCodes.Status409Conflict,
         _ => StatusCodes.Status500InternalServerError
     };
@@ -99,7 +99,7 @@ public class ExceptionHandlerMiddleware
         NotFoundException => "The requested resource was not found.",
         UnauthorizedException => "Authentication is required to access this resource.",
         ForbiddenException => "You do not have permission to access this resource.",
-        ValidationException => "One or more validation errors occurred.",
+        CommunityCar.Domain.Exceptions.ValidationException => "One or more validation errors occurred.",
         ConflictException => "The request conflicts with the current state of the resource.",
         _ => "An internal server error occurred."
     };
@@ -111,7 +111,7 @@ public class ExceptionHandlerMiddleware
         TokenExpiredException => CommunityCar.Domain.Constants.ErrorCodes.TOKEN_EXPIRED,
         UnauthorizedException => CommunityCar.Domain.Constants.ErrorCodes.UNAUTHORIZED,
         ForbiddenException => CommunityCar.Domain.Constants.ErrorCodes.FORBIDDEN,
-        ValidationException => CommunityCar.Domain.Constants.ErrorCodes.VALIDATION_ERROR,
+        CommunityCar.Domain.Exceptions.ValidationException => CommunityCar.Domain.Constants.ErrorCodes.VALIDATION_ERROR,
         ConflictException => CommunityCar.Domain.Constants.ErrorCodes.DUPLICATE_ENTRY,
         _ => CommunityCar.Domain.Constants.ErrorCodes.INTERNAL_ERROR
     };

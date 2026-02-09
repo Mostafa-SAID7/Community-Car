@@ -1,33 +1,3 @@
-using CommunityCar.Infrastructure;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using CommunityCar.Web.Infrastructure.Localization;
-using Microsoft.Extensions.Localization;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Localization.Routing;
-using CommunityCar.Infrastructure.Mappings;
-using CommunityCar.Web.Filters;
-using CommunityCar.Web.Middleware;
-using CommunityCar.Infrastructure.Data.Seed;
-using CommunityCar.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-
-using CommunityCar.Infrastructure;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using CommunityCar.Web.Infrastructure.Localization;
-using Microsoft.Extensions.Localization;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Localization.Routing;
-using CommunityCar.Infrastructure.Mappings;
-using CommunityCar.Web.Filters;
-using CommunityCar.Web.Middleware;
-using CommunityCar.Infrastructure.Data.Seed;
-using CommunityCar.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-
 try
 {
     var builder = WebApplication.CreateBuilder(args);
