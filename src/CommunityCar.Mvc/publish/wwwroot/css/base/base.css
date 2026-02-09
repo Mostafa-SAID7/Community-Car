@@ -1,0 +1,22 @@
+/* Base styles */
+html {
+    scroll-behavior: smooth;
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* Smooth transitions for theme changes */
+*,
+*::before,
+*::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: var(--transition-base);
+    transition-timing-function: ease-in-out;
+}

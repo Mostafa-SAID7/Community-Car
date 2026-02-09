@@ -1,0 +1,72 @@
+/* Page: Posts */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-purple-deep, .hero.hero-purple.hero-sm
+ * - Cards: .content-card, .content-card-borderless
+ * - Badges: .type-badge.type-badge-text, .type-badge-image, .type-badge-video, .type-badge-link
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-purple-deep instead */
+.posts-hero {
+    background: var(--gradient-purple-deep);
+    color: var(--text-inverse);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .hero.hero-purple.hero-sm instead */
+.create-post-hero {
+    background: var(--gradient-purple);
+    color: var(--text-inverse);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .content-card-borderless instead */
+.post-card {
+    transition: all var(--transition-base);
+    border: none;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Legacy aliases - use .type-badge with .type-badge-text/image/video/link instead */
+.post-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.post-type-text {
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+}
+
+.post-type-image {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.post-type-video {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.post-type-link {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning);
+}

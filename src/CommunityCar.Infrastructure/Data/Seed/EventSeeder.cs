@@ -10,19 +10,16 @@ public static class EventSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        // Don't re-seed if we already have events
-        if (await context.Events.CountAsync() > 3) return;
-
-        // Get users to be event organizers
-        var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
-        if (users.Count < 2) return;
-
         // Clear existing events to avoid duplicates
         if (await context.Events.AnyAsync())
         {
             context.Events.RemoveRange(context.Events);
             await context.SaveChangesAsync();
         }
+
+        // Get users to be event organizers
+        var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
+        if (users.Count < 2) return;
 
         var events = new List<CommunityEvent>();
         var now = DateTimeOffset.UtcNow;

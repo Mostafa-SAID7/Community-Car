@@ -1,0 +1,9 @@
+/* Layout: Navigation */
+nav ul {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+nav a:hover {
+    color: var(--primary-red);
+}

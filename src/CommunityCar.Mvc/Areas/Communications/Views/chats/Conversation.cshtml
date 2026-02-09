@@ -1,4 +1,6 @@
 @model List<CommunityCar.Domain.DTOs.Communications.ChatMessageDto>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Chat";
     var otherUserId = ViewBag.OtherUserId as Guid?;
@@ -7,142 +9,160 @@
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
-<div class="container py-3">
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden chat-container">
-        <div class="row g-0 h-100">
-            <!-- Sidebar -->
-            <div class="col-md-4 col-lg-3 border-end d-flex flex-column h-100 bg-white">
-                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Chats</h5>
-                    <a asp-action="Index" class="btn btn-light btn-sm rounded-circle shadow-sm">
-                        <i class="fas fa-search"></i>
-                    </a>
-                </div>
-                <div class="conversations-list p-2">
-                    @if (conversations != null)
-                    {
-                        foreach (var conv in conversations)
-                        {
-                            <a href="@Url.Action("Conversation", new { id = conv.UserId })" 
-                               class="d-block text-decoration-none conv-item p-3 @(conv.UserId == otherUserId ? "active" : "")"
-                               data-user-id="@conv.UserId">
-                                <div class="d-flex align-items-center">
-                                    <div class="position-relative me-3">
-                                        @if (!string.IsNullOrEmpty(conv.ProfilePicture))
-                                        {
-                                            <img src="@conv.ProfilePicture" class="rounded-circle user-avatar-sm">
-                                        }
-                                        else
-                                        {
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm">
-                                                @conv.UserName.Substring(0, 1).ToUpper()
-                                            </div>
-                                        }
-                                        @if (conv.IsOnline)
-                                        {
-                                            <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width:10px; height:10px;"></span>
-                                        }
-                                    </div>
-                                    <div class="flex-grow-1 text-truncate">
-                                        <div class="fw-bold text-dark small">@conv.UserName</div>
-                                        <div class="text-muted small text-truncate">@(conv.LastMessage ?? "No messages")</div>
-                                    </div>
-                                    @if (conv.UnreadCount > 0)
-                                    {
-                                        <span class="badge bg-danger rounded-pill">@conv.UnreadCount</span>
-                                    }
-                                </div>
-                            </a>
-                        }
-                    }
-                </div>
+@section RightSidebar {
+    <partial name="Sidebars/_RightSidebar_Chat" />
+}
+
+@{
+    ViewData["HeaderTitle"] = Localizer["Messages"];
+    ViewData["HeaderDescription"] = Localizer["Chat with your friends and community members"];
+    ViewData["HeaderIcon"] = "fas fa-comments";
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden chat-container" style="height: calc(100vh - 250px); min-height: 600px;">
+    <div class="row g-0 h-100">
+        <!-- Sidebar -->
+        <div class="col-md-4 col-lg-4 border-end d-flex flex-column h-100 bg-white">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                <h6 class="mb-0 fw-bold"><i class="fas fa-inbox me-2 text-primary"></i>Chats</h6>
+                <a asp-action="Index" class="btn btn-white btn-sm rounded-circle shadow-sm" title="@Localizer["New Chat"]">
+                    <i class="fas fa-plus text-primary"></i>
+                </a>
             </div>
-
-            <!-- Chat Area -->
-            <div class="col-md-8 col-lg-9 d-flex flex-column h-100 bg-white">
-                @if (otherUser != null)
+            <div class="conversations-list p-0 custom-scrollbar">
+                @if (conversations != null)
                 {
-                    <!-- Chat Header -->
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-white">
-                        <div class="d-flex align-items-center">
-                            <div class="position-relative me-3">
-                                @if (!string.IsNullOrEmpty(otherUser.ProfilePicture))
-                                {
-                                    <img src="@otherUser.ProfilePicture" class="rounded-circle user-avatar-sm">
-                                }
-                                else
-                                {
-                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm">
-                                        @otherUser.UserName.Substring(0, 1).ToUpper()
-                                    </div>
-                                }
-                                <div id="statusDot" class="position-absolute bottom-0 end-0 border border-white rounded-circle @(otherUser.IsOnline ? "bg-success" : "bg-secondary")" style="width:12px; height:12px;"></div>
-                            </div>
-                            <div>
-                                <h6 class="mb-0 fw-bold">@otherUser.UserName</h6>
-                                <small id="statusText" class="text-muted">@(otherUser.IsOnline ? "Online" : "Offline")</small>
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-light rounded-circle btn-sm shadow-sm" data-bs-toggle="dropdown">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Profiles", new { area = "Identity", id = otherUser.UserId })">View Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#">Block User</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Messages -->
-                    <div class="chat-messages-area p-4" id="chatMessages">
-                        @foreach (var message in Model.OrderBy(m => m.CreatedAt))
-                        {
-                            var isSent = message.SenderId.ToString() == currentUserId;
-                            <div class="d-flex flex-column @(isSent ? "align-items-end" : "align-items-start") mb-2">
-                                <div class="message-bubble @(isSent ? "message-sent" : "message-received")">
-                                    <p class="mb-0">@message.Content</p>
-                                </div>
-                                <small class="text-muted" style="font-size: 0.7rem;">
-                                    @message.CreatedAt.ToString("HH:mm")
-                                    @if(isSent) {
-                                        <i class="fas @(message.IsRead ? "fa-check-double text-primary" : "fa-check") ms-1"></i>
+                    foreach (var conv in conversations)
+                    {
+                        <a href="@Url.Action("Conversation", new { id = conv.UserId })" 
+                           class="d-block text-decoration-none conv-item p-3 border-bottom @(conv.UserId == otherUserId ? "bg-light-primary border-primary-left" : "bg-white")"
+                           data-user-id="@conv.UserId">
+                            <div class="d-flex align-items-center">
+                                <div class="position-relative me-3">
+                                    @if (!string.IsNullOrEmpty(conv.ProfilePicture))
+                                    {
+                                        <img src="@conv.ProfilePicture" class="rounded-circle user-avatar-sm shadow-sm">
                                     }
-                                </small>
+                                    else
+                                    {
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm shadow-sm">
+                                            @conv.UserName.Substring(0, 1).ToUpper()
+                                        </div>
+                                    }
+                                    @if (conv.IsOnline)
+                                    {
+                                        <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width:10px; height:10px;"></span>
+                                    }
+                                </div>
+                                <div class="flex-grow-1 text-truncate">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="fw-bold text-dark small">@conv.UserName</div>
+                                        @if (conv.UnreadCount > 0)
+                                        {
+                                            <span class="badge bg-danger rounded-pill" style="font-size: 0.6rem;">@conv.UnreadCount</span>
+                                        }
+                                    </div>
+                                    <div class="text-muted small text-truncate" style="font-size: 0.75rem;">
+                                        @(conv.LastMessage ?? Localizer["No messages"].Value)
+                                    </div>
+                                </div>
                             </div>
-                        }
-                    </div>
-
-                    <!-- Input Area -->
-                    <div class="p-3 border-top bg-white">
-                        <div id="typingIndicator" class="typing-indicator mb-1 px-2"></div>
-                        <form id="sendMessageForm" class="d-flex gap-2 align-items-center">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="ReceiverId" value="@otherUserId" />
-                            <div class="flex-grow-1 position-relative">
-                                <input type="text" name="Content" id="messageInput" class="form-control rounded-pill py-2 border-0 bg-light shadow-none" 
-                                       placeholder="Type a message..." required maxlength="2000" autocomplete="off">
-                            </div>
-                            <button type="submit" class="btn btn-primary rounded-circle shadow-sm flex-shrink-0" style="width:40px; height:40px;">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                    </div>
-                }
-                else
-                {
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-5">
-                        <i class="fas fa-comments fa-5x opacity-10 mb-4"></i>
-                        <h4 class="fw-bold text-muted">Select a conversation</h4>
-                        <p class="text-muted">Pick a contact from the list to start chatting</p>
-                    </div>
+                        </a>
+                    }
                 }
             </div>
         </div>
+
+        <!-- Chat Area -->
+        <div class="col-md-8 col-lg-8 d-flex flex-column h-100 bg-white">
+            @if (otherUser != null)
+            {
+                <!-- Chat Header -->
+                <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-white shadow-sm z-index-1">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative me-3">
+                            @if (!string.IsNullOrEmpty(otherUser.ProfilePicture))
+                            {
+                                <img src="@otherUser.ProfilePicture" class="rounded-circle user-avatar-sm shadow-sm">
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold user-avatar-sm shadow-sm">
+                                    @otherUser.UserName.Substring(0, 1).ToUpper()
+                                </div>
+                            }
+                            <div id="statusDot" class="position-absolute bottom-0 end-0 border border-white rounded-circle @(otherUser.IsOnline ? "bg-success" : "bg-secondary")" style="width:12px; height:12px;"></div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">@otherUser.UserName</h6>
+                            <small id="statusText" class="text-muted" style="font-size: 0.75rem;">@(otherUser.IsOnline ? Localizer["Online"] : Localizer["Offline"])</small>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-circle btn-sm shadow-sm" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                            <li><a class="dropdown-item" href="@Url.Action("Index", "Profiles", new { area = "Identity", id = otherUser.UserId })"><i class="fas fa-user me-2"></i>@Localizer["View Profile"]</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>@Localizer["Block User"]</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="chat-messages-area p-4 bg-light" id="chatMessages" style="background-image: url('/images/patterns/chat-bg.png');">
+                    @foreach (var message in Model.OrderBy(m => m.CreatedAt))
+                    {
+                        var isSent = message.SenderId.ToString() == currentUserId;
+                        <div class="d-flex flex-column @(isSent ? "align-items-end" : "align-items-start") mb-3">
+                            <div class="message-bubble @(isSent ? "message-sent bg-primary text-white" : "message-received bg-white shadow-sm text-dark") p-3 rounded-4 shadow-sm" style="max-width: 75%;">
+                                <p class="mb-0">@message.Content</p>
+                            </div>
+                            <small class="text-muted mt-1" style="font-size: 0.65rem;">
+                                @message.CreatedAt.ToString("HH:mm")
+                                @if(isSent) {
+                                    <i class="fas @(message.IsRead ? "fa-check-double text-primary" : "fa-check") ms-1"></i>
+                                }
+                            </small>
+                        </div>
+                    }
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-3 border-top bg-white">
+                    <div id="typingIndicator" class="typing-indicator mb-1 px-2 text-muted small fst-italic" style="min-height: 20px;"></div>
+                    <form id="sendMessageForm" class="d-flex gap-2 align-items-center">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ReceiverId" value="@otherUserId" />
+                        <div class="flex-grow-1 position-relative">
+                            <input type="text" name="Content" id="messageInput" class="form-control rounded-pill py-2 border-0 bg-light shadow-inner" 
+                                   placeholder="@Localizer["Type a message..."]" required maxlength="2000" autocomplete="off">
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted me-2">
+                                <i class="far fa-smile"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-circle shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center" style="width:42px; height:42px;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-5 bg-light">
+                    <div class="bg-white p-4 rounded-circle shadow-sm mb-4">
+                        <i class="fas fa-comments fa-4x text-primary opacity-50"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2">@Localizer["Welcome to Messages"]</h4>
+                    <p class="text-muted mb-4" style="max-width: 300px;">@Localizer["Select a conversation from the left to start chatting with your friends."]</p>
+                </div>
+            }
+        </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
         $(document).ready(function() {

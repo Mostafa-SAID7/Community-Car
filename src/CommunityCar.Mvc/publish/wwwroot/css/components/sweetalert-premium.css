@@ -1,0 +1,108 @@
+/* ===========================================
+   Premium SweetAlert2 Styling - Community Car
+   Matches QA glassmorphism and gradient design
+   =========================================== */
+
+/* --- Container and Popup --- */
+.premium-swal-popup {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-radius: var(--radius-2xl) !important;
+    box-shadow: var(--shadow-xl), var(--shadow-premium-large) !important;
+    padding: 2.5rem 1.5rem !important;
+    animation: swalPremiumShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    color: var(--text-primary) !important;
+}
+
+/* --- Title --- */
+.premium-swal-title {
+    font-family: var(--font-heading) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+    font-size: 1.75rem !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 0.75rem !important;
+}
+
+/* --- Content Content --- */
+.premium-swal-html {
+    font-size: 1.0625rem !important;
+    line-height: 1.6 !important;
+    color: var(--text-secondary) !important;
+}
+
+/* --- Icon Overrides --- */
+.premium-swal-icon {
+    border-width: 3px !important;
+    transform: scale(0.9) !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.premium-swal-icon.swal2-warning {
+    border-color: var(--red-500) !important;
+    color: var(--red-500) !important;
+}
+
+/* --- Buttons Container --- */
+.premium-swal-actions {
+    margin-top: 2rem !important;
+    gap: 1rem !important;
+}
+
+/* --- Action Buttons --- */
+.premium-swal-confirm {
+    background-color: var(--red-500) !important;
+    /* Solid fallback */
+    background: var(--gradient-premium-red) !important;
+    background-size: 200% 200% !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: var(--radius-lg) !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 2rem !important;
+    box-shadow: 0 4px 15px rgba(251, 44, 54, 0.25) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+.premium-swal-confirm:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(251, 44, 54, 0.35) !important;
+    background-position: right center !important;
+}
+
+.premium-swal-cancel {
+    background: var(--gray-100) !important;
+    color: var(--gray-700) !important;
+    border: 1px solid var(--gray-200) !important;
+    border-radius: var(--radius-lg) !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.premium-swal-cancel:hover {
+    background: var(--bg-active) !important;
+    color: var(--text-primary) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* --- Animations --- */
+@keyframes swalPremiumShow {
+    0% {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Dark Mode Tinting */
+[data-theme="dark"] .premium-swal-popup {
+    background: var(--bg-surface) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(251, 44, 54, 0.15) !important;
+}

@@ -53,7 +53,7 @@
 <body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "true" : "false")" data-page="@(ViewData["PageType"] ?? "generic")">
     <partial name="_Header" />
     
-    <main role="main" class="container-fluid my-4">
+    <main role="main" class=" my-4">
         @{
             var hideSidebars = ViewData["HideSidebars"] as bool? ?? false;
         }
@@ -67,9 +67,9 @@
         }
         else
         {
-            <div class="row g-4">
-                <!-- Left Sidebar (Desktop: 2 cols, Mobile: toggleable offcanvas) -->
-                <div class="col-lg-2 sidebar-left">
+            <div class="row g-4 align-items-start">
+                <!-- Left Sidebar (Desktop: 2 cols, Tablet: 3 cols, Mobile: toggleable offcanvas) -->
+                <div class="col-md-3 col-lg-2 sidebar-left">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("LeftSidebar"))
                         {
@@ -82,13 +82,13 @@
                     </div>
                 </div>
 
-                <!-- Main Content (Desktop: 7 cols, Tablet: 9 cols, Mobile: 12 cols) -->
-                <div class="col-12 col-md-9 col-lg-7">
+                <!-- Main Content (Desktop: 7 cols, Tablet: 6 cols, Mobile: 12 fallback) -->
+                <article class="col-md-6 col-lg-7">
                     @RenderBody()
-                </div>
+                </article>
 
-                <!-- Right Sidebar (Desktop: 3 cols, Hidden on Tablet and Mobile) -->
-                <div class="col-lg-3 sidebar-right">
+                <!-- Right Sidebar (Desktop: 3 cols, Tablet: 3 cols, Hidden on Mobile) -->
+                <div class="col-md-3 col-lg-3 sidebar-right pe-md-0">
                     <div class="sidebar-sticky">
                         @if (IsSectionDefined("RightSidebar"))
                         {
@@ -175,14 +175,43 @@
                 chat: {
                     newMessage: '@Localizer["New message received"].Value'
                 },
+                friends: {
+                    accepting: '@Localizer["Accepting..."].Value',
+                    rejecting: '@Localizer["Rejecting..."].Value',
+                    removing: '@Localizer["Removing..."].Value',
+                    blocking: '@Localizer["Blocking..."].Value',
+                    unblocking: '@Localizer["Unblocking..."].Value',
+                    sending: '@Localizer["Sending..."].Value',
+                    sent: '@Localizer["Sent"].Value',
+                    addFriend: '@Localizer["Add Friend"].Value',
+                    confirmRemove: '@Localizer["Are you sure you want to remove this friend?"].Value',
+                    confirmBlock: '@Localizer["Are you sure you want to block this user? They will not be able to send you friend requests or interact with your content."].Value',
+                    failedToAccept: '@Localizer["Failed to accept friend request"].Value',
+                    failedToReject: '@Localizer["Failed to reject friend request"].Value',
+                    failedToRemove: '@Localizer["Failed to remove friend"].Value',
+                    failedToBlock: '@Localizer["Failed to block user"].Value',
+                    failedToUnblock: '@Localizer["Failed to unblock user"].Value',
+                    failedToSend: '@Localizer["Failed to send friend request"].Value'
+                },
+                guides: {
+                    liked: '@Localizer["Liked"].Value',
+                    like: '@Localizer["Like"].Value',
+                    saved: '@Localizer["Saved"].Value',
+                    save: '@Localizer["Save"].Value',
+                    copied: '@Localizer["Guide link copied to clipboard!"].Value',
+                    copyFailed: '@Localizer["Failed to copy link"].Value'
+                },
                 alerts: {
                     great: '@Localizer["Great!"].Value',
                     yes: '@Localizer["Yes, do it!"].Value',
-                    cancel: '@Localizer["Cancel"].Value'
+                    cancel: '@Localizer["Cancel"].Value',
+                    confirm: '@Localizer["Confirm"].Value'
                 },
                 common: {
                     search: '@Localizer["Search..."].Value',
-                    tryAgain: '@Localizer["Try again"].Value'
+                    tryAgain: '@Localizer["Try again"].Value',
+                    loading: '@Localizer["Loading..."].Value',
+                    error: '@Localizer["An error occurred. Please try again."].Value'
                 }
             }
         };

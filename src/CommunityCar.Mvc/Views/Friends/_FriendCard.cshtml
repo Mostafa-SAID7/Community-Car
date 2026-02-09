@@ -1,4 +1,6 @@
 @model CommunityCar.Web.ViewModels.Community.FriendshipViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 
 <div class="friend-card">
@@ -15,20 +17,20 @@
         }
         
         <div class="friend-info">
-            <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = Model.Slug })" class="friend-name">
+            <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = Model.FriendId })" class="friend-name">
                 @Model.FriendName
             </a>
             <div class="friend-meta">
-                <i class="fas fa-calendar-check"></i> Friends since @Model.Since.ToString("MMM yyyy")
+                <i class="fas fa-calendar-check"></i> @Localizer["Friends since"] @Model.Since.ToString("MMM yyyy")
             </div>
         </div>
     </div>
 
     <div class="friend-actions">
-        <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = Model.FriendId })" class="btn-friend-action btn-friend-message" title="Message">
+        <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = Model.FriendId })" class="btn-friend-action btn-friend-message" title="@Localizer["Message"]">
             <i class="fas fa-comment"></i>
         </a>
-        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = Model.Slug })" class="btn-friend-action btn-friend-view" title="View Profile">
+        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = Model.FriendId })" class="btn-friend-action btn-friend-view" title="@Localizer["View Profile"]">
             <i class="fas fa-user"></i>
         </a>
         
@@ -42,7 +44,7 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="friendId" value="@Model.FriendId" />
                         <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
-                            <i class="fas fa-user-minus"></i> Remove Friend
+                            <i class="fas fa-user-minus"></i> @Localizer["Remove Friend"]
                         </button>
                     </form>
                 </li>
@@ -52,7 +54,7 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="friendId" value="@Model.FriendId" />
                         <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
-                            <i class="fas fa-ban"></i> Block User
+                            <i class="fas fa-ban"></i> @Localizer["Block User"]
                         </button>
                     </form>
                 </li>

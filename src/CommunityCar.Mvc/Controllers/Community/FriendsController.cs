@@ -75,7 +75,9 @@ public class FriendsController : Controller
                 };
             }).ToList();
 
-            ViewBag.FriendCount = viewModels.Count;
+            var requests = await _friendshipService.GetPendingRequestsAsync(userId);
+            ViewData["FriendCount"] = viewModels.Count;
+            ViewData["RequestCount"] = requests.Count();
             return View(viewModels);
         }
         catch (Exception ex)
@@ -128,7 +130,9 @@ public class FriendsController : Controller
             }).Where(vm => vm.UserId != Guid.Empty) // Filter out invalid records
             .ToList();
 
-            ViewBag.RequestCount = viewModels.Count;
+            var friendships = await _friendshipService.GetFriendsAsync(userId);
+            ViewData["FriendCount"] = friendships.Count();
+            ViewData["RequestCount"] = viewModels.Count;
             return View(viewModels);
         }
         catch (Exception ex)
@@ -156,7 +160,11 @@ public class FriendsController : Controller
                 ReceivedAt = r.CreatedAt
             }).ToList();
 
-            ViewBag.SentRequestCount = viewModels.Count;
+            var friendships = await _friendshipService.GetFriendsAsync(userId);
+            var requests = await _friendshipService.GetPendingRequestsAsync(userId);
+            ViewData["FriendCount"] = friendships.Count();
+            ViewData["RequestCount"] = requests.Count();
+            ViewData["SentRequestCount"] = viewModels.Count;
             return View(viewModels);
         }
         catch (Exception ex)
@@ -697,6 +705,10 @@ public class FriendsController : Controller
                 }
             }
 
+            var friendships = await _friendshipService.GetFriendsAsync(userId);
+            var requests = await _friendshipService.GetPendingRequestsAsync(userId);
+            ViewData["FriendCount"] = friendships.Count();
+            ViewData["RequestCount"] = requests.Count();
             return View(viewModels.Take(12).ToList());
         }
         catch (Exception ex)

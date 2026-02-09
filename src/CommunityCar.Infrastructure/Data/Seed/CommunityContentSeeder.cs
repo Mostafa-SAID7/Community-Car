@@ -22,7 +22,12 @@ public static class PostSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.Posts.CountAsync() > 5) return;
+        // Clear existing posts
+        if (await context.Posts.AnyAsync())
+        {
+            context.Posts.RemoveRange(context.Posts);
+            await context.SaveChangesAsync();
+        }
 
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         if (users.Count < 2) return;
@@ -71,7 +76,12 @@ public static class GuideSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.Guides.CountAsync() > 2) return;
+        // Clear existing guides
+        if (await context.Guides.AnyAsync())
+        {
+            context.Guides.RemoveRange(context.Guides);
+            await context.SaveChangesAsync();
+        }
 
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         if (users.Count < 2) return;
@@ -157,7 +167,12 @@ public static class GroupSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.CommunityGroups.CountAsync() > 2) return;
+        // Clear existing groups
+        if (await context.CommunityGroups.AnyAsync())
+        {
+            context.CommunityGroups.RemoveRange(context.CommunityGroups);
+            await context.SaveChangesAsync();
+        }
 
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         if (users.Count < 1) return;
@@ -191,7 +206,12 @@ public static class MapPointSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.MapPoints.CountAsync() > 3) return;
+        // Clear existing map points
+        if (await context.MapPoints.AnyAsync())
+        {
+            context.MapPoints.RemoveRange(context.MapPoints);
+            await context.SaveChangesAsync();
+        }
 
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         
@@ -239,7 +259,12 @@ public static class ChatSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.ChatRooms.CountAsync() > 0) return;
+        // Clear existing chat rooms
+        if (await context.ChatRooms.AnyAsync())
+        {
+            context.ChatRooms.RemoveRange(context.ChatRooms);
+            await context.SaveChangesAsync();
+        }
         
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         if (users.Count < 2) return;
@@ -300,7 +325,12 @@ public static class NewsSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.NewsArticles.CountAsync() > 2) return;
+        // Clear existing news articles
+        if (await context.NewsArticles.AnyAsync())
+        {
+            context.NewsArticles.RemoveRange(context.NewsArticles);
+            await context.SaveChangesAsync();
+        }
 
         var users = await context.Users.Where(u => !u.IsDeleted).Take(5).ToListAsync();
         if (users.Count < 1) return;

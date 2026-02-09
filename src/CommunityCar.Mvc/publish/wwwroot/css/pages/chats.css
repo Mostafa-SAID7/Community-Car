@@ -1,0 +1,170 @@
+/* Page: Chats */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-purple
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-purple instead */
+.chat-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #4361ee 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 2rem 2rem;
+}
+
+/* Conversation Cards */
+.conversation-card {
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.conversation-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* User Avatars */
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border: 2px solid var(--bs-primary);
+}
+
+.user-avatar-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.user-initial {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+/* Status Indicators */
+.online-indicator {
+    width: 14px;
+    height: 14px;
+    background-color: #28a745;
+    border: 2px solid white;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+}
+
+.unread-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: var(--bs-danger);
+    border-radius: 50%;
+}
+
+/* Message Preview */
+.message-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.search-container {
+    max-width: 400px;
+    margin-bottom: 2rem;
+}
+
+/* Chat Container & Layout */
+.chat-container {
+    height: calc(100vh - 180px);
+    min-height: 500px;
+}
+
+.conversations-list {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.chat-messages-area {
+    height: calc(100% - 130px);
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+/* Message Bubbles */
+.message-bubble {
+    max-width: 75%;
+    padding: 0.8rem 1rem;
+    border-radius: 1rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.message-sent {
+    background: var(--bs-primary);
+    color: white;
+    border-bottom-right-radius: 0.2rem;
+    margin-left: auto;
+}
+
+.message-received {
+    background: white;
+    color: var(--bs-dark);
+    border-bottom-left-radius: 0.2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--bs-muted);
+    height: 20px;
+}
+
+/* Conversation Items */
+.conv-item {
+    border: none;
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+}
+
+.conv-item.active {
+    background-color: var(--bs-primary-subtle) !important;
+    border-left: 4px solid var(--bs-primary);
+    border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.conv-item:hover:not(.active) {
+    background-color: #f1f3f5;
+}
+
+/* Legacy Page-specific: Chat list item styles */
+.chat-list-item {
+    transition: all var(--transition-fast);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1rem;
+}
+
+.chat-list-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.chat-list-item:last-child {
+    border-bottom: none;
+}

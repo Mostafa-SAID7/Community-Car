@@ -1,91 +1,115 @@
 @model CommunityCar.Mvc.ViewModels.Feed.FeedViewModel
 
-<!-- Quick Stats -->
-<div class="card mb-3">
-    <div class="card-header bg-white">
-        <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Feed Stats</h6>
-    </div>
-    <div class="card-body">
-        <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Total Items</span>
-            <strong>@Model.TotalCount</strong>
-        </div>
-        <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Current Page</span>
-            <strong>@Model.CurrentPage / @Model.TotalPages</strong>
-        </div>
-    </div>
-</div>
-
-<!-- Content Type Legend -->
-<div class="card mb-3">
-    <div class="card-header bg-white">
-        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Content Types</h6>
-    </div>
-    <div class="card-body">
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-primary me-2"><i class="fas fa-file-text"></i></span>
-            <span>Posts</span>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-info me-2"><i class="fas fa-question-circle"></i></span>
-            <span>Questions</span>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-success me-2"><i class="fas fa-calendar"></i></span>
-            <span>Events</span>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-warning me-2"><i class="fas fa-newspaper-o"></i></span>
-            <span>News</span>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-purple me-2"><i class="fas fa-book"></i></span>
-            <span>Guides</span>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-danger me-2"><i class="fas fa-star"></i></span>
-            <span>Reviews</span>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-@if (User.Identity?.IsAuthenticated == true)
-{
-    <div class="card">
-        <div class="card-header bg-white">
-            <h6 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create Content</h6>
+<div class="sidebar-content">
+    <!-- Quick Stats -->
+    <div class="card border-0 shadow-sm mb-4" style="background: var(--bg-secondary);">
+        <div class="card-header border-0 bg-transparent pb-0">
+            <h6 class="mb-0 fw-bold text-uppercase small opacity-75">
+                <i class="fas fa-chart-line me-2 text-primary"></i>Feed Stats
+            </h6>
         </div>
         <div class="card-body">
-            <div class="d-grid gap-2">
-                <a asp-controller="Posts" asp-action="Create" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-file-text me-1"></i> New Post
-                </a>
-                <a asp-controller="Questions" asp-action="Create" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-question-circle me-1"></i> Ask Question
-                </a>
-                <a asp-controller="Events" asp-action="Create" class="btn btn-sm btn-outline-success">
-                    <i class="fas fa-calendar me-1"></i> Create Event
-                </a>
+            <div class="d-flex justify-content-between mb-3 p-2 rounded-3" style="background: var(--bg-tertiary);">
+                <span class="small text-muted">Total Items</span>
+                <span class="badge bg-primary rounded-pill">@Model.TotalCount</span>
+            </div>
+            <div class="d-flex justify-content-between p-2 rounded-3" style="background: var(--bg-tertiary);">
+                <span class="small text-muted">Current Page</span>
+                <span class="fw-bold small">@Model.CurrentPage / @Model.TotalPages</span>
             </div>
         </div>
     </div>
-}
 
-<!-- Trending Tags -->
-<div class="card mt-3">
-    <div class="card-header bg-white">
-        <h6 class="mb-0"><i class="fas fa-hashtag me-2"></i>Trending Tags</h6>
-    </div>
-    <div class="card-body">
-        <div class="d-flex flex-wrap gap-2">
-            <a href="?search=cars" class="badge bg-light text-dark text-decoration-none">#cars</a>
-            <a href="?search=maintenance" class="badge bg-light text-dark text-decoration-none">#maintenance</a>
-            <a href="?search=tips" class="badge bg-light text-dark text-decoration-none">#tips</a>
-            <a href="?search=community" class="badge bg-light text-dark text-decoration-none">#community</a>
-            <a href="?search=events" class="badge bg-light text-dark text-decoration-none">#events</a>
-            <a href="?search=reviews" class="badge bg-light text-dark text-decoration-none">#reviews</a>
+    <!-- Content Type Legend -->
+    <div class="card border-0 shadow-sm mb-4" style="background: var(--bg-secondary);">
+        <div class="card-header border-0 bg-transparent pb-0">
+            <h6 class="mb-0 fw-bold text-uppercase small opacity-75">
+                <i class="fas fa-layer-group me-2 text-info"></i>Content Types
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-primary"></span>
+                        <span class="text-xs">Posts</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-info"></span>
+                        <span class="text-xs">Questions</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-success"></span>
+                        <span class="text-xs">Events</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-warning"></span>
+                        <span class="text-xs">News</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-purple"></span>
+                        <span class="text-xs">Guides</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded-2 d-flex align-items-center gap-2" style="background: var(--bg-tertiary);">
+                        <span class="size-8 rounded-circle bg-danger"></span>
+                        <span class="text-xs">Reviews</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Trending Tags -->
+    <div class="card border-0 shadow-sm mb-4" style="background: var(--bg-secondary);">
+        <div class="card-header border-0 bg-transparent pb-0">
+            <h6 class="mb-0 fw-bold text-uppercase small opacity-75">
+                <i class="fas fa-hashtag me-2 text-warning"></i>Trending
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var tag in new[] { "cars", "maintenance", "tips", "community", "events", "reviews" })
+                {
+                    <a href="?search=@tag" class="badge rounded-pill text-decoration-none px-3 py-2" 
+                       style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-primary);">#@tag</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions (Only authenticated) -->
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="card border-0 shadow-premium overflow-hidden" style="background: var(--gradient-premium-red);">
+            <div class="card-body p-4 text-center text-white position-relative">
+                <i class="fas fa-plus fa-3x mb-3 opacity-25 position-absolute top-50 start-50 translate-middle"></i>
+                <div class="position-relative z-index-1">
+                    <h5 class="fw-bold mb-3">Post something!</h5>
+                    <div class="d-grid">
+                        <a asp-controller="Posts" asp-action="Create" class="btn btn-white btn-sm fw-bold shadow-sm">
+                            <i class="fas fa-feather me-1"></i> New Content
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+<style>
+    .size-8 { width: 8px; height: 8px; }
+    .text-xs { font-size: 0.75rem; }
+    .z-index-1 { z-index: 1; }
+    .btn-white { background: white; color: var(--primary-red); }
+    .btn-white:hover { background: var(--gray-50); }
+</style>

@@ -1,5 +1,7 @@
 @model CommunityCar.Domain.DTOs.Community.GuideDto
 @using CommunityCar.Domain.Enums.Community.guides
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = Model.Title;
@@ -60,7 +62,7 @@
     ViewData["HeaderTitle"] = guide.Title;
     ViewData["HeaderIcon"] = "fas fa-book-open";
     var actionsHtml = "<div class='d-flex gap-3 align-items-center'>" +
-                      "<span><i class='fas fa-clock me-1'></i> " + guide.EstimatedTimeMinutes + " mins</span>" +
+                      "<span><i class='fas fa-clock me-1'></i> " + guide.EstimatedTimeMinutes + " " + Localizer["mins"].Value + "</span>" +
                       "<span><i class='fas fa-signal me-1'></i> " + guide.DifficultyName + "</span>" +
                       "</div>";
     ViewData["HeaderActions"] = Html.Raw(actionsHtml);
@@ -99,13 +101,13 @@
                         <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle me-3" style="width: 50px; height: 50px;">
                         <div>
                             <h6 class="mb-0 fw-bold">@guide.AuthorName</h6>
-                            <p class="text-muted small mb-0">Contributor • @guide.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            <p class="text-muted small mb-0">@Localizer["Contributor"] • @guide.CreatedAt.ToString("MMM dd, yyyy")</p>
                         </div>
                         @if (guide.IsAuthor)
                         {
                             <div class="ms-auto">
                                 <a asp-action="Edit" asp-route-id="@guide.Id" class="btn btn-outline-primary btn-sm rounded-pill px-4">
-                                    <i class="fas fa-edit me-1"></i>Edit Guide
+                                    <i class="fas fa-edit me-1"></i>@Localizer["Edit Guide"]
                                 </a>
                             </div>
                         }
@@ -125,7 +127,7 @@
                     @if (!string.IsNullOrEmpty(guide.Tags))
                     {
                         <div class="pt-4 border-top">
-                            <h6 class="fw-bold mb-3 small text-uppercase letter-spacing-1 text-muted">Related Tags</h6>
+                            <h6 class="fw-bold mb-3 small text-uppercase letter-spacing-1 text-muted">@Localizer["Related Tags"]</h6>
                             <div class="d-flex flex-wrap gap-2">
                                 @foreach (var tag in guide.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
                                 {
@@ -140,13 +142,13 @@
             <!-- Interactions -->
             <div class="d-flex align-items-center mb-5">
                 <button class="btn @(guide.IsLiked ? "btn-danger" : "btn-outline-danger") rounded-pill px-4 me-3" onclick="toggleLike('@guide.Id')">
-                    <i class="fas fa-heart me-2"></i>@(guide.IsLiked ? "Liked" : "Like") (@guide.LikeCount)
+                    <i class="fas fa-heart me-2"></i>@(guide.IsLiked ? Localizer["Liked"] : Localizer["Like"]) (@guide.LikeCount)
                 </button>
                 <button class="btn @(guide.IsBookmarked ? "btn-warning" : "btn-outline-warning") rounded-pill px-4 me-3" onclick="toggleBookmark('@guide.Id')">
-                    <i class="fas fa-bookmark me-2"></i>@(guide.IsBookmarked ? "Saved" : "Save")
+                    <i class="fas fa-bookmark me-2"></i>@(guide.IsBookmarked ? Localizer["Saved"] : Localizer["Save"])
                 </button>
                 <button class="btn btn-outline-primary rounded-pill px-4" onclick="shareGuide('@guide.Id', '@guide.Title')">
-                    <i class="fas fa-share-alt me-2"></i>Share
+                    <i class="fas fa-share-alt me-2"></i>@Localizer["Share"]
                 </button>
             </div>
         </div>
@@ -155,7 +157,7 @@
             <!-- Guide Info Sidebar -->
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h6 class="fw-bold mb-4">Guide Details</h6>
+                    <h6 class="fw-bold mb-4">@Localizer["Guide Details"]</h6>
                     
                     <div class="sidebar-stat-card mb-3">
                         <div class="d-flex align-items-center">
@@ -163,8 +165,8 @@
                                 <i class="fas fa-clock text-primary"></i>
                             </div>
                             <div>
-                                <h6 class="mb-0 fw-bold">@guide.EstimatedTimeMinutes mins</h6>
-                                <p class="small text-muted mb-0">Estimated Time</p>
+                                <h6 class="mb-0 fw-bold">@guide.EstimatedTimeMinutes @Localizer["mins"]</h6>
+                                <p class="small text-muted mb-0">@Localizer["Estimated Time"]</p>
                             </div>
                         </div>
                     </div>
@@ -175,8 +177,8 @@
                                 <i class="fas fa-signal text-warning"></i>
                             </div>
                             <div>
-                                <h6 class="mb-0 fw-bold">@guide.DifficultyName</h6>
-                                <p class="small text-muted mb-0">Difficulty Level</p>
+                                <h6 class="mb-0 fw-bold">@Localizer[guide.DifficultyName]</h6>
+                                <p class="small text-muted mb-0">@Localizer["Difficulty Level"]</p>
                             </div>
                         </div>
                     </div>
@@ -187,8 +189,8 @@
                                 <i class="fas fa-list-ol text-success"></i>
                             </div>
                             <div>
-                                <h6 class="mb-0 fw-bold">@guide.StepCount Steps</h6>
-                                <p class="small text-muted mb-0">Content Breakdown</p>
+                                <h6 class="mb-0 fw-bold">@guide.StepCount @Localizer["Steps"]</h6>
+                                <p class="small text-muted mb-0">@Localizer["Content Breakdown"]</p>
                             </div>
                         </div>
                     </div>
@@ -199,11 +201,11 @@
             <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
                 <div class="card-body p-4 text-center">
                     <img src="@(guide.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle mb-3 shadow-sm border border-3 border-white" style="width: 80px; height: 80px;">
-                    <h6 class="fw-bold mb-1">Written by @guide.AuthorName</h6>
-                    <p class="small text-muted mb-3">Professional Mechanic & Enthusiast</p>
+                    <h6 class="fw-bold mb-1">@Localizer["Written by"] @guide.AuthorName</h6>
+                    <p class="small text-muted mb-3">@Localizer["Professional Mechanic & Enthusiast"]</p>
                     
                     <div class="d-flex flex-column gap-2">
-                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = guide.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
+                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = guide.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill w-100">@Localizer["View Profile"]</a>
                         
                         @if (currentUserId.HasValue && !guide.IsAuthor)
                         {
@@ -213,7 +215,7 @@
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="friendId" value="@guide.AuthorId" />
                                     <button type="submit" class="btn btn-primary btn-sm rounded-pill w-100">
-                                        <i class="fas fa-user-plus me-1"></i> Add Friend
+                                        <i class="fas fa-user-plus me-1"></i> @Localizer["Add Friend"]
                                     </button>
                                 </form>
                             }
@@ -226,7 +228,7 @@
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="friendId" value="@guide.AuthorId" />
                                             <button type="submit" class="btn btn-success btn-sm rounded-pill w-100">
-                                                Accept
+                                                @Localizer["Accept"]
                                             </button>
                                         </form>
                                         <form asp-controller="Friends" asp-action="RejectRequest" method="post" class="ajax-reject-form flex-grow-1">
@@ -241,14 +243,14 @@
                                 else
                                 {
                                     <button class="btn btn-secondary btn-sm rounded-pill w-100" disabled>
-                                        <i class="fas fa-clock me-1"></i> Pending
+                                        <i class="fas fa-clock me-1"></i> @Localizer["Pending"]
                                     </button>
                                 }
                             }
                             else if (friendshipStatus == FriendshipStatus.Accepted)
                             {
                                 <button class="btn btn-success btn-sm rounded-pill w-100" disabled>
-                                    <i class="fas fa-check-double me-1"></i> Friends
+                                    <i class="fas fa-check-double me-1"></i> @Localizer["Friends"]
                                 </button>
                             }
                         }
@@ -259,7 +261,7 @@
             <!-- Community Sentiment -->
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3 text-center">Community Rating</h6>
+                    <h6 class="fw-bold mb-3 text-center">@Localizer["Community Rating"]</h6>
                     <div class="text-center">
                         <h2 class="fw-bold text-primary mb-1">@guide.AverageRating.ToString("F1")</h2>
                         <div class="text-warning mb-2">
@@ -268,7 +270,7 @@
                                 <i class="fas fa-star @(i <= Math.Round(guide.AverageRating) ? "" : "text-light")"></i>
                             }
                         </div>
-                        <p class="small text-muted mb-0">Based on @guide.RatingCount ratings</p>
+                        <p class="small text-muted mb-0">@string.Format(Localizer["Based on {0} ratings"].Value, guide.RatingCount)</p>
                     </div>
                 </div>
             </div>
@@ -353,10 +355,10 @@
                 });
             } else {
                 navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Guide link copied to clipboard!');
+                    alert(window.I18n?.translations.guides.copied || 'Guide link copied to clipboard!');
                 }).catch(err => {
                     console.error('Copy failed:', err);
-                    alert('Failed to copy link');
+                    alert(window.I18n?.translations.guides.copyFailed || 'Failed to copy link');
                 });
             }
         }

@@ -87,20 +87,142 @@ try
             // Always run migrations
             await context.Database.MigrateAsync();
             
-            // Only seed data in Development environment
-            if (env.IsDevelopment())
+            // Check if seeding is enabled via configuration (defaults to IsDevelopment)
+            var shouldSeed = app.Configuration.GetValue<bool>("Database:EnableSeeding", env.IsDevelopment());
+            
+            if (shouldSeed)
             {
-                await services.SeedDatabase(); // Call the extension method on IServiceProvider
-                await FriendshipSeeder.SeedAsync(context);
-                await EventSeeder.SeedAsync(context);
-                await PostSeeder.SeedAsync(context);
-                await GuideSeeder.SeedAsync(context);
-                await ReviewSeeder.SeedAsync(context);
-                await QuestionSeeder.SeedAsync(context);
-                await GroupSeeder.SeedAsync(context);
-                await MapPointSeeder.SeedAsync(context);
-                await ChatSeeder.SeedAsync(context);
-                await NewsSeeder.SeedAsync(context);
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Seeding is enabled. Starting database seed...");
+                
+                try
+                {
+                    await services.SeedDatabase();
+                    logger.LogInformation("✓ DbSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ DbSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await FriendshipSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ FriendshipSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ FriendshipSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await EventSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ EventSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ EventSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await PostSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ PostSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ PostSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await GuideSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ GuideSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ GuideSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await ReviewSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ ReviewSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ ReviewSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await QuestionSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ QuestionSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ QuestionSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await GroupSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ GroupSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ GroupSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await MapPointSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ MapPointSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ MapPointSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await ChatSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ ChatSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ ChatSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    await NewsSeeder.SeedAsync(context);
+                    logger.LogInformation("✓ NewsSeeder completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ NewsSeeder failed: {Message}", ex.Message);
+                }
+
+                try
+                {
+                    // Train ML Models
+                    var mlPipelineService = services.GetRequiredService<CommunityCar.Infrastructure.Interfaces.ML.IMLPipelineService>();
+                    await mlPipelineService.TrainModelsAsync();
+                    logger.LogInformation("✓ ML Model training completed");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "✗ ML Model training failed: {Message}", ex.Message);
+                }
+                
+                logger.LogInformation("Database seeding completed.");
+            }
+            else
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Seeding is disabled via configuration.");
             }
         }
         catch (Exception ex)

@@ -30,7 +30,7 @@ public class CultureRedirectMiddleware
             lowerPath.Contains("/images/") ||
             lowerPath.Contains("/uploads/") ||
             lowerPath.Contains("/favicon") ||
-            lowerPath.Contains("/hub") ||
+            lowerPath.Contains("hub") ||
             lowerPath.Contains("/culture/setlanguage") ||
             lowerPath.Contains("/error/"))
         {

@@ -1,6 +1,8 @@
 @model List<CommunityCar.Domain.Entities.Communications.notifications.Notification>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Notifications";
+    ViewData["Title"] = Localizer["Notifications"];
     var unreadCount = ViewBag.UnreadCount ?? 0;
     var currentPage = ViewBag.CurrentPage ?? 1;
     var pageSize = ViewBag.PageSize ?? 20;
@@ -10,17 +12,17 @@
 }
 
 @{
-    ViewData["HeaderTitle"] = "Notifications";
-    ViewData["HeaderDescription"] = "Stay updated with your latest activity";
+    ViewData["HeaderTitle"] = Localizer["Notifications"];
+    ViewData["HeaderDescription"] = Localizer["Stay updated with your latest activity"];
     ViewData["HeaderIcon"] = "fas fa-bell";
     
-    var unreadBadgeContent = unreadCount > 0 ? "<span class='badge bg-light text-dark fs-6'>" + unreadCount + " unread</span>" : "";
-    var markAllButtonContent = unreadCount > 0 ? "<button class='btn btn-light' onclick='markAllAsRead()'><i class='fas fa-check-double me-2'></i>Mark All Read</button>" : "";
+    var unreadBadgeContent = unreadCount > 0 ? "<span class='badge bg-light text-dark fs-6'>" + unreadCount + " " + Localizer["unread"] + "</span>" : "";
+    var markAllButtonContent = unreadCount > 0 ? "<button class='btn btn-light' onclick='markAllAsRead()'><i class='fas fa-check-double me-2'></i>" + Localizer["Mark All Read"] + "</button>" : "";
     
     var actionsHtml = "<div class='d-flex gap-2 flex-wrap align-items-center'>" +
                       "<span class='text-white'>" + unreadBadgeContent + "</span>" +
                       "<button class='btn btn-light' onclick='refreshNotifications()'>" +
-                      "<i class='fas fa-sync-alt me-2'></i>Refresh" +
+                      "<i class='fas fa-sync-alt me-2'></i>" + Localizer["Refresh"] +
                       "</button>" +
                       markAllButtonContent +
                       "</div>";
@@ -39,13 +41,13 @@
                             <li class="nav-item">
                                 <a class="nav-link @(unreadOnly != true ? "active" : "")" 
                                    href="@Url.Action("Index", new { page = 1, pageSize, unreadOnly = (bool?)null })">
-                                    <i class="fas fa-list me-1"></i> All
+                                    <i class="fas fa-list me-1"></i> @Localizer["All"]
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(unreadOnly == true ? "active" : "")" 
                                    href="@Url.Action("Index", new { page = 1, pageSize, unreadOnly = true })">
-                                    <i class="fas fa-envelope me-1"></i> Unread
+                                    <i class="fas fa-envelope me-1"></i> @Localizer["Unread"]
                                     @if (unreadCount > 0)
                                     {
                                         <span class="badge bg-danger rounded-pill ms-1">@unreadCount</span>
@@ -73,8 +75,8 @@
                     {
                         <div class="text-center py-5">
                             <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
-                            <h5 class="text-muted">No notifications</h5>
-                            <p class="text-muted">You're all caught up!</p>
+                            <h5 class="text-muted">@Localizer["No notifications"]</h5>
+                            <p class="text-muted">@Localizer["You're all caught up!"]</p>
                         </div>
                     }
                     else
@@ -89,7 +91,7 @@
                                             <div class="d-flex align-items-center mb-1">
                                                 @if (!notification.IsRead)
                                                 {
-                                                    <span class="badge bg-primary me-2">New</span>
+                                                    <span class="badge bg-primary me-2">@Localizer["New"]</span>
                                                 }
                                                 <h6 class="mb-0">@notification.Title</h6>
                                             </div>
@@ -106,14 +108,14 @@
                                                 <a href="@normalizedLink" 
                                                    class="btn btn-sm btn-outline-primary"
                                                    onclick="markAsRead('@notification.Id')">
-                                                    <i class="fas fa-external-link-alt"></i> View
+                                                    <i class="fas fa-external-link-alt"></i> @Localizer["View"]
                                                 </a>
                                             }
                                             @if (!notification.IsRead)
                                             {
                                                 <button class="btn btn-sm btn-outline-success" 
                                                         onclick="markAsRead('@notification.Id')">
-                                                    <i class="fas fa-check"></i> Mark Read
+                                                    <i class="fas fa-check"></i> @Localizer["Mark Read"]
                                                 </button>
                                             }
                                             <button class="btn btn-sm btn-outline-danger" 
@@ -135,7 +137,7 @@
                                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                                             <a class="page-link" 
                                                href="@Url.Action("Index", new { page = currentPage - 1, pageSize, unreadOnly })">
-                                                <i class="fas fa-chevron-left"></i> Previous
+                                                <i class="fas fa-chevron-left"></i> @Localizer["Previous"]
                                             </a>
                                         </li>
 
@@ -152,14 +154,14 @@
                                         <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                                             <a class="page-link" 
                                                href="@Url.Action("Index", new { page = currentPage + 1, pageSize, unreadOnly })">
-                                                Next <i class="fas fa-chevron-right"></i>
+                                                @Localizer["Next"] <i class="fas fa-chevron-right"></i>
                                             </a>
                                         </li>
                                     </ul>
                                 </nav>
                                 <div class="text-center mt-2">
                                     <small class="text-muted">
-                                        Showing @((currentPage - 1) * pageSize + 1) to @Math.Min(currentPage * pageSize, totalCount) of @totalCount notifications
+                                        @string.Format(Localizer["Showing {0} to {1} of {2} notifications"].Value, (currentPage - 1) * pageSize + 1, Math.Min(currentPage * pageSize, totalCount), totalCount)
                                     </small>
                                 </div>
                             </div>
@@ -192,13 +194,13 @@
                     }
                 },
                 error: function() {
-                    alert('Failed to mark notification as read');
+                    alert('@Localizer["Failed to mark notification as read"]');
                 }
             });
         }
 
         function markAllAsRead() {
-            if (!confirm('Mark all notifications as read?')) {
+            if (!confirm('@Localizer["Mark all notifications as read?"]')) {
                 return;
             }
 
@@ -209,17 +211,17 @@
                     if (response.success) {
                         location.reload();
                     } else {
-                        alert(response.message || 'Failed to mark all as read');
+                        alert(response.message || '@Localizer["Failed to mark all as read"]');
                     }
                 },
                 error: function() {
-                    alert('Failed to mark all notifications as read');
+                    alert('@Localizer["Failed to mark all notifications as read"]');
                 }
             });
         }
 
         function deleteNotification(notificationId) {
-            if (!confirm('Delete this notification?')) {
+            if (!confirm('@Localizer["Delete this notification?"]')) {
                 return;
             }
 
@@ -237,11 +239,11 @@
                             }
                         });
                     } else {
-                        alert(response.message || 'Failed to delete notification');
+                        alert(response.message || '@Localizer["Failed to delete notification"]');
                     }
                 },
                 error: function() {
-                    alert('Failed to delete notification');
+                    alert('@Localizer["Failed to delete notification"]');
                 }
             });
         }

@@ -3,6 +3,7 @@ using CommunityCar.Domain.Interfaces.Communications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace CommunityCar.Web.Areas.Communications.Controllers.notifications;
@@ -16,15 +17,18 @@ public class NotificationsController : Controller
     private readonly INotificationService _notificationService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<NotificationsController> _logger;
+    private readonly IStringLocalizer<NotificationsController> _localizer;
 
     public NotificationsController(
         INotificationService notificationService, 
         UserManager<ApplicationUser> userManager,
-        ILogger<NotificationsController> logger)
+        ILogger<NotificationsController> logger,
+        IStringLocalizer<NotificationsController> localizer)
     {
         _notificationService = notificationService;
         _userManager = userManager;
         _logger = logger;
+        _localizer = localizer;
     }
 
     // GET: Communications/Notifications
@@ -60,7 +64,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading notifications");
-            TempData["Error"] = "Failed to load notifications";
+            TempData["Error"] = _localizer["FailedToLoadNotifications"].Value;
             return View(new List<CommunityCar.Domain.Entities.Communications.notifications.Notification>());
         }
     }
@@ -107,7 +111,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting latest notifications");
-            return Json(new { success = false, message = "Failed to load notifications" });
+            return Json(new { success = false, message = _localizer["FailedToLoadNotifications"].Value });
         }
     }
 
@@ -150,7 +154,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting all notifications");
-            return Json(new { success = false, message = "Failed to load notifications" });
+            return Json(new { success = false, message = _localizer["FailedToLoadNotifications"].Value });
         }
     }
 
@@ -170,7 +174,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error marking notification {NotificationId} as read", id);
-            return Json(new { success = false, message = "Failed to mark notification as read" });
+            return Json(new { success = false, message = _localizer["FailedToMarkAsRead"].Value });
         }
     }
 
@@ -188,7 +192,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error marking all notifications as read");
-            return Json(new { success = false, message = "Failed to mark all notifications as read" });
+            return Json(new { success = false, message = _localizer["FailedToMarkAllAsRead"].Value });
         }
     }
 
@@ -207,7 +211,7 @@ public class NotificationsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting notification {NotificationId}", id);
-            return Json(new { success = false, message = "Failed to delete notification" });
+            return Json(new { success = false, message = _localizer["FailedToDeleteNotification"].Value });
         }
     }
 
@@ -257,18 +261,18 @@ public class NotificationsController : Controller
         var timeSpan = DateTimeOffset.UtcNow - dateTime;
 
         if (timeSpan.TotalMinutes < 1)
-            return "just now";
+            return _localizer["JustNow"].Value;
         if (timeSpan.TotalMinutes < 60)
-            return $"{(int)timeSpan.TotalMinutes}m ago";
+            return string.Format(_localizer["MinutesAgo"].Value, (int)timeSpan.TotalMinutes);
         if (timeSpan.TotalHours < 24)
-            return $"{(int)timeSpan.TotalHours}h ago";
+            return string.Format(_localizer["HoursAgo"].Value, (int)timeSpan.TotalHours);
         if (timeSpan.TotalDays < 7)
-            return $"{(int)timeSpan.TotalDays}d ago";
+            return string.Format(_localizer["DaysAgo"].Value, (int)timeSpan.TotalDays);
         if (timeSpan.TotalDays < 30)
-            return $"{(int)(timeSpan.TotalDays / 7)}w ago";
+            return string.Format(_localizer["WeeksAgo"].Value, (int)(timeSpan.TotalDays / 7));
         if (timeSpan.TotalDays < 365)
-            return $"{(int)(timeSpan.TotalDays / 30)}mo ago";
+            return string.Format(_localizer["MonthsAgo"].Value, (int)(timeSpan.TotalDays / 30));
         
-        return $"{(int)(timeSpan.TotalDays / 365)}y ago";
+        return string.Format(_localizer["YearsAgo"].Value, (int)(timeSpan.TotalDays / 365));
     }
 }

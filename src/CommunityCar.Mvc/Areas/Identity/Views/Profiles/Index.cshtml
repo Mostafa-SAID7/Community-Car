@@ -1,4 +1,6 @@
 @using CommunityCar.Domain.Enums.Community.friends
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.ProfileViewModel
 @{
     ViewData["Title"] = $"{Model.User.FirstName} {Model.User.LastName}";
@@ -34,10 +36,10 @@
                                 {
                                     <span><i class="bi bi-geo-alt"></i> @Model.User.Location</span>
                                 }
-                                <span><i class="bi bi-calendar"></i> Joined @Model.JoinedDate.ToString("MMMM yyyy")</span>
+                                <span><i class="bi bi-calendar"></i> @Localizer["Joined"] @Model.JoinedDate.ToString("MMMM yyyy")</span>
                                 @if (!string.IsNullOrEmpty(Model.User.Website))
                                 {
-                                    <span><i class="bi bi-link-45deg"></i> <a href="@Model.User.Website" target="_blank">Website</a></span>
+                                    <span><i class="bi bi-link-45deg"></i> <a href="@Model.User.Website" target="_blank">@Localizer["Website"]</a></span>
                                 }
                             </div>
                         </div>
@@ -45,10 +47,10 @@
                             @if (Model.IsOwnProfile)
                             {
                                 <a asp-action="Edit" class="btn btn-primary mb-2 w-100">
-                                    <i class="bi bi-pencil"></i> Edit Profile
+                                    <i class="bi bi-pencil"></i> @Localizer["Edit Profile"]
                                 </a>
                                 <a asp-action="Settings" class="btn btn-outline-secondary w-100">
-                                    <i class="bi bi-gear"></i> Settings
+                                    <i class="bi bi-gear"></i> @Localizer["Settings"]
                                 </a>
                             }
                             else
@@ -59,24 +61,24 @@
                                         <form asp-action="SendFriendRequest" asp-route-userId="@Model.User.Id" method="post" class="mb-2">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-primary w-100">
-                                                <i class="bi bi-person-plus"></i> Add Friend
+                                                <i class="bi bi-person-plus"></i> @Localizer["Add Friend"]
                                             </button>
                                         </form>
                                         break;
                                     case FriendshipStatus.Pending:
                                         <button class="btn btn-secondary w-100 mb-2" disabled>
-                                            <i class="bi bi-clock"></i> Request Pending
+                                            <i class="bi bi-clock"></i> @Localizer["Request Pending"]
                                         </button>
                                         break;
                                     case FriendshipStatus.Accepted:
                                         <div class="d-flex flex-column gap-2 mb-2">
                                             <a asp-area="" asp-controller="Chats" asp-action="Conversation" asp-route-userId="@Model.User.Id" class="btn btn-primary w-100">
-                                                <i class="fas fa-comment"></i> Message
+                                                <i class="fas fa-comment"></i> @Localizer["Message"]
                                             </a>
                                             <form asp-area="" asp-controller="Friends" asp-action="RemoveFriend" asp-route-userId="@Model.User.Id" method="post">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-outline-danger w-100">
-                                                    <i class="fas fa-person-dash"></i> Remove Friend
+                                                    <i class="fas fa-person-dash"></i> @Localizer["Remove Friend"]
                                                 </button>
                                             </form>
                                         </div>
@@ -94,7 +96,7 @@
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h3 class="text-primary mb-0">@Model.User.ReputationPoints</h3>
-                    <p class="text-muted mb-0">Reputation</p>
+                    <p class="text-muted mb-0">@Localizer["Reputation"]</p>
                 </div>
             </div>
         </div>
@@ -102,7 +104,7 @@
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h3 class="text-success mb-0">@Model.QuestionsCount</h3>
-                    <p class="text-muted mb-0">Questions</p>
+                    <p class="text-muted mb-0">@Localizer["Questions"]</p>
                 </div>
             </div>
         </div>
@@ -110,7 +112,7 @@
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h3 class="text-info mb-0">@Model.FriendsCount</h3>
-                    <p class="text-muted mb-0">Friends</p>
+                    <p class="text-muted mb-0">@Localizer["Friends"]</p>
                 </div>
             </div>
         </div>
@@ -118,7 +120,7 @@
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h3 class="text-warning mb-0">0</h3>
-                    <p class="text-muted mb-0">Badges</p>
+                    <p class="text-muted mb-0">@Localizer["Badges"]</p>
                 </div>
             </div>
         </div>
@@ -127,13 +129,13 @@
         <div class="col-12">
             <ul class="nav nav-tabs mb-4">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#activity" data-bs-toggle="tab">Activity</a>
+                    <a class="nav-link active" href="#activity" data-bs-toggle="tab">@Localizer["Activity"]</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Statistics" asp-route-userId="@Model.User.Id">Statistics</a>
+                    <a class="nav-link" asp-action="Statistics" asp-route-userId="@Model.User.Id">@Localizer["Statistics"]</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Friends" asp-route-userId="@Model.User.Id">Friends</a>
+                    <a class="nav-link" asp-action="Friends" asp-route-userId="@Model.User.Id">@Localizer["Friends"]</a>
                 </li>
             </ul>
 
@@ -142,7 +144,7 @@
                 <div class="tab-pane fade show active" id="activity">
                     <div class="card shadow-sm">
                         <div class="card-header">
-                            <h5 class="mb-0">Recent Questions</h5>
+                            <h5 class="mb-0">@Localizer["Recent Questions"]</h5>
                         </div>
                         <div class="card-body">
                             @if (Model.RecentQuestions.Any())
@@ -157,19 +159,19 @@
                                             </div>
                                             <p class="mb-1 text-muted small">@(question.Content.Length > 150 ? question.Content.Substring(0, 150) + "..." : question.Content)</p>
                                             <small class="text-muted">
-                                                <span class="badge bg-secondary">@question.ViewCount views</span>
-                                                <span class="badge bg-success">@question.AnswerCount answers</span>
+                                                <span class="badge bg-secondary">@question.ViewCount @Localizer["views"]</span>
+                                                <span class="badge bg-success">@question.AnswerCount @Localizer["answers"]</span>
                                             </small>
                                         </a>
                                     }
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a asp-action="Activity" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">View All Activity</a>
+                                    <a asp-action="Activity" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">@Localizer["View All Activity"]</a>
                                 </div>
                             }
                             else
                             {
-                                <p class="text-muted text-center py-4">No recent activity</p>
+                                <p class="text-muted text-center py-4">@Localizer["No recent activity"]</p>
                             }
                         </div>
                     </div>

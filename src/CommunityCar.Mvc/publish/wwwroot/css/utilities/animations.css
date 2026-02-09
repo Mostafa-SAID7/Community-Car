@@ -1,0 +1,410 @@
+/* ===========================================
+   UTILITIES: ANIMATIONS
+   Modern animation library for premium UI effects
+   =========================================== */
+
+/* ===== Base Keyframes ===== */
+
+/* Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Fade In Up - Entrance animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide Up - Card entrance */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Slide In Right */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Bounce In - Playful entrance */
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Pulse - Attention grabbing */
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Pulse Glow - Premium glow effect */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(251, 44, 54, 0.3),
+            0 0 10px rgba(251, 44, 54, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(251, 44, 54, 0.5),
+            0 0 30px rgba(251, 44, 54, 0.3);
+    }
+}
+
+/* Shimmer - Loading/premium effect */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Gradient Shift - Moving gradient */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Number Roll - Counter animation */
+@keyframes numberRoll {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Float - Subtle floating effect */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Ripple - Click feedback */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Shake - Error feedback */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Scale Pop - Button press */
+@keyframes scalePop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Glow Pulse - For icons/badges */
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 2px currentColor);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+}
+
+/* Border Glow Animation */
+@keyframes borderGlow {
+
+    0%,
+    100% {
+        border-color: var(--red-400);
+    }
+
+    50% {
+        border-color: var(--red-600);
+    }
+}
+
+/* ===== Utility Classes ===== */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+.bounce-in {
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.shimmer {
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.gradient-shift {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ===== Stagger Delay Utilities ===== */
+.stagger-1 {
+    animation-delay: 0.05s;
+}
+
+.stagger-2 {
+    animation-delay: 0.1s;
+}
+
+.stagger-3 {
+    animation-delay: 0.15s;
+}
+
+.stagger-4 {
+    animation-delay: 0.2s;
+}
+
+.stagger-5 {
+    animation-delay: 0.25s;
+}
+
+.stagger-6 {
+    animation-delay: 0.3s;
+}
+
+.stagger-7 {
+    animation-delay: 0.35s;
+}
+
+.stagger-8 {
+    animation-delay: 0.4s;
+}
+
+.stagger-9 {
+    animation-delay: 0.45s;
+}
+
+.stagger-10 {
+    animation-delay: 0.5s;
+}
+
+/* ===== Animation Speed Modifiers ===== */
+.anim-fast {
+    animation-duration: 0.2s;
+}
+
+.anim-normal {
+    animation-duration: 0.4s;
+}
+
+.anim-slow {
+    animation-duration: 0.6s;
+}
+
+.anim-slower {
+    animation-duration: 1s;
+}
+
+/* ===== Easing Utilities ===== */
+.ease-bounce {
+    animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.ease-smooth {
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ease-snappy {
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Hover Animation Helpers ===== */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale {
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.hover-glow {
+    transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 20px rgba(251, 44, 54, 0.3);
+}
+
+/* ===== Fill Modes ===== */
+.anim-fill-forwards {
+    animation-fill-mode: forwards;
+}
+
+.anim-fill-both {
+    animation-fill-mode: both;
+}
+
+/* ===== Initial States for Animated Elements ===== */
+.will-animate {
+    opacity: 0;
+}
+
+/* ===== Reduced Motion Support ===== */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

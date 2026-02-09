@@ -2,18 +2,18 @@
 @inject IViewLocalizer Localizer
 
 <div class="list-group list-group-flush border-0">
-    <a asp-controller="Feed" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Feed" ? "active" : "")">
+    <a asp-area="" asp-controller="Feed" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Feed" ? "active" : "")">
         <i class="fas fa-home fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Feed"].Value</span>
     </a>
-    <a asp-controller="Questions" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Questions" && Context.Request.Query["tab"] != "bookmarks" ? "active" : "")">
+    <a asp-area="" asp-controller="Questions" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Questions" && Context.Request.Query["tab"] != "bookmarks" ? "active" : "")">
         <i class="fas fa-question-circle fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Questions"].Value</span>
     </a>
     
     @if (User.Identity?.IsAuthenticated == true)
     {
-        <a asp-controller="Questions" asp-action="Bookmarks" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["action"]?.ToString() == "Bookmarks" ? "active" : "")">
+        <a asp-area="" asp-controller="Questions" asp-action="Bookmarks" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["action"]?.ToString() == "Bookmarks" ? "active" : "")">
             <i class="fas fa-bookmark fa-fw me-3"></i>
             <span class="fw-medium">@Localizer["Bookmarks"].Value</span>
         </a>
@@ -23,43 +23,47 @@
         <i class="fas fa-user-friends fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Friends"].Value</span>
     </a>
-    <a asp-controller="Groups" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Groups" ? "active" : "")">
+    <a asp-area="" asp-controller="Groups" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Groups" ? "active" : "")">
         <i class="fas fa-users fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Groups"].Value</span>
     </a>
-    <a asp-controller="Chats" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Chats" ? "active" : "")">
+    <a asp-area="Communications" asp-controller="Chats" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Chats" ? "active" : "")">
         <i class="fas fa-comments fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Chats"].Value</span>
     </a>
-    <a asp-controller="Events" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Events" ? "active" : "")">
+    <a asp-area="AI" asp-controller="Assistant" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "AI" ? "active" : "")">
+        <i class="fas fa-magic fa-fw me-3 text-primary"></i>
+        <span class="fw-medium">@Localizer["AI Assistant"].Value</span>
+    </a>
+    <a asp-area="" asp-controller="Events" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Events" ? "active" : "")">
         <i class="fas fa-calendar-alt fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Events"].Value</span>
     </a>
-    <a asp-controller="Reviews" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reviews" ? "active" : "")">
+    <a asp-area="" asp-controller="Reviews" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reviews" ? "active" : "")">
         <i class="fas fa-star fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Reviews"].Value</span>
     </a>
     
     @if (User.Identity?.IsAuthenticated == true)
     {
-        <a asp-controller="Badges" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Badges" ? "active" : "")">
+        <a asp-area="" asp-controller="Badges" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Badges" ? "active" : "")">
             <i class="fas fa-medal fa-fw me-3"></i>
             <span class="fw-medium">@Localizer["Badges"].Value</span>
         </a>
     }
-    <a asp-controller="Posts" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Posts" ? "active" : "")">
+    <a asp-area="" asp-controller="Posts" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Posts" ? "active" : "")">
         <i class="fas fa-edit fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Posts"].Value</span>
     </a>
-    <a asp-controller="Maps" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Maps" ? "active" : "")">
+    <a asp-area="" asp-controller="Maps" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Maps" ? "active" : "")">
         <i class="fas fa-map-marked-alt fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Maps"].Value</span>
     </a>
-    <a asp-controller="Guides" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Guides" ? "active" : "")">
+    <a asp-area="" asp-controller="Guides" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Guides" ? "active" : "")">
         <i class="fas fa-book-open fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Guides"].Value</span>
     </a>
-    <a asp-controller="News" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "News" ? "active" : "")">
+    <a asp-area="" asp-controller="News" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "News" ? "active" : "")">
         <i class="fas fa-newspaper fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["News"].Value</span>
     </a>

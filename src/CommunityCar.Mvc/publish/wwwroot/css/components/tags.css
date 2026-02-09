@@ -1,0 +1,151 @@
+/* Tag Components */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tag:hover {
+    background-color: var(--accent-light);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.tag-sm {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+}
+
+.tag-lg {
+    padding: 6px 16px;
+    font-size: 1rem;
+}
+
+.tag-primary {
+    background-color: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.tag-primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: white;
+}
+
+.tag-count {
+    margin-left: 6px;
+    padding: 2px 6px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+[data-theme="dark"] .tag-count {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.tag-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--input-bg);
+    min-height: 42px;
+    align-items: center;
+    transition: all var(--transition-fast);
+}
+
+.tag-input-wrapper:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.tag-input-wrapper .tag {
+    margin: 0;
+}
+
+.tag-input-wrapper .tag-remove {
+    margin-left: 6px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    font-weight: bold;
+    transition: color var(--transition-fast);
+}
+
+.tag-input-wrapper .tag-remove:hover {
+    color: var(--error);
+}
+
+.tag-input {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    padding: 4px;
+}
+
+.tag-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.tag-suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tag-suggestion-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.tag-suggestion-item.active {
+    background-color: var(--accent-light);
+}
+
+.tag-suggestion-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.tag-suggestion-count {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}

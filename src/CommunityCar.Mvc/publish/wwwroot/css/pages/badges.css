@@ -1,0 +1,32 @@
+/* Page: Badges */
+
+/* 
+ * Use shared classes from components:
+ * - Heroes: .hero.hero-gold-blue.hero-lg
+ * - Cards: .content-card
+ * 
+ * Legacy class aliases below for backward compatibility with existing views.
+ * Update views to use shared classes, then remove these aliases.
+ */
+
+/* Legacy alias - use .hero.hero-gold-blue.hero-lg instead */
+.badges-hero {
+    background: var(--gradient-gold-blue);
+    color: var(--text-inverse);
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Legacy alias - use .content-card instead */
+.badge-card {
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.badge-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}

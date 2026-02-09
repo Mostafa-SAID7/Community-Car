@@ -13,6 +13,7 @@ using CommunityCar.Domain.Interfaces.Identity;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Domain.Interfaces.Communications;
+using CommunityCar.Domain.Interfaces.Services;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces;
 using CommunityCar.Domain.Commands.Community;
@@ -21,6 +22,9 @@ using CommunityCar.Infrastructure.Services.Community;
 using CommunityCar.Infrastructure.Services.Communications;
 using CommunityCar.Infrastructure.Services.Dashboard;
 using CommunityCar.Infrastructure.Services.Common;
+using CommunityCar.Infrastructure.Services;
+using CommunityCar.Infrastructure.Services.ML;
+using CommunityCar.Infrastructure.Interfaces.ML;
 using CommunityCar.Infrastructure.Handlers.Community;
 
 namespace CommunityCar.Infrastructure;
@@ -180,6 +184,10 @@ public static class DependencyInjection
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IMapService, MapService>();
+        services.AddScoped<IAssistantService, AssistantService>();
+        services.AddScoped<IMLPipelineService, MLPipelineService>();
+        services.AddSingleton<IPredictionService, PredictionService>();
+        services.AddSingleton<ISentimentAnalysisService, SentimentAnalysisService>();
         services.AddScoped<IGroupService, GroupService>();
 
         // MediatR for domain events
