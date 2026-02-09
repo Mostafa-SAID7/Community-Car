@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 
 namespace CommunityCar.Web.Middleware;
 
@@ -16,21 +17,24 @@ public class CultureRedirectMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value ?? "/";
+        var lowerPath = path.ToLowerInvariant();
 
         // Skip static files, SignalR hubs, and special paths
-        if (path.StartsWith("/css/") || 
-            path.StartsWith("/js/") || 
-            path.StartsWith("/lib/") || 
-            path.StartsWith("/images/") ||
-            path.StartsWith("/uploads/") ||
-            path.StartsWith("/fonts/") ||
-            path.StartsWith("/favicon") ||
-            path.StartsWith("/questionHub") ||
-            path.StartsWith("/notificationHub") ||
-            path.StartsWith("/chatHub") ||
-            path.StartsWith("/friendHub") ||
-            path.StartsWith("/Culture/SetLanguage") ||
-            path.StartsWith("/Error/"))
+        // Robust check: if it has an extension (contains a dot), it's a static file
+        if (path.Contains(".") || 
+            lowerPath.Contains("/_content/") ||
+            lowerPath.Contains("/css/") || 
+            lowerPath.Contains("/js/") || 
+            lowerPath.Contains("/lib/") || 
+            lowerPath.Contains("/images/") ||
+            lowerPath.Contains("/uploads/") ||
+            lowerPath.Contains("/favicon") ||
+            lowerPath.StartsWith("/questionhub") ||
+            lowerPath.StartsWith("/notificationhub") ||
+            lowerPath.StartsWith("/chathub") ||
+            lowerPath.StartsWith("/friendhub") ||
+            lowerPath.StartsWith("/culture/setlanguage") ||
+            lowerPath.StartsWith("/error/"))
         {
             await _next(context);
             return;
@@ -42,14 +46,14 @@ public class CultureRedirectMiddleware
         if (segments.Length == 0)
         {
             // Root path - redirect to default culture
-            context.Response.Redirect($"/{_defaultCulture}");
+            context.Response.Redirect($"/{_defaultCulture.ToLowerInvariant()}/");
             return;
         }
 
-        var firstSegment = segments[0];
+        var firstSegment = segments[0].ToLowerInvariant();
         
         // If first segment is a supported culture, continue
-        if (_supportedCultures.Contains(firstSegment.ToLower()))
+        if (_supportedCultures.Contains(firstSegment))
         {
             await _next(context);
             return;
@@ -57,7 +61,8 @@ public class CultureRedirectMiddleware
 
         // If first segment is NOT a culture, prepend default culture
         var queryString = context.Request.QueryString.HasValue ? context.Request.QueryString.Value : "";
-        var newPath = $"/{_defaultCulture}{path}{queryString}";
+        var newPath = $"/{_defaultCulture.ToLowerInvariant()}{path}{queryString}";
+        
         context.Response.Redirect(newPath);
     }
 }
