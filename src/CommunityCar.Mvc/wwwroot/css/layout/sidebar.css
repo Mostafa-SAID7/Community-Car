@@ -29,6 +29,7 @@
 
 /* Mobile Sidebar (Offcanvas) behavior */
 @media (max-width: 991.98px) {
+
     /* Left sidebar: hidden by default, slides in when toggled */
     .sidebar-left {
         position: fixed;
@@ -61,6 +62,11 @@
         max-width: 100%;
     }
 
+    /* Hide main content center part when sidebar is open on mobile */
+    body.sidebar-open .col-12.col-md-9.col-lg-7 {
+        display: none !important;
+    }
+
     /* Backdrop */
     .sidebar-backdrop {
         position: fixed;
@@ -89,6 +95,7 @@
 
 /* Desktop: Both sidebars visible */
 @media (min-width: 992px) {
+
     .sidebar-left,
     .sidebar-right {
         display: block !important;
