@@ -133,96 +133,91 @@ const PostsModule = (function() {
     }
 
     // File Preview Functionality
-    function initFilePreview() {
-        // Image file preview with validation
-        $('#imageFileInput').on('change', function(e) {
-            const file = e.target.files[0];
-            const $errorSpan = $(this).siblings('.text-danger');
-            
-            if (file) {
-                // Validate file type
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
-                if (!allowedTypes.includes(file.type)) {
-                    $errorSpan.text('Only JPG, JPEG, PNG, GIF, WEBP, and BMP images are allowed');
-                    $(this).val('');
+    // File Preview Functionality
+        function initFilePreview() {
+            const maxImageSize = 10 * 1024 * 1024; // 10 MB
+            const maxVideoSize = 50 * 1024 * 1024; // 50 MB
+            const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+            const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'];
+
+            // Image file preview with validation
+            $('#imageFileInput').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    if (!allowedImageTypes.includes(file.type)) {
+                        showError('Invalid image format. Only JPG, PNG, GIF, WebP, and BMP are allowed.');
+                        $(this).val('');
+                        $('#imagePreview').removeClass('active');
+                        return;
+                    }
+
+                    // Validate file size
+                    if (file.size > maxImageSize) {
+                        showError(`Image file size cannot exceed ${maxImageSize / 1024 / 1024} MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)} MB.`);
+                        $(this).val('');
+                        $('#imagePreview').removeClass('active');
+                        return;
+                    }
+
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#imagePreviewImg').attr('src', e.target.result);
+                        $('#imagePreview').addClass('active');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
                     $('#imagePreview').removeClass('active');
-                    return;
                 }
-                
-                // Validate file size (10 MB)
-                const maxSize = 10 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    $errorSpan.text('Image file size cannot exceed 10 MB');
-                    $(this).val('');
-                    $('#imagePreview').removeClass('active');
-                    return;
+            });
+
+            // Video file preview with validation
+            $('#videoFileInput').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    if (!allowedVideoTypes.includes(file.type)) {
+                        showError('Invalid video format. Only MP4, WebM, OGG, MOV, and AVI are allowed.');
+                        $(this).val('');
+                        $('#videoPreview').removeClass('active');
+                        return;
+                    }
+
+                    // Validate file size
+                    if (file.size > maxVideoSize) {
+                        showError(`Video file size cannot exceed ${maxVideoSize / 1024 / 1024} MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)} MB.`);
+                        $(this).val('');
+                        $('#videoPreview').removeClass('active');
+                        return;
+                    }
+
+                    // Show preview
+                    const url = URL.createObjectURL(file);
+                    $('#videoPreviewPlayer').attr('src', url);
+                    $('#videoPreview').addClass('active');
+                } else {
+                    $('#videoPreview').removeClass('active');
                 }
-                
-                // Clear error and show preview
-                $errorSpan.text('');
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#imagePreviewImg').attr('src', e.target.result);
-                    $('#imagePreview').addClass('active');
-                };
-                reader.readAsDataURL(file);
-            } else {
+            });
+
+            // Remove image preview
+            $('#removeImageBtn').on('click', function() {
+                $('#imageFileInput').val('');
+                $('#existingImageUrl').val('');
                 $('#imagePreview').removeClass('active');
-                $errorSpan.text('');
-            }
-        });
+                $('#imagePreview').find('img').remove();
+            });
 
-        // Video file preview with validation
-        $('#videoFileInput').on('change', function(e) {
-            const file = e.target.files[0];
-            const $errorSpan = $(this).siblings('.text-danger');
-            
-            if (file) {
-                // Validate file type
-                const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'];
-                if (!allowedTypes.includes(file.type)) {
-                    $errorSpan.text('Only MP4, WEBM, OGG, MOV, and AVI videos are allowed');
-                    $(this).val('');
-                    $('#videoPreview').removeClass('active');
-                    return;
-                }
-                
-                // Validate file size (50 MB)
-                const maxSize = 50 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    $errorSpan.text('Video file size cannot exceed 50 MB');
-                    $(this).val('');
-                    $('#videoPreview').removeClass('active');
-                    return;
-                }
-                
-                // Clear error and show preview
-                $errorSpan.text('');
-                const url = URL.createObjectURL(file);
-                $('#videoPreviewPlayer').attr('src', url);
-                $('#videoPreview').addClass('active');
-            } else {
+            // Remove video preview
+            $('#removeVideoBtn').on('click', function() {
+                $('#videoFileInput').val('');
+                $('#existingVideoUrl').val('');
                 $('#videoPreview').removeClass('active');
-                $errorSpan.text('');
-            }
-        });
+                $('#videoPreview').find('video').remove();
+            });
+        }
 
-        // Remove image preview
-        $('#removeImageBtn').on('click', function() {
-            $('#imageFileInput').val('');
-            $('#existingImageUrl').val('');
-            $('#imagePreview').removeClass('active');
-            $('#imagePreview').find('img').remove();
-        });
-
-        // Remove video preview
-        $('#removeVideoBtn').on('click', function() {
-            $('#videoFileInput').val('');
-            $('#existingVideoUrl').val('');
-            $('#videoPreview').removeClass('active');
-            $('#videoPreview').find('video').remove();
-        });
-    }
 
     // Delete Post Function
     function deletePost(id) {
