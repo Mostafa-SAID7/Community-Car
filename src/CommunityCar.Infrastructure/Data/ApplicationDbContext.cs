@@ -58,6 +58,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<DashboardWidget> DashboardWidgets => Set<DashboardWidget>();
     public DbSet<CommunityCar.Domain.Entities.Community.Common.Category> Categories => Set<CommunityCar.Domain.Entities.Community.Common.Category>();
     
+    // Community Features
+    public DbSet<CommunityCar.Domain.Entities.Community.events.CommunityEvent> Events => Set<CommunityCar.Domain.Entities.Community.events.CommunityEvent>();
+    public DbSet<CommunityCar.Domain.Entities.Community.post.Post> Posts => Set<CommunityCar.Domain.Entities.Community.post.Post>();
+    public DbSet<CommunityCar.Domain.Entities.Community.guides.Guide> Guides => Set<CommunityCar.Domain.Entities.Community.guides.Guide>();
+    public DbSet<CommunityCar.Domain.Entities.Community.reviews.Review> Reviews => Set<CommunityCar.Domain.Entities.Community.reviews.Review>();
+    public DbSet<CommunityCar.Domain.Entities.Community.news.NewsArticle> NewsArticles => Set<CommunityCar.Domain.Entities.Community.news.NewsArticle>();
+    
     // Groups
     public DbSet<CommunityGroup> CommunityGroups => Set<CommunityGroup>();
     public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
