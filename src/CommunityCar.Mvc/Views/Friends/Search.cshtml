@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="~/css/pages/friends.css" />
 }
 
+@{
+    ViewData["PageType"] = "friends";
+}
+
 @section Scripts {
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
-    <script src="~/js/components/friend-hub.js"></script>
+    <script src="~/js/friends-hub.js"></script>
+    <script src="~/js/pages/friends.js"></script>
 }
 
 <partial name="_InnerPageHeader" />
@@ -92,17 +96,17 @@
                                 }
                                 
                                 <div class="friend-info">
-                                    <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = user.Slug })" class="friend-name">
+                                    <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = user.Slug })" class="friend-name">
                                         @user.Name
                                     </a>
                                     <div class="friend-meta">
-                                        @@@user.UserName
+                                        @user.UserName
                                     </div>
                                 </div>
                             </div>
 
                             <div class="friend-actions mt-auto d-flex gap-2">
-                                <a href="@Url.Action("Index", "Profiles", new { area = "Identity", slug = user.Slug })" class="btn btn-outline-secondary rounded-pill flex-grow-1">
+                                <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = user.Slug })" class="btn btn-outline-secondary rounded-pill flex-grow-1">
                                     <i class="fas fa-user me-2"></i> Profile
                                 </a>
                                 

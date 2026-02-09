@@ -110,14 +110,23 @@ public class FriendsController : Controller
             var userId = GetCurrentUserId();
             var requests = await _friendshipService.GetPendingRequestsAsync(userId);
             
-            var viewModels = requests.Select(r => new FriendRequestViewModel
-            {
-                UserId = r.UserId,
-                UserName = $"{r.User?.FirstName ?? "Unknown"} {r.User?.LastName ?? "User"}",
-                ProfilePictureUrl = r.User?.ProfilePictureUrl,
-                Slug = r.User?.Slug ?? string.Empty,
-                ReceivedAt = r.CreatedAt
-            }).ToList();
+            var viewModels = requests.Select(r => {
+                // Log if UserId is empty
+                if (r.UserId == Guid.Empty)
+                {
+                    _logger.LogWarning("Found friendship record with empty UserId for FriendId: {FriendId}", userId);
+                }
+                
+                return new FriendRequestViewModel
+                {
+                    UserId = r.UserId, // This is the person who sent the request
+                    UserName = $"{r.User?.FirstName ?? "Unknown"} {r.User?.LastName ?? "User"}",
+                    ProfilePictureUrl = r.User?.ProfilePictureUrl,
+                    Slug = r.User?.Slug ?? string.Empty,
+                    ReceivedAt = r.CreatedAt
+                };
+            }).Where(vm => vm.UserId != Guid.Empty) // Filter out invalid records
+            .ToList();
 
             ViewBag.RequestCount = viewModels.Count;
             return View(viewModels);
@@ -209,6 +218,12 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             
             if (userId == friendId)
@@ -289,13 +304,24 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             await _friendshipService.AcceptRequestAsync(userId, friendId);
             
             // Notify user who sent the request via database notification
             var currentUser = await _userManager.GetUserAsync(User);
             var currentUserName = $"{currentUser?.FirstName ?? "Unknown"} {currentUser?.LastName ?? "User"}";
-            await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+            
+            // Only send notification if friendId is valid
+            if (friendId != Guid.Empty)
+            {
+                await _notificationService.NotifyUserOfFriendRequestAcceptedAsync(friendId, userId, currentUserName);
+            }
 
             // Send real-time notification via SignalR
             var connectionId = CommunityCar.Infrastructure.Hubs.FriendHub.GetConnectionId(friendId);
@@ -359,6 +385,12 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             await _friendshipService.RejectRequestAsync(userId, friendId);
             
@@ -425,6 +457,12 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             await _friendshipService.RemoveFriendAsync(userId, friendId);
             
@@ -495,6 +533,12 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             
             if (userId == friendId)
@@ -727,6 +771,12 @@ public class FriendsController : Controller
     {
         try
         {
+            // Validate friendId
+            if (friendId == Guid.Empty)
+            {
+                return Json(new { success = false, message = _localizer["InvalidFriendId"].Value });
+            }
+
             var userId = GetCurrentUserId();
             await _friendshipService.UnblockUserAsync(userId, friendId);
             

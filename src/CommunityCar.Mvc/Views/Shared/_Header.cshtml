@@ -26,7 +26,7 @@
                     <a asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="@Localizer["Home"].Value">
                         <i class="fas fa-house fa-lg"></i>
                     </a>
-                    <a asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Chat"].Value">
+                    <a asp-area="Communications" asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Chat"].Value">
                         <i class="fas fa-messages fa-lg"></i>
                         <span id="chatUnreadBadge" class="notification-badge badge-xs bg-primary-premium d-none">0</span>
                     </a>

@@ -23,7 +23,14 @@ builder.Services.AddControllersWithViews(options =>
 .AddViewLocalization()
 .AddDataAnnotationsLocalization();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    // Configure keep-alive to prevent 1006 errors
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 32 * 1024; // 32KB
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<CommunityCar.Domain.Interfaces.Community.IQuestionHubService, CommunityCar.Mvc.Services.QuestionHubService>();

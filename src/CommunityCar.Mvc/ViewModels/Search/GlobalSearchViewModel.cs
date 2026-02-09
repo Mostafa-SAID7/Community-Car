@@ -11,11 +11,11 @@ public class GlobalSearchViewModel
 
 public class SearchResultItemViewModel
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string Url { get; set; }
-    public string Type { get; set; } // Post, Question, Group, Event, User
-    public string Icon { get; set; }
-    public string ImageUrl { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
+    public required string Url { get; set; }
+    public required string Type { get; set; } // Post, Question, Group, Event, User
+    public required string Icon { get; set; }
+    public required string ImageUrl { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

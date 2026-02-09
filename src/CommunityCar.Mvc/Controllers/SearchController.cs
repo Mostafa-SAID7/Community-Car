@@ -75,6 +75,7 @@ public class SearchController : Controller
                 Url = Url.Action("Details", "Feed", new { culture = GetCulture(), slug = p.Slug }) ?? string.Empty,
                 Type = "Post",
                 Icon = "fas fa-newspaper",
+                ImageUrl = string.Empty,
                 CreatedAt = p.CreatedAt
             });
         }
@@ -90,6 +91,7 @@ public class SearchController : Controller
                 Url = Url.Action("Details", "Questions", new { culture = GetCulture(), slug = q.Slug }) ?? string.Empty,
                 Type = "Question",
                 Icon = "fas fa-question-circle",
+                ImageUrl = string.Empty,
                 CreatedAt = q.CreatedAt
             });
         }
@@ -105,6 +107,7 @@ public class SearchController : Controller
                 Url = Url.Action("Details", "Groups", new { culture = GetCulture(), slug = g.Slug }) ?? string.Empty,
                 Type = "Group",
                 Icon = "fas fa-users",
+                ImageUrl = string.Empty,
                 CreatedAt = g.CreatedAt
             });
         }
@@ -120,6 +123,7 @@ public class SearchController : Controller
                 Url = Url.Action("Details", "Events", new { culture = GetCulture(), slug = e.Slug }) ?? string.Empty,
                 Type = "Event",
                 Icon = "fas fa-calendar-alt",
+                ImageUrl = string.Empty,
                 CreatedAt = e.CreatedAt
             });
         }
@@ -168,6 +172,7 @@ public class SearchController : Controller
                     Url = Url.Action(d.Action, d.Controller, new { area = "Dashboard", culture = GetCulture() }) ?? string.Empty,
                     Type = "Admin",
                     Icon = d.Icon,
+                    ImageUrl = string.Empty,
                     CreatedAt = DateTimeOffset.UtcNow // Priority items
                 });
             }

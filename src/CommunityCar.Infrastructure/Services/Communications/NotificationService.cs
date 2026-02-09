@@ -30,6 +30,12 @@ public class NotificationService : INotificationService
 
     public async Task CreateNotificationAsync(Guid userId, string title, string message, string? link = null)
     {
+        // Validate userId to prevent foreign key constraint violations
+        if (userId == Guid.Empty)
+        {
+            throw new ArgumentException("UserId cannot be empty", nameof(userId));
+        }
+
         var notification = new Notification
         {
             UserId = userId,

@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
-namespace CommunityCar.Web.Controllers.Communications;
+namespace CommunityCar.Web.Areas.Communications.Controllers;
 
-[Route("{culture:alpha}/Chats")]
+[Area("Communications")]
+[Route("{culture:alpha}/Communications/[controller]")]
+[Route("Communications/[controller]")]
 [Authorize]
 public class ChatsController : Controller
 {
@@ -57,42 +59,42 @@ public class ChatsController : Controller
         }
     }
 
-    // GET: Chats/Conversation/{userId}
-    [HttpGet("Conversation/{userId:guid}")]
-    public async Task<IActionResult> Conversation(Guid userId)
+    // GET: Chats/Conversation/{id}
+    [HttpGet("Conversation/{id:guid}")]
+    public async Task<IActionResult> Conversation(Guid id)
     {
         try
         {
             var currentUserId = GetCurrentUserId();
 
-            if (userId == currentUserId)
+            if (id == currentUserId)
             {
                 TempData["Error"] = _localizer["CannotChatWithSelf"].Value;
                 return RedirectToAction(nameof(Index));
             }
 
             // Verify friendship before allowing chat
-            var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId, userId);
+            var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(currentUserId, id);
             if (friendshipStatus != FriendshipStatus.Accepted)
             {
                 TempData["Error"] = _localizer["OnlyAcceptedFriendsCanChat"].Value;
                 return RedirectToAction("Index", "Friends");
             }
 
-            var messages = await _chatService.GetMessagesAsync(currentUserId, userId);
+            var messages = await _chatService.GetMessagesAsync(currentUserId, id);
             var conversations = await _chatService.GetConversationsAsync(currentUserId);
 
             // Mark conversation as read
-            await _chatService.MarkConversationAsReadAsync(currentUserId, userId);
+            await _chatService.MarkConversationAsReadAsync(currentUserId, id);
 
-            ViewBag.OtherUserId = userId;
+            ViewBag.OtherUserId = id;
             ViewBag.Conversations = conversations;
 
             return View(messages);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading conversation with user {UserId}", userId);
+            _logger.LogError(ex, "Error loading conversation with user {UserId}", id);
             TempData["Error"] = _localizer["FailedToLoadConversation"].Value;
             return RedirectToAction(nameof(Index));
         }
@@ -122,14 +124,14 @@ public class ChatsController : Controller
         }
     }
 
-    // GET: Chats/GetMessages/{userId}
-    [HttpGet("GetMessages/{userId:guid}")]
-    public async Task<IActionResult> GetMessages(Guid userId, int page = 1, int pageSize = 50)
+    // GET: Chats/GetMessages/{id}
+    [HttpGet("GetMessages/{id:guid}")]
+    public async Task<IActionResult> GetMessages(Guid id, int page = 1, int pageSize = 50)
     {
         try
         {
             var currentUserId = GetCurrentUserId();
-            var messages = await _chatService.GetMessagesAsync(currentUserId, userId, page, pageSize);
+            var messages = await _chatService.GetMessagesAsync(currentUserId, id, page, pageSize);
 
             return Json(new { success = true, messages });
         }
@@ -158,14 +160,14 @@ public class ChatsController : Controller
         }
     }
 
-    // POST: Chats/MarkConversationAsRead/{userId}
-    [HttpPost("MarkConversationAsRead/{userId:guid}")]
-    public async Task<IActionResult> MarkConversationAsRead(Guid userId)
+    // POST: Chats/MarkConversationAsRead/{id}
+    [HttpPost("MarkConversationAsRead/{id:guid}")]
+    public async Task<IActionResult> MarkConversationAsRead(Guid id)
     {
         try
         {
             var currentUserId = GetCurrentUserId();
-            var result = await _chatService.MarkConversationAsReadAsync(currentUserId, userId);
+            var result = await _chatService.MarkConversationAsReadAsync(currentUserId, id);
 
             return Json(new { success = result });
         }
@@ -230,4 +232,3 @@ public class ChatsController : Controller
         return userId;
     }
 }
-

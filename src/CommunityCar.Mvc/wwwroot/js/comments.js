@@ -1,8 +1,8 @@
 // Comments functionality
-(function() {
+(function () {
     'use strict';
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initializeCommentActions();
         initializeCommentForm();
         initializeSignalR();
@@ -10,7 +10,7 @@
 
     function initializeCommentActions() {
         // Edit comment
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.closest('.edit-comment-btn')) {
                 e.preventDefault();
                 const btn = e.target.closest('.edit-comment-btn');
@@ -20,7 +20,7 @@
         });
 
         // Delete comment
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.closest('.delete-comment-btn')) {
                 e.preventDefault();
                 const btn = e.target.closest('.delete-comment-btn');
@@ -30,7 +30,7 @@
         });
 
         // Vote comment
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.closest('.vote-comment-btn')) {
                 e.preventDefault();
                 const btn = e.target.closest('.vote-comment-btn');
@@ -41,7 +41,7 @@
         });
 
         // Report comment
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.closest('.report-comment-btn')) {
                 e.preventDefault();
                 const btn = e.target.closest('.report-comment-btn');
@@ -51,7 +51,7 @@
         });
 
         // Cancel edit
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.closest('.cancel-edit-btn')) {
                 e.preventDefault();
                 const form = e.target.closest('.edit-comment-form');
@@ -64,19 +64,19 @@
 
     function initializeCommentForm() {
         const commentForms = document.querySelectorAll('.comment-form');
-        
+
         commentForms.forEach(form => {
-            form.addEventListener('submit', async function(e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                
+
                 const formData = new FormData(form);
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerHTML;
-                
+
                 try {
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Posting...';
-                    
+
                     const response = await fetch(form.action, {
                         method: 'POST',
                         body: formData,
@@ -86,14 +86,14 @@
                     });
 
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         // Clear form
                         form.reset();
-                        
+
                         // Show success message
                         showToast(data.message, 'success');
-                        
+
                         // Reload comments if needed
                         if (data.html) {
                             const commentsList = form.closest('.answer-comments').querySelector('.comments-list');
@@ -131,11 +131,11 @@
                 if (commentItem) {
                     const contentDiv = commentItem.querySelector('.comment-content');
                     contentDiv.innerHTML = html;
-                    
+
                     // Initialize form submission
                     const form = contentDiv.querySelector('.edit-comment-form');
                     if (form) {
-                        form.addEventListener('submit', async function(e) {
+                        form.addEventListener('submit', async function (e) {
                             e.preventDefault();
                             await submitEditForm(form, commentId);
                         });
@@ -152,11 +152,11 @@
         const formData = new FormData(form);
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
-        
+
         try {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
-            
+
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -166,7 +166,7 @@
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 showToast(data.message, 'success');
                 await reloadComment(commentId);
@@ -197,7 +197,7 @@
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
                 if (commentItem) {
@@ -226,7 +226,7 @@
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
                 if (commentItem) {
@@ -290,6 +290,16 @@
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/hubs/question")
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: retryContext => {
+                    // Exponential backoff: 2s, 5s, 10s, 30s, then stop
+                    if (retryContext.previousRetryCount === 0) return 2000;
+                    if (retryContext.previousRetryCount === 1) return 5000;
+                    if (retryContext.previousRetryCount === 2) return 10000;
+                    if (retryContext.previousRetryCount === 3) return 30000;
+                    return null;
+                }
+            })
             .build();
 
         connection.on("ReceiveComment", function (data) {
@@ -316,6 +326,27 @@
                 commentItem.style.opacity = '0';
                 setTimeout(() => commentItem.remove(), 300);
             }
+        });
+
+        // Online/Offline status and other QuestionHub events to silence warnings
+        connection.on("ReceiveQuestion", function (data) {
+            console.debug("QuestionHub: New question received", data);
+        });
+
+        connection.on("ReceiveAnswer", function (data) {
+            console.debug("QuestionHub: New answer received", data);
+        });
+
+        connection.on("QuestionScoreUpdated", function (data) {
+            console.debug("QuestionHub: Question score updated", data);
+        });
+
+        connection.on("AnswerScoreUpdated", function (data) {
+            console.debug("QuestionHub: Answer score updated", data);
+        });
+
+        connection.on("QuestionMarkedResolved", function (data) {
+            console.debug("QuestionHub: Question resolved", data);
         });
 
         connection.start().catch(err => console.error('SignalR connection error:', err));

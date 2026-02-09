@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Entities.Identity.Roles;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels.management;

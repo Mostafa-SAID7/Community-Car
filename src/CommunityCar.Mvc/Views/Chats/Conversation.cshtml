@@ -23,7 +23,7 @@
                     {
                         foreach (var conv in conversations)
                         {
-                            <a href="@Url.Action("Conversation", new { userId = conv.UserId })" 
+                            <a href="@Url.Action("Conversation", new { id = conv.UserId })" 
                                class="d-block text-decoration-none conv-item p-3 @(conv.UserId == otherUserId ? "active" : "")"
                                data-user-id="@conv.UserId">
                                 <div class="d-flex align-items-center">
@@ -144,7 +144,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
         $(document).ready(function() {
             const receiverId = '@otherUserId';

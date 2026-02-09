@@ -31,7 +31,10 @@ public static class DbSeeder
             // 2. Seed Users
             await SeedUsersAsync(userManager, logger);
 
-            // 3. Seed Categories
+            // 3. Seed Mock Users
+            await SeedMockUsersAsync(userManager, logger);
+
+            // 4. Seed Categories
             await SeedCategoriesAsync(context, logger);
 
             logger.LogInformation("Database seeding completed successfully.");
@@ -127,6 +130,62 @@ public static class DbSeeder
                 foreach (var error in result.Errors)
                 {
                     logger.LogError("Error creating normal user: {ErrorMessage}", error.Description);
+                }
+            }
+        }
+    }
+
+    private static async Task SeedMockUsersAsync(UserManager<ApplicationUser> userManager, ILogger logger)
+    {
+        var mockUsers = new List<(string Email, string FirstName, string LastName, string Password)>
+        {
+            ("ahmed.ali@example.com", "Ahmed", "Ali", "User123!"),
+            ("sarah.smith@example.com", "Sarah", "Smith", "User123!"),
+            ("mohamed.hassan@example.com", "Mohamed", "Hassan", "User123!"),
+            ("fatima.zara@example.com", "Fatima", "Zara", "User123!"),
+            ("john.doe@example.com", "John", "Doe", "User123!"),
+            ("jane.doe@example.com", "Jane", "Doe", "User123!"),
+            ("omar.fayed@example.com", "Omar", "Fayed", "User123!"),
+            ("layla.mahmoud@example.com", "Layla", "Mahmoud", "User123!"),
+            ("youssef.mansour@example.com", "Youssef", "Mansour", "User123!"),
+            ("nour.elsayed@example.com", "Nour", "Elsayed", "User123!"),
+            ("khaled.ibrahim@example.com", "Khaled", "Ibrahim", "User123!"),
+            ("mona.zakaria@example.com", "Mona", "Zakaria", "User123!"),
+            ("tarek.hamad@example.com", "Tarek", "Hamad", "User123!"),
+            ("reem.saeed@example.com", "Reem", "Saeed", "User123!"),
+            ("zane.miller@example.com", "Zane", "Miller", "User123!")
+        };
+
+        foreach (var mock in mockUsers)
+        {
+            if (await userManager.FindByEmailAsync(mock.Email) == null)
+            {
+                logger.LogInformation("Creating mock user: {Email}", mock.Email);
+                var user = new ApplicationUser
+                {
+                    Id = Guid.NewGuid(),
+                    UserName = mock.Email,
+                    Email = mock.Email,
+                    FirstName = mock.FirstName,
+                    LastName = mock.LastName,
+                    EmailConfirmed = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    IsDeleted = false,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                var result = await userManager.CreateAsync(user, mock.Password);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "User");
+                    logger.LogInformation("Mock user {Email} created.", mock.Email);
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        logger.LogError("Error creating mock user {Email}: {ErrorMessage}", mock.Email, error.Description);
+                    }
                 }
             }
         }

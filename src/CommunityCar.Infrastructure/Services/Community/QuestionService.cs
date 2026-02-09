@@ -700,7 +700,6 @@ public class QuestionService : IQuestionService
                     // we allow it.
                     
                     int delta = 0;
-                    bool shouldResurrect = true;
 
                     if (existingVote.IsUpvote == isUpvote)
                     {

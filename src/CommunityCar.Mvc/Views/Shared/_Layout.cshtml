@@ -50,7 +50,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "true" : "false")" data-page="@(ViewData["PageType"] ?? "generic")">
     <partial name="_Header" />
     
     <main role="main" class="container-fluid my-4">
@@ -119,13 +119,14 @@
     <!-- Culture Helper (must load early) -->
     <script src="~/js/culture-helper.js"></script>
 
-    <!-- Core Modular JS -->
+    <!-- Core Architecture - Load First -->
+    <script src="~/js/utils/common-utils.js"></script>
+    <script src="~/js/utils/dom-utils.js"></script>
+    <script src="~/js/core/event-bus.js"></script>
+    <script src="~/js/core/api-client.js"></script>
     <script src="~/js/core/config.js"></script>
-    <script src="~/js/core/helpers.js"></script>
-    <script src="~/js/core/ajax.js"></script>
     
     <!-- Utils Modular JS -->
-    <script src="~/js/utils/dom.js"></script>
     <script src="~/js/utils/validators.js"></script>
     <script src="~/js/utils/theme-manager.js"></script>
     
@@ -139,15 +140,21 @@
     <script src="~/js/components/dropdown.js"></script>
     <script src="~/js/components/toast.js"></script>
     <script src="~/js/components/charts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/components/notification.js"></script>
     
     <!-- Storage Manager -->
     <script src="~/js/storage-manager.js"></script>
     
-    <!-- Entry Point JS -->
+    <!-- Error Monitor & Dev Tools (Development) -->
+    <script src="~/js/utils/error-monitor.js"></script>
+    <script src="~/js/utils/dev-tools.js"></script>
+    
+    <!-- Application Core - Initialize App -->
+    <script src="~/js/core/app.js"></script>
+    
+    <!-- Legacy Scripts (To be refactored) -->
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/friends.js" asp-append-version="true"></script>
 
     <!-- Global I18n for JS -->
     <script>

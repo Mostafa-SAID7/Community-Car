@@ -1,11 +1,16 @@
 /**
- * Notification Component Logic
+ * Notification Component Logic - Fixed SignalR Connection
  */
 
 // Define global functions first to avoid reference errors
 window.updateUnreadCount = function () {
     const badge = document.getElementById('notificationBadge');
     if (!badge) return;
+
+    if (typeof CultureHelper === 'undefined') {
+        console.warn("CultureHelper not found, skipping unread count update");
+        return;
+    }
 
     const url = CultureHelper.addCultureToUrl('/Communications/Notifications/UnreadCount');
     fetch(url)
@@ -19,14 +24,18 @@ window.updateUnreadCount = function () {
                 badge.classList.add('d-none');
             }
         })
-        .catch(err => console.debug("Failed to update unread count:", err));
+        .catch(err => {
+            // Use original console if available via errorMonitor, or silent fallback
+            const logger = window.errorMonitor?.originalConsole?.debug || console.debug;
+            logger("Failed to update unread count:", err);
+        });
 };
 
 window.updateChatUnreadCount = function () {
     const badge = document.getElementById('chatUnreadBadge');
     if (!badge) return;
 
-    const url = CultureHelper.addCultureToUrl('/Chats/GetUnreadCount');
+    const url = CultureHelper.addCultureToUrl('/Communications/Chats/GetUnreadCount');
     fetch(url)
         .then(r => r.json())
         .then(data => {
@@ -74,7 +83,7 @@ window.loadLatestNotifications = function () {
             return r.json();
         })
         .then(data => {
-            const notifications = data.notifications || data; // Handle both {success, notifications} and direct array
+            const notifications = data.notifications || data;
             if (!notifications || notifications.length === 0) {
                 list.innerHTML = `
                     <div class="p-4 text-center text-muted">
@@ -157,25 +166,37 @@ window.markAllNotificationsAsRead = function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     const notificationDropdown = document.getElementById('notificationDropdown');
-    
+
     // Only initialize SignalR if user is authenticated (notification dropdown exists)
     if (notificationDropdown) {
-        // Initialize SignalR connection for notifications
+        // Initialize SignalR connection for notifications with proper error handling
         const notificationConnection = new signalR.HubConnectionBuilder()
             .withUrl("/notificationHub")
-            .withAutomaticReconnect()
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: retryContext => {
+                    // Exponential backoff: 2s, 5s, 10s, 30s, then stop
+                    if (retryContext.previousRetryCount === 0) return 2000;
+                    if (retryContext.previousRetryCount === 1) return 5000;
+                    if (retryContext.previousRetryCount === 2) return 10000;
+                    if (retryContext.previousRetryCount === 3) return 30000;
+                    return null; // Stop retrying after 4 attempts
+                }
+            })
+            .configureLogging(signalR.LogLevel.Warning)
             .build();
 
         notificationConnection.on("ReceiveNotification", function (notification) {
             window.updateUnreadCount();
 
-            // If it's a friend request, also update the friend request badge
-            if (notification.title === 'New Friend Request' || (notification.Title === 'New Friend Request')) {
+            const isFriendReq = notification.title === 'New Friend Request' || notification.Title === 'New Friend Request';
+
+            // If it's a friend request, only update badge if window.friendHub isn't already handling it
+            if (isFriendReq) {
                 window.updateFriendRequestCount();
             }
 
-            // Show a small toast for real-time alert
-            if (window.Toast) {
+            // Show toast if enabled and NOT a duplicate friend request (since FriendHub shows its own)
+            if (window.Toast && (!isFriendReq || !window.friendHub)) {
                 window.Toast.show(notification.message || notification.Message || notification.Title, 'info', notification.title || notification.Title);
             }
 
@@ -184,19 +205,58 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        notificationConnection.start().catch(err => console.error("NotificationHub connection failed:", err));
+        // Online/Offline status events to silence warnings
+        notificationConnection.on("UserOnline", function (userId) {
+            console.debug("NotificationHub: User online", userId);
+        });
 
-        // Initialize SignalR connection for chats (to update badge globally)
+        notificationConnection.on("UserOffline", function (userId) {
+            console.debug("NotificationHub: User offline", userId);
+        });
+
+        // Handle reconnection events
+        notificationConnection.onreconnecting(error => {
+            console.debug("NotificationHub reconnecting...", error?.message || "");
+        });
+
+        notificationConnection.onreconnected(connectionId => {
+            console.debug("NotificationHub reconnected successfully");
+            // Refresh counts after reconnection
+            window.updateUnreadCount();
+            window.updateFriendRequestCount();
+        });
+
+        notificationConnection.onclose(error => {
+            // Don't log as error - status 1006 is expected when server restarts
+            console.debug("NotificationHub connection closed:", error?.message || "Connection closed normally");
+        });
+
+        notificationConnection.start()
+            .then(() => console.debug("NotificationHub connected successfully"))
+            .catch(err => {
+                console.debug("NotificationHub connection failed (this is normal if not authenticated):", err.message);
+            });
+
+        // Initialize SignalR connection for chats with proper error handling
         const chatBadge = document.getElementById('chatUnreadBadge');
         if (chatBadge) {
             const chatConnection = new signalR.HubConnectionBuilder()
                 .withUrl("/chatHub")
-                .withAutomaticReconnect()
+                .withAutomaticReconnect({
+                    nextRetryDelayInMilliseconds: retryContext => {
+                        // Retry after 2, 5, 10, 30 seconds, then stop
+                        if (retryContext.previousRetryCount === 0) return 2000;
+                        if (retryContext.previousRetryCount === 1) return 5000;
+                        if (retryContext.previousRetryCount === 2) return 10000;
+                        if (retryContext.previousRetryCount === 3) return 30000;
+                        return null; // Stop retrying
+                    }
+                })
+                .configureLogging(signalR.LogLevel.Warning)
                 .build();
 
-            chatConnection.on("ReceiveMessage", function (senderId, message) {
+            chatConnection.on("ReceiveMessage", function (senderId) {
                 // Only update if we are NOT on the conversation page with this user
-                // (The conversation page has its own logic)
                 if (typeof receiverId === 'undefined' || receiverId !== senderId) {
                     window.updateChatUnreadCount();
                     if (window.Toast) {
@@ -205,7 +265,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            chatConnection.start().catch(err => console.error("ChatHub connection failed:", err));
+            // Handle online/offline status updates from ChatHub to silence warnings
+            chatConnection.on("UserOnline", function (userId) {
+                console.debug("ChatHub: User online", userId);
+            });
+
+            chatConnection.on("UserOffline", function (userId) {
+                console.debug("ChatHub: User offline", userId);
+            });
+
+            chatConnection.on("MessageSent", function (receiverId, message, timestamp) {
+                console.debug("ChatHub: Message sent confirmation", { receiverId, timestamp });
+            });
+
+            chatConnection.on("MessageRead", function (messageId) {
+                console.debug("ChatHub: Message read confirmation", messageId);
+            });
+
+            chatConnection.on("UserTyping", function (userId) {
+                console.debug("ChatHub: User typing", userId);
+            });
+
+            chatConnection.on("UserStoppedTyping", function (userId) {
+                console.debug("ChatHub: User stopped typing", userId);
+            });
+
+            chatConnection.onreconnecting(error => {
+                console.debug("ChatHub reconnecting...", error?.message || "");
+            });
+
+            chatConnection.onreconnected(connectionId => {
+                console.debug("ChatHub reconnected successfully");
+                window.updateChatUnreadCount();
+            });
+
+            chatConnection.onclose(error => {
+                // Don't log as error - status 1006 is expected
+                console.debug("ChatHub connection closed:", error?.message || "Connection closed normally");
+            });
+
+            chatConnection.start()
+                .then(() => console.debug("ChatHub connected successfully"))
+                .catch(err => {
+                    console.debug("ChatHub connection failed (this is normal if not authenticated):", err.message);
+                });
         }
 
         // Load unread counts on page load
