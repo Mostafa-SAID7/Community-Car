@@ -6,6 +6,8 @@ try
     builder.WebHost.ConfigureKestrel(serverOptions =>
     {
         serverOptions.Limits.MaxRequestBodySize = 52428800; // 50 MB
+        serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
+        serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(5);
     });
 
     // Configure form options for larger file uploads
@@ -41,6 +43,7 @@ try
     builder.Services.AddFluentValidationAutoValidation();
     builder.Services.AddFluentValidationClientsideAdapters();
     builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Web.Areas.Identity.Validators.RegisterValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Web.Validators.CreatePostViewModelValidator>();
 
     // Localization Configuration
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
