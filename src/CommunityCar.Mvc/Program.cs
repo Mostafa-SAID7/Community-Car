@@ -88,167 +88,21 @@ try
 
     var app = builder.Build();
 
-    // Seed data
+    // Run migrations only
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-        var env = services.GetRequiredService<IWebHostEnvironment>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
         
         try
         {
             var context = services.GetRequiredService<CommunityCar.Infrastructure.Data.ApplicationDbContext>();
-            
-            // Always run migrations
             await context.Database.MigrateAsync();
-            
-            // Check if seeding is enabled via configuration (defaults to IsDevelopment)
-            var shouldSeed = app.Configuration.GetValue<bool>("Database:EnableSeeding", env.IsDevelopment());
-            
-            if (shouldSeed)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("Seeding is enabled. Starting database seed...");
-                
-                try
-                {
-                    await services.SeedDatabase();
-                    logger.LogInformation("✓ DbSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ DbSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await FriendshipSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ FriendshipSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ FriendshipSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await EventSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ EventSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ EventSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await PostSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ PostSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ PostSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await GuideSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ GuideSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ GuideSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await ReviewSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ ReviewSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ ReviewSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await QuestionSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ QuestionSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ QuestionSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await GroupSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ GroupSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ GroupSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await MapPointSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ MapPointSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ MapPointSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await ChatSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ ChatSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ ChatSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    await NewsSeeder.SeedAsync(context);
-                    logger.LogInformation("✓ NewsSeeder completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ NewsSeeder failed: {Message}", ex.Message);
-                }
-
-                try
-                {
-                    // Train ML Models
-                    var mlPipelineService = services.GetRequiredService<CommunityCar.Infrastructure.Interfaces.ML.IMLPipelineService>();
-                    await mlPipelineService.TrainModelsAsync();
-                    logger.LogInformation("✓ ML Model training completed");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "✗ ML Model training failed: {Message}", ex.Message);
-                }
-                
-                logger.LogInformation("Database seeding completed.");
-            }
-            else
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("Seeding is disabled via configuration.");
-            }
+            logger.LogInformation("Database migrations completed successfully.");
         }
         catch (Exception ex)
         {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-            
-            // Log prominently in production but allow app to start
-            if (!env.IsDevelopment())
-            {
-                logger.LogCritical("PRODUCTION STARTUP WARNING: Database migration or seeding failed. Application will continue but may have connectivity issues.");
-            }
+            logger.LogError(ex, "An error occurred while migrating the database.");
         }
     }
 
