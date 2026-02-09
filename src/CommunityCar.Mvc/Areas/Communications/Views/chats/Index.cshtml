@@ -156,7 +156,7 @@
                         @if (friends.Count > 20)
                         {
                             <div class="card-footer bg-white border-0 text-center py-3">
-                                <a asp-controller="Friends" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill">
+                                <a asp-area="" asp-controller="Friends" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill">
                                     View All Friends (@friends.Count)
                                 </a>
                             </div>
@@ -167,7 +167,7 @@
                         <div class="p-4 text-center">
                             <i class="fas fa-user-plus fa-3x text-muted opacity-25 mb-3"></i>
                             <p class="text-muted mb-3">No friends yet</p>
-                            <a asp-controller="Friends" asp-action="Index" class="btn btn-sm btn-primary rounded-pill">
+                            <a asp-area="" asp-controller="Friends" asp-action="Index" class="btn btn-sm btn-primary rounded-pill">
                                 <i class="fas fa-user-plus me-2"></i>Find Friends
                             </a>
                         </div>
