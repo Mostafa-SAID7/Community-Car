@@ -269,8 +269,8 @@ public class PostsController : Controller
                 // Notify friends if post is published
                 if (post.Status == PostStatus.Published)
                 {
-                    var friends = await _friendshipService.GetUserFriendsAsync(currentUserId, new QueryParameters { PageSize = 1000 });
-                    var friendIds = friends.Items.Select(f => f.FriendId).ToList();
+                    var friends = await _friendshipService.GetFriendsAsync(currentUserId);
+                    var friendIds = friends.Select(f => f.FriendId).ToList();
                     
                     if (friendIds.Any())
                     {
