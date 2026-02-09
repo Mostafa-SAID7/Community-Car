@@ -144,18 +144,54 @@ public class EventsController : Controller
                 return View(model);
             }
 
+            // Validate dates
+            if (model.EndTime <= model.StartTime)
+            {
+                ModelState.AddModelError("EndTime", "End time must be after start time");
+                ViewBag.Categories = Enum.GetValues<EventCategory>();
+                return View(model);
+            }
+
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+
+            // Handle image upload
+            string? imageUrl = null;
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "events");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(model.ImageFile.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(fileStream);
+                }
+
+                imageUrl = $"/uploads/events/{uniqueFileName}";
+            }
+
+            // Convert DateTime to DateTimeOffset with local timezone
+            var startTime = new DateTimeOffset(model.StartTime, TimeZoneInfo.Local.GetUtcOffset(model.StartTime));
+            var endTime = new DateTimeOffset(model.EndTime, TimeZoneInfo.Local.GetUtcOffset(model.EndTime));
 
             var communityEvent = await _eventService.CreateEventAsync(
                 model.Title,
                 model.Description,
-                model.StartTime,
-                model.EndTime,
+                startTime,
+                endTime,
                 model.Location,
                 userId,
                 model.Category,
                 model.MaxAttendees,
                 model.IsOnline);
+
+            // Set image URL if uploaded
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                await _eventService.SetEventImageAsync(communityEvent.Id, imageUrl);
+            }
 
             TempData["Success"] = _localizer["EventCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = communityEvent.Slug });

@@ -7,7 +7,9 @@
 }
 
 @section Styles {
-    }
+    <link rel="stylesheet" href="~/css/components/cards.css" />
+    <link rel="stylesheet" href="~/css/pages/posts.css" />
+}
 
 @{
     ViewData["HeaderTitle"] = "Community Posts";
@@ -32,28 +34,49 @@
 
 <partial name="_InnerPageHeader" />
 
-<div class="container">
-    <!-- Filters -->
-    <div class="card mb-4 border-0 shadow-sm">
+<div class="container posts-container">
+    <!-- Search and Filters Section -->
+    <div class="card filter-card mb-4">
         <div class="card-body">
+            <!-- Search Bar -->
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <div class="search-wrapper position-relative">
+                        <input type="text" 
+                               id="postSearchInput" 
+                               class="form-control form-control-lg ps-5" 
+                               placeholder="Search posts by title, content, or tags..."
+                               autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                        <div id="searchSpinner" class="search-spinner d-none">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Type Filters -->
             <div class="d-flex flex-wrap gap-2 align-items-center">
-                <span class="fw-bold me-2">
+                <span class="fw-bold me-2 filter-label">
                     <i class="fas fa-filter me-1"></i>Post Type:
                 </span>
-                <a asp-action="Index" 
-                   class="btn btn-sm filter-btn @(currentType == null ? "btn-purple" : "btn-outline-purple")">
+                <button type="button" 
+                        class="btn btn-sm filter-btn @(currentType == null ? "btn-purple active" : "btn-outline-purple")"
+                        data-type="">
                     <i class="fas fa-th me-1"></i>All Types
-                </a>
+                </button>
                 @if (postTypes != null)
                 {
                     @foreach (var type in postTypes)
                     {
                         var typeValue = (CommunityCar.Domain.Enums.Community.post.PostType)type;
-                        <a asp-action="Index" 
-                           asp-route-type="@typeValue" 
-                           class="btn btn-sm filter-btn @(currentType == typeValue ? "btn-purple" : "btn-outline-purple")">
+                        <button type="button" 
+                                class="btn btn-sm filter-btn @(currentType == typeValue ? "btn-purple active" : "btn-outline-purple")"
+                                data-type="@typeValue">
                             @typeValue.ToString()
-                        </a>
+                        </button>
                     }
                 }
                 <div class="ms-auto">
@@ -66,162 +89,202 @@
         </div>
     </div>
 
+    <!-- Results Count -->
+    <div class="results-info mb-3">
+        <span id="resultsCount" class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Showing <strong>@Model.Items.Count()</strong> of <strong>@Model.TotalCount</strong> posts
+        </span>
+    </div>
+
     <!-- Posts Grid -->
-    @if (Model.Items.Any())
-    {
-        <div class="row g-4 mb-4">
+    <div id="postsGrid" class="row g-4 mb-4">
+        @if (Model.Items.Any())
+        {
             @foreach (var post in Model.Items)
             {
-                <div class="col-lg-4 col-md-6">
-                    <div class="card post-card">
-                        <div class="position-relative">
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 post-item">
+                    <div class="content-card">
+                        <div class="content-card-image-wrapper">
                             @if (post.IsPinned)
                             {
-                                <span class="badge bg-warning text-dark pinned-badge">
+                                <span class="card-badge card-badge-top-left card-badge-warning">
                                     <i class="fas fa-thumbtack me-1"></i>Pinned
                                 </span>
                             }
-                            <span class="badge bg-purple post-type-badge text-white">
+                            <span class="card-badge card-badge-top-right card-badge-primary">
                                 @post.Type
                             </span>
-                            <img src="@(post.ImageUrl ?? "/images/post-placeholder.jpg")" 
-                                 alt="@post.Title" 
-                                 class="card-img-top post-image" />
+                            
+                            @* Display image or video based on post type *@
+                            @if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Image && !string.IsNullOrEmpty(post.ImageUrl))
+                            {
+                                <img src="@post.ImageUrl" 
+                                     alt="@post.Title" 
+                                     class="content-card-image" 
+                                     loading="lazy" />
+                            }
+                            else if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Video && !string.IsNullOrEmpty(post.VideoUrl))
+                            {
+                                @if (post.VideoUrl.Contains("youtube.com") || post.VideoUrl.Contains("youtu.be"))
+                                {
+                                    @* YouTube video thumbnail *@
+                                    var videoId = post.VideoUrl.Contains("youtu.be") 
+                                        ? post.VideoUrl.Split('/').Last().Split('?').First()
+                                        : System.Web.HttpUtility.ParseQueryString(new Uri(post.VideoUrl).Query).Get("v");
+                                    <div class="video-thumbnail-wrapper">
+                                        <img src="https://img.youtube.com/vi/@videoId/maxresdefault.jpg" 
+                                             alt="@post.Title" 
+                                             class="content-card-image" 
+                                             loading="lazy" />
+                                        <div class="video-play-overlay">
+                                            <i class="fas fa-play-circle"></i>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @* Direct video file *@
+                                    <div class="video-thumbnail-wrapper">
+                                        <video class="content-card-image" preload="metadata">
+                                            <source src="@post.VideoUrl#t=0.1" type="video/mp4">
+                                        </video>
+                                        <div class="video-play-overlay">
+                                            <i class="fas fa-play-circle"></i>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                @* Default placeholder *@
+                                <img src="/images/post-placeholder.jpg" 
+                                     alt="@post.Title" 
+                                     class="content-card-image" 
+                                     loading="lazy" />
+                            }
                         </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="post-meta mb-2">
-                                <i class="fas fa-user me-1"></i>@post.AuthorName
+                        <div class="content-card-body">
+                            <div class="content-card-meta">
+                                <span class="author-info">
+                                    <i class="fas fa-user me-1"></i>@post.AuthorName
+                                </span>
                                 <span class="mx-2">•</span>
-                                <i class="fas fa-calendar me-1"></i>@post.CreatedAt.ToString("MMM dd, yyyy")
+                                <span class="date-info">
+                                    <i class="fas fa-calendar me-1"></i>@post.CreatedAt.ToString("MMM dd, yyyy")
+                                </span>
                             </div>
-                            <h5 class="post-title mb-2">
-                                <a href="@Url.Action("Details", "Posts", new { slug = post.Slug })" 
-                                   class="text-decoration-none text-dark">
+                            <h5 class="content-card-title">
+                                <a href="@Url.Action("Details", "Posts", new { slug = post.Slug })">
                                     @post.Title
                                 </a>
                             </h5>
-                            <p class="post-content mb-3 flex-grow-1">
+                            <p class="content-card-content">
                                 @(post.Content?.Length > 120 ? post.Content.Substring(0, 120) + "..." : post.Content)
                             </p>
                             @if (!string.IsNullOrEmpty(post.Tags))
                             {
-                                <div class="mb-2">
+                                <div class="card-tags">
                                     @foreach (var tag in post.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
                                     {
-                                        <span class="badge bg-light text-dark me-1">#@tag.Trim()</span>
+                                        <span class="card-tag">#@tag.Trim()</span>
                                     }
                                 </div>
                             }
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                <div class="d-flex gap-3 text-muted small">
-                                    <span><i class="fas fa-eye me-1"></i>@post.ViewCount</span>
-                                    <span><i class="fas fa-heart me-1"></i>@post.LikeCount</span>
-                                    <span><i class="fas fa-comment me-1"></i>@post.CommentCount</span>
-                                    <span><i class="fas fa-share me-1"></i>@post.ShareCount</span>
+                            <div class="content-card-footer">
+                                <div class="card-stats">
+                                    <span class="card-stat-item" title="Views">
+                                        <i class="fas fa-eye"></i>
+                                        <span>@post.ViewCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Likes">
+                                        <i class="fas fa-heart"></i>
+                                        <span>@post.LikeCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Comments">
+                                        <i class="fas fa-comment"></i>
+                                        <span>@post.CommentCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Shares">
+                                        <i class="fas fa-share"></i>
+                                        <span>@post.ShareCount</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-        </div>
-
-        <!-- Pagination -->
-        @if (Model.TotalPages > 1)
-        {
-            <nav aria-label="Posts pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                        <a class="page-link" href="@Url.Action("Index", "Posts", new { page = Model.PageNumber - 1, type = currentType, groupId = groupId })">
-                            <i class="fas fa-chevron-left"></i> Previous
-                        </a>
-                    </li>
-
-                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
-                    {
-                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link" href="@Url.Action("Index", "Posts", new { page = i, type = currentType, groupId = groupId })">
-                                @i
-                            </a>
-                        </li>
-                    }
-
-                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                        <a class="page-link" 
-                           asp-action="Index" 
-                           asp-route-page="@(Model.PageNumber + 1)"
-                           asp-route-type="@currentType"
-                           asp-route-groupId="@groupId">
-                            Next <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
         }
-    }
-    else
-    {
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-edit fa-4x text-muted mb-4"></i>
-                <h4 class="text-muted mb-3">No Posts Found</h4>
-                <p class="text-muted mb-4">
-                    @if (currentType != null)
+        else
+        {
+            <div class="col-12">
+                <div class="empty-state-card">
+                    <i class="fas fa-edit"></i>
+                    <h4>No Posts Found</h4>
+                    <p>
+                        @if (currentType != null)
+                        {
+                            <text>No posts found with the selected type.</text>
+                        }
+                        else
+                        {
+                            <text>Be the first to share your story with the community!</text>
+                        }
+                    </p>
+                    @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        <text>No posts found with the selected type.</text>
+                        <a asp-action="Create" class="btn btn-purple text-white">
+                            <i class="fas fa-plus-circle me-2"></i>Create First Post
+                        </a>
                     }
                     else
                     {
-                        <text>Be the first to share your story with the community!</text>
+                        <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-purple text-white">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Create Posts
+                        </a>
                     }
-                </p>
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    <a asp-action="Create" class="btn btn-purple text-white">
-                        <i class="fas fa-plus-circle me-2"></i>Create First Post
-                    </a>
-                }
-                else
-                {
-                    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-purple text-white">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login to Create Posts
-                    </a>
-                }
+                </div>
             </div>
-        </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Posts pagination" class="mt-5" id="paginationNav">
+            <ul class="pagination justify-content-center flex-wrap">
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" 
+                       href="@Url.Action("Index", "Posts", new { page = Model.PageNumber - 1, type = currentType, groupId = groupId })"
+                       data-page="@(Model.PageNumber - 1)">
+                        <i class="fas fa-chevron-left"></i> <span class="d-none d-sm-inline">Previous</span>
+                    </a>
+                </li>
+
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" 
+                           href="@Url.Action("Index", "Posts", new { page = i, type = currentType, groupId = groupId })"
+                           data-page="@i">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" 
+                       href="@Url.Action("Index", "Posts", new { page = Model.PageNumber + 1, type = currentType, groupId = groupId })"
+                       data-page="@(Model.PageNumber + 1)">
+                        <span class="d-none d-sm-inline">Next</span> <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     }
 </div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('.pagination a').on('click', function() {
-                $('html, body').animate({ scrollTop: 0 }, 300);
-            });
-
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver(function(entries) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '0';
-                        entry.target.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            entry.target.style.transition = 'all 0.5s ease';
-                            entry.target.style.opacity = '1';
-                            entry.target.style.transform = 'translateY(0)';
-                        }, 100);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.post-card').forEach(card => {
-                observer.observe(card);
-            });
-        });
-    </script>
+    <script src="~/js/pages/posts.js"></script>
 }

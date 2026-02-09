@@ -50,12 +50,30 @@ window.updateChatUnreadCount = function () {
         .catch(err => console.debug("Failed to update chat unread count:", err));
 };
 
+// Throttle friend request count updates to prevent excessive requests
+let friendRequestCountThrottle = null;
 window.updateFriendRequestCount = function () {
     const badge = document.getElementById('friendRequestBadge');
     if (!badge) return;
 
+    // Throttle: only allow one request every 5 seconds
+    if (friendRequestCountThrottle) {
+        return;
+    }
+
+    friendRequestCountThrottle = setTimeout(() => {
+        friendRequestCountThrottle = null;
+    }, 5000);
+
     const url = CultureHelper.addCultureToUrl('/Friends/GetPendingRequestCount');
-    fetch(url)
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'max-age=10'
+        },
+        keepalive: true
+    })
         .then(r => r.json())
         .then(data => {
             const count = data.count;

@@ -33,6 +33,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <!-- Build Performance Optimizations -->
+    <BuildInParallel>true</BuildInParallel>
+    <UseSharedCompilation>true</UseSharedCompilation>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

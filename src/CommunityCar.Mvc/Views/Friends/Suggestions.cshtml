@@ -1,6 +1,14 @@
 @model IEnumerable<CommunityCar.Web.ViewModels.Community.UserSearchViewModel>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Friend Suggestions";
+    ViewData["Title"] = Localizer["Friend Suggestions"].Value;
+}
+
+@{
+    ViewData["HeaderTitle"] = Localizer["Friend Suggestions"].Value;
+    ViewData["HeaderDescription"] = Localizer["Discover people you may know"].Value;
+    ViewData["HeaderIcon"] = "fas fa-lightbulb";
 }
 
 @section Styles {
@@ -23,20 +31,20 @@
     <!-- Premium Navigation Tabs -->
     <div class="friends-nav">
         <a class="nav-link" asp-action="Index">
-            <i class="fas fa-user-friends"></i> Friends 
+            <i class="fas fa-user-friends"></i> @Localizer["Friends"] 
         </a>
         <a class="nav-link" asp-action="Requests">
-            <i class="fas fa-user-plus"></i> Received
+            <i class="fas fa-user-plus"></i> @Localizer["Received"]
              @if (ViewBag.RequestCount > 0) { <span class="badge bg-danger ms-2">@ViewBag.RequestCount</span> }
         </a>
         <a class="nav-link" asp-action="SentRequests">
-            <i class="fas fa-paper-plane"></i> Sent
+            <i class="fas fa-paper-plane"></i> @Localizer["Sent"]
         </a>
         <a class="nav-link active" asp-action="Suggestions">
-            <i class="fas fa-lightbulb"></i> Suggestions
+            <i class="fas fa-lightbulb"></i> @Localizer["Suggestions"]
         </a>
         <a class="nav-link" asp-action="Blocked">
-            <i class="fas fa-ban"></i> Blocked
+            <i class="fas fa-ban"></i> @Localizer["Blocked"]
         </a>
     </div>
 
@@ -62,10 +70,10 @@
             <div class="friends-empty-icon">
                 <i class="fas fa-lightbulb"></i>
             </div>
-            <h3 class="fw-bold mb-2">No Suggestions Available</h3>
-            <p class="text-muted mb-4">Check back later for new friend suggestions.</p>
+            <h3 class="fw-bold mb-2">@Localizer["No Suggestions Available"]</h3>
+            <p class="text-muted mb-4">@Localizer["Check back later for new friend suggestions."]</p>
             <a href="@Url.Action("Search")" class="btn btn-primary rounded-pill px-4 py-2">
-                <i class="fas fa-search me-2"></i>Search for Friends
+                <i class="fas fa-search me-2"></i>@Localizer["Search for Friends"]
             </a>
         </div>
     }
@@ -100,13 +108,13 @@
 
                         <div class="friend-actions mt-auto d-flex gap-2">
                             <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = user.UserId })" class="btn btn-outline-secondary rounded-pill flex-grow-1">
-                                <i class="fas fa-user me-2"></i> Profile
+                                <i class="fas fa-user me-2"></i> @Localizer["Profile"]
                             </a>
                             <form asp-action="SendRequest" method="post" class="flex-grow-1 ajax-add-friend-form">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="friendId" value="@user.UserId" />
                                 <button type="submit" class="btn btn-primary w-100 rounded-pill">
-                                    <i class="fas fa-user-plus me-2"></i> Add
+                                    <i class="fas fa-user-plus me-2"></i> @Localizer["Add"]
                                 </button>
                             </form>
                         </div>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CommunityCar.Domain.Enums.Community.post;
+using Microsoft.AspNetCore.Http;
 
 namespace CommunityCar.Mvc.ViewModels.Post;
 
@@ -15,6 +16,9 @@ public class CreatePostViewModel
     [Required(ErrorMessage = "Post type is required")]
     public PostType Type { get; set; } = PostType.Text;
 
+    [Required(ErrorMessage = "Status is required")]
+    public PostStatus Status { get; set; } = PostStatus.Draft;
+
     public Guid? GroupId { get; set; }
 
     public string? ImageUrl { get; set; }
@@ -24,4 +28,8 @@ public class CreatePostViewModel
     public string? LinkDescription { get; set; }
     public string? Tags { get; set; }
     public bool PublishImmediately { get; set; }
+
+    // File upload properties
+    public IFormFile? ImageFile { get; set; }
+    public IFormFile? VideoFile { get; set; }
 }

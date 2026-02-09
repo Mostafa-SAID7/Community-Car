@@ -21,6 +21,16 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Build Performance Optimizations -->
+    <BuildInParallel>true</BuildInParallel>
+    <UseSharedCompilation>true</UseSharedCompilation>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    
+    <!-- Razor Compilation Optimizations -->
+    <RazorCompileOnBuild>true</RazorCompileOnBuild>
+    <RazorCompileOnPublish>true</RazorCompileOnPublish>
   </PropertyGroup>
 
 </Project>

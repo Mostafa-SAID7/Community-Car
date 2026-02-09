@@ -5,146 +5,207 @@
 @{
     ViewData["Title"] = "Create Post";
     var postTypes = ViewBag.PostTypes as PostType[];
+    var postStatuses = Enum.GetValues<PostStatus>();
 
     ViewData["HeaderTitle"] = "Create Post";
     ViewData["HeaderDescription"] = "Share your story with the community";
     ViewData["HeaderIcon"] = "fas fa-edit";
+    
+    ViewData["HideRightSidebar"] = true;
 }
 
 @section Styles {
-    }
+    <link rel="stylesheet" href="~/css/components/cards.css" />
+    <link rel="stylesheet" href="~/css/pages/posts.css" />
+}
 
-<partial name="_InnerPageHeader" />
-
-<div class="container">
-    <nav aria-label="breadcrumb">
+<div class="container-fluid px-0">
+    <nav aria-label="breadcrumb" class="px-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-action="Index">Posts</a></li>
             <li class="breadcrumb-item active">Create Post</li>
         </ol>
     </nav>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <div class="px-3">
+        <div class="card form-card-red shadow-sm border-0">
+           
+            <div class="card-body p-3 p-md-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Post Type <span class="text-danger">*</span></label>
-                            <div class="post-type-selector">
-                                @if (postTypes != null)
+                    <div class="mb-3 mb-md-4">
+                        <label class="form-label fw-bold">Post Type <span class="text-danger">*</span></label>
+                        <div class="post-type-selector">
+                            @if (postTypes != null)
+                            {
+                                @foreach (var type in postTypes)
                                 {
-                                    @foreach (var type in postTypes)
-                                    {
-                                        var icon = type switch {
-                                            PostType.Text => "fa-align-left",
-                                            PostType.Image => "fa-image",
-                                            PostType.Video => "fa-video",
-                                            PostType.Link => "fa-link",
-                                            PostType.Poll => "fa-poll",
-                                            _ => "fa-file"
-                                        };
-                                        
-                                        <div class="post-type-card" data-type="@type">
-                                            <i class="fas @icon"></i>
-                                            <div class="fw-bold">@type</div>
-                                        </div>
-                                    }
+                                    var icon = type switch {
+                                        PostType.Text => "fa-align-left",
+                                        PostType.Image => "fa-image",
+                                        PostType.Video => "fa-video",
+                                        PostType.Link => "fa-link",
+                                        PostType.Poll => "fa-poll",
+                                        PostType.Event => "fa-calendar-alt",
+                                        _ => "fa-file"
+                                    };
+                                    
+                                    <div class="post-type-card" data-type="@type">
+                                        <i class="fas @icon"></i>
+                                        <div class="fw-bold">@type</div>
+                                    </div>
                                 }
+                            }
+                        </div>
+                        <input asp-for="Type" type="hidden" id="postTypeInput" />
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 mb-md-4">
+                        <label class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                        <div class="post-status-selector">
+                            @foreach (var status in postStatuses)
+                            {
+                                var statusIcon = status switch {
+                                    PostStatus.Draft => "fa-file-alt",
+                                    PostStatus.Published => "fa-check-circle",
+                                    PostStatus.Archived => "fa-archive",
+                                    PostStatus.Deleted => "fa-trash",
+                                    _ => "fa-circle"
+                                };
+                                
+                                var statusColor = status switch {
+                                    PostStatus.Draft => "status-draft",
+                                    PostStatus.Published => "status-published",
+                                    PostStatus.Archived => "status-archived",
+                                    PostStatus.Deleted => "status-deleted",
+                                    _ => ""
+                                };
+                                
+                                var isDefault = status == PostStatus.Published;
+                                
+                                <div class="post-status-card @statusColor @(isDefault ? "active" : "")" data-status="@status">
+                                    <i class="fas @statusIcon"></i>
+                                    <div class="fw-bold">@status</div>
+                                </div>
+                            }
+                        </div>
+                        <input asp-for="Status" type="hidden" id="postStatusInput" value="@PostStatus.Published" />
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                        <small class="form-text text-muted d-block mt-2">
+                            <i class="fas fa-info-circle me-1"></i>Choose Draft to save without publishing
+                        </small>
+                    </div>
+
+                    <div class="mb-3 mb-md-4">
+                        <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter an engaging title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 mb-md-4">
+                        <label asp-for="Content" class="form-label fw-bold">Content <span class="text-danger">*</span></label>
+                        <textarea asp-for="Content" class="form-control" rows="8" placeholder="Share your thoughts..."></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 mb-md-4 post-type-fields" id="imageFields">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-image me-1"></i>Image
+                        </label>
+                        <div class="mb-3">
+                            <label class="form-label small">Upload Image File</label>
+                            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" id="imageFileInput" />
+                            <small class="form-text text-muted">Max size: 10 MB. Allowed formats: JPG, PNG, GIF, WebP</small>
+                            <span asp-validation-for="ImageFile" class="text-danger d-block"></span>
+                            <div id="imagePreview" class="preview-container">
+                                <img id="imagePreviewImg" src="" alt="Image preview" />
                             </div>
-                            <input asp-for="Type" type="hidden" id="postTypeInput" />
-                            <span asp-validation-for="Type" class="text-danger"></span>
                         </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
-                            <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter an engaging title" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
+                        <div class="text-center my-2">
+                            <span class="text-muted">OR</span>
                         </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Content" class="form-label fw-bold">Content <span class="text-danger">*</span></label>
-                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="Share your thoughts..."></textarea>
-                            <span asp-validation-for="Content" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-4" id="imageUrlField" class="d-none">
-                            <label asp-for="ImageUrl" class="form-label fw-bold">
-                                <i class="fas fa-image me-1"></i>Image URL
-                            </label>
+                        <div>
+                            <label class="form-label small">Image URL</label>
                             <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
                             <span asp-validation-for="ImageUrl" class="text-danger"></span>
                         </div>
+                    </div>
 
-                        <div class="mb-4" id="videoUrlField" class="d-none">
-                            <label asp-for="VideoUrl" class="form-label fw-bold">
-                                <i class="fas fa-video me-1"></i>Video URL
-                            </label>
+                    <div class="mb-3 mb-md-4 post-type-fields" id="videoFields">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-video me-1"></i>Video
+                        </label>
+                        <div class="mb-3">
+                            <label class="form-label small">Upload Video File</label>
+                            <input asp-for="VideoFile" type="file" class="form-control" accept="video/*" id="videoFileInput" />
+                            <small class="form-text text-muted">Max size: 50 MB. Allowed formats: MP4, WebM, OGG, MOV</small>
+                            <span asp-validation-for="VideoFile" class="text-danger d-block"></span>
+                            <div id="videoPreview" class="preview-container">
+                                <video id="videoPreviewPlayer" controls></video>
+                            </div>
+                        </div>
+                        <div class="text-center my-2">
+                            <span class="text-muted">OR</span>
+                        </div>
+                        <div>
+                            <label class="form-label small">Video URL</label>
                             <input asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/watch?v=..." />
                             <span asp-validation-for="VideoUrl" class="text-danger"></span>
                         </div>
+                    </div>
 
-                        <div id="linkFields" class="d-none">
-                            <div class="mb-4">
-                                <label asp-for="LinkUrl" class="form-label fw-bold">
-                                    <i class="fas fa-link me-1"></i>Link URL
-                                </label>
-                                <input asp-for="LinkUrl" class="form-control" placeholder="https://example.com" />
-                                <span asp-validation-for="LinkUrl" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-4">
-                                <label asp-for="LinkTitle" class="form-label fw-bold">Link Title</label>
-                                <input asp-for="LinkTitle" class="form-control" placeholder="Title of the linked content" />
-                                <span asp-validation-for="LinkTitle" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-4">
-                                <label asp-for="LinkDescription" class="form-label fw-bold">Link Description</label>
-                                <textarea asp-for="LinkDescription" class="form-control" rows="3" placeholder="Brief description of the link"></textarea>
-                                <span asp-validation-for="LinkDescription" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="Tags" class="form-label fw-bold">
-                                <i class="fas fa-tags me-1"></i>Tags
+                    <div id="linkFields" class="post-type-fields">
+                        <div class="mb-3 mb-md-4">
+                            <label asp-for="LinkUrl" class="form-label fw-bold">
+                                <i class="fas fa-link me-1"></i>Link URL
                             </label>
-                            <input asp-for="Tags" class="form-control" placeholder="Separate tags with commas (e.g., cars, maintenance, tips)" />
-                            <span asp-validation-for="Tags" class="text-danger"></span>
-                            <small class="form-text text-muted">Add relevant tags to help others find your post</small>
+                            <input asp-for="LinkUrl" class="form-control" placeholder="https://example.com" />
+                            <span asp-validation-for="LinkUrl" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-4">
-                            <label asp-for="GroupId" class="form-label fw-bold">
-                                <i class="fas fa-users me-1"></i>Post to Group (Optional)
+                        <div class="mb-3 mb-md-4">
+                            <label asp-for="LinkTitle" class="form-label fw-bold">Link Title</label>
+                            <input asp-for="LinkTitle" class="form-control" placeholder="Title of the linked content" />
+                            <span asp-validation-for="LinkTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 mb-md-4">
+                            <label asp-for="LinkDescription" class="form-label fw-bold">Link Description</label>
+                            <textarea asp-for="LinkDescription" class="form-control" rows="3" placeholder="Brief description of the link"></textarea>
+                            <span asp-validation-for="LinkDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mb-md-4">
+                        <label asp-for="Tags" class="form-label fw-bold">
+                            <i class="fas fa-tags me-1"></i>Tags
+                        </label>
+                        <input asp-for="Tags" class="form-control" placeholder="Separate tags with commas (e.g., cars, maintenance, tips)" />
+                        <span asp-validation-for="Tags" class="text-danger"></span>
+                        <small class="form-text text-muted">Add relevant tags to help others find your post</small>
+                    </div>
+
+                    <div class="mb-3 mb-md-4">
+                        <div class="form-check">
+                            <input asp-for="PublishImmediately" class="form-check-input" type="checkbox" checked />
+                            <label asp-for="PublishImmediately" class="form-check-label">
+                                <i class="fas fa-rocket me-1"></i>Publish immediately
                             </label>
-                            <input asp-for="GroupId" class="form-control" placeholder="Enter group ID if posting to a specific group" />
-                            <span asp-validation-for="GroupId" class="text-danger"></span>
                         </div>
+                        <small class="form-text text-muted">Uncheck to save as draft</small>
+                    </div>
 
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input asp-for="PublishImmediately" class="form-check-input" type="checkbox" checked />
-                                <label asp-for="PublishImmediately" class="form-check-label">
-                                    <i class="fas fa-rocket me-1"></i>Publish immediately
-                                </label>
-                            </div>
-                            <small class="form-text text-muted">Uncheck to save as draft</small>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-times me-2"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-paper-plane me-2"></i>Create Post
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-2">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Create Post
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -152,45 +213,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        $(document).ready(function() {
-            const postTypeCards = $('.post-type-card');
-            const postTypeInput = $('#postTypeInput');
-            const imageUrlField = $('#imageUrlField');
-            const videoUrlField = $('#videoUrlField');
-            const linkFields = $('#linkFields');
-            
-            // Initialize with default type
-            const currentType = postTypeInput.val() || 'Text';
-            updatePostType(currentType);
-            
-            postTypeCards.on('click', function() {
-                const type = $(this).data('type');
-                updatePostType(type);
-            });
-            
-            function updatePostType(type) {
-                postTypeInput.val(type);
-                postTypeCards.removeClass('active');
-                postTypeCards.filter('[data-type="' + type + '"]').addClass('active');
-                
-                // Show/hide relevant fields
-                imageUrlField.hide();
-                videoUrlField.hide();
-                linkFields.hide();
-                
-                switch(type) {
-                    case 'Image':
-                        imageUrlField.show();
-                        break;
-                    case 'Video':
-                        videoUrlField.show();
-                        break;
-                    case 'Link':
-                        linkFields.show();
-                        break;
-                }
-            }
-        });
-    </script>
+    <script src="~/js/pages/posts.js"></script>
 }

@@ -1,6 +1,8 @@
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Enums.Community.post;
 using CommunityCar.Domain.Interfaces.Community;
+using CommunityCar.Infrastructure.Interfaces;
+using CommunityCar.Infrastructure.Services.Community;
 using CommunityCar.Mvc.ViewModels.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +16,26 @@ public class PostsController : Controller
 {
     private readonly IPostService _postService;
     private readonly IFriendshipService _friendshipService;
+    private readonly IGroupService _groupService;
+    private readonly IFileStorageService _fileStorageService;
+    private readonly IPostHubService _postHubService;
     private readonly ILogger<PostsController> _logger;
     private readonly IStringLocalizer<PostsController> _localizer;
 
     public PostsController(
         IPostService postService,
         IFriendshipService friendshipService,
+        IGroupService groupService,
+        IFileStorageService fileStorageService,
+        IPostHubService postHubService,
         ILogger<PostsController> logger,
         IStringLocalizer<PostsController> localizer)
     {
         _postService = postService;
         _friendshipService = friendshipService;
+        _groupService = groupService;
+        _fileStorageService = fileStorageService;
+        _postHubService = postHubService;
         _logger = logger;
         _localizer = localizer;
     }
@@ -127,9 +138,17 @@ public class PostsController : Controller
     // GET: Post/Create
     [Authorize]
     [HttpGet("Create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         ViewBag.PostTypes = Enum.GetValues<PostType>();
+        
+        var userId = GetCurrentUserId();
+        if (userId.HasValue)
+        {
+            var userGroups = await _groupService.GetUserGroupsAsync(userId.Value, new QueryParameters { PageSize = 100 });
+            ViewBag.UserGroups = userGroups.Items;
+        }
+        
         return View(new CreatePostViewModel());
     }
 
@@ -137,24 +156,143 @@ public class PostsController : Controller
     [Authorize]
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(52428800)] // 50 MB limit
     public async Task<IActionResult> Create(CreatePostViewModel model)
     {
         try
         {
+            // Validate file sizes
+            if (model.ImageFile != null)
+            {
+                const long maxImageSize = 10 * 1024 * 1024; // 10 MB
+                if (model.ImageFile.Length > maxImageSize)
+                {
+                    ModelState.AddModelError(nameof(model.ImageFile), "Image file size cannot exceed 10 MB");
+                }
+                
+                var allowedImageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var imageExtension = Path.GetExtension(model.ImageFile.FileName).ToLowerInvariant();
+                if (!allowedImageExtensions.Contains(imageExtension))
+                {
+                    ModelState.AddModelError(nameof(model.ImageFile), "Only JPG, PNG, GIF, and WebP images are allowed");
+                }
+            }
+            
+            if (model.VideoFile != null)
+            {
+                const long maxVideoSize = 50 * 1024 * 1024; // 50 MB
+                if (model.VideoFile.Length > maxVideoSize)
+                {
+                    ModelState.AddModelError(nameof(model.VideoFile), "Video file size cannot exceed 50 MB");
+                }
+                
+                var allowedVideoExtensions = new[] { ".mp4", ".webm", ".ogg", ".mov" };
+                var videoExtension = Path.GetExtension(model.VideoFile.FileName).ToLowerInvariant();
+                if (!allowedVideoExtensions.Contains(videoExtension))
+                {
+                    ModelState.AddModelError(nameof(model.VideoFile), "Only MP4, WebM, OGG, and MOV videos are allowed");
+                }
+            }
+            
             if (!ModelState.IsValid)
             {
                 ViewBag.PostTypes = Enum.GetValues<PostType>();
+                
+                var userId = GetCurrentUserId();
+                if (userId.HasValue)
+                {
+                    var userGroups = await _groupService.GetUserGroupsAsync(userId.Value, new QueryParameters { PageSize = 100 });
+                    ViewBag.UserGroups = userGroups.Items;
+                }
+                
                 return View(model);
             }
 
-            var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+            var currentUserId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+
+            // Handle image upload using FileStorageService
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                model.ImageUrl = await _fileStorageService.SaveFileAsync(
+                    model.ImageFile, 
+                    "uploads/posts/images",
+                    $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}");
+            }
+            
+            // Handle video upload using FileStorageService
+            if (model.VideoFile != null && model.VideoFile.Length > 0)
+            {
+                model.VideoUrl = await _fileStorageService.SaveFileAsync(
+                    model.VideoFile, 
+                    "uploads/posts/videos",
+                    $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.VideoFile.FileName)}");
+            }
 
             var post = await _postService.CreatePostAsync(
                 model.Title,
                 model.Content,
                 model.Type,
-                userId,
-                model.GroupId);
+                currentUserId,
+                model.GroupId,
+                model.Status);
+            
+            // Update media URLs if files were uploaded
+            if (!string.IsNullOrEmpty(model.ImageUrl) || !string.IsNullOrEmpty(model.VideoUrl))
+            {
+                post.SetMedia(model.ImageUrl, model.VideoUrl);
+                await _postService.SaveChangesAsync();
+            }
+            
+            // Update link information if provided
+            if (!string.IsNullOrEmpty(model.LinkUrl))
+            {
+                post.SetLink(model.LinkUrl, model.LinkTitle, model.LinkDescription);
+                await _postService.SaveChangesAsync();
+            }
+
+            // Send real-time notifications
+            try
+            {
+                // Notify user about successful creation
+                await _postHubService.NotifyPostCreatedAsync(currentUserId, new
+                {
+                    post.Id,
+                    post.Title,
+                    post.Content,
+                    post.Type,
+                    post.Status,
+                    post.ImageUrl,
+                    post.VideoUrl,
+                    post.CreatedAt
+                });
+
+                // Notify friends if post is published
+                if (post.Status == PostStatus.Published)
+                {
+                    var friends = await _friendshipService.GetUserFriendsAsync(currentUserId, new QueryParameters { PageSize = 1000 });
+                    var friendIds = friends.Items.Select(f => f.FriendId).ToList();
+                    
+                    if (friendIds.Any())
+                    {
+                        await _postHubService.NotifyFriendsNewPostAsync(friendIds, new
+                        {
+                            post.Id,
+                            post.Title,
+                            post.Content,
+                            post.Type,
+                            post.ImageUrl,
+                            post.VideoUrl,
+                            AuthorId = currentUserId,
+                            post.CreatedAt
+                        });
+                    }
+                }
+            }
+            catch (Exception hubEx)
+            {
+                _logger.LogError(hubEx, "Error sending post notifications");
+                // Don't fail the request if notifications fail
+            }
 
             TempData["Success"] = _localizer["PostCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
@@ -164,6 +302,14 @@ public class PostsController : Controller
             _logger.LogError(ex, "Error creating post");
             ModelState.AddModelError("", _localizer["FailedToCreatePost"].Value);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
+            
+            var userId = GetCurrentUserId();
+            if (userId.HasValue)
+            {
+                var userGroups = await _groupService.GetUserGroupsAsync(userId.Value, new QueryParameters { PageSize = 100 });
+                ViewBag.UserGroups = userGroups.Items;
+            }
+            
             return View(model);
         }
     }
@@ -196,6 +342,7 @@ public class PostsController : Controller
                 Title = postDto.Title,
                 Content = postDto.Content,
                 Type = postDto.Type,
+                Status = postDto.Status,
                 ImageUrl = postDto.ImageUrl,
                 VideoUrl = postDto.VideoUrl,
                 LinkUrl = postDto.LinkUrl,
@@ -219,12 +366,48 @@ public class PostsController : Controller
     [Authorize]
     [HttpPost("Edit/{id:guid}")]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(52428800)] // 50 MB limit
     public async Task<IActionResult> Edit(Guid id, EditPostViewModel model)
     {
         try
         {
             if (id != model.Id)
                 return BadRequest();
+            
+            var currentUserId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+
+            // Validate file sizes
+            if (model.ImageFile != null)
+            {
+                const long maxImageSize = 10 * 1024 * 1024; // 10 MB
+                if (model.ImageFile.Length > maxImageSize)
+                {
+                    ModelState.AddModelError(nameof(model.ImageFile), "Image file size cannot exceed 10 MB");
+                }
+                
+                var allowedImageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var imageExtension = Path.GetExtension(model.ImageFile.FileName).ToLowerInvariant();
+                if (!allowedImageExtensions.Contains(imageExtension))
+                {
+                    ModelState.AddModelError(nameof(model.ImageFile), "Only JPG, PNG, GIF, and WebP images are allowed");
+                }
+            }
+            
+            if (model.VideoFile != null)
+            {
+                const long maxVideoSize = 50 * 1024 * 1024; // 50 MB
+                if (model.VideoFile.Length > maxVideoSize)
+                {
+                    ModelState.AddModelError(nameof(model.VideoFile), "Video file size cannot exceed 50 MB");
+                }
+                
+                var allowedVideoExtensions = new[] { ".mp4", ".webm", ".ogg", ".mov" };
+                var videoExtension = Path.GetExtension(model.VideoFile.FileName).ToLowerInvariant();
+                if (!allowedVideoExtensions.Contains(videoExtension))
+                {
+                    ModelState.AddModelError(nameof(model.VideoFile), "Only MP4, WebM, OGG, and MOV videos are allowed");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -232,11 +415,65 @@ public class PostsController : Controller
                 return View(model);
             }
 
+            // Handle image upload using FileStorageService
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                model.ImageUrl = await _fileStorageService.SaveFileAsync(
+                    model.ImageFile, 
+                    "uploads/posts/images",
+                    $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}");
+            }
+            
+            // Handle video upload using FileStorageService
+            if (model.VideoFile != null && model.VideoFile.Length > 0)
+            {
+                model.VideoUrl = await _fileStorageService.SaveFileAsync(
+                    model.VideoFile, 
+                    "uploads/posts/videos",
+                    $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.VideoFile.FileName)}");
+            }
+
             var post = await _postService.UpdatePostAsync(
                 id,
                 model.Title,
                 model.Content,
-                model.Type);
+                model.Type,
+                model.Status);
+            
+            // Update media URLs if files were uploaded or URLs provided
+            if (!string.IsNullOrEmpty(model.ImageUrl) || !string.IsNullOrEmpty(model.VideoUrl))
+            {
+                post.SetMedia(model.ImageUrl, model.VideoUrl);
+                await _postService.SaveChangesAsync();
+            }
+            
+            // Update link information if provided
+            if (!string.IsNullOrEmpty(model.LinkUrl))
+            {
+                post.SetLink(model.LinkUrl, model.LinkTitle, model.LinkDescription);
+                await _postService.SaveChangesAsync();
+            }
+
+            // Send real-time notification about update
+            try
+            {
+                await _postHubService.NotifyPostUpdatedAsync(currentUserId, new
+                {
+                    post.Id,
+                    post.Title,
+                    post.Content,
+                    post.Type,
+                    post.Status,
+                    post.ImageUrl,
+                    post.VideoUrl,
+                    post.ModifiedAt
+                });
+            }
+            catch (Exception hubEx)
+            {
+                _logger.LogError(hubEx, "Error sending post update notification");
+                // Don't fail the request if notifications fail
+            }
 
             TempData["Success"] = _localizer["PostUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });

@@ -1,9 +1,11 @@
 /**
  * Sidebar Component
- * Handles toggle functionality for mobile responsiveness
+ * Handles toggle functionality for mobile responsiveness using Bootstrap & jQuery
  */
 
-window.Sidebar = (function () {
+window.Sidebar = (function ($) {
+    'use strict';
+
     const SELECTORS = {
         TOGGLE_BTN: '.sidebar-toggle-btn',
         SIDEBAR: '.sidebar-left',
@@ -12,52 +14,49 @@ window.Sidebar = (function () {
     };
 
     const CLASSES = {
-        OPEN: 'sidebar-open',
-        SHOW: 'show'
+        OPEN: 'sidebar-open'
     };
 
     function init() {
-        console.log("Sidebar initialized");
-        const toggleBtns = document.querySelectorAll(SELECTORS.TOGGLE_BTN);
-        if (toggleBtns.length > 0) {
-            toggleBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleSidebar();
-                });
-            });
-        }
+        console.log("Sidebar initialized with Bootstrap & jQuery");
+        
+        // Toggle sidebar on button click
+        $(document).on('click', SELECTORS.TOGGLE_BTN, function(e) {
+            e.preventDefault();
+            toggleSidebar();
+        });
 
         // Close sidebar when clicking backdrop
-        const backdrop = document.querySelector(SELECTORS.BACKDROP);
-        if (backdrop) {
-            backdrop.addEventListener('click', closeSidebar);
-        }
+        $(document).on('click', SELECTORS.BACKDROP, function() {
+            closeSidebar();
+        });
 
         // Close sidebar when clicking a nav link on mobile
-        const sidebarLinks = document.querySelectorAll(`${SELECTORS.SIDEBAR} a`);
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth < 768) {
-                    closeSidebar();
-                }
-            });
+        $(document).on('click', `${SELECTORS.SIDEBAR} a`, function() {
+            if ($(window).width() < 768) {
+                closeSidebar();
+            }
         });
     }
 
     function toggleSidebar() {
-        document.body.classList.toggle(CLASSES.OPEN);
-        console.log("Sidebar toggled", document.body.classList.contains(CLASSES.OPEN));
+        $('body').toggleClass(CLASSES.OPEN);
+        console.log("Sidebar toggled", $('body').hasClass(CLASSES.OPEN));
     }
 
     function closeSidebar() {
-        document.body.classList.remove(CLASSES.OPEN);
+        $('body').removeClass(CLASSES.OPEN);
+    }
+
+    function openSidebar() {
+        $('body').addClass(CLASSES.OPEN);
     }
 
     // Expose public API
     return {
         init: init,
         toggle: toggleSidebar,
-        close: closeSidebar
+        close: closeSidebar,
+        open: openSidebar
     };
-})();
+})(jQuery);

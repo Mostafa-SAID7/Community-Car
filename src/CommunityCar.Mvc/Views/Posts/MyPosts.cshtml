@@ -2,71 +2,161 @@
 
 @{
     ViewData["Title"] = "My Posts";
+    ViewData["HeaderTitle"] = "My Posts";
+    ViewData["HeaderDescription"] = "Manage your shared stories and experiences";
+    ViewData["HeaderIcon"] = "fas fa-user-edit";
+    
+    var createUrl = Url.Action("Create");
+    var actionsHtml = "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Create New Post" +
+                      "</a>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
 }
 
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                @{
-                    ViewData["HeaderTitle"] = "My Posts";
-                    ViewData["HeaderDescription"] = "Manage your shared stories and experiences";
-                    ViewData["HeaderIcon"] = "fas fa-user-edit";
-                }
+@section Styles {
+    <link rel="stylesheet" href="~/css/components/cards.css" />
+    <link rel="stylesheet" href="~/css/pages/posts.css" />
+}
 
-                <partial name="_InnerPageHeader" />
-                <a asp-action="Create" class="btn btn-gradient btn-lg">
-                    <i class="fas fa-plus-circle me-2"></i>Create New Post
-                </a>
-            </div>
-        </div>
-    </div>
+<partial name="_InnerPageHeader" />
 
+<div class="container posts-container">
     @if (Model.Items.Any())
     {
-        <div class="row g-4">
+        <div class="row g-4 mb-4">
             @foreach (var post in Model.Items)
             {
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card post-card h-100 shadow-sm hover-lift">
-                        @if (!string.IsNullOrEmpty(post.ImageUrl))
-                        {
-                            <img src="@post.ImageUrl" class="card-img-top" alt="@post.Title" class="img-cover-200">
-                        }
-                        <div class="card-body d-flex flex-column">
-                            <div class="mb-2">
-                                <span class="badge bg-primary">@post.Type</span>
-                                @if (post.IsFeatured)
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 post-item">
+                    <div class="content-card">
+                        <div class="content-card-image-wrapper">
+                            @if (post.IsPinned)
+                            {
+                                <span class="card-badge card-badge-top-left card-badge-warning">
+                                    <i class="fas fa-thumbtack me-1"></i>Pinned
+                                </span>
+                            }
+                            @if (post.IsFeatured)
+                            {
+                                <span class="card-badge card-badge-top-right card-badge-warning">
+                                    <i class="fas fa-star me-1"></i>Featured
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="card-badge card-badge-top-right card-badge-primary">
+                                    @post.Type
+                                </span>
+                            }
+                            @* Display image or video based on post type *@
+                            @if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Image && !string.IsNullOrEmpty(post.ImageUrl))
+                            {
+                                <img src="@post.ImageUrl" 
+                                     alt="@post.Title" 
+                                     class="content-card-image" 
+                                     loading="lazy" />
+                            }
+                            else if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Video && !string.IsNullOrEmpty(post.VideoUrl))
+                            {
+                                @if (post.VideoUrl.Contains("youtube.com") || post.VideoUrl.Contains("youtu.be"))
                                 {
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="fas fa-star me-1"></i>Featured
-                                    </span>
+                                    @* YouTube video thumbnail *@
+                                    var videoId = post.VideoUrl.Contains("youtu.be") 
+                                        ? post.VideoUrl.Split('/').Last().Split('?').First()
+                                        : System.Web.HttpUtility.ParseQueryString(new Uri(post.VideoUrl).Query).Get("v");
+                                    <div class="video-thumbnail-wrapper">
+                                        <img src="https://img.youtube.com/vi/@videoId/maxresdefault.jpg" 
+                                             alt="@post.Title" 
+                                             class="content-card-image" 
+                                             loading="lazy" />
+                                        <div class="video-play-overlay">
+                                            <i class="fas fa-play-circle"></i>
+                                        </div>
+                                    </div>
                                 }
+                                else
+                                {
+                                    @* Direct video file *@
+                                    <div class="video-thumbnail-wrapper">
+                                        <video class="content-card-image" preload="metadata">
+                                            <source src="@post.VideoUrl#t=0.1" type="video/mp4">
+                                        </video>
+                                        <div class="video-play-overlay">
+                                            <i class="fas fa-play-circle"></i>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                @* Default placeholder *@
+                                <img src="/images/post-placeholder.jpg" 
+                                     alt="@post.Title" 
+                                     class="content-card-image" 
+                                     loading="lazy" />
+                            }
+                        </div>
+                        <div class="content-card-body">
+                            <div class="content-card-meta">
+                                <span class="date-info">
+                                    <i class="fas fa-calendar me-1"></i>@post.CreatedAt.ToString("MMM dd, yyyy")
+                                </span>
+                                <span class="mx-2">•</span>
+                                <span class="status-info">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.5rem; vertical-align: middle;"></i>@post.Status
+                                </span>
                             </div>
-                            <h5 class="card-title fw-bold mb-2">
-                                <a href="@Url.Action("Details", "Posts", new { slug = post.Slug })" class="text-decoration-none text-dark">
+                            <h5 class="content-card-title">
+                                <a href="@Url.Action("Details", "Posts", new { slug = post.Slug })">
                                     @post.Title
                                 </a>
                             </h5>
-                            <p class="card-text text-muted flex-grow-1">
-                                @(post.Content.Length > 150 ? post.Content.Substring(0, 150) + "..." : post.Content)
+                            <p class="content-card-content">
+                                @(post.Content?.Length > 120 ? post.Content.Substring(0, 120) + "..." : post.Content)
                             </p>
-                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                                <div class="text-muted small">
-                                    <i class="fas fa-eye me-1"></i>@post.ViewCount
-                                    <i class="fas fa-thumbs-up ms-3 me-1"></i>@post.LikeCount
-                                    <i class="fas fa-comment ms-3 me-1"></i>@post.CommentCount
+                            @if (!string.IsNullOrEmpty(post.Tags))
+                            {
+                                <div class="card-tags">
+                                    @foreach (var tag in post.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
+                                    {
+                                        <span class="card-tag">#@tag.Trim()</span>
+                                    }
+                                </div>
+                            }
+                            <div class="content-card-footer">
+                                <div class="card-stats">
+                                    <span class="card-stat-item" title="Views">
+                                        <i class="fas fa-eye"></i>
+                                        <span>@post.ViewCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Likes">
+                                        <i class="fas fa-heart"></i>
+                                        <span>@post.LikeCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Comments">
+                                        <i class="fas fa-comment"></i>
+                                        <span>@post.CommentCount</span>
+                                    </span>
+                                    <span class="card-stat-item" title="Shares">
+                                        <i class="fas fa-share"></i>
+                                        <span>@post.ShareCount</span>
+                                    </span>
                                 </div>
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <button class="btn btn-sm btn-ghost dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                                         <li>
-                                            <a class="dropdown-item" href="@Url.Action("Edit", "Posts", new { id = post.Id })">
-                                                <i class="fas fa-edit me-2"></i>Edit
+                                            <a class="dropdown-item" href="@Url.Action("Details", "Posts", new { slug = post.Slug })">
+                                                <i class="fas fa-eye me-2 text-primary"></i>View
                                             </a>
                                         </li>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit", "Posts", new { id = post.Id })">
+                                                <i class="fas fa-edit me-2 text-info"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <a class="dropdown-item text-danger" href="#" onclick="deletePost('@post.Id'); return false;">
                                                 <i class="fas fa-trash me-2"></i>Delete
@@ -75,34 +165,41 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="text-muted small mt-2">
-                                <i class="fas fa-clock me-1"></i>
-                                @post.CreatedAt.ToString("MMM dd, yyyy")
-                            </div>
                         </div>
                     </div>
                 </div>
             }
         </div>
 
+        <!-- Pagination -->
         @if (Model.TotalPages > 1)
         {
-            <nav aria-label="Page navigation" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-                        <a class="page-link" href="@Url.Action("MyPosts", new { page = Model.PageNumber - 1 })">
-                            <i class="fas fa-chevron-left"></i>
+            <nav aria-label="Posts pagination" class="mt-5" id="paginationNav">
+                <ul class="pagination justify-content-center flex-wrap">
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           href="@Url.Action("MyPosts", "Posts", new { page = Model.PageNumber - 1 })"
+                           data-page="@(Model.PageNumber - 1)">
+                            <i class="fas fa-chevron-left"></i> <span class="d-none d-sm-inline">Previous</span>
                         </a>
                     </li>
-                    @for (int i = 1; i <= Model.TotalPages; i++)
+
+                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
                     {
-                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                            <a class="page-link" href="@Url.Action("MyPosts", new { page = i })">@i</a>
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" 
+                               href="@Url.Action("MyPosts", "Posts", new { page = i })"
+                               data-page="@i">
+                                @i
+                            </a>
                         </li>
                     }
-                    <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
-                        <a class="page-link" href="@Url.Action("MyPosts", new { page = Model.PageNumber + 1 })">
-                            <i class="fas fa-chevron-right"></i>
+
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a class="page-link" 
+                           href="@Url.Action("MyPosts", "Posts", new { page = Model.PageNumber + 1 })"
+                           data-page="@(Model.PageNumber + 1)">
+                            <span class="d-none d-sm-inline">Next</span> <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
                 </ul>
@@ -113,15 +210,13 @@
     {
         <div class="row">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
-                        <h3 class="mb-3">No Posts Yet</h3>
-                        <p class="text-muted mb-4">You haven't created any posts yet. Start sharing your thoughts with the community!</p>
-                        <a asp-action="Create" class="btn btn-gradient btn-lg">
-                            <i class="fas fa-plus-circle me-2"></i>Create Your First Post
-                        </a>
-                    </div>
+                <div class="empty-state-card">
+                    <i class="fas fa-inbox"></i>
+                    <h4>No Posts Yet</h4>
+                    <p>You haven't created any posts yet. Start sharing your thoughts with the community!</p>
+                    <a asp-action="Create" class="btn btn-purple text-white">
+                        <i class="fas fa-plus-circle me-2"></i>Create Your First Post
+                    </a>
                 </div>
             </div>
         </div>
@@ -129,28 +224,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        function deletePost(postId) {
-            if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
-                $.ajax({
-                    url: `/Posts/Delete/${postId}`,
-                    type: 'POST',
-                    data: {
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert('Failed to delete post: ' + (response.message || 'Unknown error'));
-                        }
-                    },
-                    error: function() {
-                        alert('An error occurred while deleting the post');
-                    }
-                });
-            }
-        }
-    </script>
+    <script src="~/js/pages/posts.js"></script>
 }
-

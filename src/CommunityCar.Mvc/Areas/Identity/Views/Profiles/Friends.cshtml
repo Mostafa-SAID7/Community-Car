@@ -1,9 +1,14 @@
 @model CommunityCar.Web.Areas.Identity.ViewModels.UserFriendsViewModel
 @{
     ViewData["Title"] = $"{Model.User.FirstName}'s Friends";
+    ViewData["PageType"] = "profile";
 }
 
-<div class="container mt-4">
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/profiles.css" asp-append-version="true" />
+}
+
+<div class="profile-container">
     <div class="row">
         <!-- User Info -->
         <div class="col-12 mb-4">

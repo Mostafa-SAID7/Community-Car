@@ -9,8 +9,8 @@ namespace CommunityCar.Domain.Interfaces.Community;
 public interface IPostService
 {
     // CRUD Operations
-    Task<Post> CreatePostAsync(string title, string content, PostType type, Guid authorId, Guid? groupId = null);
-    Task<Post> UpdatePostAsync(Guid postId, string title, string content, PostType type);
+    Task<Post> CreatePostAsync(string title, string content, PostType type, Guid authorId, Guid? groupId = null, PostStatus status = PostStatus.Draft);
+    Task<Post> UpdatePostAsync(Guid postId, string title, string content, PostType type, PostStatus? status = null);
     Task DeletePostAsync(Guid postId);
     
     // Query Operations
@@ -39,4 +39,7 @@ public interface IPostService
     Task<PostComment> UpdateCommentAsync(Guid commentId, Guid userId, string content);
     Task DeleteCommentAsync(Guid commentId, Guid userId);
     Task<PagedResult<PostCommentDto>> GetPostCommentsAsync(Guid postId, QueryParameters parameters, Guid? currentUserId = null);
+    
+    // Persistence
+    Task SaveChangesAsync();
 }

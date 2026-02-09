@@ -301,6 +301,7 @@ try
     app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/chatHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.FriendHub>("/friendHub");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.PostHub>("/postHub");
 
     app.Run();
 }

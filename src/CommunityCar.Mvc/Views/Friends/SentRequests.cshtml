@@ -1,11 +1,13 @@
 @model IEnumerable<CommunityCar.Web.ViewModels.Community.FriendRequestViewModel>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Sent Friend Requests";
+    ViewData["Title"] = Localizer["Sent Friend Requests"].Value;
 }
 
 @{
-    ViewData["HeaderTitle"] = "Sent Friend Requests";
-    ViewData["HeaderDescription"] = "View friend requests you've sent";
+    ViewData["HeaderTitle"] = Localizer["Sent Friend Requests"].Value;
+    ViewData["HeaderDescription"] = Localizer["View friend requests you've sent"].Value;
     ViewData["HeaderIcon"] = "fas fa-paper-plane";
 }
 
@@ -29,20 +31,20 @@
     <!-- Premium Navigation Tabs -->
     <div class="friends-nav">
         <a class="nav-link" asp-action="Index">
-            <i class="fas fa-user-friends"></i> Friends 
+            <i class="fas fa-user-friends"></i> @Localizer["Friends"] 
         </a>
         <a class="nav-link" asp-action="Requests">
-            <i class="fas fa-user-plus"></i> Received
+            <i class="fas fa-user-plus"></i> @Localizer["Received"]
         </a>
         <a class="nav-link active" asp-action="SentRequests">
-            <i class="fas fa-paper-plane"></i> Sent
+            <i class="fas fa-paper-plane"></i> @Localizer["Sent"]
             @if (ViewBag.SentRequestCount > 0) { <span class="badge bg-white text-primary ms-2">@ViewBag.SentRequestCount</span> }
         </a>
         <a class="nav-link" asp-action="Suggestions">
-            <i class="fas fa-lightbulb"></i> Suggestions
+            <i class="fas fa-lightbulb"></i> @Localizer["Suggestions"]
         </a>
         <a class="nav-link" asp-action="Blocked">
-            <i class="fas fa-ban"></i> Blocked
+            <i class="fas fa-ban"></i> @Localizer["Blocked"]
         </a>
     </div>
 
@@ -68,10 +70,10 @@
             <div class="friends-empty-icon">
                 <i class="fas fa-paper-plane"></i>
             </div>
-            <h3 class="fw-bold mb-2">No Pending Requests</h3>
-            <p class="text-muted mb-4">You haven't sent any friend requests yet.</p>
+            <h3 class="fw-bold mb-2">@Localizer["No Pending Requests"]</h3>
+            <p class="text-muted mb-4">@Localizer["You haven't sent any friend requests yet."]</p>
             <a href="@Url.Action("Search")" class="btn btn-primary rounded-pill px-4 py-2">
-                <i class="fas fa-search me-2"></i>Find Friends
+                <i class="fas fa-search me-2"></i>@Localizer["Find Friends"]
             </a>
         </div>
     }
@@ -99,20 +101,20 @@
                                     @request.UserName
                                 </a>
                                 <div class="friend-meta">
-                                    <i class="fas fa-clock"></i> Sent @request.ReceivedAt.ToString("MMM dd")
+                                    <i class="fas fa-clock"></i> @Localizer["Sent"] @request.ReceivedAt.ToString("MMM dd")
                                 </div>
                             </div>
                         </div>
 
                         <div class="friend-actions mt-auto">
                             <div class="text-center text-muted small">
-                                <i class="fas fa-hourglass-half me-1"></i> Pending
+                                <i class="fas fa-hourglass-half me-1"></i> @Localizer["Pending"]
                             </div>
                             <form asp-action="RemoveFriend" method="post" class="ajax-remove-form">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="friendId" value="@request.UserId" />
                                 <button type="submit" class="btn btn-outline-danger w-100 rounded-pill mt-2">
-                                    <i class="fas fa-times me-2"></i> Cancel Request
+                                    <i class="fas fa-times me-2"></i> @Localizer["Cancel Request"]
                                 </button>
                             </form>
                         </div>

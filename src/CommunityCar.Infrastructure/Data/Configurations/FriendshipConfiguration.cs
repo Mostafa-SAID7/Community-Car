@@ -23,6 +23,16 @@ public class FriendshipConfiguration : IEntityTypeConfiguration<Friendship>
             .HasForeignKey(f => f.FriendId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Indexes for performance optimization
+        builder.HasIndex(f => new { f.FriendId, f.Status })
+            .HasDatabaseName("IX_Friendships_FriendId_Status");
+
+        builder.HasIndex(f => new { f.UserId, f.Status })
+            .HasDatabaseName("IX_Friendships_UserId_Status");
+
+        builder.HasIndex(f => new { f.UserId, f.FriendId })
+            .HasDatabaseName("IX_Friendships_UserId_FriendId");
+
         // Soft delete filter
         builder.HasQueryFilter(f => !f.IsDeleted);
     }

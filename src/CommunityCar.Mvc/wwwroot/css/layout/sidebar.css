@@ -1,16 +1,39 @@
-/* Sidebar Styles */
+/* Sidebar Styles - Fixed Position */
+
+/* Left and Right Sidebars - Fixed on Desktop */
+@media (min-width: 768px) {
+    .sidebar-left,
+    .sidebar-right {
+        position: sticky;
+        top: 90px; /* Below fixed header (70px + 20px margin) */
+        height: calc(100vh - 110px);
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .sidebar-left {
+        padding-left: 1rem;
+        padding-right: 0.5rem;
+    }
+
+    .sidebar-right {
+        padding-left: 0.5rem;
+        padding-right: 1rem;
+    }
+
+    /* Main content area */
+    main.my-4 {
+        margin-top: 1.5rem !important;
+    }
+}
 
 /* Sticky Behavior on Desktop */
 .sidebar-sticky {
-    position: sticky;
-    top: 80px;
-    height: calc(100vh - 100px);
+    position: relative;
+    height: 100%;
     overflow-y: auto;
-    z-index: 100;
     direction: ltr;
-    /* Force scrollbar to right side */
     padding-right: 4px;
-    /* Space for scrollbar */
 }
 
 .sidebar-content {
@@ -72,12 +95,9 @@
 @media (min-width: 768px) {
     .sidebar-left {
         display: block !important;
-        position: static;
-        height: auto;
         background-color: transparent;
         box-shadow: none;
         padding-top: 0;
-        z-index: 10;
     }
 
     .sidebar-right {

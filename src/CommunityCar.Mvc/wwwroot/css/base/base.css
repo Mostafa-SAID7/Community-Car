@@ -2,6 +2,8 @@
 html {
     scroll-behavior: smooth;
     transition: background-color var(--transition-base), color var(--transition-base);
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 body {
@@ -10,6 +12,18 @@ body {
     font-family: var(--font-primary);
     line-height: 1.6;
     transition: background-color var(--transition-base), color var(--transition-base);
+    overflow-x: hidden;
+    max-width: 100%;
+    position: relative;
+}
+
+/* Prevent horizontal scroll on all containers */
+.container,
+.container-fluid,
+main,
+.row {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Smooth transitions for theme changes */

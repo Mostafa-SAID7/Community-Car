@@ -478,4 +478,18 @@ public class EventService : IEventService
             UpdatedAt = communityEvent.ModifiedAt
         };
     }
+
+    public async Task SetEventImageAsync(Guid eventId, string imageUrl)
+    {
+        var communityEvent = await _context.Set<CommunityEvent>()
+            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+        if (communityEvent == null)
+            throw new NotFoundException("Event not found");
+
+        communityEvent.SetImageUrl(imageUrl);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Event image set: {EventId}", eventId);
+    }
 }

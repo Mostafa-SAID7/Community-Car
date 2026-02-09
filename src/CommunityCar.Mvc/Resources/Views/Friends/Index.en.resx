@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Common Navigation -->
+  <data name="Friends" xml:space="preserve">
+    <value>Friends</value>
+  </data>
+  <data name="Received" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Suggestions" xml:space="preserve">
+    <value>Suggestions</value>
+  </data>
+  <data name="Blocked" xml:space="preserve">
+    <value>Blocked</value>
+  </data>
+  
+  <!-- Index Page -->
+  <data name="My Friends" xml:space="preserve">
+    <value>My Friends</value>
+  </data>
+  <data name="Connect with your community" xml:space="preserve">
+    <value>Connect with your community</value>
+  </data>
+  <data name="No Friends Yet" xml:space="preserve">
+    <value>No Friends Yet</value>
+  </data>
+  <data name="Start connecting with people in the community." xml:space="preserve">
+    <value>Start connecting with people in the community.</value>
+  </data>
+  <data name="Find Friends" xml:space="preserve">
+    <value>Find Friends</value>
+  </data>
+  <data name="Friends since" xml:space="preserve">
+    <value>Friends since</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="View Profile" xml:space="preserve">
+    <value>View Profile</value>
+  </data>
+  <data name="Remove Friend" xml:space="preserve">
+    <value>Remove Friend</value>
+  </data>
+  <data name="Block User" xml:space="preserve">
+    <value>Block User</value>
+  </data>
+  
+  <!-- Requests Page -->
+  <data name="Friend Requests" xml:space="preserve">
+    <value>Friend Requests</value>
+  </data>
+  <data name="Manage your pending friend requests" xml:space="preserve">
+    <value>Manage your pending friend requests</value>
+  </data>
+  <data name="No Pending Requests" xml:space="preserve">
+    <value>No Pending Requests</value>
+  </data>
+  <data name="You don't have any friend requests at the moment." xml:space="preserve">
+    <value>You don't have any friend requests at the moment.</value>
+  </data>
+  <data name="You have {0} pending friend request(s)." xml:space="preserve">
+    <value>You have {0} pending friend request(s).</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  
+  <!-- Sent Requests Page -->
+  <data name="Sent Friend Requests" xml:space="preserve">
+    <value>Sent Friend Requests</value>
+  </data>
+  <data name="View friend requests you've sent" xml:space="preserve">
+    <value>View friend requests you've sent</value>
+  </data>
+  <data name="You haven't sent any friend requests yet." xml:space="preserve">
+    <value>You haven't sent any friend requests yet.</value>
+  </data>
+  <data name="Cancel Request" xml:space="preserve">
+    <value>Cancel Request</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  
+  <!-- Suggestions Page -->
+  <data name="Friend Suggestions" xml:space="preserve">
+    <value>Friend Suggestions</value>
+  </data>
+  <data name="Discover people you may know" xml:space="preserve">
+    <value>Discover people you may know</value>
+  </data>
+  <data name="No Suggestions Available" xml:space="preserve">
+    <value>No Suggestions Available</value>
+  </data>
+  <data name="Check back later for new friend suggestions." xml:space="preserve">
+    <value>Check back later for new friend suggestions.</value>
+  </data>
+  <data name="Search for Friends" xml:space="preserve">
+    <value>Search for Friends</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  
+  <!-- Search Page -->
+  <data name="Search for people to connect with" xml:space="preserve">
+    <value>Search for people to connect with</value>
+  </data>
+  <data name="Search by name or username..." xml:space="preserve">
+    <value>Search by name or username...</value>
+  </data>
+  <data name="No Results Found" xml:space="preserve">
+    <value>No Results Found</value>
+  </data>
+  <data name="Try searching with different keywords." xml:space="preserve">
+    <value>Try searching with different keywords.</value>
+  </data>
+  <data name="Enter a name or username to find people you know." xml:space="preserve">
+    <value>Enter a name or username to find people you know.</value>
+  </data>
+  <data name="View Suggestions" xml:space="preserve">
+    <value>View Suggestions</value>
+  </data>
+  <data name="Friend" xml:space="preserve">
+    <value>Friend</value>
+  </data>
+  
+  <!-- Blocked Page -->
+  <data name="Blocked Users" xml:space="preserve">
+    <value>Blocked Users</value>
+  </data>
+  <data name="Manage users you've blocked" xml:space="preserve">
+    <value>Manage users you've blocked</value>
+  </data>
+  <data name="No Blocked Users" xml:space="preserve">
+    <value>No Blocked Users</value>
+  </data>
+  <data name="You haven't blocked anyone yet." xml:space="preserve">
+    <value>You haven't blocked anyone yet.</value>
+  </data>
+  <data name="View My Friends" xml:space="preserve">
+    <value>View My Friends</value>
+  </data>
+  <data name="Blocked users cannot send you friend requests or interact with your content." xml:space="preserve">
+    <value>Blocked users cannot send you friend requests or interact with your content.</value>
+  </data>
+  <data name="Unblock User" xml:space="preserve">
+    <value>Unblock User</value>
+  </data>
+</root>

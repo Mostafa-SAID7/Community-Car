@@ -22,7 +22,7 @@
                     <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> Create New Event</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
@@ -100,9 +100,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ImageUrl" class="form-label"></label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
-                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            <label asp-for="ImageFile" class="form-label">Event Image</label>
+                            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            <small class="form-text text-muted">Upload an image for your event (JPG, PNG, GIF)</small>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -123,6 +124,26 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // Set default datetime values to avoid timezone issues
+        document.addEventListener('DOMContentLoaded', function() {
+            const startTimeInput = document.querySelector('input[name="StartTime"]');
+            const endTimeInput = document.querySelector('input[name="EndTime"]');
+            
+            if (startTimeInput && !startTimeInput.value) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(10, 0, 0, 0);
+                startTimeInput.value = tomorrow.toISOString().slice(0, 16);
+            }
+            
+            if (endTimeInput && !endTimeInput.value) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(12, 0, 0, 0);
+                endTimeInput.value = tomorrow.toISOString().slice(0, 16);
+            }
+        });
+        
         document.getElementById('isOnlineCheck').addEventListener('change', function() {
             const locationField = document.getElementById('locationField');
             const addressField = document.getElementById('addressField');

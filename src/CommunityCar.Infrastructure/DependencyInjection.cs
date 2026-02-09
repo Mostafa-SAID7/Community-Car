@@ -183,9 +183,11 @@ public static class DependencyInjection
         services.AddScoped<IGuideService, GuideService>();
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IPostHubService, PostHubService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<IAssistantService, AssistantService>();
         services.AddScoped<IMLPipelineService, MLPipelineService>();
+        services.AddScoped<CommunityCar.Infrastructure.Interfaces.IFileStorageService, FileStorageService>();
         services.AddSingleton<IPredictionService, PredictionService>();
         services.AddSingleton<ISentimentAnalysisService, SentimentAnalysisService>();
         services.AddScoped<IGroupService, GroupService>();

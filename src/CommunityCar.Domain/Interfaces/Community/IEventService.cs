@@ -57,4 +57,6 @@ public interface IEventService
     Task<EventComment> UpdateCommentAsync(Guid commentId, Guid userId, string content);
     Task DeleteCommentAsync(Guid commentId, Guid userId);
     Task<PagedResult<EventCommentDto>> GetEventCommentsAsync(Guid eventId, QueryParameters parameters, Guid? currentUserId = null);
+    
+    Task SetEventImageAsync(Guid eventId, string imageUrl);
 }

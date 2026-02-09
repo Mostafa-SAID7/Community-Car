@@ -1,0 +1,41 @@
+root = true
+
+# All files
+[*]
+charset = utf-8
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+
+# Razor files
+[*.{cshtml,razor}]
+indent_size = 4
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# XML files
+[*.{xml,csproj,props,targets}]
+indent_size = 2
+
+# C# files
+[*.cs]
+
+# Disable some analyzers for faster builds in development
+dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1303.severity = none
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA2007.severity = none
+
+# Nullable warnings (keep these for safety)
+dotnet_diagnostic.CS8600.severity = warning
+dotnet_diagnostic.CS8601.severity = warning
+dotnet_diagnostic.CS8602.severity = warning
+dotnet_diagnostic.CS8603.severity = warning
+dotnet_diagnostic.CS8604.severity = warning

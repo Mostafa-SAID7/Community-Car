@@ -89,13 +89,14 @@ public class FriendsController : Controller
     }
 
     [HttpGet("GetPendingRequestCount")]
+    [ResponseCache(Duration = 10, VaryByHeader = "Cookie")]
     public async Task<IActionResult> GetPendingRequestCount()
     {
         try
         {
             var userId = GetCurrentUserId();
-            var requests = await _friendshipService.GetPendingRequestsAsync(userId);
-            return Json(new { success = true, count = requests.Count() });
+            var count = await _friendshipService.GetPendingRequestsCountAsync(userId);
+            return Json(new { success = true, count });
         }
         catch (Exception ex)
         {
@@ -189,6 +190,20 @@ public class FriendsController : Controller
                 return RedirectToAction(nameof(Index));
             }
 
+            // Check if target user is an admin
+            var targetUser = await _userManager.FindByIdAsync(friendId.ToString());
+            if (targetUser != null)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(targetUser, "Admin");
+                var isSuperAdmin = await _userManager.IsInRoleAsync(targetUser, "SuperAdmin");
+                
+                if (isAdmin || isSuperAdmin)
+                {
+                    TempData["Error"] = _localizer["CannotSendRequestToAdmin"].Value ?? "Cannot send friend requests to administrators.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             await _friendshipService.SendRequestAsync(userId, friendId);
             
             // Notify user via database notification
@@ -237,6 +252,19 @@ public class FriendsController : Controller
             if (userId == friendId)
             {
                 return Json(new { success = false, message = _localizer["CannotSendRequestToSelf"].Value });
+            }
+
+            // Check if target user is an admin
+            var targetUser = await _userManager.FindByIdAsync(friendId.ToString());
+            if (targetUser != null)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(targetUser, "Admin");
+                var isSuperAdmin = await _userManager.IsInRoleAsync(targetUser, "SuperAdmin");
+                
+                if (isAdmin || isSuperAdmin)
+                {
+                    return Json(new { success = false, message = _localizer["CannotSendRequestToAdmin"].Value ?? "Cannot send friend requests to administrators." });
+                }
             }
 
             await _friendshipService.SendRequestAsync(userId, friendId);
@@ -511,6 +539,20 @@ public class FriendsController : Controller
                 return RedirectToAction(nameof(Index));
             }
 
+            // Check if target user is an admin
+            var targetUser = await _userManager.FindByIdAsync(friendId.ToString());
+            if (targetUser != null)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(targetUser, "Admin");
+                var isSuperAdmin = await _userManager.IsInRoleAsync(targetUser, "SuperAdmin");
+                
+                if (isAdmin || isSuperAdmin)
+                {
+                    TempData["Error"] = _localizer["CannotBlockAdmin"].Value ?? "Cannot block administrators.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             await _friendshipService.BlockUserAsync(userId, friendId);
             
             // Send real-time notification via SignalR
@@ -552,6 +594,19 @@ public class FriendsController : Controller
             if (userId == friendId)
             {
                 return Json(new { success = false, message = _localizer["CannotBlockSelf"].Value });
+            }
+
+            // Check if target user is an admin
+            var targetUser = await _userManager.FindByIdAsync(friendId.ToString());
+            if (targetUser != null)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(targetUser, "Admin");
+                var isSuperAdmin = await _userManager.IsInRoleAsync(targetUser, "SuperAdmin");
+                
+                if (isAdmin || isSuperAdmin)
+                {
+                    return Json(new { success = false, message = _localizer["CannotBlockAdmin"].Value ?? "Cannot block administrators." });
+                }
             }
 
             await _friendshipService.BlockUserAsync(userId, friendId);
@@ -605,8 +660,14 @@ public class FriendsController : Controller
                 return View(new List<UserSearchViewModel>());
             }
 
+            // Get all admin and superadmin user IDs to exclude them
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            var superAdminUsers = await _userManager.GetUsersInRoleAsync("SuperAdmin");
+            var adminUserIds = adminUsers.Select(u => u.Id).Concat(superAdminUsers.Select(u => u.Id)).ToList();
+
             var users = await _userManager.Users
                 .Where(u => !u.IsDeleted && u.Id != userId &&
+                    !adminUserIds.Contains(u.Id) && // Exclude admin users
                     ((u.FirstName != null && u.FirstName.Contains(query)) || 
                      (u.LastName != null && u.LastName.Contains(query)) || 
                      (u.UserName != null && u.UserName.Contains(query))))
@@ -649,8 +710,15 @@ public class FriendsController : Controller
             }
 
             var userId = GetCurrentUserId();
+            
+            // Get all admin and superadmin user IDs to exclude them
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            var superAdminUsers = await _userManager.GetUsersInRoleAsync("SuperAdmin");
+            var adminUserIds = adminUsers.Select(u => u.Id).Concat(superAdminUsers.Select(u => u.Id)).ToList();
+            
             var users = await _userManager.Users
                 .Where(u => !u.IsDeleted && u.Id != userId &&
+                    !adminUserIds.Contains(u.Id) && // Exclude admin users
                     ((u.FirstName != null && u.FirstName.Contains(query)) || 
                      (u.LastName != null && u.LastName.Contains(query)) || 
                      (u.UserName != null && u.UserName.Contains(query))))
@@ -681,9 +749,14 @@ public class FriendsController : Controller
         {
             var userId = GetCurrentUserId();
             
+            // Get all admin and superadmin user IDs to exclude them
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            var superAdminUsers = await _userManager.GetUsersInRoleAsync("SuperAdmin");
+            var adminUserIds = adminUsers.Select(u => u.Id).Concat(superAdminUsers.Select(u => u.Id)).ToList();
+            
             // Get users who are not friends and not blocked
             var suggestions = await _userManager.Users
-                .Where(u => !u.IsDeleted && u.Id != userId)
+                .Where(u => !u.IsDeleted && u.Id != userId && !adminUserIds.Contains(u.Id)) // Exclude admin users
                 .Take(12)
                 .ToListAsync();
 

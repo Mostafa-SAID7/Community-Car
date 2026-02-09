@@ -144,4 +144,12 @@ public class FriendshipService : IFriendshipService
             .Where(f => f.UserId == userId && f.Status == FriendshipStatus.Blocked)
             .ToListAsync();
     }
+
+    public async Task<int> GetPendingRequestsCountAsync(Guid userId)
+    {
+        return await _friendshipRepository
+            .GetQueryable()
+            .Where(f => f.FriendId == userId && f.Status == FriendshipStatus.Pending)
+            .CountAsync();
+    }
 }

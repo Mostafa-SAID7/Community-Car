@@ -1,6 +1,14 @@
 @model IEnumerable<CommunityCar.Web.ViewModels.Community.BlockedUserViewModel>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Blocked Users";
+    ViewData["Title"] = Localizer["Blocked"].Value;
+}
+
+@{
+    ViewData["HeaderTitle"] = Localizer["Blocked"].Value;
+    ViewData["HeaderDescription"] = Localizer["Blocked users cannot send you friend requests or interact with your content."].Value;
+    ViewData["HeaderIcon"] = "fas fa-ban";
 }
 
 @section Styles {
@@ -23,20 +31,20 @@
     <!-- Premium Navigation Tabs -->
     <div class="friends-nav">
         <a class="nav-link" asp-action="Index">
-            <i class="fas fa-user-friends"></i> Friends 
+            <i class="fas fa-user-friends"></i> @Localizer["Friends"] 
         </a>
         <a class="nav-link" asp-action="Requests">
-            <i class="fas fa-user-plus"></i> Received
+            <i class="fas fa-user-plus"></i> @Localizer["Received"]
              @if (ViewBag.RequestCount > 0) { <span class="badge bg-danger ms-2">@ViewBag.RequestCount</span> }
         </a>
         <a class="nav-link" asp-action="SentRequests">
-            <i class="fas fa-paper-plane"></i> Sent
+            <i class="fas fa-paper-plane"></i> @Localizer["Sent"]
         </a>
         <a class="nav-link" asp-action="Suggestions">
-            <i class="fas fa-lightbulb"></i> Suggestions
+            <i class="fas fa-lightbulb"></i> @Localizer["Suggestions"]
         </a>
         <a class="nav-link active" asp-action="Blocked">
-            <i class="fas fa-ban"></i> Blocked
+            <i class="fas fa-ban"></i> @Localizer["Blocked"]
         </a>
     </div>
 
@@ -62,10 +70,10 @@
             <div class="friends-empty-icon">
                 <i class="fas fa-shield-alt"></i>
             </div>
-            <h3 class="fw-bold mb-2">No Blocked Users</h3>
-            <p class="text-muted mb-4">You haven't blocked anyone yet.</p>
+            <h3 class="fw-bold mb-2">@Localizer["No Blocked Users"]</h3>
+            <p class="text-muted mb-4">@Localizer["You haven't blocked anyone yet."]</p>
             <a href="@Url.Action("Index")" class="btn btn-primary rounded-pill px-4 py-2">
-                <i class="fas fa-users me-2"></i>View My Friends
+                <i class="fas fa-users me-2"></i>@Localizer["View My Friends"]
             </a>
         </div>
     }
@@ -73,7 +81,7 @@
     {
         <div class="alert alert-light border-0 shadow-sm rounded-xl mb-4 d-flex align-items-center gap-3 p-3">
             <i class="fas fa-info-circle text-primary fs-4"></i>
-            <span class="text-secondary">Blocked users cannot send you friend requests or interact with your content.</span>
+            <span class="text-secondary">@Localizer["Blocked users cannot send you friend requests or interact with your content."]</span>
         </div>
 
         <div class="row g-4">
@@ -98,7 +106,7 @@
                                     @user.UserName
                                 </span>
                                 <div class="friend-meta text-danger">
-                                    <i class="fas fa-ban"></i> Blocked @user.BlockedAt.ToString("MMM dd")
+                                    <i class="fas fa-ban"></i> @Localizer["Blocked"] @user.BlockedAt.ToString("MMM dd")
                                 </div>
                             </div>
                         </div>
@@ -108,7 +116,7 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="friendId" value="@user.UserId" />
                                 <button type="submit" class="btn btn-outline-success w-100 rounded-pill">
-                                    <i class="fas fa-unlock me-2"></i> Unblock User
+                                    <i class="fas fa-unlock me-2"></i> @Localizer["Unblock User"]
                                 </button>
                             </form>
                         </div>

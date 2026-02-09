@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Common Navigation -->
+  <data name="Friends" xml:space="preserve">
+    <value>الأصدقاء</value>
+  </data>
+  <data name="Received" xml:space="preserve">
+    <value>المستلمة</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>المرسلة</value>
+  </data>
+  <data name="Suggestions" xml:space="preserve">
+    <value>الاقتراحات</value>
+  </data>
+  <data name="Blocked" xml:space="preserve">
+    <value>المحظورون</value>
+  </data>
+  
+  <!-- Index Page -->
+  <data name="My Friends" xml:space="preserve">
+    <value>أصدقائي</value>
+  </data>
+  <data name="Connect with your community" xml:space="preserve">
+    <value>تواصل مع مجتمعك</value>
+  </data>
+  <data name="No Friends Yet" xml:space="preserve">
+    <value>لا يوجد أصدقاء بعد</value>
+  </data>
+  <data name="Start connecting with people in the community." xml:space="preserve">
+    <value>ابدأ بالتواصل مع الأشخاص في المجتمع.</value>
+  </data>
+  <data name="Find Friends" xml:space="preserve">
+    <value>البحث عن أصدقاء</value>
+  </data>
+  <data name="Friends since" xml:space="preserve">
+    <value>أصدقاء منذ</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>رسالة</value>
+  </data>
+  <data name="View Profile" xml:space="preserve">
+    <value>عرض الملف الشخصي</value>
+  </data>
+  <data name="Remove Friend" xml:space="preserve">
+    <value>إزالة صديق</value>
+  </data>
+  <data name="Block User" xml:space="preserve">
+    <value>حظر المستخدم</value>
+  </data>
+  
+  <!-- Requests Page -->
+  <data name="Friend Requests" xml:space="preserve">
+    <value>طلبات الصداقة</value>
+  </data>
+  <data name="Manage your pending friend requests" xml:space="preserve">
+    <value>إدارة طلبات الصداقة المعلقة</value>
+  </data>
+  <data name="No Pending Requests" xml:space="preserve">
+    <value>لا توجد طلبات معلقة</value>
+  </data>
+  <data name="You don't have any friend requests at the moment." xml:space="preserve">
+    <value>ليس لديك أي طلبات صداقة في الوقت الحالي.</value>
+  </data>
+  <data name="You have {0} pending friend request(s)." xml:space="preserve">
+    <value>لديك {0} طلب صداقة معلق.</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>قبول</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>رفض</value>
+  </data>
+  
+  <!-- Sent Requests Page -->
+  <data name="Sent Friend Requests" xml:space="preserve">
+    <value>طلبات الصداقة المرسلة</value>
+  </data>
+  <data name="View friend requests you've sent" xml:space="preserve">
+    <value>عرض طلبات الصداقة التي أرسلتها</value>
+  </data>
+  <data name="You haven't sent any friend requests yet." xml:space="preserve">
+    <value>لم ترسل أي طلبات صداقة بعد.</value>
+  </data>
+  <data name="Cancel Request" xml:space="preserve">
+    <value>إلغاء الطلب</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>معلق</value>
+  </data>
+  
+  <!-- Suggestions Page -->
+  <data name="Friend Suggestions" xml:space="preserve">
+    <value>اقتراحات الأصدقاء</value>
+  </data>
+  <data name="Discover people you may know" xml:space="preserve">
+    <value>اكتشف أشخاصًا قد تعرفهم</value>
+  </data>
+  <data name="No Suggestions Available" xml:space="preserve">
+    <value>لا توجد اقتراحات متاحة</value>
+  </data>
+  <data name="Check back later for new friend suggestions." xml:space="preserve">
+    <value>تحقق لاحقًا للحصول على اقتراحات أصدقاء جديدة.</value>
+  </data>
+  <data name="Search for Friends" xml:space="preserve">
+    <value>البحث عن أصدقاء</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>الملف الشخصي</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  
+  <!-- Search Page -->
+  <data name="Search for people to connect with" xml:space="preserve">
+    <value>ابحث عن أشخاص للتواصل معهم</value>
+  </data>
+  <data name="Search by name or username..." xml:space="preserve">
+    <value>البحث بالاسم أو اسم المستخدم...</value>
+  </data>
+  <data name="No Results Found" xml:space="preserve">
+    <value>لم يتم العثور على نتائج</value>
+  </data>
+  <data name="Try searching with different keywords." xml:space="preserve">
+    <value>حاول البحث بكلمات مفتاحية مختلفة.</value>
+  </data>
+  <data name="Enter a name or username to find people you know." xml:space="preserve">
+    <value>أدخل اسمًا أو اسم مستخدم للعثور على أشخاص تعرفهم.</value>
+  </data>
+  <data name="View Suggestions" xml:space="preserve">
+    <value>عرض الاقتراحات</value>
+  </data>
+  <data name="Friend" xml:space="preserve">
+    <value>صديق</value>
+  </data>
+  
+  <!-- Blocked Page -->
+  <data name="Blocked Users" xml:space="preserve">
+    <value>المستخدمون المحظورون</value>
+  </data>
+  <data name="Manage users you've blocked" xml:space="preserve">
+    <value>إدارة المستخدمين الذين حظرتهم</value>
+  </data>
+  <data name="No Blocked Users" xml:space="preserve">
+    <value>لا يوجد مستخدمون محظورون</value>
+  </data>
+  <data name="You haven't blocked anyone yet." xml:space="preserve">
+    <value>لم تحظر أي شخص بعد.</value>
+  </data>
+  <data name="View My Friends" xml:space="preserve">
+    <value>عرض أصدقائي</value>
+  </data>
+  <data name="Blocked users cannot send you friend requests or interact with your content." xml:space="preserve">
+    <value>لا يمكن للمستخدمين المحظورين إرسال طلبات صداقة أو التفاعل مع محتواك.</value>
+  </data>
+  <data name="Unblock User" xml:space="preserve">
+    <value>إلغاء حظر المستخدم</value>
+  </data>
+</root>

@@ -1,4 +1,5 @@
 using CommunityCar.Domain.Enums.Community.events;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommunityCar.Mvc.ViewModels.Events;
@@ -14,10 +15,10 @@ public class CreateEventViewModel
     public string Description { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Start time is required")]
-    public DateTimeOffset StartTime { get; set; } = DateTimeOffset.Now.AddDays(1);
+    public DateTime StartTime { get; set; } = DateTime.Now.AddDays(1);
 
     [Required(ErrorMessage = "End time is required")]
-    public DateTimeOffset EndTime { get; set; } = DateTimeOffset.Now.AddDays(1).AddHours(2);
+    public DateTime EndTime { get; set; } = DateTime.Now.AddDays(1).AddHours(2);
 
     [Required(ErrorMessage = "Location is required")]
     [StringLength(500, ErrorMessage = "Location cannot exceed 500 characters")]
@@ -38,7 +39,7 @@ public class CreateEventViewModel
     [Url(ErrorMessage = "Please enter a valid URL")]
     public string? OnlineUrl { get; set; }
 
-    [StringLength(500)]
-    [Url(ErrorMessage = "Please enter a valid URL")]
+    public IFormFile? ImageFile { get; set; }
+    
     public string? ImageUrl { get; set; }
 }

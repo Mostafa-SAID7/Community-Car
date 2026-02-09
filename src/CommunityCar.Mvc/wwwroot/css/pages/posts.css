@@ -1,72 +1,938 @@
-/* Page: Posts */
+/* Page: Posts - Centralized Styles */
 
-/* 
- * Use shared classes from components:
- * - Heroes: .hero.hero-purple-deep, .hero.hero-purple.hero-sm
- * - Cards: .content-card, .content-card-borderless
- * - Badges: .type-badge.type-badge-text, .type-badge-image, .type-badge-video, .type-badge-link
- * 
- * Legacy class aliases below for backward compatibility with existing views.
- * Update views to use shared classes, then remove these aliases.
- */
-
-/* Legacy alias - use .hero.hero-purple-deep instead */
-.posts-hero {
-    background: var(--gradient-purple-deep);
-    color: var(--text-inverse);
-    padding: 3rem 0;
-    margin-bottom: 2rem;
-    border-radius: var(--radius-lg);
+/* ========================================
+   CONTAINER
+   ======================================== */
+.posts-container {
+    padding-top: var(--spacing-lg);
+    padding-bottom: var(--spacing-2xl);
 }
 
-/* Legacy alias - use .hero.hero-purple.hero-sm instead */
-.create-post-hero {
-    background: var(--gradient-purple);
-    color: var(--text-inverse);
-    padding: 2rem 0;
-    margin-bottom: 2rem;
-    border-radius: var(--radius-lg);
+/* ========================================
+   SEARCH FUNCTIONALITY
+   ======================================== */
+.search-wrapper {
+    position: relative;
 }
 
-/* Legacy alias - use .content-card-borderless instead */
-.post-card {
-    transition: all var(--transition-base);
-    border: none;
+.search-wrapper .form-control {
+    padding-left: var(--spacing-2xl);
+    padding-right: var(--spacing-2xl);
     border-radius: var(--radius-xl);
-    overflow: hidden;
+    border: 2px solid var(--border-primary);
+    transition: all var(--transition-base);
+}
+
+.search-wrapper .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(251, 44, 54, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--spacing-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    pointer-events: none;
+}
+
+.search-spinner {
+    position: absolute;
+    right: var(--spacing-lg);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ========================================
+   FILTER BUTTONS
+   ======================================== */
+.filter-label {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+}
+
+.filter-btn {
+    border-radius: var(--radius-full);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.filter-btn.active {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-premium-glow);
+}
+
+/* ========================================
+   RESULTS INFO
+   ======================================== */
+.results-info {
+    padding: 0.75rem 0;
+    font-size: 0.9375rem;
+}
+
+/* ========================================
+   POST TYPE SELECTOR (for Create/Edit forms)
+   ======================================== */
+.post-type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.post-type-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) var(--spacing-md);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-2xl);
+    cursor: pointer;
+    transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-primary);
+    text-align: center;
+    min-height: 100px;
+}
+
+.post-type-card:hover {
+    background: var(--bg-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-secondary);
+}
+
+.post-type-card.active {
+    background: var(--gradient-premium-red);
+    color: var(--text-inverse);
+    box-shadow: var(--shadow-premium-large);
+    border-color: var(--color-primary);
+}
+
+.post-type-card.active::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 24px;
+    height: 24px;
+    background: var(--bg-primary);
+    color: var(--color-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.post-type-card i {
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+    transition: transform var(--transition-base);
+}
+
+.post-type-card:hover i {
+    transform: scale(1.1);
+}
+
+.post-type-card .fw-bold {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ========================================
+   POST STATUS SELECTOR (for Create/Edit forms)
+   ======================================== */
+.post-status-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.post-status-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-primary);
+    text-align: center;
+    min-height: 90px;
+}
+
+.post-status-card:hover {
+    background: var(--bg-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-secondary);
+}
+
+.post-status-card.active {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.post-status-card.active::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    width: 22px;
+    height: 22px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
     box-shadow: var(--shadow-sm);
 }
 
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+.post-status-card i {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    transition: transform var(--transition-base);
 }
 
-/* Legacy aliases - use .type-badge with .type-badge-text/image/video/link instead */
-.post-type-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
+.post-status-card:hover i {
+    transform: scale(1.1);
+}
+
+.post-status-card .fw-bold {
+    font-size: 0.8rem;
     font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
-.post-type-text {
-    background-color: var(--color-info-bg);
-    color: var(--color-info);
+/* Status-specific colors */
+.post-status-card.status-draft {
+    border-color: #ffc107;
 }
 
-.post-type-image {
-    background-color: var(--color-success-bg);
+.post-status-card.status-draft.active {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #fff;
+    border-color: #ffc107;
+}
+
+.post-status-card.status-draft.active::before {
+    color: #ffc107;
+}
+
+.post-status-card.status-published {
+    border-color: #28a745;
+}
+
+.post-status-card.status-published.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #fff;
+    border-color: #28a745;
+}
+
+.post-status-card.status-published.active::before {
+    color: #28a745;
+}
+
+.post-status-card.status-archived {
+    border-color: #6c757d;
+}
+
+.post-status-card.status-archived.active {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: #fff;
+    border-color: #6c757d;
+}
+
+.post-status-card.status-archived.active::before {
+    color: #6c757d;
+}
+
+.post-status-card.status-deleted {
+    border-color: #dc3545;
+}
+
+.post-status-card.status-deleted.active {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: #fff;
+    border-color: #dc3545;
+}
+
+.post-status-card.status-deleted.active::before {
+    color: #dc3545;
+}
+
+
+/* ========================================
+   FILE UPLOAD PREVIEW
+   ======================================== */
+.file-upload-wrapper {
+    position: relative;
+}
+
+.preview-container {
+    margin-top: var(--spacing-md);
+    border: 2px dashed var(--border-secondary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    display: none;
+    background: var(--bg-tertiary);
+}
+
+.preview-container.active {
+    display: block;
+}
+
+.preview-container img,
+.preview-container video {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.file-preview-remove {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: rgba(220, 53, 69, 0.95);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.file-preview-remove:hover {
+    background: var(--color-danger);
+    transform: scale(1.1);
+}
+
+/* ========================================
+   PAGINATION
+   ======================================== */
+.pagination {
+    gap: var(--spacing-sm);
+}
+
+.pagination .page-link {
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-primary);
+    color: var(--text-primary);
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all var(--transition-base);
+}
+
+.pagination .page-link:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--text-inverse);
+    transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-premium-glow);
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+.post-item.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.post-item {
+    transition: opacity var(--transition-base);
+}
+
+/* ========================================
+   POST DETAILS PAGE
+   ======================================== */
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.post-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+}
+
+.post-author-avatar-large {
+    width: 80px;
+    height: 80px;
+    margin-top: -50px;
+}
+
+.post-comment-avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.tag-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-right: var(--spacing-sm);
+    display: inline-block;
+}
+
+.tag-badge:hover {
+    background: var(--bg-active);
+    color: var(--text-primary);
+}
+
+.related-post-card {
+    transition: transform var(--transition-fast);
+    border: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.related-post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.related-post-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.related-post-placeholder {
+    width: 60px;
+    height: 60px;
+}
+
+/* ========================================
+   EDIT POST PAGE
+   ======================================== */
+.edit-post-card .card-header {
+    background: var(--gradient-premium-red);
+    color: var(--text-inverse);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+}
+
+.edit-post-card .card-body {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: var(--spacing-xl);
+}
+
+.edit-post-card .form-label {
+    color: var(--text-primary);
+}
+
+.edit-post-card .form-control,
+.edit-post-card .form-select {
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
+}
+
+.edit-post-card .form-control:focus,
+.edit-post-card .form-select:focus {
+    background: var(--input-bg);
+    border-color: var(--border-focus);
+    color: var(--input-text);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    .post-type-selector {
+        gap: var(--spacing-sm);
+    }
+
+    .post-type-card {
+        padding: var(--spacing-md) var(--spacing-sm);
+        min-height: 85px;
+    }
+
+    .post-type-card i {
+        font-size: 1.75rem;
+    }
+
+    .post-type-card .fw-bold {
+        font-size: 0.8rem;
+    }
+
+    .post-status-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    .post-status-card {
+        padding: var(--spacing-md) var(--spacing-sm);
+        min-height: 80px;
+    }
+
+    .post-status-card i {
+        font-size: 1.5rem;
+    }
+
+    .post-status-card .fw-bold {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .post-type-selector {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.4rem;
+    }
+
+    .post-type-card {
+        padding: 0.75rem 0.4rem;
+        min-height: 75px;
+    }
+
+    .post-type-card i {
+        font-size: 1.5rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .post-type-card .fw-bold {
+        font-size: 0.7rem;
+    }
+
+    .post-type-card.active::before {
+        width: 20px;
+        height: 20px;
+        top: 6px;
+        right: 6px;
+        font-size: 0.65rem;
+    }
+
+    .post-status-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+
+    .post-status-card {
+        padding: 0.65rem 0.35rem;
+        min-height: 70px;
+    }
+
+    .post-status-card i {
+        font-size: 1.35rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .post-status-card .fw-bold {
+        font-size: 0.65rem;
+    }
+
+    .post-status-card.active::before {
+        width: 18px;
+        height: 18px;
+        top: 5px;
+        right: 5px;
+        font-size: 0.6rem;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.post-type-fields {
+    display: none;
+}
+
+.post-type-fields.active {
+    display: block;
+}
+
+/* ========================================
+   MY POSTS PAGE
+   ======================================== */
+.my-post-card {
+    position: relative;
+}
+
+.my-post-card .content-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.my-post-card .dropdown .btn-ghost {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    transition: all var(--transition-fast);
+}
+
+.my-post-card .dropdown .btn-ghost:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-published {
+    background: var(--color-success-light);
     color: var(--color-success);
 }
 
-.post-type-video {
-    background-color: var(--color-error-bg);
-    color: var(--color-error);
+.status-draft {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
 }
 
-.post-type-link {
-    background-color: var(--color-warning-bg);
-    color: var(--color-warning);
+.status-archived {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.status-pending {
+    background: var(--color-info-light);
+    color: var(--color-info);
+}
+
+/* ========================================
+   NOTE: RTL, Print, and additional responsive
+   styles are in centralized utility files:
+   - utilities/rtl.css
+   - utilities/print.css
+   - utilities/responsive.css
+   ======================================== */
+
+
+/* ========================================
+   POST STATUS SELECTOR (for Create/Edit forms)
+   ======================================== */
+.post-status-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.post-status-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-primary);
+    text-align: center;
+    min-height: 90px;
+}
+
+.post-status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.post-status-card.active {
+    box-shadow: var(--shadow-lg);
+    border-width: 2px;
+}
+
+.post-status-card.active::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    width: 20px;
+    height: 20px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+}
+
+.post-status-card i {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    transition: transform var(--transition-base);
+}
+
+.post-status-card:hover i {
+    transform: scale(1.1);
+}
+
+.post-status-card .fw-bold {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* Status-specific colors */
+.post-status-card.status-draft {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.post-status-card.status-draft:hover {
+    background: #f8f9fa;
+    border-color: #5a6268;
+}
+
+.post-status-card.status-draft.active {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+.post-status-card.status-draft.active::before {
+    color: #6c757d;
+}
+
+.post-status-card.status-published {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.post-status-card.status-published:hover {
+    background: #f1f9f3;
+    border-color: #218838;
+}
+
+.post-status-card.status-published.active {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.post-status-card.status-published.active::before {
+    color: #28a745;
+}
+
+.post-status-card.status-archived {
+    border-color: #ffc107;
+    color: #856404;
+}
+
+.post-status-card.status-archived:hover {
+    background: #fff9e6;
+    border-color: #e0a800;
+}
+
+.post-status-card.status-archived.active {
+    background: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.post-status-card.status-archived.active::before {
+    color: #856404;
+}
+
+.post-status-card.status-deleted {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.post-status-card.status-deleted:hover {
+    background: #fef5f6;
+    border-color: #c82333;
+}
+
+.post-status-card.status-deleted.active {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.post-status-card.status-deleted.active::before {
+    color: #dc3545;
+}
+
+/* Responsive adjustments for status selector */
+@media (max-width: 768px) {
+    .post-status-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .post-status-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ========================================
+   VIDEO THUMBNAIL OVERLAY
+   ======================================== */
+.video-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.video-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    pointer-events: none;
+}
+
+.video-play-overlay i {
+    font-size: 3rem;
+    color: white;
+}
+
+.content-card:hover .video-play-overlay {
+    background: rgba(251, 44, 54, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-thumbnail-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ========================================
+   POST MEDIA CONTAINER (Details Page)
+   ======================================== */
+.post-media-container {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.post-media-container img {
+    display: block;
+    width: 100%;
+}
+
+.post-media-container video {
+    display: block;
+    width: 100%;
+    background: #000;
+}
+
+.post-media-container iframe {
+    border: none;
+}
+
+
+/* ========================================
+   VIDEO THUMBNAIL STYLES
+   ======================================== */
+.video-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.video-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    transition: all var(--transition-base);
+}
+
+.content-card:hover .video-play-overlay {
+    transform: translate(-50%, -50%) scale(1.1);
+    color: var(--color-primary);
+}
+
+.video-thumbnail-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Post media container for details page */
+.post-media-container {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.post-media-container img,
+.post-media-container video {
+    display: block;
+    width: 100%;
+}
+
+.post-media-container .ratio {
+    box-shadow: var(--shadow-md);
 }

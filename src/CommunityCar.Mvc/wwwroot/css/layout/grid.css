@@ -2,5 +2,20 @@
 .container {
     margin: 0 auto;
     padding: 0 var(--spacing-md);
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
+/* Ensure Bootstrap rows don't cause overflow */
+.row {
+    margin-left: calc(var(--bs-gutter-x, 1.5rem) * -0.5);
+    margin-right: calc(var(--bs-gutter-x, 1.5rem) * -0.5);
+    max-width: 100%;
+}
+
+/* Fix for columns that might overflow */
+[class*="col-"] {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}

@@ -8,50 +8,14 @@
     var isAuthor = post.IsAuthor;
     var friendshipStatus = ViewBag.FriendshipStatus as CommunityCar.Domain.Enums.Community.friends.FriendshipStatus?;
     var isIncoming = ViewBag.IsIncomingRequest as bool? ?? false;
+    
+    // Hide right sidebar for this page
+    ViewData["HideRightSidebar"] = true;
 }
 @using CommunityCar.Domain.Enums.Community.friends
 
 @section Styles {
-    <style>
-        .post-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #4a5568;
-        }
-        .post-meta {
-            font-size: 0.9rem;
-            color: #718096;
-        }
-        .author-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .tag-badge {
-            background: #edf2f7;
-            color: #4a5568;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.2s;
-            margin-right: 0.5rem;
-            display: inline-block;
-        }
-        .tag-badge:hover {
-            background: #e2e8f0;
-            color: #2d3748;
-        }
-        .related-post-card {
-            transition: transform 0.2s;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .related-post-card:hover {
-            transform: translateY(-5px);
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/pages/posts.css" />
 }
 
 @{
@@ -73,8 +37,8 @@
 
 <partial name="_InnerPageHeader" />
 
-<div class="container my-5">
-    <div class="row">
+<div class="my-4">
+    <div class="row g-3">
         <div class="col-lg-8">
             <!-- Post Content -->
             <div class="card shadow-sm border-0 mb-4 rounded-4">
@@ -97,21 +61,57 @@
                         @if (isAuthor)
                         {
                             <div class="ms-auto">
-                                <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                <a asp-action="Edit" asp-route-id="@post.Id" class=" btn-sm rounded-pill px-3">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
                             </div>
                         }
                     </div>
 
+                    @* Display Image *@
                     @if (post.Type == PostType.Image && !string.IsNullOrEmpty(post.ImageUrl))
                     {
-                        <img src="@post.ImageUrl" class="img-fluid rounded-4 mb-4 w-100" alt="@post.Title">
+                        <div class="post-media-container mb-4">
+                            <img src="@post.ImageUrl" class="img-fluid rounded-4 w-100" alt="@post.Title" style="max-height: 600px; object-fit: cover;">
+                        </div>
                     }
+                    
+                    @* Display Video *@
                     @if (post.Type == PostType.Video && !string.IsNullOrEmpty(post.VideoUrl))
                     {
-                        <div class="ratio ratio-16x9 mb-4 rounded-4 overflow-hidden">
-                            <iframe src="@post.VideoUrl" allowfullscreen></iframe>
+                        <div class="post-media-container mb-4">
+                            @if (post.VideoUrl.Contains("youtube.com") || post.VideoUrl.Contains("youtu.be"))
+                            {
+                                @* YouTube video *@
+                                var videoId = post.VideoUrl.Contains("youtu.be") 
+                                    ? post.VideoUrl.Split('/').Last().Split('?').First()
+                                    : System.Web.HttpUtility.ParseQueryString(new Uri(post.VideoUrl).Query).Get("v");
+                                <div class="ratio ratio-16x9 rounded-4 overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/@videoId" 
+                                            allowfullscreen 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                                </div>
+                            }
+                            else if (post.VideoUrl.Contains("vimeo.com"))
+                            {
+                                @* Vimeo video *@
+                                var vimeoId = post.VideoUrl.Split('/').Last();
+                                <div class="ratio ratio-16x9 rounded-4 overflow-hidden">
+                                    <iframe src="https://player.vimeo.com/video/@vimeoId" 
+                                            allowfullscreen 
+                                            allow="autoplay; fullscreen; picture-in-picture"></iframe>
+                                </div>
+                            }
+                            else
+                            {
+                                @* Direct video file *@
+                                <div class="rounded-4 overflow-hidden">
+                                    <video controls class="w-100" style="max-height: 600px;">
+                                        <source src="@post.VideoUrl" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            }
                         </div>
                     }
 
@@ -139,7 +139,7 @@
                                 <div>
                                     <h6 class="mb-1">@post.LinkTitle</h6>
                                     <p class="small text-muted mb-2">@post.LinkDescription</p>
-                                    <a href="@post.LinkUrl" target="_blank" class="btn btn-primary btn-sm rounded-pill px-3">
+                                    <a href="@post.LinkUrl" target="_blank" class=" btn-sm rounded-pill px-3">
                                         Visit Link <i class="fas fa-external-link-alt ms-1 small"></i>
                                     </a>
                                 </div>
@@ -151,7 +151,7 @@
                         <button class="btn @(post.IsLiked ? "btn-danger" : "btn-outline-danger") rounded-pill px-4 me-3" onclick="toggleLike('@post.Id')">
                             <i class="fas fa-heart me-2"></i>@(post.IsLiked ? "Liked" : "Like") (@post.LikeCount)
                         </button>
-                        <button class="btn btn-outline-primary rounded-pill px-4" onclick="sharePost('@post.Id', '@post.Title')">
+                        <button class=" rounded-pill px-4" onclick="sharePost('@post.Id', '@post.Title')">
                             <i class="fas fa-share-alt me-2"></i>Share
                         </button>
                     </div>
@@ -171,7 +171,7 @@
                                 <div class="mb-3">
                                     <textarea name="content" class="form-control rounded-4 border-light" rows="3" placeholder="Add a comment..."></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary rounded-pill px-4">Post Comment</button>
+                                <button type="submit" class=" rounded-pill px-4">Post Comment</button>
                             </form>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                 {
                     <div class="alert alert-light border rounded-4 p-4 text-center mb-4">
                         <p class="mb-3">Please login to join the conversation</p>
-                        <a href="/Identity/Account/Login" class="btn btn-primary rounded-pill px-4">Login</a>
+                        <a href="/Identity/Account/Login" class=" rounded-pill px-4">Login</a>
                     </div>
                 }
 
@@ -190,7 +190,7 @@
                         @foreach (var comment in Model.Comments.Items)
                         {
                             <div class="d-flex mb-4">
-                                <img src="@(comment.UserAvatar ?? "/images/default-avatar.svg")" alt="@comment.UserName" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <img src="@(comment.UserAvatar ?? "/images/default-avatar.svg")" alt="@comment.UserName" class="rounded-circle me-3 post-comment-avatar">
                                 <div class="flex-grow-1">
                                     <div class="bg-light p-3 rounded-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -220,12 +220,12 @@
             <div class="card shadow-sm border-0 mb-4 rounded-4 overflow-hidden">
                 <div class="bg-primary p-3"></div>
                 <div class="card-body p-4 text-center mt-n4">
-                    <img src="@(post.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle border border-4 border-white mb-3 shadow-sm" style="width: 80px; height: 80px; margin-top: -50px;">
+                    <img src="@(post.AuthorAvatar ?? "/images/default-avatar.svg")" class="rounded-circle border border-4 border-white mb-3 shadow-sm post-author-avatar-large">
                     <h5 class="fw-bold mb-1">@post.AuthorName</h5>
                     <p class="text-muted small mb-3">Community Contributor</p>
                     
                     <div class="d-flex flex-column gap-2 px-3">
-                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = post.AuthorId })" class="btn btn-outline-primary btn-sm rounded-pill w-100">View Profile</a>
+                        <a href="@Url.Action("Index", "Profiles", new { area = "Identity", id = post.AuthorId })" class=" btn-sm rounded-pill w-100">View Profile</a>
                         
                         @if (currentUserId.HasValue && !isAuthor)
                         {
@@ -234,7 +234,7 @@
                                 <form asp-controller="Friends" asp-action="SendRequest" method="post" class="ajax-add-friend-form">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="friendId" value="@post.AuthorId" />
-                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill w-100">
+                                    <button type="submit" class=" btn-sm rounded-pill w-100">
                                         <i class="fas fa-user-plus me-1"></i> Add Friend
                                     </button>
                                 </form>
@@ -287,11 +287,11 @@
                         <div class="d-flex">
                             @if (!string.IsNullOrEmpty(related.ImageUrl))
                             {
-                                <img src="@related.ImageUrl" class="rounded-3 me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="@related.ImageUrl" class="rounded-3 me-3 related-post-thumbnail">
                             }
                             else
                             {
-                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3 related-post-placeholder">
                                     <i class="fas fa-file-alt text-muted opacity-50"></i>
                                 </div>
                             }
@@ -311,33 +311,5 @@
 
 @section Scripts {
     <script src="~/js/pages/friends.js"></script>
-    <script>
-        function toggleLike(postId) {
-            const url = CultureHelper.buildUrl('Posts/ToggleLike/' + postId);
-            $.post(url, function(res) {
-                if (res.success) location.reload();
-            });
-        }
-
-        function sharePost(postId, title) {
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    url: window.location.href
-                });
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert('Link copied to clipboard!');
-            }
-        }
-
-        $('#commentForm').submit(function(e) {
-            e.preventDefault();
-            const data = $(this).serialize();
-            const url = CultureHelper.addCultureToUrl('/Posts/AddComment');
-            $.post(url, data, function(res) {
-                if (res.success) location.reload();
-            });
-        });
-    </script>
+    <script src="~/js/pages/posts.js"></script>
 }

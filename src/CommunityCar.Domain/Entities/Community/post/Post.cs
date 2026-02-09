@@ -46,7 +46,8 @@ public class Post : AggregateRoot
         string content,
         PostType type,
         Guid authorId,
-        Guid? groupId = null)
+        Guid? groupId = null,
+        PostStatus status = PostStatus.Draft)
     {
         Guard.Against.NullOrWhiteSpace(title, nameof(title));
         Guard.Against.NullOrWhiteSpace(content, nameof(content));
@@ -57,11 +58,17 @@ public class Post : AggregateRoot
         Type = type;
         AuthorId = authorId;
         GroupId = groupId;
-        Status = PostStatus.Draft;
+        Status = status;
         Slug = SlugHelper.GenerateSlug(title);
+        
+        // Set PublishedAt if status is Published
+        if (status == PostStatus.Published)
+        {
+            PublishedAt = DateTimeOffset.UtcNow;
+        }
     }
 
-    public void Update(string title, string content, PostType type)
+    public void Update(string title, string content, PostType type, PostStatus? status = null)
     {
         Guard.Against.NullOrWhiteSpace(title, nameof(title));
         Guard.Against.NullOrWhiteSpace(content, nameof(content));
@@ -70,6 +77,18 @@ public class Post : AggregateRoot
         Content = content;
         Type = type;
         Slug = SlugHelper.GenerateSlug(title);
+        
+        // Update status if provided
+        if (status.HasValue && status.Value != Status)
+        {
+            Status = status.Value;
+            
+            // Set PublishedAt if changing to Published
+            if (status.Value == PostStatus.Published && !PublishedAt.HasValue)
+            {
+                PublishedAt = DateTimeOffset.UtcNow;
+            }
+        }
     }
 
     public void Publish()

@@ -1,16 +1,17 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.DependencyInjection
 @inject IViewLocalizer Localizer
 
 <header class="app-header">
     <div class="container-fluid h-100 d-flex align-items-center justify-content-between px-3 px-lg-4">
         <!-- Left: Logo & Sidebar Toggle -->
         <div class="header-left d-flex align-items-center gap-3">
-            <button class="btn btn-icon d-md-none p-0 sidebar-toggle-btn" aria-label="Toggle Sidebar">
+            <button class="btn btn-link p-0 sidebar-toggle-btn d-md-none" aria-label="Toggle Sidebar">
                 <i class="fas fa-bars fa-lg"></i>
             </button>
-            <a asp-controller="Feed" asp-action="Index" class="navbar-brand d-flex align-items-center gap-2">
+            <a asp-controller="Feed" asp-action="Index" class="navbar-brand d-flex align-items-center gap-2 text-decoration-none">
                 <!-- Placeholder Logo -->
-                <div class="brand-logo-circle size-32">
+                <div class="brand-logo-circle size-32 d-flex align-items-center justify-content-center rounded-circle text-white">
                     <i class="fas fa-car-side"></i>
                 </div>
                 <span class="brand-text fw-bold fs-5 d-none d-sm-block">CommunityCar</span>
@@ -18,21 +19,20 @@
         </div>
 
         <!-- Center: Pill Navigation (Desktop Only) -->
-        <div class="header-center  d-md-flex align-items-center justify-content-center flex-grow-1">
+        <div class="header-center d-none d-md-flex align-items-center justify-content-center flex-grow-1">
             <div class="header-pill d-flex align-items-center">
                 
-                   <!-- Nav Links -->
                 <nav class="pill-nav d-flex align-items-center gap-1">
-                    <a asp-area="" asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill" title="@Localizer["Home"].Value">
+                    <a asp-area="" asp-controller="Feed" asp-action="Index" class="nav-link px-3 py-1 rounded-pill d-flex align-items-center justify-content-center" title="@Localizer["Home"].Value">
                         <i class="fas fa-house fa-lg"></i>
                     </a>
-                    <a asp-area="Communications" asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Chat"].Value">
+                    <a asp-area="Communications" asp-controller="Chats" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative d-flex align-items-center justify-content-center" title="@Localizer["Chat"].Value">
                         <i class="fas fa-messages fa-lg"></i>
-                        <span id="chatUnreadBadge" class="notification-badge badge-xs bg-primary-premium d-none">0</span>
+                        <span id="chatUnreadBadge" class="notification-badge badge bg-primary d-none">0</span>
                     </a>
-                    <a asp-area="" asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative" title="@Localizer["Friends"].Value">
+                    <a asp-area="" asp-controller="Friends" asp-action="Index" class="nav-link px-3 py-1 rounded-pill position-relative d-flex align-items-center justify-content-center" title="@Localizer["Friends"].Value">
                         <i class="fas fa-user-group fa-lg"></i>
-                        <span id="friendRequestBadge" class="notification-badge badge-xs bg-success-premium d-none">0</span>
+                        <span id="friendRequestBadge" class="notification-badge badge bg-success d-none">0</span>
                     </a>
                 </nav>
 
@@ -62,20 +62,18 @@
             <!-- Admin Dashboard Link -->
             @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
             {
-                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-icon text-danger p-1" title="@Localizer["Admin Dashboard"].Value">
+                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-link text-danger p-1 d-flex align-items-center justify-content-center" title="@Localizer["Admin Dashboard"].Value">
                     <i class="fas fa-gauge-high fa-lg"></i>
                 </a>
             }
 
             <!-- Notifications -->
             <div class="dropdown me-1">
-                <button class="btn btn-icon p-1 position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["Notifications"].Value">
+                <button class="btn btn-icon p-1 position-relative d-flex align-items-center justify-content-center" type="button" id="notificationDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="@Localizer["Notifications"].Value">
                     <i class="fas fa-bell fa-lg"></i>
-                    <span id="notificationBadge" class="notification-badge badge-xs bg-danger d-none">
-                        0
-                    </span>
+                    <span id="notificationBadge" class="notification-badge badge bg-danger d-none">0</span>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-320 shadow-lg border-0 mt-2 p-0" aria-labelledby="notificationDropdown">
+                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0" aria-labelledby="notificationDropdown">
                     <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-tertiary rounded-top">
                         <h6 class="mb-0 fw-bold">@Localizer["Notifications"].Value</h6>
                         <a href="javascript:void(0)" onclick="markAllNotificationsAsRead()" class="text-xs text-primary text-decoration-none">@Localizer["Mark all as read"].Value</a>
@@ -100,26 +98,66 @@
             <form asp-controller="Culture" asp-action="SetLanguage" method="post" class="d-inline">
                 <input type="hidden" name="culture" value="@targetCulture" />
                 <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                <button type="submit" class="btn btn-icon btn-sm text-secondary rounded-circle me-1" title="@(currentCulture == "en" ? Localizer["Switch to Arabic"].Value : Localizer["التغيير إلى الإنجليزية"].Value)">
+                <button type="submit" class="btn btn-link p-1 d-flex align-items-center justify-content-center" title="@(currentCulture == "en" ? Localizer["Switch to Arabic"].Value : Localizer["التغيير إلى الإنجليزية"].Value)">
                     <i class="fas fa-language fa-lg"></i>
                 </button>
             </form>
 
             <!-- Theme Toggle -->
-            <button class="theme-toggle-icon btn btn-icon rounded-circle" aria-label="@Localizer["Toggle theme"].Value" title="@Localizer["Toggle Theme"].Value">
+            <button class="theme-toggle-icon btn btn-link p-1 d-flex align-items-center justify-content-center" aria-label="@Localizer["Toggle theme"].Value" title="@Localizer["Toggle Theme"].Value">
                 <i class="fas fa-moon theme-icon-moon"></i>
                 <i class="fas fa-sun theme-icon-sun"></i>
             </button>
 
             <!-- Badges/Awards -->
-            <a asp-area="" asp-controller="Badges" asp-action="Index" class="btn btn-icon p-1" title="@Localizer["Badges & Achievements"].Value">
+            <a asp-area="" asp-controller="Badges" asp-action="Index" class="btn btn-link p-1 d-flex align-items-center justify-content-center" title="@Localizer["Badges & Achievements"].Value">
                 <i class="fas fa-trophy fa-lg"></i>
             </a>
             
             <!-- User Avatar -->
             <div class="dropdown">
-                <a href="#" class="d-block text-decoration-none header-user-link" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=User&background=random" alt="mdo" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm">
+                <a href="#" class="d-block text-decoration-none header-user-link" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        var userManager = Context.RequestServices.GetService<Microsoft.AspNetCore.Identity.UserManager<CommunityCar.Domain.Entities.Identity.Users.ApplicationUser>>();
+                        var currentUser = await userManager!.GetUserAsync(User);
+                        
+                        if (currentUser != null)
+                        {
+                            if (!string.IsNullOrEmpty(currentUser.ProfilePictureUrl))
+                            {
+                                <img src="@currentUser.ProfilePictureUrl" alt="@currentUser.FullName" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm" style="object-fit: cover;">
+                            }
+                            else
+                            {
+                                var initials = "";
+                                if (!string.IsNullOrEmpty(currentUser.FirstName))
+                                {
+                                    initials += currentUser.FirstName.Substring(0, 1).ToUpper();
+                                }
+                                if (!string.IsNullOrEmpty(currentUser.LastName))
+                                {
+                                    initials += currentUser.LastName.Substring(0, 1).ToUpper();
+                                }
+                                if (string.IsNullOrEmpty(initials))
+                                {
+                                    initials = currentUser.UserName?.Substring(0, Math.Min(2, currentUser.UserName.Length)).ToUpper() ?? "U";
+                                }
+                                
+                                <div class="rounded-circle border border-2 border-light shadow-sm d-flex align-items-center justify-content-center bg-primary text-white fw-bold" style="width: 38px; height: 38px; font-size: 14px;">
+                                    @initials
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm">
+                        }
+                    }
+                    else
+                    {
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=random" alt="Guest" width="38" height="38" class="rounded-circle border border-2 border-light shadow-sm">
+                    }
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                     <li><a class="dropdown-item" asp-area="Identity" asp-controller="Profiles" asp-action="Index">@Localizer["Profile"].Value</a></li>

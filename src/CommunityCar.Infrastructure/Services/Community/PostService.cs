@@ -37,14 +37,15 @@ public class PostService : IPostService
         string content,
         PostType type,
         Guid authorId,
-        Guid? groupId = null)
+        Guid? groupId = null,
+        PostStatus status = PostStatus.Draft)
     {
-        var post = new Post(title, content, type, authorId, groupId);
+        var post = new Post(title, content, type, authorId, groupId, status);
         
         _context.Set<Post>().Add(post);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Post created: {PostId} by user {UserId}", post.Id, authorId);
+        _logger.LogInformation("Post created: {PostId} by user {UserId} with status {Status}", post.Id, authorId, status);
         return post;
     }
 
@@ -52,7 +53,8 @@ public class PostService : IPostService
         Guid postId,
         string title,
         string content,
-        PostType type)
+        PostType type,
+        PostStatus? status = null)
     {
         var post = await _context.Set<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
@@ -60,10 +62,10 @@ public class PostService : IPostService
         if (post == null)
             throw new NotFoundException("Post not found");
 
-        post.Update(title, content, type);
+        post.Update(title, content, type, status);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Post updated: {PostId}", postId);
+        _logger.LogInformation("Post updated: {PostId} with status {Status}", postId, status);
         return post;
     }
 
@@ -457,5 +459,10 @@ public class PostService : IPostService
             CreatedAt = post.CreatedAt,
             UpdatedAt = post.ModifiedAt
         };
+    }
+    
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }

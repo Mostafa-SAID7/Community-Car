@@ -1,0 +1,316 @@
+/* ===========================================
+   UTILITIES: PRINT STYLES
+   Centralized print styles for better document printing
+   =========================================== */
+
+@media print {
+    /* ===== GENERAL PRINT SETTINGS ===== */
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+
+    /* ===== PAGE BREAKS ===== */
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    p, blockquote {
+        orphans: 3;
+        widows: 3;
+    }
+
+    blockquote, pre {
+        page-break-inside: avoid;
+    }
+
+    img {
+        page-break-inside: avoid;
+        max-width: 100% !important;
+    }
+
+    table, figure {
+        page-break-inside: avoid;
+    }
+
+    /* ===== HIDE INTERACTIVE ELEMENTS ===== */
+    nav,
+    header,
+    footer,
+    aside,
+    .sidebar,
+    .navbar,
+    .header,
+    .footer,
+    .btn,
+    button,
+    .search-wrapper,
+    .filter-card,
+    .filter-btn,
+    .pagination,
+    .card-badge,
+    .dropdown,
+    .modal,
+    .tooltip,
+    .popover,
+    .alert,
+    .toast,
+    .offcanvas,
+    .collapse,
+    .accordion-button,
+    .form-control,
+    .form-select,
+    input,
+    textarea,
+    select,
+    .no-print {
+        display: none !important;
+    }
+
+    /* ===== CARDS ===== */
+    .card,
+    .content-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        margin-bottom: 1rem;
+    }
+
+    .card:hover,
+    .content-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* ===== LINKS ===== */
+    a {
+        text-decoration: underline;
+        color: #000 !important;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 90%;
+        color: #666;
+    }
+
+    a[href^="#"]:after,
+    a[href^="javascript:"]:after {
+        content: "";
+    }
+
+    /* ===== IMAGES ===== */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .content-card-image {
+        max-height: none !important;
+    }
+
+    /* ===== TABLES ===== */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1 {
+        font-size: 24pt;
+        margin-bottom: 12pt;
+    }
+
+    h2 {
+        font-size: 20pt;
+        margin-bottom: 10pt;
+    }
+
+    h3 {
+        font-size: 16pt;
+        margin-bottom: 8pt;
+    }
+
+    h4 {
+        font-size: 14pt;
+        margin-bottom: 6pt;
+    }
+
+    h5, h6 {
+        font-size: 12pt;
+        margin-bottom: 6pt;
+    }
+
+    p {
+        margin-bottom: 8pt;
+    }
+
+    /* ===== CODE BLOCKS ===== */
+    pre, code {
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+        font-family: monospace;
+        font-size: 10pt;
+    }
+
+    pre {
+        padding: 8pt;
+        margin-bottom: 8pt;
+        white-space: pre-wrap;
+    }
+
+    /* ===== LISTS ===== */
+    ul, ol {
+        margin-bottom: 8pt;
+        padding-left: 20pt;
+    }
+
+    li {
+        margin-bottom: 4pt;
+    }
+
+    /* ===== BLOCKQUOTES ===== */
+    blockquote {
+        border-left: 3px solid #ddd;
+        padding-left: 12pt;
+        margin: 8pt 0;
+        font-style: italic;
+    }
+
+    /* ===== VISIBILITY HELPERS ===== */
+    .print-only {
+        display: block !important;
+    }
+
+    .screen-only {
+        display: none !important;
+    }
+
+    /* ===== CONTENT SPECIFIC ===== */
+    .content-card-body {
+        padding: 0 !important;
+    }
+
+    .content-card-footer {
+        border-top: 1px solid #ddd !important;
+        padding-top: 8pt !important;
+    }
+
+    .card-stats,
+    .card-tags {
+        display: none !important;
+    }
+
+    /* ===== FORMS (if needed for print) ===== */
+    .form-card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+
+    .form-card-header {
+        background: #f5f5f5 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+
+    .form-card-body {
+        background: #fff !important;
+    }
+
+    /* ===== SPACING ADJUSTMENTS ===== */
+    .container,
+    .container-fluid {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .row {
+        margin: 0 !important;
+    }
+
+    .col,
+    [class*="col-"] {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ===== UTILITY OVERRIDES ===== */
+    .shadow,
+    .shadow-sm,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
+
+    .rounded,
+    .rounded-lg,
+    .rounded-xl,
+    .rounded-2xl {
+        border-radius: 0 !important;
+    }
+
+    /* ===== BACKGROUNDS ===== */
+    .bg-primary,
+    .bg-secondary,
+    .bg-tertiary,
+    .bg-success,
+    .bg-warning,
+    .bg-danger,
+    .bg-info {
+        background: #f5f5f5 !important;
+        border: 1px solid #ddd !important;
+    }
+
+    /* ===== BORDERS ===== */
+    .border-0 {
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* ===== PRINT-SPECIFIC UTILITY CLASSES ===== */
+@media print {
+    .page-break-before {
+        page-break-before: always;
+    }
+
+    .page-break-after {
+        page-break-after: always;
+    }
+
+    .page-break-inside-avoid {
+        page-break-inside: avoid;
+    }
+
+    .print-hide {
+        display: none !important;
+    }
+
+    .print-show {
+        display: block !important;
+    }
+}

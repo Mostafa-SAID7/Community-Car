@@ -53,58 +53,72 @@
 <body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "true" : "false")" data-page="@(ViewData["PageType"] ?? "generic")">
     <partial name="_Header" />
     
-    <main role="main" class=" my-4">
+    <main role="main" class="my-4">
         @{
             var hideSidebars = ViewData["HideSidebars"] as bool? ?? false;
+            var hideRightSidebar = ViewData["HideRightSidebar"] as bool? ?? false;
         }
         @if (hideSidebars)
         {
-            <div class="row">
-                <div class="col-12">
-                    @RenderBody()
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        @RenderBody()
+                    </div>
                 </div>
             </div>
         }
         else
         {
-            <div class="row g-4 align-items-start">
-                <!-- Left Sidebar (Desktop: 2 cols, Tablet: 3 cols, Mobile: toggleable offcanvas) -->
-                <div class="col-md-3 col-lg-2 sidebar-left">
-                    <div class="sidebar-sticky">
-                        @if (IsSectionDefined("LeftSidebar"))
-                        {
-                            @await RenderSectionAsync("LeftSidebar", required: false)
-                        }
-                        else
-                        {
-                            <partial name="_LeftSidebar" />
-                        }
+            <div class="container-fluid">
+                <div class="row g-3 align-items-start">
+                    <!-- Left Sidebar (Desktop: 2 cols, Tablet: 3 cols, Mobile: toggleable offcanvas) -->
+                    <div class="col-md-2 col-lg-2 sidebar-left">
+                        <div class="sidebar-sticky">
+                            @if (IsSectionDefined("LeftSidebar"))
+                            {
+                                @await RenderSectionAsync("LeftSidebar", required: false)
+                            }
+                            else
+                            {
+                                <partial name="_LeftSidebar" />
+                            }
+                        </div>
                     </div>
-                </div>
 
-                <!-- Main Content (Desktop: 7 cols, Tablet: 6 cols, Mobile: 12 fallback) -->
-                <article class="col-md-6 col-lg-7">
-                    @RenderBody()
-                </article>
+                    <!-- Main Content (Expands when right sidebar is hidden) -->
+                    <article class="@(hideRightSidebar ? "col-md-9 col-lg-10" : "col-md-6 col-lg-7")">
+                        @RenderBody()
+                    </article>
 
-                <!-- Right Sidebar (Desktop: 3 cols, Tablet: 3 cols, Hidden on Mobile) -->
-                <div class="col-md-3 col-lg-3 sidebar-right pe-md-0">
-                    <div class="sidebar-sticky">
-                        @if (IsSectionDefined("RightSidebar"))
-                        {
-                            @await RenderSectionAsync("RightSidebar", required: false)
-                        }
-                        else
-                        {
-                            <partial name="Sidebars/_RightSidebar_Generic" />
-                        }
-                    </div>
+                    <!-- Right Sidebar (Desktop: 3 cols, Tablet: 3 cols, Hidden on Mobile) -->
+                    @if (!hideRightSidebar)
+                    {
+                        <div class="col-md-3 col-lg-3 sidebar-right pe-md-0">
+                            <div class="sidebar-sticky">
+                                @if (IsSectionDefined("RightSidebar"))
+                                {
+                                    @await RenderSectionAsync("RightSidebar", required: false)
+                                }
+                                else
+                                {
+                                    <partial name="Sidebars/_RightSidebar_Generic" />
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         }
     </main>
     
-    <partial name="_Footer" />
+    @{
+        var hideFooter = ViewData["HideFooter"] as bool? ?? false;
+    }
+    @if (!hideFooter)
+    {
+        <partial name="_Footer" />
+    }
 
     <!-- Sidebar Backdrop -->
     <div class="sidebar-backdrop"></div>
@@ -142,6 +156,9 @@
     <script src="~/js/components/charts.js"></script>
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/components/notification.js"></script>
+    
+    <!-- SignalR Hubs -->
+    <script src="~/js/hubs/post-hub.js"></script>
     
     <!-- Storage Manager -->
     <script src="~/js/storage-manager.js"></script>

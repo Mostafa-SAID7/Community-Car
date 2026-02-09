@@ -37,6 +37,9 @@ public static class DbSeeder
             // 4. Seed Categories
             await SeedCategoriesAsync(context, logger);
 
+            // 5. Seed Groups
+            await SeedGroupsAsync(context, userManager, logger);
+
             logger.LogInformation("Database seeding completed successfully.");
         }
         catch (Exception ex)
@@ -246,6 +249,229 @@ public static class DbSeeder
             await context.Categories.AddRangeAsync(categories);
             await context.SaveChangesAsync();
             logger.LogInformation("Categories seeded successfully.");
+        }
+    }
+
+    private static async Task SeedGroupsAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger logger)
+    {
+        if (!context.CommunityGroups.Any())
+        {
+            logger.LogInformation("Seeding groups...");
+
+            // Get users for group creation
+            var normalUser = await userManager.FindByEmailAsync("user@communitycar.com");
+            var ahmed = await userManager.FindByEmailAsync("ahmed.ali@example.com");
+            var sarah = await userManager.FindByEmailAsync("sarah.smith@example.com");
+            var mohamed = await userManager.FindByEmailAsync("mohamed.hassan@example.com");
+            var fatima = await userManager.FindByEmailAsync("fatima.zara@example.com");
+            var john = await userManager.FindByEmailAsync("john.doe@example.com");
+            var jane = await userManager.FindByEmailAsync("jane.doe@example.com");
+            var omar = await userManager.FindByEmailAsync("omar.fayed@example.com");
+            var layla = await userManager.FindByEmailAsync("layla.mahmoud@example.com");
+            var youssef = await userManager.FindByEmailAsync("youssef.mansour@example.com");
+
+            if (normalUser == null || ahmed == null || sarah == null || mohamed == null)
+            {
+                logger.LogWarning("Required users not found for group seeding. Skipping groups.");
+                return;
+            }
+
+            // Create groups
+            var groups = new List<CommunityCar.Domain.Entities.Community.groups.CommunityGroup>
+            {
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Classic Car Enthusiasts",
+                    "A community for lovers of vintage and classic automobiles. Share restoration projects, maintenance tips, and celebrate automotive history.",
+                    normalUser.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Electric Vehicle Owners",
+                    "Connect with fellow EV owners. Discuss charging infrastructure, range optimization, and the future of electric mobility.",
+                    ahmed.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "DIY Car Repair",
+                    "Learn and share DIY car repair techniques. From oil changes to brake replacements, we help each other save money and learn new skills.",
+                    sarah.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Performance Tuning",
+                    "For those who want more power! Discuss engine modifications, ECU tuning, turbocharging, and track day experiences.",
+                    mohamed.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Off-Road Adventures",
+                    "4x4 enthusiasts unite! Share trail recommendations, vehicle modifications, and off-road adventure stories.",
+                    fatima!.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Luxury Car Club",
+                    "An exclusive community for luxury and exotic car owners. Share experiences, maintenance tips, and lifestyle discussions.",
+                    john!.Id,
+                    true), // Private group
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "First Time Car Buyers",
+                    "New to car ownership? Get advice on buying your first car, understanding maintenance, and navigating insurance.",
+                    jane!.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Car Photography",
+                    "Showcase your automotive photography skills. Share tips on capturing the perfect car shot and discuss camera gear.",
+                    omar!.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Eco-Friendly Driving",
+                    "Discuss fuel efficiency, hybrid vehicles, eco-driving techniques, and reducing your carbon footprint.",
+                    layla!.Id,
+                    false),
+                
+                new CommunityCar.Domain.Entities.Community.groups.CommunityGroup(
+                    "Track Day Warriors",
+                    "For those who take their cars to the track. Share lap times, driving techniques, and track day preparation tips.",
+                    youssef!.Id,
+                    true) // Private group
+            };
+
+            await context.CommunityGroups.AddRangeAsync(groups);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Groups created successfully.");
+
+            // Add members to groups
+            var groupMembers = new List<CommunityCar.Domain.Entities.Community.groups.GroupMember>();
+
+            // Classic Car Enthusiasts - Public group with many members
+            var classicCarGroup = groups[0];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(classicCarGroup.Id, normalUser.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(classicCarGroup.Id, ahmed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Moderator),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(classicCarGroup.Id, sarah.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(classicCarGroup.Id, mohamed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(classicCarGroup.Id, john!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            classicCarGroup.IncrementMemberCount(); // +4 more members (creator already counted)
+            classicCarGroup.IncrementMemberCount();
+            classicCarGroup.IncrementMemberCount();
+            classicCarGroup.IncrementMemberCount();
+
+            // Electric Vehicle Owners
+            var evGroup = groups[1];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(evGroup.Id, ahmed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(evGroup.Id, fatima!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(evGroup.Id, layla!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            evGroup.IncrementMemberCount();
+            evGroup.IncrementMemberCount();
+
+            // DIY Car Repair - Popular group
+            var diyGroup = groups[2];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, sarah.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, normalUser.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Moderator),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, jane!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, omar!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, youssef!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(diyGroup.Id, ahmed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            diyGroup.IncrementMemberCount();
+            diyGroup.IncrementMemberCount();
+            diyGroup.IncrementMemberCount();
+            diyGroup.IncrementMemberCount();
+            diyGroup.IncrementMemberCount();
+
+            // Performance Tuning
+            var perfGroup = groups[3];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(perfGroup.Id, mohamed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(perfGroup.Id, youssef!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Moderator),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(perfGroup.Id, john!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            perfGroup.IncrementMemberCount();
+            perfGroup.IncrementMemberCount();
+
+            // Off-Road Adventures
+            var offRoadGroup = groups[4];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(offRoadGroup.Id, fatima!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(offRoadGroup.Id, omar!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(offRoadGroup.Id, mohamed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            offRoadGroup.IncrementMemberCount();
+            offRoadGroup.IncrementMemberCount();
+
+            // Luxury Car Club - Private
+            var luxuryGroup = groups[5];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(luxuryGroup.Id, john!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(luxuryGroup.Id, sarah.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            luxuryGroup.IncrementMemberCount();
+
+            // First Time Car Buyers
+            var firstTimeGroup = groups[6];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(firstTimeGroup.Id, jane!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(firstTimeGroup.Id, normalUser.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Moderator),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(firstTimeGroup.Id, layla!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            firstTimeGroup.IncrementMemberCount();
+            firstTimeGroup.IncrementMemberCount();
+
+            // Car Photography
+            var photoGroup = groups[7];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(photoGroup.Id, omar!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(photoGroup.Id, ahmed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(photoGroup.Id, fatima!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(photoGroup.Id, jane!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            photoGroup.IncrementMemberCount();
+            photoGroup.IncrementMemberCount();
+            photoGroup.IncrementMemberCount();
+
+            // Eco-Friendly Driving
+            var ecoGroup = groups[8];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(ecoGroup.Id, layla!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(ecoGroup.Id, ahmed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(ecoGroup.Id, sarah.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            ecoGroup.IncrementMemberCount();
+            ecoGroup.IncrementMemberCount();
+
+            // Track Day Warriors - Private
+            var trackGroup = groups[9];
+            groupMembers.AddRange(new[]
+            {
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(trackGroup.Id, youssef!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Admin),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(trackGroup.Id, mohamed.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Moderator),
+                new CommunityCar.Domain.Entities.Community.groups.GroupMember(trackGroup.Id, john!.Id, CommunityCar.Domain.Enums.Community.groups.GroupMemberRole.Member)
+            });
+            trackGroup.IncrementMemberCount();
+            trackGroup.IncrementMemberCount();
+
+            await context.GroupMembers.AddRangeAsync(groupMembers);
+            await context.SaveChangesAsync();
+            
+            logger.LogInformation("Group members added successfully. Total groups: {GroupCount}, Total memberships: {MemberCount}", 
+                groups.Count, groupMembers.Count);
         }
     }
 }

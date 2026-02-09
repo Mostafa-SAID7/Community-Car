@@ -33,6 +33,10 @@ err.txt
 *.nupkg
 **/packages/*
 !**/packages/build/
+.nuget/
+
+# Package lock files
+packages.lock.json
 
 # Visual Studio cache files
 project.lock.json

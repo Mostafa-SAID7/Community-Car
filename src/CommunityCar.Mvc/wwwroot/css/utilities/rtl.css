@@ -1,0 +1,241 @@
+/* ===========================================
+   UTILITIES: RTL (Right-to-Left) Support
+   Centralized RTL styles for Arabic/Hebrew languages
+   =========================================== */
+
+/* ===== GENERAL RTL DIRECTION ===== */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] body {
+    text-align: right;
+}
+
+/* ===== TEXT ALIGNMENT ===== */
+[dir="rtl"] .text-left {
+    text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left !important;
+}
+
+/* ===== FLEX DIRECTION ===== */
+[dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+}
+
+/* ===== MARGINS & PADDING ===== */
+[dir="rtl"] .ms-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+[dir="rtl"] .me-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+[dir="rtl"] .ps-3 {
+    padding-right: 1rem !important;
+    padding-left: 0 !important;
+}
+
+[dir="rtl"] .pe-3 {
+    padding-left: 1rem !important;
+    padding-right: 0 !important;
+}
+
+/* ===== BORDERS ===== */
+[dir="rtl"] .border-left {
+    border-left: none;
+    border-right: 1px solid var(--border-primary);
+}
+
+[dir="rtl"] .border-right {
+    border-right: none;
+    border-left: 1px solid var(--border-primary);
+}
+
+/* ===== POSITIONING ===== */
+[dir="rtl"] .float-left {
+    float: right !important;
+}
+
+[dir="rtl"] .float-right {
+    float: left !important;
+}
+
+/* ===== CARD BADGES ===== */
+[dir="rtl"] .card-badge-top-right {
+    right: auto;
+    left: var(--spacing-md);
+}
+
+[dir="rtl"] .card-badge-top-left {
+    left: auto;
+    right: var(--spacing-md);
+}
+
+/* ===== CARD STATS & META ===== */
+[dir="rtl"] .card-stats,
+[dir="rtl"] .content-card-meta,
+[dir="rtl"] .card-tags {
+    direction: rtl;
+}
+
+/* ===== SEARCH COMPONENTS ===== */
+[dir="rtl"] .search-wrapper .form-control {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+[dir="rtl"] .search-icon {
+    left: auto;
+    right: 1.25rem;
+}
+
+[dir="rtl"] .search-spinner {
+    right: auto;
+    left: 1.25rem;
+}
+
+/* ===== FILTER BUTTONS ===== */
+[dir="rtl"] .filter-btn {
+    direction: rtl;
+}
+
+/* ===== POST TYPE SELECTOR ===== */
+[dir="rtl"] .post-type-card.active::before {
+    right: auto;
+    left: 0.5rem;
+}
+
+/* ===== FILE PREVIEW ===== */
+[dir="rtl"] .file-preview-remove {
+    right: auto;
+    left: 1rem;
+}
+
+/* ===== DROPDOWNS ===== */
+[dir="rtl"] .dropdown-menu {
+    text-align: right;
+}
+
+[dir="rtl"] .dropdown-item {
+    text-align: right;
+}
+
+/* ===== LISTS ===== */
+[dir="rtl"] ul,
+[dir="rtl"] ol {
+    padding-right: 1.5rem;
+    padding-left: 0;
+}
+
+/* ===== ICONS ===== */
+[dir="rtl"] .icon-left {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+[dir="rtl"] .icon-right {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* ===== FORMS ===== */
+[dir="rtl"] .form-check {
+    padding-right: 1.5rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .form-check-input {
+    float: right;
+    margin-right: -1.5rem;
+    margin-left: 0;
+}
+
+/* ===== BUTTONS WITH ICONS ===== */
+[dir="rtl"] .btn i:first-child {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+[dir="rtl"] .btn i:last-child {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* ===== NAVIGATION ===== */
+[dir="rtl"] .nav-tabs,
+[dir="rtl"] .nav-pills {
+    padding-right: 0;
+}
+
+/* ===== BREADCRUMBS ===== */
+[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    float: right;
+    padding-left: 0.5rem;
+    padding-right: 0;
+}
+
+/* ===== MODALS ===== */
+[dir="rtl"] .modal-header .btn-close {
+    margin: -0.5rem auto -0.5rem -0.5rem;
+}
+
+/* ===== TOOLTIPS & POPOVERS ===== */
+[dir="rtl"] .tooltip,
+[dir="rtl"] .popover {
+    text-align: right;
+}
+
+/* ===== TABLES ===== */
+[dir="rtl"] table {
+    text-align: right;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+    text-align: right;
+}
+
+/* ===== PAGINATION ===== */
+[dir="rtl"] .pagination {
+    flex-direction: row-reverse;
+}
+
+/* ===== ALERTS ===== */
+[dir="rtl"] .alert {
+    text-align: right;
+}
+
+[dir="rtl"] .alert-dismissible .btn-close {
+    left: 0;
+    right: auto;
+}
+
+/* ===== PROGRESS BARS ===== */
+[dir="rtl"] .progress-bar {
+    right: 0;
+    left: auto;
+}
+
+/* ===== BADGES ===== */
+[dir="rtl"] .badge {
+    text-align: center;
+}
+
+/* ===== RESPONSIVE RTL ADJUSTMENTS ===== */
+@media (max-width: 576px) {
+    [dir="rtl"] .search-icon {
+        right: 1rem;
+    }
+    
+    [dir="rtl"] .post-type-card.active::before {
+        left: 0.4rem;
+    }
+}
