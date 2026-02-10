@@ -10,10 +10,6 @@
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
-@section RightSidebar {
-    <partial name="Sidebars/_RightSidebar_Chat" />
-}
-
 @{
     ViewData["HeaderTitle"] = Localizer["Messages"];
     ViewData["HeaderDescription"] = Localizer["Chat with your friends and community members"];
