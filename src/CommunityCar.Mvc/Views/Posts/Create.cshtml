@@ -6,6 +6,8 @@
     ViewData["Title"] = "Create Post";
     var postTypes = ViewBag.PostTypes as PostType[];
     var postStatuses = Enum.GetValues<PostStatus>();
+    var groupId = Context.Request.Query["groupId"].ToString();
+    var userGroups = ViewBag.UserGroups as IEnumerable<CommunityCar.Domain.DTOs.Community.GroupDto>;
 
     ViewData["HeaderTitle"] = "Create Post";
     ViewData["HeaderDescription"] = "Share your story with the community";
@@ -27,6 +29,24 @@
             <li class="breadcrumb-item active">Create Post</li>
         </ol>
     </nav>
+
+    @if (!string.IsNullOrEmpty(groupId))
+    {
+        var selectedGroup = userGroups?.FirstOrDefault(g => g.Id.ToString() == groupId);
+        if (selectedGroup != null)
+        {
+            <div class="px-3 mb-3">
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="fas fa-users me-3 fs-4"></i>
+                    <div>
+                        <strong>Posting in Group:</strong> @selectedGroup.Name
+                        <br />
+                        <small class="text-muted">This post will be visible to group members</small>
+                    </div>
+                </div>
+            </div>
+        }
+    }
 
     <div class="px-3">
         <div class="card form-card-red shadow-sm border-0">
@@ -167,6 +187,28 @@
                         <span asp-validation-for="Category" class="text-danger"></span>
                         <small class="form-text text-muted">Choose a category for better organization</small>
                     </div>
+
+                    @if (userGroups != null && userGroups.Any())
+                    {
+                        <div class="mb-3 mb-md-4">
+                            <label asp-for="GroupId" class="form-label fw-bold">
+                                <i class="fas fa-users me-1"></i>Post to Group (Optional)
+                            </label>
+                            <select asp-for="GroupId" class="form-control" id="groupSelect">
+                                <option value="">-- Post to your timeline --</option>
+                                @foreach (var group in userGroups)
+                                {
+                                    <option value="@group.Id" selected="@(group.Id.ToString() == groupId)">@group.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="GroupId" class="text-danger"></span>
+                            <small class="form-text text-muted">Select a group to share this post with group members</small>
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(groupId))
+                    {
+                        <input type="hidden" asp-for="GroupId" value="@groupId" />
+                    }
 
                     <div class="mb-3 mb-md-4">
                         <label asp-for="Tags" class="form-label fw-bold">

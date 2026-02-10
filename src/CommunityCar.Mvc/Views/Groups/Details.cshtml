@@ -2,137 +2,424 @@
 @{
     ViewData["Title"] = Model.Name;
     var members = ViewBag.Members as List<CommunityCar.Web.ViewModels.Groups.GroupMemberViewModel> ?? new List<CommunityCar.Web.ViewModels.Groups.GroupMemberViewModel>();
+    var activeTab = ViewBag.ActiveTab as string ?? "about";
 }
 
 @section RightSidebar {
     <partial name="Sidebars/_RightSidebar_Social" />
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/groups.css" />
+}
+
 <div class="container py-4">
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-12">
+            <!-- Group Header Card -->
             <div class="card shadow-sm mb-4">
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name" style="height: 300px; object-fit: cover;" />
                 }
                 <div class="card-body">
-                    <h2 class="card-title">
-                        @Model.Name
-                        @if (Model.IsPrivate)
-                        {
-                            <i class="fas fa-lock text-muted ms-2" title="Private Group"></i>
-                        }
-                    </h2>
-                    <p class="text-muted">
-                        <i class="fas fa-user me-1"></i>Created by @Model.CreatorName on @Model.CreatedAt.ToString("MMM dd, yyyy")
-                    </p>
-                    <p class="card-text">@Model.Description</p>
-                    
-                    <div class="d-flex gap-2 mt-3">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            @if (Model.IsMember)
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <h2 class="card-title mb-2">
+                                @Model.Name
+                                @if (Model.IsPrivate)
+                                {
+                                    <i class="fas fa-lock text-muted ms-2" title="Private Group"></i>
+                                }
+                            </h2>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-user me-1"></i>Created by @Model.CreatorName on @Model.CreatedAt.ToString("MMM dd, yyyy")
+                            </p>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-users me-1"></i>@Model.MemberCount @(Model.MemberCount == 1 ? "member" : "members")
+                            </p>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            @if (User.Identity?.IsAuthenticated == true)
                             {
-                                <form asp-action="Leave" asp-route-id="@Model.Id" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to leave this group?')">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Leave Group
-                                    </button>
-                                </form>
+                                @if (Model.IsMember)
+                                {
+                                    <form asp-action="Leave" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to leave this group?')">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Leave Group
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Join" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-user-plus me-2"></i>Join Group
+                                        </button>
+                                    </form>
+                                }
+                                
+                                @if (Model.IsAdmin)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                                        <i class="fas fa-edit me-2"></i>Edit
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this group?')">
+                                            <i class="fas fa-trash me-2"></i>Delete
+                                        </button>
+                                    </form>
+                                }
                             }
                             else
                             {
-                                <form asp-action="Join" asp-route-id="@Model.Id" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-user-plus me-2"></i>Join Group
-                                    </button>
-                                </form>
-                            }
-                            
-                            @if (Model.IsAdmin)
-                            {
-                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-                                    <i class="fas fa-edit me-2"></i>Edit
+                                <a href="/@ViewContext.RouteData.Values["culture"]/Identity/Account/Login" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login to Join
                                 </a>
-                                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this group?')">
-                                        <i class="fas fa-trash me-2"></i>Delete
-                                    </button>
-                                </form>
                             }
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Members (@Model.MemberCount)</h5>
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs mb-4" id="groupTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(activeTab == "about" ? "active" : "")" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">
+                        <i class="fas fa-info-circle me-2"></i>About
+                    </button>
+                </li>
+                @if (Model.IsMember || !Model.IsPrivate)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "posts" ? "active" : "")" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
+                            <i class="fas fa-newspaper me-2"></i>Posts
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "questions" ? "active" : "")" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab">
+                            <i class="fas fa-question-circle me-2"></i>Q&A
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "reviews" ? "active" : "")" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                            <i class="fas fa-star me-2"></i>Reviews
+                        </button>
+                    </li>
+                }
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(activeTab == "members" ? "active" : "")" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" type="button" role="tab">
+                        <i class="fas fa-users me-2"></i>Members
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="groupTabsContent">
+                <!-- About Tab -->
+                <div class="tab-pane fade @(activeTab == "about" ? "show active" : "")" id="about" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="fas fa-align-left me-2"></i>Description</h5>
+                            <p class="card-text">@Model.Description</p>
+                            
+                            <hr class="my-4" />
+                            
+                            <h5 class="card-title mb-3"><i class="fas fa-info-circle me-2"></i>Group Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Type:</strong> @(Model.IsPrivate ? "Private" : "Public")
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Members:</strong> @Model.MemberCount
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Created:</strong> @Model.CreatedAt.ToString("MMMM dd, yyyy")
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Creator:</strong> @Model.CreatorName
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @if (members.Any())
-                    {
-                        <div class="list-group">
-                            @foreach (var member in members)
-                            {
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <img src="@(member.ProfilePictureUrl ?? $"https://ui-avatars.com/api/?name={member.UserName}&background=random")" 
-                                             alt="@member.UserName" 
-                                             class="rounded-circle me-3" 
-                                             style="width: 40px; height: 40px; object-fit: cover;" />
-                                        <div>
-                                            <strong>@member.UserName</strong>
-                                            <br />
-                                            <small class="text-muted">@member.RoleName</small>
-                                        </div>
-                                    </div>
-                                    @if (Model.IsAdmin && member.UserId != Model.CreatorId)
+
+                <!-- Posts Tab -->
+                @if (Model.IsMember || !Model.IsPrivate)
+                {
+                    <div class="tab-pane fade @(activeTab == "posts" ? "show active" : "")" id="posts" role="tabpanel">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0"><i class="fas fa-newspaper me-2"></i>Group Posts</h5>
+                                    @if (Model.IsMember && User.Identity?.IsAuthenticated == true)
                                     {
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                                Actions
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                    <form asp-action="RemoveMember" method="post" class="d-inline">
-                                                        @Html.AntiForgeryToken()
-                                                        <input type="hidden" name="groupId" value="@Model.Id" />
-                                                        <input type="hidden" name="memberId" value="@member.Id" />
-                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Remove this member?')">
-                                                            <i class="fas fa-user-times me-2"></i>Remove
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
+                                        <a href="/@ViewContext.RouteData.Values["culture"]/Posts/Create?groupId=@Model.Id" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>Create Post
+                                        </a>
+                                    }
+                                </div>
+                                
+                                <div id="groupPostsContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3 text-muted">Loading posts...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Questions Tab -->
+                    <div class="tab-pane fade @(activeTab == "questions" ? "show active" : "")" id="questions" role="tabpanel">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Group Questions</h5>
+                                    @if (Model.IsMember && User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <a href="/@ViewContext.RouteData.Values["culture"]/Questions/Create?groupId=@Model.Id" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>Ask Question
+                                        </a>
+                                    }
+                                </div>
+                                
+                                <div id="groupQuestionsContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3 text-muted">Loading questions...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade @(activeTab == "reviews" ? "show active" : "")" id="reviews" role="tabpanel">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Group Reviews</h5>
+                                    @if (Model.IsMember && User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <a href="/@ViewContext.RouteData.Values["culture"]/Reviews/Create?groupId=@Model.Id" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>Write Review
+                                        </a>
+                                    }
+                                </div>
+                                
+                                <div id="groupReviewsContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3 text-muted">Loading reviews...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Members Tab -->
+                <div class="tab-pane fade @(activeTab == "members" ? "show active" : "")" id="members" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Members (@Model.MemberCount)</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (members.Any())
+                            {
+                                <div class="list-group">
+                                    @foreach (var member in members)
+                                    {
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <img src="@(member.ProfilePictureUrl ?? $"https://ui-avatars.com/api/?name={member.UserName}&background=random")" 
+                                                     alt="@member.UserName" 
+                                                     class="rounded-circle me-3" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;" />
+                                                <div>
+                                                    <strong>@member.UserName</strong>
+                                                    <br />
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-shield-alt me-1"></i>@member.RoleName
+                                                    </small>
+                                                    <br />
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-calendar me-1"></i>Joined @member.JoinedAt.ToString("MMM dd, yyyy")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            @if (Model.IsAdmin && member.UserId != Model.CreatorId)
+                                            {
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <form asp-action="RemoveMember" method="post" class="d-inline">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="groupId" value="@Model.Id" />
+                                                                <input type="hidden" name="memberId" value="@member.Id" />
+                                                                <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Remove this member?')">
+                                                                    <i class="fas fa-user-times me-2"></i>Remove
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 </div>
                             }
+                            else
+                            {
+                                <p class="text-muted text-center py-4">No members yet</p>
+                            }
                         </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted text-center">No members yet</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Group Info</h6>
-                </div>
-                <div class="card-body">
-                    <p><strong>Members:</strong> @Model.MemberCount</p>
-                    <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
-                    <p><strong>Type:</strong> @(Model.IsPrivate ? "Private" : "Public")</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const groupId = '@Model.Id';
+        const culture = '@ViewContext.RouteData.Values["culture"]';
+        const isMember = @Model.IsMember.ToString().ToLower();
+        
+        // Load content when tabs are shown
+        document.addEventListener('DOMContentLoaded', function() {
+            const postsTab = document.getElementById('posts-tab');
+            const questionsTab = document.getElementById('questions-tab');
+            const reviewsTab = document.getElementById('reviews-tab');
+            
+            if (postsTab) {
+                postsTab.addEventListener('shown.bs.tab', function() {
+                    loadGroupPosts();
+                });
+                
+                // Load posts if it's the active tab on page load
+                if (postsTab.classList.contains('active')) {
+                    loadGroupPosts();
+                }
+            }
+            
+            if (questionsTab) {
+                questionsTab.addEventListener('shown.bs.tab', function() {
+                    loadGroupQuestions();
+                });
+                
+                // Load questions if it's the active tab on page load
+                if (questionsTab.classList.contains('active')) {
+                    loadGroupQuestions();
+                }
+            }
+            
+            if (reviewsTab) {
+                reviewsTab.addEventListener('shown.bs.tab', function() {
+                    loadGroupReviews();
+                });
+                
+                // Load reviews if it's the active tab on page load
+                if (reviewsTab.classList.contains('active')) {
+                    loadGroupReviews();
+                }
+            }
+        });
+        
+        function loadGroupPosts() {
+            const container = document.getElementById('groupPostsContainer');
+            if (!container) return;
+            
+            fetch(`/${culture}/Posts?groupId=${groupId}&pageSize=10`)
+                .then(response => response.text())
+                .then(html => {
+                    // For now, show a message that posts will be loaded
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Posts for this group will be displayed here. 
+                            ${isMember ? '<a href="/' + culture + '/Posts/Create?groupId=' + groupId + '" class="alert-link">Create the first post!</a>' : ''}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error loading posts:', error);
+                    container.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to load posts. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+        
+        function loadGroupQuestions() {
+            const container = document.getElementById('groupQuestionsContainer');
+            if (!container) return;
+            
+            fetch(`/${culture}/Questions?groupId=${groupId}&pageSize=10`)
+                .then(response => response.text())
+                .then(html => {
+                    // For now, show a message that questions will be loaded
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Questions for this group will be displayed here. 
+                            ${isMember ? '<a href="/' + culture + '/Questions/Create?groupId=' + groupId + '" class="alert-link">Ask the first question!</a>' : ''}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error loading questions:', error);
+                    container.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to load questions. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+        
+        function loadGroupReviews() {
+            const container = document.getElementById('groupReviewsContainer');
+            if (!container) return;
+            
+            fetch(`/${culture}/Reviews?groupId=${groupId}&pageSize=10`)
+                .then(response => response.text())
+                .then(html => {
+                    // For now, show a message that reviews will be loaded
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Reviews for this group will be displayed here. 
+                            ${isMember ? '<a href="/' + culture + '/Reviews/Create?groupId=' + groupId + '" class="alert-link">Write the first review!</a>' : ''}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error loading reviews:', error);
+                    container.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to load reviews. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+    </script>
+}

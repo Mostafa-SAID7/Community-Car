@@ -2,6 +2,8 @@
 @model CommunityCar.Mvc.ViewModels.Qa.CreateQuestionViewModel
 @{
     ViewData["Title"] = "Ask a Question";
+    var groupId = Context.Request.Query["groupId"].ToString();
+    var userGroups = ViewBag.UserGroups as IEnumerable<CommunityCar.Domain.DTOs.Community.GroupDto>;
 }
 
 @section RightSidebar {
@@ -18,6 +20,22 @@
 }
 
 <partial name="_InnerPageHeader" />
+
+@if (!string.IsNullOrEmpty(groupId))
+{
+    var selectedGroup = userGroups?.FirstOrDefault(g => g.Id.ToString() == groupId);
+    if (selectedGroup != null)
+    {
+        <div class="alert alert-info d-flex align-items-center mb-4">
+            <i class="fas fa-users me-3 fs-4"></i>
+            <div>
+                <strong>Asking in Group:</strong> @selectedGroup.Name
+                <br />
+                <small class="text-muted">This question will be visible to group members</small>
+            </div>
+        </div>
+    }
+}
 
 <!-- Create Form -->
 <div class="card create-card">
@@ -78,6 +96,30 @@
                     Add up to 5 tags separated by commas to help categorize your question
                 </div>
             </div>
+
+            @if (userGroups != null && userGroups.Any())
+            {
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-users me-2 text-primary"></i>Ask in Group (Optional)
+                    </label>
+                    <select name="GroupId" class="form-select form-select-lg" id="groupSelect">
+                        <option value="">-- Ask publicly --</option>
+                        @foreach (var group in userGroups)
+                        {
+                            <option value="@group.Id" selected="@(group.Id.ToString() == groupId)">@group.Name</option>
+                        }
+                    </select>
+                    <div class="form-text small text-muted mt-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Select a group to ask this question within that group
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(groupId))
+            {
+                <input type="hidden" name="GroupId" value="@groupId" />
+            }
 
             <div class="alert alert-info rounded-4 mb-4">
                 <h6 class="alert-heading mb-2">

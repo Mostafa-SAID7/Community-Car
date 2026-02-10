@@ -1,6 +1,8 @@
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Enums.Community.groups;
+using CommunityCar.Domain.Enums.Community.post;
+using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Web.ViewModels.Groups;
 using Microsoft.Extensions.Localization;
@@ -16,17 +18,26 @@ namespace CommunityCar.Mvc.Controllers.Community;
 public partial class GroupsController : Controller
 {
     private readonly IGroupService _groupService;
+    private readonly IPostService _postService;
+    private readonly IQuestionService _questionService;
+    private readonly IReviewService _reviewService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<GroupsController> _logger;
     private readonly IStringLocalizer<GroupsController> _localizer;
 
     public GroupsController(
         IGroupService groupService,
+        IPostService postService,
+        IQuestionService questionService,
+        IReviewService reviewService,
         UserManager<ApplicationUser> userManager,
         ILogger<GroupsController> logger,
         IStringLocalizer<GroupsController> localizer)
     {
         _groupService = groupService;
+        _postService = postService;
+        _questionService = questionService;
+        _reviewService = reviewService;
         _userManager = userManager;
         _logger = logger;
         _localizer = localizer;
@@ -124,7 +135,7 @@ public partial class GroupsController : Controller
     [HttpGet("Details/{slug}")]
     [HttpGet("Details")]
     [AllowAnonymous]
-    public async Task<IActionResult> Details(string slug, int page = 1, int pageSize = 20)
+    public async Task<IActionResult> Details(string slug, string tab = "about", int page = 1, int pageSize = 20)
     {
         try
         {
@@ -171,6 +182,46 @@ public partial class GroupsController : Controller
 
             ViewBag.MembersPage = page;
             ViewBag.MembersTotalPages = membersResult.TotalPages;
+            ViewBag.ActiveTab = tab.ToLower();
+
+            // Get group posts
+            var postsParams = new QueryParameters { PageNumber = 1, PageSize = 10 };
+            var postsResult = await _postService.GetPostsAsync(
+                postsParams,
+                PostStatus.Published,
+                null,
+                group.Id,
+                userId);
+            ViewBag.Posts = postsResult;
+
+            // Get group questions
+            var questionsParams = new QueryParameters { PageNumber = 1, PageSize = 10 };
+            var questionsResult = await _questionService.GetQuestionsAsync(
+                questionsParams,
+                searchTerm: null,
+                tag: null,
+                isResolved: null,
+                hasAnswers: null,
+                categoryId: null,
+                currentUserId: userId);
+            
+            // Filter questions by groupId (if QuestionService doesn't support it yet)
+            // For now, we'll show all questions - this will be updated when QuestionService adds groupId support
+            ViewBag.Questions = questionsResult;
+
+            // Get group reviews
+            var reviewsParams = new QueryParameters { PageNumber = 1, PageSize = 10 };
+            var reviewsResult = await _reviewService.GetReviewsAsync(
+                reviewsParams,
+                null,
+                ReviewStatus.Approved,
+                null,
+                null,
+                userId);
+            
+            // Filter reviews by groupId (if ReviewService doesn't support it yet)
+            // For now, we'll show all reviews - this will be updated when ReviewService adds groupId support
+            ViewBag.Reviews = reviewsResult;
 
             return View(viewModel);
         }
@@ -510,6 +561,60 @@ public partial class GroupsController : Controller
             _logger.LogError(ex, "Error searching groups with query: {Query}", query);
             TempData["Error"] = _localizer["FailedToSearchGroups"].Value;
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    // GET: Groups/GetGroupPosts/{id}
+    [HttpGet("GetGroupPosts/{id:guid}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetGroupPosts(Guid id, int page = 1, int pageSize = 10)
+    {
+        try
+        {
+            // This will be called via AJAX to load group posts
+            // For now, return empty result - will be implemented when PostService is injected
+            return Json(new { success = true, posts = new List<object>(), totalPages = 0 });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading group posts for group: {GroupId}", id);
+            return Json(new { success = false, message = _localizer["FailedToLoadGroupPosts"].Value });
+        }
+    }
+
+    // GET: Groups/GetGroupQuestions/{id}
+    [HttpGet("GetGroupQuestions/{id:guid}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetGroupQuestions(Guid id, int page = 1, int pageSize = 10)
+    {
+        try
+        {
+            // This will be called via AJAX to load group questions
+            // For now, return empty result - will be implemented when QuestionService is injected
+            return Json(new { success = true, questions = new List<object>(), totalPages = 0 });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading group questions for group: {GroupId}", id);
+            return Json(new { success = false, message = _localizer["FailedToLoadGroupQuestions"].Value });
+        }
+    }
+
+    // GET: Groups/GetGroupReviews/{id}
+    [HttpGet("GetGroupReviews/{id:guid}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetGroupReviews(Guid id, int page = 1, int pageSize = 10)
+    {
+        try
+        {
+            // This will be called via AJAX to load group reviews
+            // For now, return empty result - will be implemented when ReviewService is injected
+            return Json(new { success = true, reviews = new List<object>(), totalPages = 0 });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading group reviews for group: {GroupId}", id);
+            return Json(new { success = false, message = _localizer["FailedToLoadGroupReviews"].Value });
         }
     }
 }

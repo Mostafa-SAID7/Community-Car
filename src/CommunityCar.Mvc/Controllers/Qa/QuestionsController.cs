@@ -14,17 +14,20 @@ public class QuestionsController : Controller
 {
     private readonly IQuestionService _questionService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IGroupService _groupService;
     private readonly IStringLocalizer<QuestionsController> _localizer;
     private readonly ILogger<QuestionsController> _logger;
 
     public QuestionsController(
         IQuestionService questionService,
         ICurrentUserService currentUserService,
+        IGroupService groupService,
         IStringLocalizer<QuestionsController> localizer,
         ILogger<QuestionsController> logger)
     {
         _questionService = questionService;
         _currentUserService = currentUserService;
+        _groupService = groupService;
         _localizer = localizer;
         _logger = logger;
     }
@@ -130,7 +133,7 @@ public class QuestionsController : Controller
     // GET: Questions/Create
     [Authorize]
     [HttpGet("Create")]
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(Guid? groupId = null)
     {
         try
         {
@@ -143,6 +146,11 @@ public class QuestionsController : Controller
                 CategoryId = null,
                 Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList()
             };
+            
+            // Load user groups for group selection
+            var userId = GetCurrentUserId();
+            var userGroups = await _groupService.GetUserGroupsAsync(userId, new QueryParameters { PageSize = 100 });
+            ViewBag.UserGroups = userGroups.Items;
             
             return View(viewModel);
         }
@@ -158,7 +166,7 @@ public class QuestionsController : Controller
     [Authorize]
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateQuestionViewModel model)
+    public async Task<IActionResult> Create(CreateQuestionViewModel model, Guid? groupId = null)
     {
         try
         {
@@ -166,16 +174,22 @@ public class QuestionsController : Controller
             {
                 model.Categories = (await _questionService.GetCategoriesAsync())
                     .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
+                
+                var userId = GetCurrentUserId();
+                var userGroups = await _groupService.GetUserGroupsAsync(userId, new QueryParameters { PageSize = 100 });
+                ViewBag.UserGroups = userGroups.Items;
+                
                 return View(model);
             }
 
-            var userId = GetCurrentUserId();
+            var currentUserId = GetCurrentUserId();
 
             var question = await _questionService.CreateQuestionAsync(
                 model.Title, 
                 model.Content, 
-                userId, 
+                currentUserId, 
                 categoryId: model.CategoryId,
+                groupId: groupId,
                 tags: model.Tags);
 
             TempData["Success"] = _localizer["QuestionCreatedSuccessfully"].Value;
@@ -187,6 +201,11 @@ public class QuestionsController : Controller
             ModelState.AddModelError("", _localizer["FailedToCreateQuestion"].Value);
             model.Categories = (await _questionService.GetCategoriesAsync())
                 .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c.Name, c.Id.ToString())).ToList();
+            
+            var userId = GetCurrentUserId();
+            var userGroups = await _groupService.GetUserGroupsAsync(userId, new QueryParameters { PageSize = 100 });
+            ViewBag.UserGroups = userGroups.Items;
+            
             return View(model);
         }
     }
