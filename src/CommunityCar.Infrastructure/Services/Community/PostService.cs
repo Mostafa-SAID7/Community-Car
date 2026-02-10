@@ -6,8 +6,8 @@ using CommunityCar.Domain.Entities.Community.post;
 using CommunityCar.Domain.Enums.Community.post;
 using CommunityCar.Domain.Exceptions;
 using CommunityCar.Domain.Interfaces;
+using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,18 +15,18 @@ namespace CommunityCar.Infrastructure.Services.Community;
 
 public class PostService : IPostService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<PostService> _logger;
     private readonly ICommandHandler<LikePostCommand, LikePostResult> _likePostHandler;
 
     public PostService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<PostService> logger,
         ICommandHandler<LikePostCommand, LikePostResult> likePostHandler)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
         _likePostHandler = likePostHandler;
@@ -43,8 +43,8 @@ public class PostService : IPostService
     {
         var post = new Post(title, content, type, authorId, category, groupId, status);
         
-        _context.Set<Post>().Add(post);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<Post>().AddAsync(post);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post created: {PostId} by user {UserId} with status {Status} and category {Category}", post.Id, authorId, status, category);
         return post;
@@ -58,14 +58,14 @@ public class PostService : IPostService
         PostCategory? category = null,
         PostStatus? status = null)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Update(title, content, type, category, status);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post updated: {PostId} with status {Status} and category {Category}", postId, status, category);
         return post;
@@ -73,21 +73,22 @@ public class PostService : IPostService
 
     public async Task DeletePostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
-        _context.Set<Post>().Remove(post);
-        await _context.SaveChangesAsync();
+        _uow.Repository<Post>().Delete(post);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post deleted: {PostId}", postId);
     }
 
     public async Task<PostDto?> GetPostByIdAsync(Guid postId, Guid? currentUserId = null)
     {
-        var post = await _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable();
+        var post = await query
             .Include(p => p.Author)
             .FirstOrDefaultAsync(p => p.Id == postId);
 
@@ -99,7 +100,8 @@ public class PostService : IPostService
 
     public async Task<PostDto?> GetPostBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var post = await _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable();
+        var post = await query
             .Include(p => p.Author)
             .FirstOrDefaultAsync(p => p.Slug == slug);
 
@@ -116,7 +118,7 @@ public class PostService : IPostService
         Guid? groupId = null,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable()
             .Include(p => p.Author)
             .AsQueryable();
 
@@ -151,7 +153,7 @@ public class PostService : IPostService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable()
             .Include(p => p.Author)
             .Where(p => p.AuthorId == userId)
             .OrderByDescending(p => p.CreatedAt);
@@ -169,7 +171,8 @@ public class PostService : IPostService
 
     public async Task<List<PostDto>> GetFeaturedPostsAsync(int count = 5)
     {
-        var posts = await _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable();
+        var posts = await query
             .Include(p => p.Author)
             .Where(p => p.Status == PostStatus.Published && p.IsPinned)
             .OrderByDescending(p => p.PublishedAt ?? p.CreatedAt)
@@ -181,7 +184,8 @@ public class PostService : IPostService
 
     public async Task<List<PostDto>> GetLatestPostsAsync(int count = 10)
     {
-        var posts = await _context.Set<Post>()
+        var query = _uow.Repository<Post>().GetQueryable();
+        var posts = await query
             .Include(p => p.Author)
             .Where(p => p.Status == PostStatus.Published)
             .OrderByDescending(p => p.PublishedAt ?? p.CreatedAt)
@@ -193,98 +197,98 @@ public class PostService : IPostService
 
     public async Task PublishPostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Publish();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post published: {PostId}", postId);
     }
 
     public async Task ArchivePostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Archive();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post archived: {PostId}", postId);
     }
 
     public async Task PinPostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Pin();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post pinned: {PostId}", postId);
     }
 
     public async Task UnpinPostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Unpin();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post unpinned: {PostId}", postId);
     }
 
     public async Task LockPostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Lock();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post locked: {PostId}", postId);
     }
 
     public async Task UnlockPostAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.Unlock();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Post unlocked: {PostId}", postId);
     }
 
     public async Task IncrementViewsAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.IncrementViews();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<LikePostResult> ToggleLikeAsync(Guid postId, Guid userId)
@@ -309,19 +313,20 @@ public class PostService : IPostService
 
     public async Task IncrementSharesAsync(Guid postId)
     {
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
 
         if (post == null)
             throw new NotFoundException("Post not found");
 
         post.IncrementShares();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<List<PostLikerDto>> GetPostLikersAsync(Guid postId, QueryParameters parameters)
     {
-        var likes = await _context.Set<PostReaction>()
+        var query = _uow.Repository<PostReaction>().GetQueryable();
+        var likes = await query
             .Where(l => l.PostId == postId && l.ReactionType == Domain.Enums.Community.qa.ReactionType.Like)
             .OrderByDescending(l => l.CreatedAt)
             .Skip((parameters.PageNumber - 1) * parameters.PageSize)
@@ -347,17 +352,17 @@ public class PostService : IPostService
     {
         var comment = new PostComment(postId, userId, content, parentCommentId);
         
-        _context.Set<PostComment>().Add(comment);
+        await _uow.Repository<PostComment>().AddAsync(comment);
         
         // Increment comment count on post
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == postId);
         if (post != null)
         {
             post.IncrementComments();
         }
         
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment added to post {PostId} by user {UserId}", postId, userId);
         return comment;
@@ -365,7 +370,7 @@ public class PostService : IPostService
 
     public async Task<PostComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<PostComment>()
+        var comment = await _uow.Repository<PostComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -375,7 +380,7 @@ public class PostService : IPostService
             throw new ForbiddenException("You can only edit your own comments");
 
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} updated", commentId);
         return comment;
@@ -383,7 +388,7 @@ public class PostService : IPostService
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<PostComment>()
+        var comment = await _uow.Repository<PostComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -393,15 +398,15 @@ public class PostService : IPostService
             throw new ForbiddenException("You can only delete your own comments");
 
         // Decrement comment count on post
-        var post = await _context.Set<Post>()
+        var post = await _uow.Repository<Post>()
             .FirstOrDefaultAsync(p => p.Id == comment.PostId);
         if (post != null)
         {
             post.DecrementComments();
         }
 
-        _context.Set<PostComment>().Remove(comment);
-        await _context.SaveChangesAsync();
+        _uow.Repository<PostComment>().Delete(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} deleted", commentId);
     }
@@ -411,7 +416,7 @@ public class PostService : IPostService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<PostComment>()
+        var query = _uow.Repository<PostComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.PostId == postId && c.ParentCommentId == null)
             .OrderByDescending(c => c.CreatedAt);
@@ -485,6 +490,6 @@ public class PostService : IPostService
     
     public async Task SaveChangesAsync()
     {
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 }

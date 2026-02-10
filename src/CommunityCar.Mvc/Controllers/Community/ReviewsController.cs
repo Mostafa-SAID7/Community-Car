@@ -2,6 +2,7 @@ using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Reviews;
+using CommunityCar.Mvc.Attributes;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -132,44 +133,48 @@ public class ReviewsController : Controller
         }
     }
 
-    // GET: Reviews/Create
-    [Authorize]
-    [HttpGet("Create")]
-    public IActionResult Create(Guid? entityId, string? entityType, ReviewType? type, Guid? groupId)
-    {
-        var model = new CreateReviewViewModel();
-        
-        if (entityId.HasValue)
-            model.EntityId = entityId.Value;
-        
-        if (!string.IsNullOrEmpty(entityType))
-            model.EntityType = entityType;
-        
-        if (type.HasValue)
-            model.Type = type.Value;
-
-        if (groupId.HasValue)
-            model.GroupId = groupId.Value;
-
-        ViewBag.Types = Enum.GetValues<ReviewType>();
-        return View(model);
-    }
 
     // POST: Reviews/Create
     [Authorize]
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
+    [RateLimit("CreateReview", maxRequests: 3, timeWindowSeconds: 300)] // Max 3 reviews per 5 minutes
     public async Task<IActionResult> Create(CreateReviewViewModel model)
     {
         try
         {
             if (!ModelState.IsValid)
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    });
+                }
+
                 ViewBag.Types = Enum.GetValues<ReviewType>();
                 return View(model);
             }
 
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+
+            // Check for duplicate review (one review per entity per user)
+            var existingReview = await _reviewService.GetUserReviewForEntityAsync(userId, model.EntityId, model.EntityType);
+            if (existingReview != null)
+            {
+                var errorMessage = _localizer["YouHaveAlreadyReviewedThisItem"].Value;
+                
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = errorMessage });
+                }
+
+                ModelState.AddModelError("", errorMessage);
+                ViewBag.Types = Enum.GetValues<ReviewType>();
+                return View(model);
+            }
 
             var review = await _reviewService.CreateReviewAsync(
                 model.EntityId,
@@ -185,13 +190,37 @@ public class ReviewsController : Controller
                 model.IsRecommended,
                 model.GroupId);
 
-            TempData["Success"] = _localizer["ReviewSubmittedForApproval"].Value;
+            _logger.LogInformation("User {UserId} created review {ReviewId} for {EntityType} {EntityId}",
+                userId, review.Id, model.EntityType, model.EntityId);
+
+            var successMessage = _localizer["ReviewSubmittedForApproval"].Value;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = successMessage,
+                    reviewId = review.Id,
+                    slug = review.Slug
+                });
+            }
+
+            TempData["Success"] = successMessage;
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating review");
-            ModelState.AddModelError("", _localizer["FailedToCreateReview"].Value);
+            _logger.LogError(ex, "Error creating review for user {UserId}", GetCurrentUserId());
+            
+            var errorMessage = _localizer["FailedToCreateReview"].Value;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, message = errorMessage });
+            }
+
+            ModelState.AddModelError("", errorMessage);
             ViewBag.Types = Enum.GetValues<ReviewType>();
             return View(model);
         }
@@ -244,6 +273,7 @@ public class ReviewsController : Controller
     [Authorize]
     [HttpPost("Edit/{id:guid}")]
     [ValidateAntiForgeryToken]
+    [RateLimit("EditReview", maxRequests: 5, timeWindowSeconds: 300)] // Max 5 edits per 5 minutes
     public async Task<IActionResult> Edit(Guid id, EditReviewViewModel model)
     {
         try
@@ -252,7 +282,17 @@ public class ReviewsController : Controller
                 return BadRequest();
 
             if (!ModelState.IsValid)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    });
+                }
                 return View(model);
+            }
 
             var review = await _reviewService.UpdateReviewAsync(
                 id,
@@ -263,13 +303,36 @@ public class ReviewsController : Controller
                 model.Cons,
                 model.IsRecommended);
 
-            TempData["Success"] = _localizer["ReviewUpdated"].Value;
+            _logger.LogInformation("User {UserId} updated review {ReviewId}",
+                GetCurrentUserId(), id);
+
+            var successMessage = _localizer["ReviewUpdated"].Value;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = successMessage,
+                    slug = review.Slug
+                });
+            }
+
+            TempData["Success"] = successMessage;
             return RedirectToAction(nameof(Details), new { slug = review.Slug });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating review {ReviewId}", id);
-            ModelState.AddModelError("", _localizer["FailedToUpdateReview"].Value);
+            
+            var errorMessage = _localizer["FailedToUpdateReview"].Value;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, message = errorMessage });
+            }
+
+            ModelState.AddModelError("", errorMessage);
             return View(model);
         }
     }
@@ -295,12 +358,16 @@ public class ReviewsController : Controller
     // POST: Reviews/MarkHelpful/{id}
     [Authorize]
     [HttpPost("MarkHelpful/{id:guid}")]
+    [RateLimit("MarkHelpful", maxRequests: 10, timeWindowSeconds: 60)] // Max 10 reactions per minute
     public async Task<IActionResult> MarkHelpful(Guid id, bool isHelpful)
     {
         try
         {
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.MarkReviewHelpfulAsync(id, userId, isHelpful);
+
+            _logger.LogInformation("User {UserId} marked review {ReviewId} as {Helpful}",
+                userId, id, isHelpful ? "helpful" : "not helpful");
 
             return Json(new { success = true, message = _localizer["FeedbackReceived"].Value });
         }
@@ -333,12 +400,16 @@ public class ReviewsController : Controller
     // POST: Reviews/Flag/{id}
     [Authorize]
     [HttpPost("Flag/{id:guid}")]
+    [RateLimit("FlagReview", maxRequests: 5, timeWindowSeconds: 300)] // Max 5 flags per 5 minutes
     public async Task<IActionResult> Flag(Guid id, string? reason = null)
     {
         try
         {
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.FlagReviewAsync(id, userId, reason);
+
+            _logger.LogWarning("User {UserId} flagged review {ReviewId} with reason: {Reason}",
+                userId, id, reason ?? "No reason provided");
 
             return Json(new { success = true, message = _localizer["ReviewFlagged"].Value });
         }
@@ -352,12 +423,16 @@ public class ReviewsController : Controller
     // POST: Reviews/AddComment
     [Authorize]
     [HttpPost("AddComment")]
+    [RateLimit("AddComment", maxRequests: 10, timeWindowSeconds: 60)] // Max 10 comments per minute
     public async Task<IActionResult> AddComment(Guid reviewId, string content)
     {
         try
         {
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
             await _reviewService.AddCommentAsync(reviewId, userId, content);
+
+            _logger.LogInformation("User {UserId} added comment to review {ReviewId}",
+                userId, reviewId);
 
             return Json(new { success = true, message = _localizer["CommentAdded"].Value });
         }

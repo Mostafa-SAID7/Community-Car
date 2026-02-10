@@ -13,17 +13,18 @@ public interface IReviewService
         string entityType,
         ReviewType type,
         Guid reviewerId,
-        int rating,
+        decimal rating,
         string title,
         string content,
         string? pros = null,
         string? cons = null,
         bool isVerifiedPurchase = false,
-        bool isRecommended = true);
+        bool isRecommended = true,
+        Guid? groupId = null);
     
     Task<Review> UpdateReviewAsync(
         Guid reviewId,
-        int rating,
+        decimal rating,
         string title,
         string content,
         string? pros,
@@ -32,9 +33,14 @@ public interface IReviewService
     
     Task DeleteReviewAsync(Guid reviewId);
     
+    // Duplicate & Rate Limiting
+    Task<bool> HasUserReviewedEntityAsync(Guid userId, Guid entityId, string entityType);
+    Task<bool> CanUserReviewAsync(Guid userId); // Rate limiting check
+    
     // Query Operations
     Task<ReviewDto?> GetReviewByIdAsync(Guid reviewId, Guid? currentUserId = null);
     Task<ReviewDto?> GetReviewBySlugAsync(string slug, Guid? currentUserId = null);
+    Task<ReviewDto?> GetUserReviewForEntityAsync(Guid userId, Guid entityId, string entityType);
     
     Task<PagedResult<ReviewDto>> GetReviewsAsync(
         QueryParameters parameters,

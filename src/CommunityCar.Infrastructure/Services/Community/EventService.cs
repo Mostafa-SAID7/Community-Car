@@ -6,7 +6,6 @@ using CommunityCar.Domain.Enums.Community.events;
 using CommunityCar.Domain.Exceptions;
 using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,16 +13,16 @@ namespace CommunityCar.Infrastructure.Services.Community;
 
 public class EventService : IEventService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<EventService> _logger;
 
     public EventService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<EventService> logger)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
     }
@@ -55,7 +54,7 @@ public class EventService : IEventService
         var slug = baseSlug;
         var counter = 1;
         
-        while (await _context.Set<CommunityEvent>().AnyAsync(e => e.Slug == slug && !e.IsDeleted))
+        while (await _uow.Repository<CommunityEvent>().GetQueryable().AnyAsync(e => e.Slug == slug && !e.IsDeleted))
         {
             slug = $"{baseSlug}-{counter}";
             counter++;
@@ -67,8 +66,8 @@ public class EventService : IEventService
         // Auto-publish the event so it appears in the index immediately
         communityEvent.Publish();
 
-        _context.Set<CommunityEvent>().Add(communityEvent);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<CommunityEvent>().AddAsync(communityEvent);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event created and published: {EventId} by user {UserId}", communityEvent.Id, organizerId);
         return communityEvent;
@@ -85,14 +84,14 @@ public class EventService : IEventService
         int maxAttendees,
         bool isOnline)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
             throw new NotFoundException("Event not found");
 
         communityEvent.Update(title, description, startTime, endTime, location, category, maxAttendees, isOnline);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event updated: {EventId}", eventId);
         return communityEvent;
@@ -100,21 +99,22 @@ public class EventService : IEventService
 
     public async Task DeleteEventAsync(Guid eventId)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
             throw new NotFoundException("Event not found");
 
-        _context.Set<CommunityEvent>().Remove(communityEvent);
-        await _context.SaveChangesAsync();
+        _uow.Repository<CommunityEvent>().Delete(communityEvent);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event deleted: {EventId}", eventId);
     }
 
     public async Task<EventDto?> GetEventByIdAsync(Guid eventId, Guid? currentUserId = null)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var query = _uow.Repository<CommunityEvent>().GetQueryable();
+        var communityEvent = await query
             .Include(e => e.Organizer)
             .Include(e => e.Attendees)
             .FirstOrDefaultAsync(e => e.Id == eventId);
@@ -127,7 +127,8 @@ public class EventService : IEventService
 
     public async Task<EventDto?> GetEventBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var query = _uow.Repository<CommunityEvent>().GetQueryable();
+        var communityEvent = await query
             .Include(e => e.Organizer)
             .Include(e => e.Attendees)
             .FirstOrDefaultAsync(e => e.Slug == slug);
@@ -146,7 +147,7 @@ public class EventService : IEventService
         bool? isUpcoming = null,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<CommunityEvent>()
+        var query = _uow.Repository<CommunityEvent>().GetQueryable()
             .Include(e => e.Organizer)
             .Include(e => e.Attendees)
             .AsQueryable();
@@ -180,7 +181,7 @@ public class EventService : IEventService
 
     public async Task<PagedResult<EventDto>> GetUserEventsAsync(Guid userId, QueryParameters parameters, bool asOrganizer = false)
     {
-        var query = _context.Set<CommunityEvent>()
+        var query = _uow.Repository<CommunityEvent>().GetQueryable()
             .Include(e => e.Organizer)
             .Include(e => e.Attendees)
             .AsQueryable();
@@ -219,7 +220,7 @@ public class EventService : IEventService
 
     public async Task PublishEventAsync(Guid eventId, Guid userId)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
@@ -229,14 +230,14 @@ public class EventService : IEventService
             throw new ForbiddenException("Only the organizer can publish this event");
 
         communityEvent.Publish();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event published: {EventId}", eventId);
     }
 
     public async Task CancelEventAsync(Guid eventId, Guid userId)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
@@ -246,14 +247,14 @@ public class EventService : IEventService
             throw new ForbiddenException("Only the organizer can cancel this event");
 
         communityEvent.Cancel();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event cancelled: {EventId}", eventId);
     }
 
     public async Task CompleteEventAsync(Guid eventId, Guid userId)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
@@ -263,14 +264,15 @@ public class EventService : IEventService
             throw new ForbiddenException("Only the organizer can complete this event");
 
         communityEvent.Complete();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event completed: {EventId}", eventId);
     }
 
     public async Task<EventAttendee> JoinEventAsync(Guid eventId, Guid userId, AttendeeStatus status)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var query = _uow.Repository<CommunityEvent>().GetQueryable();
+        var communityEvent = await query
             .Include(e => e.Attendees)
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
@@ -288,40 +290,40 @@ public class EventService : IEventService
                 throw new ConflictException("Event is full");
 
             var attendee = new EventAttendee(eventId, userId, status);
-            _context.Set<EventAttendee>().Add(attendee);
+            await _uow.Repository<EventAttendee>().AddAsync(attendee);
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
         _logger.LogInformation("User {UserId} joined event {EventId} with status {Status}", userId, eventId, status);
 
-        return existingAttendee ?? await _context.Set<EventAttendee>()
-            .FirstAsync(a => a.EventId == eventId && a.UserId == userId);
+        return existingAttendee ?? await _uow.Repository<EventAttendee>()
+            .FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == userId) ?? throw new NotFoundException("Attendee not found");
     }
 
     public async Task UpdateAttendanceAsync(Guid eventId, Guid userId, AttendeeStatus status)
     {
-        var attendee = await _context.Set<EventAttendee>()
+        var attendee = await _uow.Repository<EventAttendee>()
             .FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == userId);
 
         if (attendee == null)
             throw new NotFoundException("Attendance record not found");
 
         attendee.UpdateStatus(status);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("User {UserId} updated attendance for event {EventId} to {Status}", userId, eventId, status);
     }
 
     public async Task LeaveEventAsync(Guid eventId, Guid userId)
     {
-        var attendee = await _context.Set<EventAttendee>()
+        var attendee = await _uow.Repository<EventAttendee>()
             .FirstOrDefaultAsync(a => a.EventId == eventId && a.UserId == userId);
 
         if (attendee == null)
             throw new NotFoundException("Attendance record not found");
 
-        _context.Set<EventAttendee>().Remove(attendee);
-        await _context.SaveChangesAsync();
+        _uow.Repository<EventAttendee>().Delete(attendee);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("User {UserId} left event {EventId}", userId, eventId);
     }
@@ -331,7 +333,7 @@ public class EventService : IEventService
         QueryParameters parameters,
         AttendeeStatus? status = null)
     {
-        var query = _context.Set<EventAttendee>()
+        var query = _uow.Repository<EventAttendee>().GetQueryable()
             .Include(a => a.User)
             .Where(a => a.EventId == eventId);
 
@@ -365,8 +367,8 @@ public class EventService : IEventService
     public async Task<EventComment> AddCommentAsync(Guid eventId, Guid userId, string content)
     {
         var comment = new EventComment(eventId, userId, content);
-        _context.Set<EventComment>().Add(comment);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<EventComment>().AddAsync(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment added to event {EventId} by user {UserId}", eventId, userId);
         return comment;
@@ -374,7 +376,7 @@ public class EventService : IEventService
 
     public async Task<EventComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<EventComment>()
+        var comment = await _uow.Repository<EventComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -384,7 +386,7 @@ public class EventService : IEventService
             throw new ForbiddenException("You can only edit your own comments");
 
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} updated", commentId);
         return comment;
@@ -392,7 +394,7 @@ public class EventService : IEventService
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<EventComment>()
+        var comment = await _uow.Repository<EventComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -401,8 +403,8 @@ public class EventService : IEventService
         if (comment.UserId != userId)
             throw new ForbiddenException("You can only delete your own comments");
 
-        _context.Set<EventComment>().Remove(comment);
-        await _context.SaveChangesAsync();
+        _uow.Repository<EventComment>().Delete(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} deleted", commentId);
     }
@@ -412,7 +414,7 @@ public class EventService : IEventService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<EventComment>()
+        var query = _uow.Repository<EventComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.EventId == eventId)
             .OrderByDescending(c => c.CreatedAt);
@@ -481,15 +483,16 @@ public class EventService : IEventService
 
     public async Task SetEventImageAsync(Guid eventId, string imageUrl)
     {
-        var communityEvent = await _context.Set<CommunityEvent>()
+        var communityEvent = await _uow.Repository<CommunityEvent>()
             .FirstOrDefaultAsync(e => e.Id == eventId);
 
         if (communityEvent == null)
             throw new NotFoundException("Event not found");
 
         communityEvent.SetImageUrl(imageUrl);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Event image set: {EventId}", eventId);
     }
 }
+

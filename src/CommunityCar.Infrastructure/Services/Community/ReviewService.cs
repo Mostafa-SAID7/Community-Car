@@ -4,25 +4,28 @@ using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Entities.Community.reviews;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Exceptions;
+using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CommunityCar.Infrastructure.Services.Community;
 
+/// <summary>
+/// Review service using Unit of Work pattern for better transaction management
+/// </summary>
 public class ReviewService : IReviewService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<ReviewService> _logger;
 
     public ReviewService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<ReviewService> logger)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
     }
@@ -32,7 +35,7 @@ public class ReviewService : IReviewService
         string entityType,
         ReviewType type,
         Guid reviewerId,
-        int rating,
+        decimal rating,
         string title,
         string content,
         string? pros = null,
@@ -57,8 +60,8 @@ public class ReviewService : IReviewService
         if (!string.IsNullOrEmpty(pros) || !string.IsNullOrEmpty(cons))
             review.SetProsAndCons(pros, cons);
 
-        _context.Set<Review>().Add(review);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<Review>().AddAsync(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review created: {ReviewId} by user {UserId}", review.Id, reviewerId);
         return review;
@@ -66,14 +69,14 @@ public class ReviewService : IReviewService
 
     public async Task<Review> UpdateReviewAsync(
         Guid reviewId,
-        int rating,
+        decimal rating,
         string title,
         string content,
         string? pros,
         string? cons,
         bool isRecommended)
     {
-        var review = await _context.Set<Review>()
+        var review = await _uow.Repository<Review>()
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
         if (review == null)
@@ -81,8 +84,9 @@ public class ReviewService : IReviewService
 
         review.Update(rating, title, content, isRecommended);
         review.SetProsAndCons(pros, cons);
-        
-        await _context.SaveChangesAsync();
+
+        _uow.Repository<Review>().Update(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review updated: {ReviewId}", reviewId);
         return review;
@@ -90,21 +94,22 @@ public class ReviewService : IReviewService
 
     public async Task DeleteReviewAsync(Guid reviewId)
     {
-        var review = await _context.Set<Review>()
+        var review = await _uow.Repository<Review>()
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
         if (review == null)
             throw new NotFoundException("Review not found");
 
-        _context.Set<Review>().Remove(review);
-        await _context.SaveChangesAsync();
+        _uow.Repository<Review>().Delete(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review deleted: {ReviewId}", reviewId);
     }
 
     public async Task<ReviewDto?> GetReviewByIdAsync(Guid reviewId, Guid? currentUserId = null)
     {
-        var review = await _context.Set<Review>()
+        var query = _uow.Repository<Review>().GetQueryable();
+        var review = await query
             .Include(r => r.Reviewer)
             .Include(r => r.Reactions)
             .FirstOrDefaultAsync(r => r.Id == reviewId);
@@ -117,7 +122,8 @@ public class ReviewService : IReviewService
 
     public async Task<ReviewDto?> GetReviewBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var review = await _context.Set<Review>()
+        var query = _uow.Repository<Review>().GetQueryable();
+        var review = await query
             .Include(r => r.Reviewer)
             .Include(r => r.Reactions)
             .FirstOrDefaultAsync(r => r.Slug == slug);
@@ -128,6 +134,37 @@ public class ReviewService : IReviewService
         return MapToDto(review, currentUserId);
     }
 
+    public async Task<ReviewDto?> GetUserReviewForEntityAsync(Guid userId, Guid entityId, string entityType)
+    {
+        var query = _uow.Repository<Review>().GetQueryable();
+        var review = await query
+            .Include(r => r.Reviewer)
+            .Include(r => r.Reactions)
+            .FirstOrDefaultAsync(r => r.ReviewerId == userId && r.EntityId == entityId && r.EntityType == entityType);
+
+        if (review == null)
+            return null;
+
+        return MapToDto(review, userId);
+    }
+
+    public async Task<bool> HasUserReviewedEntityAsync(Guid userId, Guid entityId, string entityType)
+    {
+        return await _uow.Repository<Review>()
+            .GetQueryable()
+            .AnyAsync(r => r.ReviewerId == userId && r.EntityId == entityId && r.EntityType == entityType);
+    }
+
+    public async Task<bool> CanUserReviewAsync(Guid userId)
+    {
+        // Check if user has created more than 3 reviews in the last 5 minutes (rate limiting)
+        var fiveMinutesAgo = DateTimeOffset.UtcNow.AddMinutes(-5);
+        var recentReviewCount = await _uow.Repository<Review>()
+            .CountAsync(r => r.ReviewerId == userId && r.CreatedAt >= fiveMinutesAgo);
+
+        return recentReviewCount < 3;
+    }
+
     public async Task<PagedResult<ReviewDto>> GetReviewsAsync(
         QueryParameters parameters,
         ReviewType? type = null,
@@ -136,10 +173,9 @@ public class ReviewService : IReviewService
         int? maxRating = null,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Review>()
+        IQueryable<Review> query = _uow.Repository<Review>().GetQueryable()
             .Include(r => r.Reviewer)
-            .Include(r => r.Reactions)
-            .AsQueryable();
+            .Include(r => r.Reactions);
 
         if (type.HasValue)
             query = query.Where(r => r.Type == type.Value);
@@ -150,10 +186,10 @@ public class ReviewService : IReviewService
             query = query.Where(r => r.Status == ReviewStatus.Approved);
 
         if (minRating.HasValue)
-            query = query.Where(r => r.Rating >= minRating.Value);
+            query = query.Where(r => r.Rating.Value >= minRating.Value);
 
         if (maxRating.HasValue)
-            query = query.Where(r => r.Rating <= maxRating.Value);
+            query = query.Where(r => r.Rating.Value <= maxRating.Value);
 
         query = query.OrderByDescending(r => r.CreatedAt);
 
@@ -174,7 +210,7 @@ public class ReviewService : IReviewService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Review>()
+        var query = _uow.Repository<Review>().GetQueryable()
             .Include(r => r.Reviewer)
             .Include(r => r.Reactions)
             .Where(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved)
@@ -196,7 +232,7 @@ public class ReviewService : IReviewService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Review>()
+        var query = _uow.Repository<Review>().GetQueryable()
             .Include(r => r.Reviewer)
             .Include(r => r.Reactions)
             .Where(r => r.ReviewerId == userId)
@@ -215,23 +251,23 @@ public class ReviewService : IReviewService
 
     public async Task<ReviewStatisticsDto> GetEntityReviewStatisticsAsync(Guid entityId, string entityType)
     {
-        var reviews = await _context.Set<Review>()
-            .Where(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved)
-            .ToListAsync();
+        var reviews = await _uow.Repository<Review>()
+            .WhereAsync(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved);
 
-        var totalReviews = reviews.Count;
-        var averageRating = totalReviews > 0 ? reviews.Average(r => r.Rating) : 0;
-        var recommendedCount = reviews.Count(r => r.IsRecommended);
+        var reviewList = reviews.ToList();
+        var totalReviews = reviewList.Count;
+        var averageRating = totalReviews > 0 ? reviewList.Average(r => r.Rating.Value) : 0;
+        var recommendedCount = reviewList.Count(r => r.IsRecommended);
 
         return new ReviewStatisticsDto
         {
             TotalReviews = totalReviews,
-            AverageRating = Math.Round(averageRating, 2),
-            FiveStarCount = reviews.Count(r => r.Rating == 5),
-            FourStarCount = reviews.Count(r => r.Rating == 4),
-            ThreeStarCount = reviews.Count(r => r.Rating == 3),
-            TwoStarCount = reviews.Count(r => r.Rating == 2),
-            OneStarCount = reviews.Count(r => r.Rating == 1),
+            AverageRating = (double)Math.Round(averageRating, 2),
+            FiveStarCount = reviewList.Count(r => r.Rating.Value == 5),
+            FourStarCount = reviewList.Count(r => r.Rating.Value == 4),
+            ThreeStarCount = reviewList.Count(r => r.Rating.Value == 3),
+            TwoStarCount = reviewList.Count(r => r.Rating.Value == 2),
+            OneStarCount = reviewList.Count(r => r.Rating.Value == 1),
             RecommendedCount = recommendedCount,
             RecommendedPercentage = totalReviews > 0 ? Math.Round((double)recommendedCount / totalReviews * 100, 2) : 0
         };
@@ -239,42 +275,45 @@ public class ReviewService : IReviewService
 
     public async Task ApproveReviewAsync(Guid reviewId, Guid moderatorId)
     {
-        var review = await _context.Set<Review>()
+        var review = await _uow.Repository<Review>()
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
         if (review == null)
             throw new NotFoundException("Review not found");
 
         review.Approve(moderatorId);
-        await _context.SaveChangesAsync();
+        _uow.Repository<Review>().Update(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review approved: {ReviewId} by moderator {ModeratorId}", reviewId, moderatorId);
     }
 
     public async Task RejectReviewAsync(Guid reviewId, Guid moderatorId, string reason)
     {
-        var review = await _context.Set<Review>()
+        var review = await _uow.Repository<Review>()
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
         if (review == null)
             throw new NotFoundException("Review not found");
 
         review.Reject(moderatorId, reason);
-        await _context.SaveChangesAsync();
+        _uow.Repository<Review>().Update(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review rejected: {ReviewId} by moderator {ModeratorId}", reviewId, moderatorId);
     }
 
     public async Task FlagReviewAsync(Guid reviewId, Guid userId, string? reason = null)
     {
-        var review = await _context.Set<Review>()
+        var review = await _uow.Repository<Review>()
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
         if (review == null)
             throw new NotFoundException("Review not found");
 
         review.Flag(reason ?? "Flagged by user");
-        await _context.SaveChangesAsync();
+        _uow.Repository<Review>().Update(review);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review flagged: {ReviewId} by user {UserId}", reviewId, userId);
     }
@@ -286,7 +325,8 @@ public class ReviewService : IReviewService
 
     public async Task MarkAsHelpfulAsync(Guid reviewId, Guid userId, bool isHelpful)
     {
-        var review = await _context.Set<Review>()
+        var query = _uow.Repository<Review>().GetQueryable();
+        var review = await query
             .Include(r => r.Reactions)
             .FirstOrDefaultAsync(r => r.Id == reviewId);
 
@@ -294,38 +334,36 @@ public class ReviewService : IReviewService
             throw new NotFoundException("Review not found");
 
         var existingReaction = review.Reactions.FirstOrDefault(r => r.UserId == userId);
-        
+
         if (existingReaction != null)
         {
             // Update existing reaction
             var oldValue = existingReaction.IsHelpful;
             existingReaction.UpdateReaction(isHelpful);
-            
+
             // Update counts
             if (oldValue && !isHelpful)
             {
                 review.MarkNotHelpful();
-                // Decrement helpful count (we need to add a method for this)
             }
             else if (!oldValue && isHelpful)
             {
                 review.MarkHelpful();
-                // Decrement not helpful count
             }
         }
         else
         {
             // Create new reaction
             var reaction = new ReviewReaction(reviewId, userId, isHelpful);
-            _context.Set<ReviewReaction>().Add(reaction);
-            
+            await _uow.Repository<ReviewReaction>().AddAsync(reaction);
+
             if (isHelpful)
                 review.MarkHelpful();
             else
                 review.MarkNotHelpful();
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
         _logger.LogInformation("Review reaction updated: {ReviewId} by user {UserId}", reviewId, userId);
     }
 
@@ -336,14 +374,14 @@ public class ReviewService : IReviewService
 
     public async Task RemoveReactionAsync(Guid reviewId, Guid userId)
     {
-        var reaction = await _context.Set<ReviewReaction>()
+        var reaction = await _uow.Repository<ReviewReaction>()
             .FirstOrDefaultAsync(r => r.ReviewId == reviewId && r.UserId == userId);
 
         if (reaction == null)
             throw new NotFoundException("Reaction not found");
 
-        _context.Set<ReviewReaction>().Remove(reaction);
-        await _context.SaveChangesAsync();
+        _uow.Repository<ReviewReaction>().Delete(reaction);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Review reaction removed: {ReviewId} by user {UserId}", reviewId, userId);
     }
@@ -351,8 +389,8 @@ public class ReviewService : IReviewService
     public async Task<ReviewComment> AddCommentAsync(Guid reviewId, Guid userId, string content)
     {
         var comment = new ReviewComment(reviewId, userId, content);
-        _context.Set<ReviewComment>().Add(comment);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<ReviewComment>().AddAsync(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment added to review {ReviewId} by user {UserId}", reviewId, userId);
         return comment;
@@ -360,7 +398,7 @@ public class ReviewService : IReviewService
 
     public async Task<ReviewComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<ReviewComment>()
+        var comment = await _uow.Repository<ReviewComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -370,7 +408,8 @@ public class ReviewService : IReviewService
             throw new ForbiddenException("You can only edit your own comments");
 
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        _uow.Repository<ReviewComment>().Update(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} updated", commentId);
         return comment;
@@ -378,7 +417,7 @@ public class ReviewService : IReviewService
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<ReviewComment>()
+        var comment = await _uow.Repository<ReviewComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -387,8 +426,8 @@ public class ReviewService : IReviewService
         if (comment.UserId != userId)
             throw new ForbiddenException("You can only delete your own comments");
 
-        _context.Set<ReviewComment>().Remove(comment);
-        await _context.SaveChangesAsync();
+        _uow.Repository<ReviewComment>().Delete(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} deleted", commentId);
     }
@@ -398,7 +437,7 @@ public class ReviewService : IReviewService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<ReviewComment>()
+        var query = _uow.Repository<ReviewComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.ReviewId == reviewId)
             .OrderByDescending(c => c.CreatedAt);
@@ -427,30 +466,32 @@ public class ReviewService : IReviewService
 
     public async Task<Dictionary<int, int>> GetRatingDistributionAsync(Guid entityId, string entityType)
     {
-        var reviews = await _context.Set<Review>()
-            .Where(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved)
-            .ToListAsync();
+        var reviews = await _uow.Repository<Review>()
+            .WhereAsync(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved);
+
+        var reviewList = reviews.ToList();
 
         return new Dictionary<int, int>
         {
-            { 5, reviews.Count(r => r.Rating == 5) },
-            { 4, reviews.Count(r => r.Rating == 4) },
-            { 3, reviews.Count(r => r.Rating == 3) },
-            { 2, reviews.Count(r => r.Rating == 2) },
-            { 1, reviews.Count(r => r.Rating == 1) }
+            { 5, reviewList.Count(r => r.Rating.Value >= 4.5m && r.Rating.Value <= 5m) },
+            { 4, reviewList.Count(r => r.Rating.Value >= 3.5m && r.Rating.Value < 4.5m) },
+            { 3, reviewList.Count(r => r.Rating.Value >= 2.5m && r.Rating.Value < 3.5m) },
+            { 2, reviewList.Count(r => r.Rating.Value >= 1.5m && r.Rating.Value < 2.5m) },
+            { 1, reviewList.Count(r => r.Rating.Value >= 0m && r.Rating.Value < 1.5m) }
         };
     }
 
     public async Task<double> GetAverageRatingAsync(Guid entityId, string entityType)
     {
-        var reviews = await _context.Set<Review>()
-            .Where(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved)
-            .ToListAsync();
+        var reviews = await _uow.Repository<Review>()
+            .WhereAsync(r => r.EntityId == entityId && r.EntityType == entityType && r.Status == ReviewStatus.Approved);
 
-        if (reviews.Count == 0)
+        var reviewList = reviews.ToList();
+
+        if (reviewList.Count == 0)
             return 0;
 
-        return Math.Round(reviews.Average(r => r.Rating), 2);
+        return (double)Math.Round(reviewList.Average(r => r.Rating.Value), 2);
     }
 
     private ReviewDto MapToDto(Review review, Guid? currentUserId)
@@ -471,8 +512,9 @@ public class ReviewService : IReviewService
             StatusName = review.Status.ToString(),
             ReviewerId = review.ReviewerId,
             ReviewerName = review.Reviewer?.UserName ?? "Unknown",
+            AuthorName = review.Reviewer?.UserName ?? "Unknown",
             ReviewerAvatar = review.Reviewer?.ProfilePictureUrl,
-            Rating = review.Rating,
+            Rating = review.Rating.Value,
             Title = review.Title,
             Comment = review.Comment,
             Content = review.Comment, // Map Comment to Content as well
@@ -491,3 +533,4 @@ public class ReviewService : IReviewService
         };
     }
 }
+

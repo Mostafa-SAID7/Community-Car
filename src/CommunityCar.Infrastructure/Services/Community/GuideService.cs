@@ -5,8 +5,8 @@ using CommunityCar.Domain.Entities.Community.guides;
 using CommunityCar.Domain.Enums.Community.guides;
 using CommunityCar.Domain.Enums.Community.qa;
 using CommunityCar.Domain.Exceptions;
+using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,16 +14,16 @@ namespace CommunityCar.Infrastructure.Services.Community;
 
 public class GuideService : IGuideService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<GuideService> _logger;
 
     public GuideService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<GuideService> logger)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
     }
@@ -44,7 +44,7 @@ public class GuideService : IGuideService
         var slug = baseSlug;
         var counter = 1;
         
-        while (await _context.Set<Guide>().AnyAsync(g => g.Slug == slug))
+        while (await _uow.Repository<Guide>().GetQueryable().AnyAsync(g => g.Slug == slug))
         {
             slug = $"{baseSlug}-{counter}";
             counter++;
@@ -57,8 +57,8 @@ public class GuideService : IGuideService
             slugProperty?.SetValue(guide, slug);
         }
         
-        _context.Set<Guide>().Add(guide);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<Guide>().AddAsync(guide);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide created: {GuideId} by user {UserId}", guide.Id, authorId);
         return guide;
@@ -73,7 +73,7 @@ public class GuideService : IGuideService
         GuideDifficulty difficulty,
         int estimatedTimeMinutes)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
@@ -92,7 +92,7 @@ public class GuideService : IGuideService
             var counter = 1;
             
             // Check if the new slug already exists (excluding current guide)
-            while (await _context.Set<Guide>()
+            while (await _uow.Repository<Guide>().GetQueryable()
                 .AnyAsync(g => g.Slug == slug && g.Id != guideId))
             {
                 slug = $"{baseSlug}-{counter}";
@@ -106,7 +106,7 @@ public class GuideService : IGuideService
             }
         }
         
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide updated: {GuideId}", guideId);
         return guide;
@@ -114,21 +114,22 @@ public class GuideService : IGuideService
 
     public async Task DeleteGuideAsync(Guid guideId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
-        _context.Set<Guide>().Remove(guide);
-        await _context.SaveChangesAsync();
+        _uow.Repository<Guide>().Delete(guide);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide deleted: {GuideId}", guideId);
     }
 
     public async Task<GuideDto?> GetGuideByIdAsync(Guid guideId, Guid? currentUserId = null)
     {
-        var guide = await _context.Set<Guide>()
+        var query = _uow.Repository<Guide>().GetQueryable();
+        var guide = await query
             .Include(g => g.Author)
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
@@ -140,7 +141,8 @@ public class GuideService : IGuideService
 
     public async Task<GuideDto?> GetGuideBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var guide = await _context.Set<Guide>()
+        var query = _uow.Repository<Guide>().GetQueryable();
+        var guide = await query
             .Include(g => g.Author)
             .FirstOrDefaultAsync(g => g.Slug == slug);
 
@@ -157,9 +159,8 @@ public class GuideService : IGuideService
         string? category = null,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Guide>()
-            .Include(g => g.Author)
-            .AsQueryable();
+        IQueryable<Guide> query = _uow.Repository<Guide>().GetQueryable()
+            .Include(g => g.Author);
 
         if (status.HasValue)
             query = query.Where(g => g.Status == status.Value);
@@ -194,7 +195,7 @@ public class GuideService : IGuideService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Guide>()
+        var query = _uow.Repository<Guide>().GetQueryable()
             .Include(g => g.Author)
             .Where(g => g.AuthorId == userId)
             .OrderByDescending(g => g.CreatedAt);
@@ -242,7 +243,7 @@ public class GuideService : IGuideService
         };
 
         // Get categories from published guides
-        var usedCategories = await _context.Set<Guide>()
+        var usedCategories = await _uow.Repository<Guide>().GetQueryable()
             .Where(g => g.Status == GuideStatus.Published)
             .Select(g => g.Category)
             .Distinct()
@@ -259,7 +260,7 @@ public class GuideService : IGuideService
 
     public async Task<Dictionary<string, int>> GetCategoryCountsAsync()
     {
-        return await _context.Set<Guide>()
+        return await _uow.Repository<Guide>().GetQueryable()
             .Where(g => g.Status == GuideStatus.Published)
             .GroupBy(g => g.Category)
             .Select(g => new { Category = g.Key, Count = g.Count() })
@@ -271,7 +272,7 @@ public class GuideService : IGuideService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<Guide>()
+        var query = _uow.Repository<Guide>().GetQueryable()
             .Include(g => g.Author)
             .Where(g => g.Status == GuideStatus.Published &&
                        (g.Title.Contains(searchTerm) ||
@@ -297,56 +298,56 @@ public class GuideService : IGuideService
 
     public async Task PublishGuideAsync(Guid guideId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
         guide.Publish();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide published: {GuideId}", guideId);
     }
 
     public async Task ArchiveGuideAsync(Guid guideId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
         guide.Archive();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide archived: {GuideId}", guideId);
     }
 
     public async Task SubmitForReviewAsync(Guid guideId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
         guide.SubmitForReview();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Guide submitted for review: {GuideId}", guideId);
     }
 
     public async Task IncrementViewsAsync(Guid guideId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
         guide.IncrementViews();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task IncrementViewCountAsync(Guid guideId)
@@ -356,30 +357,30 @@ public class GuideService : IGuideService
 
     public async Task ToggleLikeAsync(Guid guideId, Guid userId)
         {
-            var guide = await _context.Set<Guide>()
+            var guide = await _uow.Repository<Guide>()
                 .FirstOrDefaultAsync(g => g.Id == guideId);
 
             if (guide == null)
                 throw new NotFoundException("Guide not found");
 
-            var existingReaction = await _context.Set<GuideReaction>()
+            var existingReaction = await _uow.Repository<GuideReaction>()
                 .FirstOrDefaultAsync(r => r.GuideId == guideId && r.UserId == userId);
 
             if (existingReaction != null)
             {
                 // Unlike - remove the reaction
-                _context.Set<GuideReaction>().Remove(existingReaction);
+                _uow.Repository<GuideReaction>().Delete(existingReaction);
                 guide.DecrementLikes();
             }
             else
             {
                 // Like - add new reaction
                 var reaction = new GuideReaction(guideId, userId, ReactionType.Like);
-                await _context.Set<GuideReaction>().AddAsync(reaction);
+                await _uow.Repository<GuideReaction>().AddAsync(reaction);
                 guide.IncrementLikes();
             }
 
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
 
             _logger.LogInformation("Guide {GuideId} like toggled by user {UserId}", guideId, userId);
         }
@@ -387,19 +388,19 @@ public class GuideService : IGuideService
 
     public async Task ToggleBookmarkAsync(Guid guideId, Guid userId)
     {
-        var guide = await _context.Set<Guide>()
+        var guide = await _uow.Repository<Guide>()
             .FirstOrDefaultAsync(g => g.Id == guideId);
 
         if (guide == null)
             throw new NotFoundException("Guide not found");
 
-        var existingBookmark = await _context.Set<GuideBookmark>()
+        var existingBookmark = await _uow.Repository<GuideBookmark>()
             .FirstOrDefaultAsync(gb => gb.GuideId == guideId && gb.UserId == userId);
 
         if (existingBookmark != null)
         {
             // Remove bookmark
-            _context.Set<GuideBookmark>().Remove(existingBookmark);
+            _uow.Repository<GuideBookmark>().Delete(existingBookmark);
             guide.DecrementBookmarks();
             _logger.LogInformation("Guide {GuideId} unbookmarked by user {UserId}", guideId, userId);
         }
@@ -407,20 +408,20 @@ public class GuideService : IGuideService
         {
             // Add bookmark
             var bookmark = new GuideBookmark(guideId, userId);
-            await _context.Set<GuideBookmark>().AddAsync(bookmark);
+            await _uow.Repository<GuideBookmark>().AddAsync(bookmark);
             guide.IncrementBookmarks();
             _logger.LogInformation("Guide {GuideId} bookmarked by user {UserId}", guideId, userId);
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<GuideStep> AddStepAsync(Guid guideId, int stepNumber, string title, string content, int estimatedTimeMinutes)
     {
         var step = new GuideStep(guideId, stepNumber, title, content, estimatedTimeMinutes);
         
-        _context.Set<GuideStep>().Add(step);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<GuideStep>().AddAsync(step);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Step added to guide {GuideId}", guideId);
         return step;
@@ -428,14 +429,14 @@ public class GuideService : IGuideService
 
     public async Task<GuideStep> UpdateStepAsync(Guid stepId, string title, string content, int estimatedTimeMinutes)
     {
-        var step = await _context.Set<GuideStep>()
+        var step = await _uow.Repository<GuideStep>()
             .FirstOrDefaultAsync(s => s.Id == stepId);
 
         if (step == null)
             throw new NotFoundException("Step not found");
 
         step.Update(title, content, estimatedTimeMinutes);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Step {StepId} updated", stepId);
         return step;
@@ -443,21 +444,21 @@ public class GuideService : IGuideService
 
     public async Task DeleteStepAsync(Guid stepId)
     {
-        var step = await _context.Set<GuideStep>()
+        var step = await _uow.Repository<GuideStep>()
             .FirstOrDefaultAsync(s => s.Id == stepId);
 
         if (step == null)
             throw new NotFoundException("Step not found");
 
-        _context.Set<GuideStep>().Remove(step);
-        await _context.SaveChangesAsync();
+        _uow.Repository<GuideStep>().Delete(step);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Step {StepId} deleted", stepId);
     }
 
     public async Task<List<GuideStepDto>> GetGuideStepsAsync(Guid guideId)
     {
-        var steps = await _context.Set<GuideStep>()
+        var steps = await _uow.Repository<GuideStep>().GetQueryable()
             .Where(s => s.GuideId == guideId)
             .OrderBy(s => s.StepNumber)
             .ToListAsync();
@@ -479,8 +480,8 @@ public class GuideService : IGuideService
     {
         var comment = new GuideComment(guideId, userId, content);
         
-        _context.Set<GuideComment>().Add(comment);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<GuideComment>().AddAsync(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment added to guide {GuideId} by user {UserId}", guideId, userId);
         return comment;
@@ -488,7 +489,7 @@ public class GuideService : IGuideService
 
     public async Task<GuideComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<GuideComment>()
+        var comment = await _uow.Repository<GuideComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -498,7 +499,7 @@ public class GuideService : IGuideService
             throw new ForbiddenException("You can only edit your own comments");
 
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} updated", commentId);
         return comment;
@@ -506,7 +507,7 @@ public class GuideService : IGuideService
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<GuideComment>()
+        var comment = await _uow.Repository<GuideComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -515,8 +516,8 @@ public class GuideService : IGuideService
         if (comment.UserId != userId)
             throw new ForbiddenException("You can only delete your own comments");
 
-        _context.Set<GuideComment>().Remove(comment);
-        await _context.SaveChangesAsync();
+        _uow.Repository<GuideComment>().Delete(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} deleted", commentId);
     }
@@ -526,7 +527,7 @@ public class GuideService : IGuideService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<GuideComment>()
+        var query = _uow.Repository<GuideComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.GuideId == guideId)
             .OrderByDescending(c => c.CreatedAt);
@@ -561,10 +562,10 @@ public class GuideService : IGuideService
 
         if (currentUserId.HasValue)
         {
-            isLiked = await _context.Set<GuideReaction>()
+            isLiked = await _uow.Repository<GuideReaction>().GetQueryable()
                 .AnyAsync(gr => gr.GuideId == guide.Id && gr.UserId == currentUserId.Value);
             
-            isBookmarked = await _context.Set<GuideBookmark>()
+            isBookmarked = await _uow.Repository<GuideBookmark>().GetQueryable()
                 .AnyAsync(gb => gb.GuideId == guide.Id && gb.UserId == currentUserId.Value);
         }
 

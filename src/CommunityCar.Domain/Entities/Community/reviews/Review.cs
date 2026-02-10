@@ -3,6 +3,7 @@ using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Entities.Community.groups;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Utilities;
+using CommunityCar.Domain.ValueObjects;
 
 namespace CommunityCar.Domain.Entities.Community.reviews;
 
@@ -19,7 +20,8 @@ public class Review : AggregateRoot
     public Guid? GroupId { get; private set; }
     public virtual CommunityGroup? Group { get; private set; }
     
-    public int Rating { get; private set; } // 1-5 stars
+    private decimal _rating;
+    public Rating Rating => ValueObjects.Rating.Create(_rating);
     public string Title { get; private set; } = string.Empty;
     public string Comment { get; private set; } = string.Empty;
     
@@ -51,7 +53,7 @@ public class Review : AggregateRoot
         string entityType,
         ReviewType type,
         Guid reviewerId,
-        int rating,
+        decimal rating,
         string title,
         string comment,
         bool isVerifiedPurchase = false,
@@ -64,14 +66,14 @@ public class Review : AggregateRoot
         Guard.Against.NullOrWhiteSpace(title, nameof(title));
         Guard.Against.NullOrWhiteSpace(comment, nameof(comment));
         
-        if (rating < 1 || rating > 5)
-            throw new ArgumentException("Rating must be between 1 and 5", nameof(rating));
+        // Validate using Rating value object
+        var ratingValue = ValueObjects.Rating.Create(rating);
 
         EntityId = entityId;
         EntityType = entityType;
         Type = type;
         ReviewerId = reviewerId;
-        Rating = rating;
+        _rating = ratingValue.Value;
         Title = title;
         Comment = comment;
         IsVerifiedPurchase = isVerifiedPurchase;
@@ -81,15 +83,15 @@ public class Review : AggregateRoot
         Slug = SlugHelper.GenerateSlug(title);
     }
 
-    public void Update(int rating, string title, string comment, bool isRecommended)
+    public void Update(decimal rating, string title, string comment, bool isRecommended)
     {
         Guard.Against.NullOrWhiteSpace(title, nameof(title));
         Guard.Against.NullOrWhiteSpace(comment, nameof(comment));
         
-        if (rating < 1 || rating > 5)
-            throw new ArgumentException("Rating must be between 1 and 5", nameof(rating));
+        // Validate using Rating value object
+        var ratingValue = ValueObjects.Rating.Create(rating);
 
-        Rating = rating;
+        _rating = ratingValue.Value;
         Title = title;
         Comment = comment;
         IsRecommended = isRecommended;

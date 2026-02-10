@@ -140,7 +140,7 @@ public class ContentReportsController : Controller
             // Content quality metrics
             viewModel.ResolvedQuestions = filteredQuestions.Count(q => q.IsResolved);
             viewModel.UnresolvedQuestions = filteredQuestions.Count(q => !q.IsResolved);
-            viewModel.AverageReviewRating = filteredReviews.Any() ? filteredReviews.Average(r => r.Rating) : 0;
+            viewModel.AverageReviewRating = filteredReviews.Any() ? (double)filteredReviews.Average(r => r.Rating) : 0;
 
             return View(viewModel);
         }

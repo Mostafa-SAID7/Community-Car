@@ -1,7 +1,7 @@
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Common;
-using CommunityCar.Mvc.Hubs;
+using CommunityCar.Infrastructure.Hubs;
 using CommunityCar.Mvc.ViewModels.Qa;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

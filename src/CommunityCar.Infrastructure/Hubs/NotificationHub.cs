@@ -1,18 +1,39 @@
-using Microsoft.AspNetCore.SignalR;
+using CommunityCar.Infrastructure.Hubs.Base;
+using CommunityCar.Infrastructure.Services.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace CommunityCar.Infrastructure.Hubs;
 
+
 [Authorize]
-public class NotificationHub : Hub
+public class NotificationHub : BaseHub<NotificationHub>
 {
-    public override async Task OnConnectedAsync()
+    public NotificationHub(ILogger<NotificationHub> logger, IConnectionManager connectionManager) : base(logger, connectionManager)
     {
-        var userId = Context.UserIdentifier;
-        if (!string.IsNullOrEmpty(userId))
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-        }
-        await base.OnConnectedAsync();
     }
+
+    
+    public override async Task JoinGroup(string groupName)
+    {
+        await base.JoinGroup(groupName);
+    }
+
+    
+    public override async Task LeaveGroup(string groupName)
+    {
+        await base.LeaveGroup(groupName);
+    }
+
+    #region Utility Methods
+
+    /// <summary>
+    /// Get count of users in a specific notification group
+    /// </summary>
+    public int GetGroupMemberCount(string groupName)
+    {
+        return ConnectionManager.GetGroupConnectionCount(groupName);
+    }
+
+    #endregion
 }

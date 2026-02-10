@@ -4,8 +4,8 @@ using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Entities.Community.news;
 using CommunityCar.Domain.Enums.Community.news;
 using CommunityCar.Domain.Exceptions;
+using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,16 +13,16 @@ namespace CommunityCar.Infrastructure.Services.Community;
 
 public class NewsService : INewsService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<NewsService> _logger;
 
     public NewsService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<NewsService> logger)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
     }
@@ -38,8 +38,8 @@ public class NewsService : INewsService
         var article = new NewsArticle(title, content, summary, category, authorId);
         article.Status = status;
         
-        _context.Set<NewsArticle>().Add(article);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<NewsArticle>().AddAsync(article);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article created: {ArticleId} by user {UserId} with status {Status}", article.Id, authorId, status);
         return article;
@@ -53,7 +53,7 @@ public class NewsService : INewsService
             NewsCategory category,
             NewsStatus status)
         {
-            var article = await _context.Set<NewsArticle>()
+            var article = await _uow.Repository<NewsArticle>()
                 .FirstOrDefaultAsync(a => a.Id == articleId);
 
             if (article == null)
@@ -61,7 +61,7 @@ public class NewsService : INewsService
 
             article.Update(title, content, summary, category);
             article.Status = status;
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
 
             _logger.LogInformation("News article updated: {ArticleId} with status {Status}", articleId, status);
             return article;
@@ -70,21 +70,22 @@ public class NewsService : INewsService
 
     public async Task DeleteNewsArticleAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
-        _context.Set<NewsArticle>().Remove(article);
-        await _context.SaveChangesAsync();
+        _uow.Repository<NewsArticle>().Delete(article);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article deleted: {ArticleId}", articleId);
     }
 
     public async Task<NewsArticleDto?> GetNewsArticleByIdAsync(Guid articleId, Guid? currentUserId = null)
     {
-        var article = await _context.Set<NewsArticle>()
+        var query = _uow.Repository<NewsArticle>().GetQueryable();
+        var article = await query
             .Include(a => a.Author)
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
@@ -96,7 +97,8 @@ public class NewsService : INewsService
 
     public async Task<NewsArticleDto?> GetNewsArticleBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var article = await _context.Set<NewsArticle>()
+        var query = _uow.Repository<NewsArticle>().GetQueryable();
+        var article = await query
             .Include(a => a.Author)
             .FirstOrDefaultAsync(a => a.Slug == slug);
 
@@ -113,9 +115,8 @@ public class NewsService : INewsService
         bool? isFeatured = null,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<NewsArticle>()
-            .Include(a => a.Author)
-            .AsQueryable();
+        IQueryable<NewsArticle> query = _uow.Repository<NewsArticle>().GetQueryable()
+            .Include(a => a.Author);
 
         if (status.HasValue)
             query = query.Where(a => a.Status == status.Value);
@@ -150,7 +151,7 @@ public class NewsService : INewsService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<NewsArticle>()
+        var query = _uow.Repository<NewsArticle>().GetQueryable()
             .Include(a => a.Author)
             .Where(a => a.AuthorId == userId)
             .OrderByDescending(a => a.CreatedAt);
@@ -172,7 +173,8 @@ public class NewsService : INewsService
 
     public async Task<List<NewsArticleDto>> GetFeaturedNewsAsync(int count = 5)
     {
-        var articles = await _context.Set<NewsArticle>()
+        var query = _uow.Repository<NewsArticle>().GetQueryable();
+        var articles = await query
             .Include(a => a.Author)
             .Where(a => a.Status == NewsStatus.Published && a.IsFeatured)
             .OrderByDescending(a => a.PublishedAt ?? a.CreatedAt)
@@ -190,7 +192,8 @@ public class NewsService : INewsService
 
     public async Task<List<NewsArticleDto>> GetLatestNewsAsync(int count = 10)
     {
-        var articles = await _context.Set<NewsArticle>()
+        var query = _uow.Repository<NewsArticle>().GetQueryable();
+        var articles = await query
             .Include(a => a.Author)
             .Where(a => a.Status == NewsStatus.Published)
             .OrderByDescending(a => a.PublishedAt ?? a.CreatedAt)
@@ -208,75 +211,75 @@ public class NewsService : INewsService
 
     public async Task PublishNewsArticleAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.Publish();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article published: {ArticleId}", articleId);
     }
 
     public async Task ArchiveNewsArticleAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.Archive();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article archived: {ArticleId}", articleId);
     }
 
     public async Task FeatureNewsArticleAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.Feature();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article featured: {ArticleId}", articleId);
     }
 
     public async Task UnfeatureNewsArticleAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.Unfeature();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article unfeatured: {ArticleId}", articleId);
     }
 
     public async Task IncrementViewsAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.IncrementViews();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task ToggleLikeAsync(Guid articleId, Guid userId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
@@ -284,38 +287,38 @@ public class NewsService : INewsService
 
         // In a real implementation, track likes in a separate table
         article.IncrementLikes();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("News article {ArticleId} liked by user {UserId}", articleId, userId);
     }
 
     public async Task IncrementSharesAsync(Guid articleId)
     {
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
 
         if (article == null)
             throw new NotFoundException("News article not found");
 
         article.IncrementShares();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<NewsComment> AddCommentAsync(Guid articleId, Guid userId, string content)
     {
         var comment = new NewsComment(articleId, userId, content);
         
-        _context.Set<NewsComment>().Add(comment);
+        await _uow.Repository<NewsComment>().AddAsync(comment);
         
         // Increment comment count on article
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == articleId);
         if (article != null)
         {
             article.IncrementComments();
         }
         
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment added to news article {ArticleId} by user {UserId}", articleId, userId);
         return comment;
@@ -323,7 +326,7 @@ public class NewsService : INewsService
 
     public async Task<NewsComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<NewsComment>()
+        var comment = await _uow.Repository<NewsComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -333,7 +336,7 @@ public class NewsService : INewsService
             throw new ForbiddenException("You can only edit your own comments");
 
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} updated", commentId);
         return comment;
@@ -341,7 +344,7 @@ public class NewsService : INewsService
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<NewsComment>()
+        var comment = await _uow.Repository<NewsComment>()
             .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment == null)
@@ -351,15 +354,15 @@ public class NewsService : INewsService
             throw new ForbiddenException("You can only delete your own comments");
 
         // Decrement comment count on article
-        var article = await _context.Set<NewsArticle>()
+        var article = await _uow.Repository<NewsArticle>()
             .FirstOrDefaultAsync(a => a.Id == comment.NewsArticleId);
         if (article != null)
         {
             article.DecrementComments();
         }
 
-        _context.Set<NewsComment>().Remove(comment);
-        await _context.SaveChangesAsync();
+        _uow.Repository<NewsComment>().Delete(comment);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation("Comment {CommentId} deleted", commentId);
     }
@@ -369,7 +372,7 @@ public class NewsService : INewsService
         QueryParameters parameters,
         Guid? currentUserId = null)
     {
-        var query = _context.Set<NewsComment>()
+        var query = _uow.Repository<NewsComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.NewsArticleId == articleId)
             .OrderByDescending(c => c.CreatedAt);

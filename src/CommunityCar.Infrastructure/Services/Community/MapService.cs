@@ -5,7 +5,7 @@ using CommunityCar.Domain.Entities.Community.maps;
 using CommunityCar.Domain.Enums.Community.maps;
 using CommunityCar.Domain.Exceptions;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Infrastructure.Data;
+using CommunityCar.Domain.Interfaces.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,16 +13,16 @@ namespace CommunityCar.Infrastructure.Services.Community;
 
 public class MapService : IMapService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly ILogger<MapService> _logger;
 
     public MapService(
-        ApplicationDbContext context,
+        IUnitOfWork uow,
         IMapper mapper,
         ILogger<MapService> logger)
     {
-        _context = context;
+        _uow = uow;
         _mapper = mapper;
         _logger = logger;
     }
@@ -37,7 +37,7 @@ public class MapService : IMapService
         var slug = baseSlug;
         var counter = 1;
         
-        while (await _context.Set<MapPoint>().AnyAsync(m => m.Slug == slug))
+        while (await _uow.Repository<MapPoint>().GetQueryable().AnyAsync(m => m.Slug == slug))
         {
             slug = $"{baseSlug}-{counter}";
             counter++;
@@ -52,15 +52,15 @@ public class MapService : IMapService
         // Auto-publish the map point so it appears in the index immediately
         mapPoint.Publish();
         
-        _context.Set<MapPoint>().Add(mapPoint);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<MapPoint>().AddAsync(mapPoint);
+        await _uow.SaveChangesAsync();
         _logger.LogInformation("Map point created and published: {MapPointId}", mapPoint.Id);
         return mapPoint;
     }
 
     public async Task<MapPoint> UpdateMapPointAsync(Guid mapPointId, string name, double latitude, double longitude, string? address, MapPointType type, string? description)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
         var location = new Location(latitude, longitude, address);
@@ -71,7 +71,7 @@ public class MapService : IMapService
         var slug = baseSlug;
         var counter = 1;
         
-        while (await _context.Set<MapPoint>().AnyAsync(m => m.Slug == slug && m.Id != mapPointId))
+        while (await _uow.Repository<MapPoint>().GetQueryable().AnyAsync(m => m.Slug == slug && m.Id != mapPointId))
         {
             slug = $"{baseSlug}-{counter}";
             counter++;
@@ -83,24 +83,24 @@ public class MapService : IMapService
             mapPoint.Slug = slug;
         }
         
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
         _logger.LogInformation("Map point updated: {MapPointId}", mapPointId);
         return mapPoint;
     }
 
     public async Task DeleteMapPointAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
-        _context.Set<MapPoint>().Remove(mapPoint);
-        await _context.SaveChangesAsync();
+        _uow.Repository<MapPoint>().Delete(mapPoint);
+        await _uow.SaveChangesAsync();
         _logger.LogInformation("Map point deleted: {MapPointId}", mapPointId);
     }
 
     public async Task<MapPointDto?> GetMapPointByIdAsync(Guid mapPointId, Guid? currentUserId = null)
     {
-        var mapPoint = await _context.Set<MapPoint>()
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .FirstOrDefaultAsync(m => m.Id == mapPointId);
         
@@ -110,7 +110,7 @@ public class MapService : IMapService
         if (currentUserId.HasValue)
         {
             dto.IsOwner = mapPoint.OwnerId == currentUserId.Value;
-            dto.IsFavorited = await _context.Set<MapPointFavorite>()
+            dto.IsFavorited = await _uow.Repository<MapPointFavorite>().GetQueryable()
                 .AnyAsync(f => f.MapPointId == mapPointId && f.UserId == currentUserId.Value);
         }
         return dto;
@@ -118,7 +118,7 @@ public class MapService : IMapService
 
     public async Task<MapPointDto?> GetMapPointBySlugAsync(string slug, Guid? currentUserId = null)
     {
-        var mapPoint = await _context.Set<MapPoint>()
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .FirstOrDefaultAsync(m => m.Slug == slug);
         
@@ -128,7 +128,7 @@ public class MapService : IMapService
         if (currentUserId.HasValue)
         {
             dto.IsOwner = mapPoint.OwnerId == currentUserId.Value;
-            dto.IsFavorited = await _context.Set<MapPointFavorite>()
+            dto.IsFavorited = await _uow.Repository<MapPointFavorite>().GetQueryable()
                 .AnyAsync(f => f.MapPointId == mapPoint.Id && f.UserId == currentUserId.Value);
         }
         return dto;
@@ -136,7 +136,7 @@ public class MapService : IMapService
 
     public async Task<PagedResult<MapPointDto>> GetMapPointsAsync(QueryParameters parameters, MapPointStatus? status = null, MapPointType? type = null, Guid? ownerId = null, Guid? currentUserId = null)
     {
-        var query = _context.Set<MapPoint>()
+        var query = _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .AsQueryable();
 
@@ -158,7 +158,7 @@ public class MapService : IMapService
         
         if (currentUserId.HasValue)
         {
-            var favoriteIds = await _context.Set<MapPointFavorite>()
+            var favoriteIds = await _uow.Repository<MapPointFavorite>().GetQueryable()
                 .Where(f => f.UserId == currentUserId.Value && items.Select(i => i.Id).Contains(f.MapPointId))
                 .Select(f => f.MapPointId)
                 .ToListAsync();
@@ -175,7 +175,7 @@ public class MapService : IMapService
 
     public async Task<List<MapPointDto>> GetNearbyMapPointsAsync(double latitude, double longitude, double radiusKm = 10, MapPointType? type = null, Guid? currentUserId = null)
     {
-        var query = _context.Set<MapPoint>()
+        var query = _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .Where(m => m.Status == MapPointStatus.Published);
 
@@ -194,7 +194,7 @@ public class MapService : IMapService
 
     public async Task<List<MapPointDto>> GetFeaturedMapPointsAsync(int count = 10)
     {
-        var mapPoints = await _context.Set<MapPoint>()
+        var mapPoints = await _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .Where(m => m.Status == MapPointStatus.Published)
             .OrderByDescending(m => m.ViewCount)
@@ -206,7 +206,7 @@ public class MapService : IMapService
 
     public async Task<PagedResult<MapPointDto>> SearchMapPointsAsync(string searchTerm, QueryParameters parameters, Guid? currentUserId = null)
     {
-        var query = _context.Set<MapPoint>()
+        var query = _uow.Repository<MapPoint>().GetQueryable()
             .Include(m => m.Owner)
             .Where(m => m.Status == MapPointStatus.Published &&
                        (m.Name.Contains(searchTerm) || 
@@ -225,87 +225,87 @@ public class MapService : IMapService
 
     public async Task PublishMapPointAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
         mapPoint.Publish();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task ArchiveMapPointAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
         mapPoint.Archive();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task VerifyMapPointAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
         mapPoint.Verify();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task UnverifyMapPointAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) throw new NotFoundException("Map point not found");
         
         mapPoint.Unverify();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task IncrementViewsAsync(Guid mapPointId)
     {
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint == null) return;
         
         mapPoint.IncrementViews();
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task ToggleFavoriteAsync(Guid mapPointId, Guid userId)
     {
-        var favorite = await _context.Set<MapPointFavorite>()
+        var favorite = await _uow.Repository<MapPointFavorite>().GetQueryable()
             .FirstOrDefaultAsync(f => f.MapPointId == mapPointId && f.UserId == userId);
 
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         
         if (favorite == null)
         {
-            _context.Set<MapPointFavorite>().Add(new MapPointFavorite(mapPointId, userId));
+            await _uow.Repository<MapPointFavorite>().AddAsync(new MapPointFavorite(mapPointId, userId));
             if (mapPoint != null) mapPoint.IncrementFavorites();
         }
         else
         {
-            _context.Set<MapPointFavorite>().Remove(favorite);
+            _uow.Repository<MapPointFavorite>().Delete(favorite);
             if (mapPoint != null) mapPoint.DecrementFavorites();
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task CheckInAsync(Guid mapPointId, Guid userId)
     {
         var checkIn = new MapPointCheckIn(mapPointId, userId);
-        _context.Set<MapPointCheckIn>().Add(checkIn);
+        await _uow.Repository<MapPointCheckIn>().AddAsync(checkIn);
         
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint != null)
         {
             mapPoint.IncrementCheckIns();
         }
         
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<MapPointRating> AddOrUpdateRatingAsync(Guid mapPointId, Guid userId, int rating, string? comment = null)
     {
-        var existingRating = await _context.Set<MapPointRating>()
+        var existingRating = await _uow.Repository<MapPointRating>().GetQueryable()
             .FirstOrDefaultAsync(r => r.MapPointId == mapPointId && r.UserId == userId);
 
         if (existingRating != null)
@@ -315,30 +315,30 @@ public class MapService : IMapService
         else
         {
             existingRating = new MapPointRating(mapPointId, userId, rating, comment);
-            _context.Set<MapPointRating>().Add(existingRating);
+            await _uow.Repository<MapPointRating>().AddAsync(existingRating);
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
         await UpdateMapPointAverageRatingAsync(mapPointId);
         return existingRating;
     }
 
     public async Task DeleteRatingAsync(Guid mapPointId, Guid userId)
     {
-        var rating = await _context.Set<MapPointRating>()
+        var rating = await _uow.Repository<MapPointRating>().GetQueryable()
             .FirstOrDefaultAsync(r => r.MapPointId == mapPointId && r.UserId == userId);
 
         if (rating != null)
         {
-            _context.Set<MapPointRating>().Remove(rating);
-            await _context.SaveChangesAsync();
+            _uow.Repository<MapPointRating>().Delete(rating);
+            await _uow.SaveChangesAsync();
             await UpdateMapPointAverageRatingAsync(mapPointId);
         }
     }
 
     public async Task<int?> GetUserRatingAsync(Guid mapPointId, Guid userId)
     {
-        var rating = await _context.Set<MapPointRating>()
+        var rating = await _uow.Repository<MapPointRating>().GetQueryable()
             .FirstOrDefaultAsync(r => r.MapPointId == mapPointId && r.UserId == userId);
         return rating?.Rating;
     }
@@ -346,38 +346,38 @@ public class MapService : IMapService
     public async Task<MapPointComment> AddCommentAsync(Guid mapPointId, Guid userId, string content)
     {
         var comment = new MapPointComment(mapPointId, userId, content);
-        _context.Set<MapPointComment>().Add(comment);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<MapPointComment>().AddAsync(comment);
+        await _uow.SaveChangesAsync();
         return comment;
     }
 
     public async Task<MapPointComment> UpdateCommentAsync(Guid commentId, Guid userId, string content)
     {
-        var comment = await _context.Set<MapPointComment>()
+        var comment = await _uow.Repository<MapPointComment>().GetQueryable()
             .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
         
         if (comment == null) throw new NotFoundException("Comment not found");
         
         comment.Update(content);
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
         return comment;
     }
 
     public async Task DeleteCommentAsync(Guid commentId, Guid userId)
     {
-        var comment = await _context.Set<MapPointComment>()
+        var comment = await _uow.Repository<MapPointComment>().GetQueryable()
             .FirstOrDefaultAsync(c => c.Id == commentId && c.UserId == userId);
         
         if (comment != null)
         {
-            _context.Set<MapPointComment>().Remove(comment);
-            await _context.SaveChangesAsync();
+            _uow.Repository<MapPointComment>().Delete(comment);
+            await _uow.SaveChangesAsync();
         }
     }
 
     public async Task<PagedResult<MapPointCommentDto>> GetMapPointCommentsAsync(Guid mapPointId, QueryParameters parameters, Guid? currentUserId = null)
     {
-        var query = _context.Set<MapPointComment>()
+        var query = _uow.Repository<MapPointComment>().GetQueryable()
             .Include(c => c.User)
             .Where(c => c.MapPointId == mapPointId);
 
@@ -394,11 +394,11 @@ public class MapService : IMapService
 
     private async Task UpdateMapPointAverageRatingAsync(Guid mapPointId)
     {
-        var ratings = await _context.Set<MapPointRating>()
+        var ratings = await _uow.Repository<MapPointRating>().GetQueryable()
             .Where(r => r.MapPointId == mapPointId)
             .ToListAsync();
 
-        var mapPoint = await _context.Set<MapPoint>().FirstOrDefaultAsync(m => m.Id == mapPointId);
+        var mapPoint = await _uow.Repository<MapPoint>().GetQueryable().FirstOrDefaultAsync(m => m.Id == mapPointId);
         if (mapPoint != null)
         {
             if (ratings.Any())
@@ -410,7 +410,7 @@ public class MapService : IMapService
             {
                 mapPoint.UpdateRating(0, 0);
             }
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
         }
     }
 
@@ -428,3 +428,4 @@ public class MapService : IMapService
 
     private static double ToRadians(double degrees) => degrees * Math.PI / 180;
 }
+

@@ -1,5 +1,4 @@
 using CommunityCar.Domain.Interfaces.Common;
-using CommunityCar.Infrastructure.Data;
 using CommunityCar.Domain.Entities.Dashboard.security;
 using CommunityCar.Domain.Enums.Dashboard.security;
 
@@ -7,12 +6,12 @@ namespace CommunityCar.Infrastructure.Services.Common;
 
 public class SecurityService : ISecurityService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _uow;
     private readonly ICurrentUserService _currentUserService;
 
-    public SecurityService(ApplicationDbContext context, ICurrentUserService currentUserService)
+    public SecurityService(IUnitOfWork uow, ICurrentUserService currentUserService)
     {
-        _context = context;
+        _uow = uow;
         _currentUserService = currentUserService;
     }
 
@@ -28,8 +27,8 @@ public class SecurityService : ISecurityService
             NewValues = metadata
         };
 
-        _context.AuditLogs.Add(auditLog);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<AuditLog>().AddAsync(auditLog);
+        await _uow.SaveChangesAsync();
     }
 
     public async Task LogUnauthorizedAccessAsync(string resource, string? metadata = null)
@@ -51,7 +50,7 @@ public class SecurityService : ISecurityService
             description,
             source: "System");
 
-        _context.Set<SecurityAlert>().Add(alert);
-        await _context.SaveChangesAsync();
+        await _uow.Repository<SecurityAlert>().AddAsync(alert);
+        await _uow.SaveChangesAsync();
     }
 }

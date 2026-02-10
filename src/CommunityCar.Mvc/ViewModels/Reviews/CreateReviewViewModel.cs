@@ -16,8 +16,8 @@ public class CreateReviewViewModel
     public ReviewType Type { get; set; }
 
     [Required(ErrorMessage = "Rating is required")]
-    [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
-    public int Rating { get; set; }
+    [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
+    public decimal Rating { get; set; }
 
     [Required(ErrorMessage = "Title is required")]
     [StringLength(200, ErrorMessage = "Title cannot exceed 200 characters")]

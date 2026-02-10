@@ -341,7 +341,7 @@ public class FeedController : Controller
             LikeCount = review.HelpfulCount,
             CommentCount = 0,
             InteractionCount = review.HelpfulCount + review.NotHelpfulCount,
-            Rating = review.Rating,
+            Rating = (int?)Math.Round((double)review.Rating),
             IsRecommended = review.IsRecommended,
             CreatedAt = review.CreatedAt,
             TimeAgo = GetTimeAgo(review.CreatedAt),

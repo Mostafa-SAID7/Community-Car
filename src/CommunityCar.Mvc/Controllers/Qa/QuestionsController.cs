@@ -188,9 +188,8 @@ public class QuestionsController : Controller
                 model.Title, 
                 model.Content, 
                 currentUserId, 
-                categoryId: model.CategoryId,
-                groupId: groupId,
-                tags: model.Tags);
+                model.CategoryId,
+                model.Tags);
 
             TempData["Success"] = _localizer["QuestionCreatedSuccessfully"].Value;
             return RedirectToAction(nameof(Details), new { slug = question.Slug });

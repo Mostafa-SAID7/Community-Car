@@ -49,7 +49,7 @@ public class NotificationService : INotificationService
         await _uow.SaveChangesAsync();
 
         // Broadcast real-time
-        await _hubContext.Clients.Group(userId.ToString()).SendAsync("ReceiveNotification", new
+        await _hubContext.Clients.Group(userId.ToString()).SendCoreAsync("ReceiveNotification", new object[] { new
         {
             notification.Id,
             notification.Title,
@@ -57,7 +57,7 @@ public class NotificationService : INotificationService
             notification.Link,
             notification.CreatedAt,
             notification.IsRead
-        });
+        } });
     }
 
     public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(Guid userId, int count = 10)

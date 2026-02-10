@@ -2706,9 +2706,6 @@ namespace CommunityCar.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ReviewerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2731,11 +2728,13 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("_rating")
+                        .HasColumnType("decimal(3,1)")
+                        .HasColumnName("Rating");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
-
-                    b.HasIndex("Rating");
 
                     b.HasIndex("ReviewerId");
 
@@ -2746,6 +2745,8 @@ namespace CommunityCar.Infrastructure.Migrations
                     b.HasIndex("Status");
 
                     b.HasIndex("Type");
+
+                    b.HasIndex("_rating");
 
                     b.HasIndex("EntityId", "EntityType");
 

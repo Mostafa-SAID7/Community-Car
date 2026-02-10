@@ -38,7 +38,6 @@ try
     });
 
     builder.Services.AddInfrastructure(builder.Configuration);
-    builder.Services.AddScoped<CommunityCar.Domain.Interfaces.Community.IQuestionHubService, CommunityCar.Mvc.Services.QuestionHubService>();
     builder.Services.AddAutoMapper(typeof(FriendshipProfile).Assembly);
 
     // FluentValidation
@@ -165,7 +164,23 @@ try
         name: "default",
         pattern: "{controller=Feed}/{action=Index}/{id?}");
 
-    app.MapHub<CommunityCar.Mvc.Hubs.QuestionHub>("/questionHub");
+    // SignalR Hub Endpoints - Each hub has its own endpoint for specific functionality
+    // All hubs inherit from BaseHub<THub> for consistent connection management
+    
+    // Generic Hub - Backward compatibility and general notifications
+    app.MapHub<CommunityCar.Infrastructure.Hubs.GenericHub>("/hub");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.GenericHub>("/hubs/generic");
+    
+    // Specific Hubs - Dedicated endpoints for each feature area
+    app.MapHub<CommunityCar.Infrastructure.Hubs.QuestionHub>("/hubs/question");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/hubs/notification");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/hubs/chat");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.FriendHub>("/hubs/friend");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.PostHub>("/hubs/post");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.CommunityHub>("/hubs/community");
+    
+    // Legacy endpoints for backward compatibility (redirect to specific hubs)
+    app.MapHub<CommunityCar.Infrastructure.Hubs.QuestionHub>("/questionHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/chatHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.FriendHub>("/friendHub");

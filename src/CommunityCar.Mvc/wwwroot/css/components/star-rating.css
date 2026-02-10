@@ -1,0 +1,269 @@
+/**
+ * Star Rating Component
+ * Supports: Full stars, half stars, interactive rating, read-only display
+ */
+
+/* Rating Container */
+.star-rating {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star-rating.readonly {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Individual Star */
+.star {
+    position: relative;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: inline-block;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.star::before {
+    content: '★';
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 1.5rem;
+    color: var(--color-gray-300, #d1d5db);
+    transition: color 0.2s ease;
+}
+
+/* Filled Star */
+.star.filled::before {
+    color: var(--color-warning, #fbbf24);
+}
+
+/* Half Star */
+.star.half::before {
+    background: linear-gradient(
+        90deg,
+        var(--color-warning, #fbbf24) 50%,
+        var(--color-gray-300, #d1d5db) 50%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hover Effects */
+.star-rating:not(.readonly) .star:hover {
+    transform: scale(1.1);
+}
+
+.star.preview::before {
+    color: var(--color-warning-light, #fcd34d);
+}
+
+/* Size Variants */
+.star-rating.sm .star {
+    width: 1rem;
+    height: 1rem;
+}
+
+.star-rating.sm .star::before {
+    font-size: 1rem;
+}
+
+.star-rating.lg .star {
+    width: 2rem;
+    height: 2rem;
+}
+
+.star-rating.lg .star::before {
+    font-size: 2rem;
+}
+
+.star-rating.xl .star {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.star-rating.xl .star::before {
+    font-size: 2.5rem;
+}
+
+/* Rating Display with Number */
+.rating-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating-number {
+    font-weight: 600;
+    color: var(--color-text-primary, #1f2937);
+    font-size: 1.125rem;
+}
+
+.rating-count {
+    color: var(--color-text-secondary, #6b7280);
+    font-size: 0.875rem;
+}
+
+/* Rating Input Form */
+.rating-input-group {
+    margin-bottom: 1rem;
+}
+
+.rating-input-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1f2937);
+}
+
+.rating-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rating-value-display {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-warning, #fbbf24);
+    min-width: 3rem;
+}
+
+/* Rating Distribution */
+.rating-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rating-bar-label {
+    min-width: 3rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #6b7280);
+}
+
+.rating-bar-track {
+    flex: 1;
+    height: 0.5rem;
+    background-color: var(--color-gray-200, #e5e7eb);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background-color: var(--color-warning, #fbbf24);
+    transition: width 0.3s ease;
+}
+
+.rating-bar-count {
+    min-width: 2.5rem;
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #6b7280);
+}
+
+/* Helpful Buttons */
+.helpful-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.helpful-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    border-radius: 0.375rem;
+    background-color: var(--color-white, #ffffff);
+    color: var(--color-text-secondary, #6b7280);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.helpful-btn:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+    border-color: var(--color-gray-400, #9ca3af);
+}
+
+.helpful-btn.active {
+    background-color: var(--color-success-light, #d1fae5);
+    border-color: var(--color-success, #10b981);
+    color: var(--color-success-dark, #047857);
+}
+
+.helpful-count {
+    font-weight: 600;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .star::before {
+        color: var(--color-gray-600, #4b5563);
+    }
+
+    .star.filled::before,
+    .star.half::before {
+        color: var(--color-warning, #fbbf24);
+    }
+
+    .rating-number,
+    .rating-input-label {
+        color: var(--color-text-primary-dark, #f9fafb);
+    }
+
+    .rating-count,
+    .rating-bar-label,
+    .rating-bar-count {
+        color: var(--color-text-secondary-dark, #d1d5db);
+    }
+
+    .rating-bar-track {
+        background-color: var(--color-gray-700, #374151);
+    }
+
+    .helpful-btn {
+        background-color: var(--color-gray-800, #1f2937);
+        border-color: var(--color-gray-600, #4b5563);
+        color: var(--color-text-secondary-dark, #d1d5db);
+    }
+
+    .helpful-btn:hover {
+        background-color: var(--color-gray-700, #374151);
+    }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .star-rating {
+        gap: 0.125rem;
+    }
+
+    .star {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .star::before {
+        font-size: 1.25rem;
+    }
+
+    .rating-distribution {
+        font-size: 0.8125rem;
+    }
+}

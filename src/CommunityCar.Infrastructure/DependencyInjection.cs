@@ -115,6 +115,16 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         
+        // SignalR Connection Manager
+        services.AddSingleton<IConnectionManager, ConnectionManager>();
+
+        // SignalR Hub Services (Clean Architecture with IHubContext)
+        services.AddScoped<INotificationHubService, NotificationHubService>();
+        services.AddScoped<IQuestionHubService, QuestionHubService>();
+        services.AddScoped<IPostHubService, PostHubService>();
+        services.AddScoped<IFriendHubService, FriendHubService>();
+        services.AddScoped<IChatHubService, ChatHubService>();
+        
         // Command Handlers
         services.AddScoped<ICommandHandler<LikePostCommand, LikePostResult>, LikePostCommandHandler>();
         services.AddScoped<ICommandHandler<VoteQuestionCommand, VoteResult>, VoteQuestionCommandHandler>();
@@ -177,13 +187,13 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IHubNotificationService, HubNotificationService>();
         services.AddScoped<IWidgetService, WidgetService>();
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IGuideService, GuideService>();
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<IPostService, PostService>();
-        services.AddScoped<IPostHubService, PostHubService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<IAssistantService, AssistantService>();
         services.AddScoped<IMLPipelineService, MLPipelineService>();

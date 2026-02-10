@@ -42,6 +42,14 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.Property(r => r.Slug)
             .HasMaxLength(250);
 
+        // Configure Rating value object with backing field
+        builder.Property("_rating")
+            .HasColumnName("Rating")
+            .HasColumnType("decimal(3,1)")
+            .IsRequired();
+
+        builder.Ignore(r => r.Rating);
+
         builder.HasIndex(r => r.Slug)
             .IsUnique();
 
@@ -49,7 +57,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasIndex(r => r.ReviewerId);
         builder.HasIndex(r => r.Status);
         builder.HasIndex(r => r.Type);
-        builder.HasIndex(r => r.Rating);
+        builder.HasIndex("_rating");
 
         builder.HasOne(r => r.Reviewer)
             .WithMany()
