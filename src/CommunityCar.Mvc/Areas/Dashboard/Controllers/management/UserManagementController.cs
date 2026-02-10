@@ -10,6 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.management;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/Management/Users")]
 public class UserManagementController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;

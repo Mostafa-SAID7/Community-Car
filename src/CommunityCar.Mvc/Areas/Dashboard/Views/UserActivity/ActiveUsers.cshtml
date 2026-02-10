@@ -66,8 +66,8 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1">Active Users</h6>
-                            <h2 class="mb-0">@Model.Users.Count.ToString("N0")</h2>
-                            <small class="text-muted">in the last @Model.TimeRange hours</small>
+                            <h2 class="mb-1">@Model.Users.Count.ToString("N0")</h2>
+                            <small class="text-muted d-block">in the last @Model.TimeRange hours</small>
                         </div>
                     </div>
                 </div>
@@ -82,8 +82,8 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1">Online Now</h6>
-                            <h2 class="mb-0">@Model.Users.Count(u => u.IsOnline).ToString("N0")</h2>
-                            <small class="text-muted">currently active</small>
+                            <h2 class="mb-1">@Model.Users.Count(u => u.IsOnline).ToString("N0")</h2>
+                            <small class="text-muted d-block">currently active</small>
                         </div>
                     </div>
                 </div>
@@ -98,8 +98,8 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1">Total Activities</h6>
-                            <h2 class="mb-0">@Model.Users.Sum(u => u.ActivityCount).ToString("N0")</h2>
-                            <small class="text-muted">combined activities</small>
+                            <h2 class="mb-1">@Model.Users.Sum(u => u.ActivityCount).ToString("N0")</h2>
+                            <small class="text-muted d-block">combined activities</small>
                         </div>
                     </div>
                 </div>

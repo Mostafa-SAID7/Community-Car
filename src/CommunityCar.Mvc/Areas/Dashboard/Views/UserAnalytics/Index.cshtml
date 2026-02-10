@@ -1,23 +1,405 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.UserAnalyticsViewModel
 @{
-    ViewData["Title"] = "User Analytics";
+    ViewData["Title"] = "User Analytics - Dashboard";
 }
 
-<div class="container-fluid py-4">
-    <partial name="_AnalyticsNav" />
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">User Analytics</h1>
-            <p class="text-muted small">Analyze user growth, engagement, and activity.</p>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">User Analytics</h1>
+                    <p class="text-muted">Analyze user growth, engagement, and activity</p>
+                </div>
+                <div>
+                    <select id="periodSelector" class="form-select">
+                        @{
+                            var periods = new[] {
+                                new { Value = "7days", Text = "Last 7 Days" },
+                                new { Value = "30days", Text = "Last 30 Days" },
+                                new { Value = "90days", Text = "Last 90 Days" },
+                                new { Value = "1year", Text = "Last Year" }
+                            };
+                            foreach (var period in periods)
+                            {
+                                <option value="@period.Value" selected="@(period.Value == Model.Period)">@period.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-5 text-center">
-             <div class="mb-4">
-                <i class="fas fa-chart-line fa-3x text-primary opacity-25"></i>
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Total Users</p>
+                            <h3 class="mb-0">@Model.TotalUsers.ToString("N0")</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-people fs-1"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h5 class="fw-bold">User Analytics Dashboard</h5>
-            <p class="text-muted">User statistics and charts will be implemented here.</p>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">New Users</p>
+                            <h3 class="mb-0">@Model.NewUsers.ToString("N0")</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-person-plus fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Active Users</p>
+                            <h3 class="mb-0">@Model.ActiveUsers.ToString("N0")</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-activity fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Avg Content/User</p>
+                            <h3 class="mb-0">@Model.AverageContentPerUser.ToString("F1")</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-bar-chart fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Growth Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">User Growth Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userGrowthChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Role Distribution & Activity -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">User Role Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="roleDistributionChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Daily Activity</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Contributors -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Contributors</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopContributors.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>User</th>
+                                        <th>Contributions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.TopContributors.Count; i++)
+                                    {
+                                        var contributor = Model.TopContributors[i];
+                                        <tr>
+                                            <td>
+                                                @if (i == 0)
+                                                {
+                                                    <i class="bi bi-trophy-fill text-warning"></i>
+                                                }
+                                                else if (i == 1)
+                                                {
+                                                    <i class="bi bi-trophy-fill text-secondary"></i>
+                                                }
+                                                else if (i == 2)
+                                                {
+                                                    <i class="bi bi-trophy-fill text-danger"></i>
+                                                }
+                                                else
+                                                {
+                                                    <span>@(i + 1)</span>
+                                                }
+                                            </td>
+                                            <td>@contributor.UserName</td>
+                                            <td>
+                                                <span class="badge bg-primary">@contributor.ContributionCount</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No contributor data available</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Registrations -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Registrations</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentUsers.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Registered</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.RecentUsers)
+                                    {
+                                        <tr>
+                                            <td>@user.UserName</td>
+                                            <td>@user.Email</td>
+                                            <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (user.EmailConfirmed)
+                                                {
+                                                    <span class="badge bg-success">Verified</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">Pending</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No recent users</p>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let activityChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+            const userGrowthData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.UserGrowthData));
+            
+            new Chart(userGrowthCtx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(userGrowthData),
+                    datasets: [{
+                        label: 'New Users',
+                        data: Object.values(userGrowthData),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Role Distribution Chart
+            const roleCtx = document.getElementById('roleDistributionChart').getContext('2d');
+            new Chart(roleCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Regular Users', 'Moderators', 'Admins', 'Super Admins'],
+                    datasets: [{
+                        data: [@Model.RegularUserCount, @Model.ModeratorCount, @Model.AdminCount, @Model.SuperAdminCount],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Activity Chart - Load via AJAX
+            loadActivityChart('@Model.Period');
+
+            // Period selector change handler
+            document.getElementById('periodSelector').addEventListener('change', function() {
+                window.location.href = '@Url.Action("Index")?period=' + this.value;
+            });
+        });
+
+        function loadActivityChart(period) {
+            fetch('@Url.Action("GetUserActivityData")?period=' + period)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        // Destroy existing chart if it exists
+                        if (activityChartInstance) {
+                            activityChartInstance.destroy();
+                        }
+
+                        const activityCtx = document.getElementById('activityChart');
+                        if (!activityCtx) {
+                            console.error('Activity chart canvas not found');
+                            return;
+                        }
+
+                        const labels = Object.keys(result.data);
+                        const values = Object.values(result.data);
+
+                        activityChartInstance = new Chart(activityCtx.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Daily Registrations',
+                                    data: values,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return 'Registrations: ' + context.parsed.y;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0,
+                                            stepSize: 1
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 45,
+                                            minRotation: 45
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        console.log('Activity chart loaded successfully with', labels.length, 'data points');
+                    } else {
+                        console.error('Invalid data received:', result);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading activity data:', error);
+                    // Show error message to user
+                    const chartContainer = document.getElementById('activityChart').parentElement;
+                    chartContainer.innerHTML = '<p class="text-danger text-center py-3">Failed to load activity data. Please refresh the page.</p>';
+                });
+        }
+    </script>
+}

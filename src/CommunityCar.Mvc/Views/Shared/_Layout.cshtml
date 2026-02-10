@@ -56,7 +56,7 @@
     <main role="main" class="my-4">
         @{
             var hideSidebars = ViewData["HideSidebars"] as bool? ?? false;
-            var hideRightSidebar = ViewData["HideRightSidebar"] as bool? ?? false;
+            var hideRightSidebar = ViewData["HideRightSidebar"] as bool? ?? true; // Default to hiding right sidebar
         }
         @if (hideSidebars)
         {

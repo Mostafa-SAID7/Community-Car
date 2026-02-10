@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Upload Profile Picture" xml:space="preserve">
+    <value>Upload Profile Picture</value>
+  </data>
+  <data name="Choose Picture" xml:space="preserve">
+    <value>Choose Picture</value>
+  </data>
+  <data name="Accepted formats" xml:space="preserve">
+    <value>Accepted formats: JPG, PNG, GIF. Maximum size: 5MB</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="UploadBtn" xml:space="preserve">
+    <value>Upload</value>
+  </data>
+  <data name="Tips for a great profile picture:" xml:space="preserve">
+    <value>Tips for a great profile picture:</value>
+  </data>
+  <data name="Use a clear, recent photo of yourself" xml:space="preserve">
+    <value>Use a clear, recent photo of yourself</value>
+  </data>
+  <data name="Make sure your face is visible" xml:space="preserve">
+    <value>Make sure your face is visible</value>
+  </data>
+  <data name="Use good lighting" xml:space="preserve">
+    <value>Use good lighting</value>
+  </data>
+  <data name="Square images work best" xml:space="preserve">
+    <value>Square images work best</value>
+  </data>
+</root>

@@ -134,6 +134,21 @@ public class ReviewsController : Controller
     }
 
 
+    // GET: Reviews/Create
+    [Authorize]
+    [HttpGet("Create")]
+    public IActionResult Create(Guid entityId, string entityType)
+    {
+        var model = new CreateReviewViewModel
+        {
+            EntityId = entityId,
+            EntityType = entityType
+        };
+
+        ViewBag.Types = Enum.GetValues<ReviewType>();
+        return View(model);
+    }
+
     // POST: Reviews/Create
     [Authorize]
     [HttpPost("Create")]

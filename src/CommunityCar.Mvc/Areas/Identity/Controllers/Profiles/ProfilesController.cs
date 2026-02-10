@@ -391,6 +391,17 @@ public class ProfilesController : Controller
         return View(viewModel);
     }
 
+    [HttpGet]
+    [Authorize]
+    [Route("SendFriendRequest/{userId}")]
+    public IActionResult SendFriendRequestGet(Guid userId)
+    {
+        // GET requests should redirect to the profile page
+        // Friend requests must be sent via POST for security
+        TempData["Info"] = "Please use the 'Add Friend' button on the profile page to send a friend request.";
+        return RedirectToAction(nameof(Index), new { userId });
+    }
+
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]

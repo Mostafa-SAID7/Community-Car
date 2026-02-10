@@ -45,8 +45,14 @@ public static class DependencyInjection
 
         services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
+            // Password Requirements
             options.Password.RequireDigit = true;
-            options.Password.RequiredLength = 8;
+            options.Password.RequiredLength = 6;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = false; // No special characters required
+            options.Password.RequiredUniqueChars = 1;
+            
             options.User.RequireUniqueEmail = true;
             
             // 2FA - Two-Factor Authentication

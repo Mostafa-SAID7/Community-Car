@@ -30,7 +30,9 @@
 @import 'pages/qa.css';
 @import 'pages/security.css';
 @import 'pages/badges.css';
+@import 'pages/chat-ui-standard.css';
 @import 'pages/chats.css';
+
 @import 'pages/guides.css';
 @import 'pages/news.css';
 @import 'pages/posts.css';

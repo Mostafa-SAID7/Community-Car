@@ -15,18 +15,54 @@
                     <a asp-action="Create" class="btn btn-primary">
                         <i class="fas fa-plus me-1"></i> @Localizer["AddTranslation"]
                     </a>
-                    <a asp-action="BulkImport" class="btn btn-info">
-                        <i class="fas fa-file-import me-1"></i> @Localizer["BulkImport"]
-                    </a>
-                    <a asp-action="Export" class="btn btn-success">
-                        <i class="fas fa-file-export me-1"></i> @Localizer["Export"]
-                    </a>
-                    <form asp-action="SyncToFiles" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-sync me-1"></i> @Localizer["SyncToFiles"]
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-file-import me-1"></i> Import
                         </button>
-                    </form>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="BulkImport">Bulk Import (JSON/CSV)</a></li>
+                            <li>
+                                <form asp-action="SyncFromFiles" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-filetype-json me-1"></i> Sync From JSON Files
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-action="SyncFromResx" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-filetype-xml me-1"></i> Sync From RESX Files
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-file-export me-1"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="Export">Export (JSON/CSV)</a></li>
+                            <li>
+                                <form asp-action="SyncToFiles" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-filetype-json me-1"></i> Sync To JSON Files
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-action="SyncToResx" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-filetype-xml me-1"></i> Sync To RESX Files
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Login with OTP" xml:space="preserve">
+    <value>تسجيل الدخول باستخدام رمز لمرة واحدة</value>
+  </data>
+  <data name="Enter your phone number to receive a verification code" xml:space="preserve">
+    <value>أدخل رقم هاتفك لتلقي رمز التحقق</value>
+  </data>
+  <data name="Phone Number" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Send Code" xml:space="preserve">
+    <value>إرسال رمز التحقق</value>
+  </data>
+  <data name="Include country code (e.g., +1 for US)" xml:space="preserve">
+    <value>تضمين رمز البلد (مثلاً، +20 لمصر)</value>
+  </data>
+  <data name="Back to Login" xml:space="preserve">
+    <value>العودة لتسجيل الدخول</value>
+  </data>
+  <data name="OTP Login" xml:space="preserve">
+    <value>تسجيل الدخول عبر OTP</value>
+  </data>
+  <data name="OTP (One-Time Password) provides a secure, passwordless way to access your account." xml:space="preserve">
+    <value>يوفر رمز التحقق لمرة واحدة (OTP) وسيلة آمنة وبدون كلمة مرور للوصول إلى حسابك.</value>
+  </data>
+</root>

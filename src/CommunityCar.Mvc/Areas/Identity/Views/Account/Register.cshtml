@@ -1,70 +1,128 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = Localizer["Register"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
     var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Create Account</h2>
-                    <p class="text-center text-muted mb-4">Join our community today</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
 
-                    <form action="/@culture/Register" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<div class="login-wrapper">
+    <div class="login-container wide">
+        <div class="login-header">
+            <h2>@Localizer["Create Account"]</h2>
+            <p class="text-muted">@Localizer["Join our community today"]</p>
+        </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
-                                <span asp-validation-for="LastName" class="text-danger"></span>
-                            </div>
-                        </div>
+        <form action="/@culture/Register" method="post" class="login-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" placeholder="Enter email address" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
 
-                        <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="Enter phone number (optional)" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                        </div>
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
 
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" placeholder="Enter password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                            <small class="form-text text-muted">Password must be at least 6 characters</small>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm password" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
-
-                        <div class="text-center">
-                            <p class="mb-0">Already have an account? <a href="/@culture/Login">Sign in</a></p>
-                        </div>
-                    </form>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-floating">
+                        <input asp-for="FirstName" class="form-control" id="floatingFirstName" placeholder="FirstName" required>
+                        <label asp-for="FirstName">@Localizer["First Name"]</label>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-floating">
+                        <input asp-for="LastName" class="form-control" id="floatingLastName" placeholder="LastName" required>
+                        <label asp-for="LastName">@Localizer["Last Name"]</label>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Email" type="email" class="form-control" id="floatingEmail" placeholder="name@example.com" required>
+                <label asp-for="Email">@Localizer["Email address"]</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="PhoneNumber" class="form-control" id="floatingPhone" placeholder="Phone number (optional)">
+                <label asp-for="PhoneNumber">@Localizer["Phone number (optional)"]</label>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3 position-relative">
+                <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                <label asp-for="Password">@Localizer["Password"]</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3 z-10" 
+                        onclick="togglePassword('floatingPassword', 'toggleIcon')">
+                    <i class="fas fa-eye" id="toggleIcon"></i>
+                </button>
+                <div id="passwordFeedback"></div>
+            </div>
+
+            <div class="form-floating mb-4 position-relative">
+                <input asp-for="ConfirmPassword" type="password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" required>
+                <label asp-for="ConfirmPassword">@Localizer["Confirm Password"]</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3 z-10" 
+                        onclick="togglePassword('floatingConfirmPassword', 'toggleConfirmIcon')">
+                    <i class="fas fa-eye" id="toggleConfirmIcon"></i>
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-4">@Localizer["Register"]</button>
+
+            <div class="login-footer text-center">
+                <p class="mb-0">@Localizer["Already have an account?"] <a href="/@culture/Login" class="register-link fw-bold">@Localizer["Sign in"]</a></p>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/identity-utils.js"></script>
+    <script>
+        // Initialize password validation feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            showPasswordFeedback('floatingPassword', 'passwordFeedback');
+            
+            // Show toast notifications for TempData messages
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                if (window.Toast) {
+                    window.Toast.show('@Html.Raw(TempData["Error"])', 'error', 'Registration Error');
+                }
+                </text>
+            }
+            
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                if (window.Toast) {
+                    window.Toast.show('@Html.Raw(TempData["Success"])', 'success', 'Success');
+                }
+                </text>
+            }
+        });
+    </script>
 }

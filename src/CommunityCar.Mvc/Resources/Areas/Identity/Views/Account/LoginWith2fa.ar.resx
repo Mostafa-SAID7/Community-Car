@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Two-factor authentication" xml:space="preserve">
+    <value>المصادقة الثنائية</value>
+  </data>
+  <data name="Your login is protected with an authenticator app. Enter your authenticator code below." xml:space="preserve">
+    <value>تسجيل دخولك محمي بتطبيق المصادقة. أدخل رمز المصادقة الخاص بك أدناه.</value>
+  </data>
+  <data name="Authenticator code" xml:space="preserve">
+    <value>رمز المصادقة</value>
+  </data>
+  <data name="Remember this machine" xml:space="preserve">
+    <value>تذكر هذا الجهاز</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>تحقق</value>
+  </data>
+  <data name="Extra Security" xml:space="preserve">
+    <value>أمان إضافي</value>
+  </data>
+  <data name="2FA adds an extra layer of protection to your account by requiring more than just a password to log in." xml:space="preserve">
+    <value>تضيف المصادقة الثنائية طبقة إضافية من الحماية لحسابك من خلال طلب أكثر من مجرد كلمة مرور لتسجيل الدخول.</value>
+  </data>
+  <data name="Don't have access to your device?" xml:space="preserve">
+    <value>ليس لديك وصول إلى جهازك؟</value>
+  </data>
+  <data name="Use a recovery code" xml:space="preserve">
+    <value>استخدم رمز الاسترداد</value>
+  </data>
+</root>

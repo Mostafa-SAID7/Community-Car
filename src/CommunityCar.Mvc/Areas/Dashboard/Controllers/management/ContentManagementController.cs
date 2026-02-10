@@ -8,6 +8,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.management;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/Management/Content")]
 public class ContentManagementController : Controller
 {
     private readonly IQuestionService _questionService;

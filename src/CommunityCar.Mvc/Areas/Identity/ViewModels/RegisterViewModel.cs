@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CommunityCar.Web.Validators.Identity;
 
 namespace CommunityCar.Web.Areas.Identity.ViewModels;
 
@@ -14,6 +15,7 @@ public class RegisterViewModel
 
     [Required(ErrorMessage = "Password is required")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
+    [PasswordRequirements]
     [DataType(DataType.Password)]
     [Display(Name = "Password")]
     public string Password { get; set; } = string.Empty;

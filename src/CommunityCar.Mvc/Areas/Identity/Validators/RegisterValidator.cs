@@ -12,13 +12,12 @@ public class RegisterValidator : AbstractValidator<RegisterViewModel>
             .EmailAddress().WithMessage("Invalid email address")
             .MaximumLength(256).WithMessage("Email cannot exceed 256 characters");
 
+        // Password validation is handled by PasswordRequirementsAttribute and JavaScript
+        // FluentValidation is disabled for client-side to prevent conflicts
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters")
-            .MaximumLength(100).WithMessage("Password cannot exceed 100 characters")
-            .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
-            .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
-            .Matches(@"[0-9]").WithMessage("Password must contain at least one digit");
+            .MaximumLength(100).WithMessage("Password cannot exceed 100 characters");
 
         RuleFor(x => x.ConfirmPassword)
             .NotEmpty().WithMessage("Confirm password is required")

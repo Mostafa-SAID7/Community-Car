@@ -19,6 +19,9 @@ public interface ILocalizationService
     Task<Dictionary<string, Dictionary<string, string>>> ExportAllAsync();
     Task<List<LocalizationResourceDto>> GetMissingTranslationsAsync(string sourceCulture, string targetCulture);
     Task SyncToJsonFilesAsync();
+    Task<int> SyncFromJsonFilesAsync();
+    Task<int> SyncFromResxFilesAsync();
+    Task<int> SyncToResxFilesAsync();
     Task<List<string>> GetAvailableCulturesAsync();
     Task<List<string>> GetAvailableCategoriesAsync();
     Task<Dictionary<string, string>> ExportResourcesAsync(string? culture, string? category);

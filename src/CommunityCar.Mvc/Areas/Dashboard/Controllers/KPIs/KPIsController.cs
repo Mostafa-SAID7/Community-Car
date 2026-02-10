@@ -8,7 +8,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.KPIs;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/KPIs")]
+[Route("{culture}/Dashboard/KPIs")]
 public class KPIsController : Controller
 {
     private readonly IKPIService _kpiService;

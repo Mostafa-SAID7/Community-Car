@@ -22,8 +22,18 @@
                 <li><a class="dropdown-item" href="?culture=ar">العربية</a></li>
             </ul>
         </div>
-        <button class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>@Localizer["Dashboard.ExportReport"]</button>
-        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>@Localizer["Dashboard.NewAction"]</button>
+        <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-download me-2"></i>@Localizer["Dashboard.ExportReport"]
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                <li><a class="dropdown-item" asp-action="ExportReport" asp-route-format="csv"><i class="bi bi-filetype-csv me-2"></i>Export as CSV</a></li>
+                <li><a class="dropdown-item" asp-action="ExportReport" asp-route-format="json"><i class="bi bi-filetype-json me-2"></i>Export as JSON</a></li>
+            </ul>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickActionsModal">
+            <i class="fas fa-plus me-2"></i>@Localizer["Dashboard.NewAction"]
+        </button>
     </div>
 </div>
 
@@ -130,6 +140,93 @@
             </div>
             <div class="card-footer bg-white text-center border-0 py-3">
                 <a href="#" class="btn btn-link btn-sm text-decoration-none fw-bold">@Localizer["Dashboard.ViewAllActivity"] <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Modal -->
+<div class="modal fade" id="quickActionsModal" tabindex="-1" aria-labelledby="quickActionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickActionsModalLabel">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group list-group-flush">
+                    <a href="@Url.Action("Create", "Posts", new { area = "" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-primary-subtle">
+                                <i class="bi bi-file-earmark-text text-primary"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Create New Post</h6>
+                            <small class="text-muted">Share content with the community</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("Create", "Events", new { area = "" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-success-subtle">
+                                <i class="bi bi-calendar-event text-success"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Create New Event</h6>
+                            <small class="text-muted">Organize a community event</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("Create", "Groups", new { area = "" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-info-subtle">
+                                <i class="bi bi-people text-info"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Create New Group</h6>
+                            <small class="text-muted">Start a new community group</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("Create", "News", new { area = "" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-warning-subtle">
+                                <i class="bi bi-newspaper text-warning"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Create News Article</h6>
+                            <small class="text-muted">Publish news to the community</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("Create", "Guides", new { area = "" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-danger-subtle">
+                                <i class="bi bi-book text-danger"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Create New Guide</h6>
+                            <small class="text-muted">Write a helpful guide</small>
+                        </div>
+                    </a>
+                    <a href="@Url.Action("Create", "Localization", new { area = "Dashboard" })" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <div class="me-3">
+                            <div class="icon-circle bg-secondary-subtle">
+                                <i class="bi bi-translate text-secondary"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Add Translation</h6>
+                            <small class="text-muted">Add new localization key</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

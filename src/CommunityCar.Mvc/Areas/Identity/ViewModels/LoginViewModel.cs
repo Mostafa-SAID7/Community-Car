@@ -7,9 +7,8 @@ namespace CommunityCar.Web.Areas.Identity.ViewModels;
 /// </summary>
 public class LoginViewModel
 {
-    [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid email address")]
-    [Display(Name = "Email")]
+    [Required(ErrorMessage = "Email, username, or phone number is required")]
+    [Display(Name = "Email, Username, or Phone")]
     public string Email { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Password is required")]

@@ -8,7 +8,7 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.UserActivity;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("{culture}/Dashboard/[controller]")]
+[Route("{culture}/Dashboard/UserActivity")]
 public class UserActivityController : Controller
 {
     private readonly ILogger<UserActivityController> _logger;
@@ -25,7 +25,8 @@ public class UserActivityController : Controller
         _localizer = localizer;
     }
 
-    [HttpGet]
+    [HttpGet("")]
+    [HttpGet("Index")]
     public async Task<IActionResult> Index(
         string? searchTerm = null,
         DateTime? startDate = null,
@@ -73,7 +74,7 @@ public class UserActivityController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("Details/{id}")]
     public async Task<IActionResult> Details(int id)
     {
         try
@@ -95,7 +96,7 @@ public class UserActivityController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("UserDetails")]
     public async Task<IActionResult> UserDetails(string userId, int page = 1, int pageSize = 20)
     {
         try
@@ -127,7 +128,7 @@ public class UserActivityController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("Statistics")]
     public async Task<IActionResult> Statistics(DateTime? startDate = null, DateTime? endDate = null)
     {
         try
@@ -153,7 +154,7 @@ public class UserActivityController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("Timeline")]
     public async Task<IActionResult> Timeline(string userId, DateTime? startDate = null, DateTime? endDate = null)
     {
         try
@@ -180,7 +181,7 @@ public class UserActivityController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("Export")]
     public async Task<IActionResult> Export(
         DateTime? startDate = null,
         DateTime? endDate = null,
@@ -254,7 +255,7 @@ public class UserActivityController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet]
+    [HttpGet("ActiveUsers")]
     public async Task<IActionResult> ActiveUsers(int hours = 24)
     {
         try

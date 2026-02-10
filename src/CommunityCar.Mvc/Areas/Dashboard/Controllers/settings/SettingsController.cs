@@ -10,7 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.settings;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/Settings")]
+[Route("{culture}/Dashboard/Settings")]
 public class SettingsController : Controller
 {
     private readonly ISystemSettingService _systemSettingService;

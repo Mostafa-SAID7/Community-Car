@@ -109,65 +109,61 @@
             {
                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 post-item">
                     <div class="content-card">
-                        <div class="content-card-image-wrapper">
-                            @if (post.IsPinned)
-                            {
-                                <span class="card-badge card-badge-top-left card-badge-warning">
-                                    <i class="fas fa-thumbtack me-1"></i>Pinned
+                        @if ((post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Image && !string.IsNullOrEmpty(post.ImageUrl)) || 
+                             (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Video && !string.IsNullOrEmpty(post.VideoUrl)))
+                        {
+                            <div class="content-card-image-wrapper">
+                                @if (post.IsPinned)
+                                {
+                                    <span class="card-badge card-badge-top-left card-badge-warning">
+                                        <i class="fas fa-thumbtack me-1"></i>Pinned
+                                    </span>
+                                }
+                                <span class="card-badge card-badge-top-right card-badge-primary">
+                                    @post.Type
                                 </span>
-                            }
-                            <span class="card-badge card-badge-top-right card-badge-primary">
-                                @post.Type
-                            </span>
-                            
-                            @* Display image or video based on post type *@
-                            @if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Image && !string.IsNullOrEmpty(post.ImageUrl))
-                            {
-                                <img src="@post.ImageUrl" 
-                                     alt="@post.Title" 
-                                     class="content-card-image" 
-                                     loading="lazy" />
-                            }
-                            else if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Video && !string.IsNullOrEmpty(post.VideoUrl))
-                            {
-                                @if (post.VideoUrl.Contains("youtube.com") || post.VideoUrl.Contains("youtu.be"))
+                                
+                                @* Display image or video based on post type *@
+                                @if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Image && !string.IsNullOrEmpty(post.ImageUrl))
                                 {
-                                    @* YouTube video thumbnail *@
-                                    var videoId = post.VideoUrl.Contains("youtu.be") 
-                                        ? post.VideoUrl.Split('/').Last().Split('?').First()
-                                        : System.Web.HttpUtility.ParseQueryString(new Uri(post.VideoUrl).Query).Get("v");
-                                    <div class="video-thumbnail-wrapper">
-                                        <img src="https://img.youtube.com/vi/@videoId/maxresdefault.jpg" 
-                                             alt="@post.Title" 
-                                             class="content-card-image" 
-                                             loading="lazy" />
-                                        <div class="video-play-overlay">
-                                            <i class="fas fa-play-circle"></i>
-                                        </div>
-                                    </div>
+                                    <img src="@post.ImageUrl" 
+                                         alt="@post.Title" 
+                                         class="content-card-image" 
+                                         loading="lazy" />
                                 }
-                                else
+                                else if (post.Type == CommunityCar.Domain.Enums.Community.post.PostType.Video && !string.IsNullOrEmpty(post.VideoUrl))
                                 {
-                                    @* Direct video file *@
-                                    <div class="video-thumbnail-wrapper">
-                                        <video class="content-card-image" preload="metadata">
-                                            <source src="@post.VideoUrl#t=0.1" type="video/mp4">
-                                        </video>
-                                        <div class="video-play-overlay">
-                                            <i class="fas fa-play-circle"></i>
+                                    @if (post.VideoUrl.Contains("youtube.com") || post.VideoUrl.Contains("youtu.be"))
+                                    {
+                                        @* YouTube video thumbnail *@
+                                        var videoId = post.VideoUrl.Contains("youtu.be") 
+                                            ? post.VideoUrl.Split('/').Last().Split('?').First()
+                                            : System.Web.HttpUtility.ParseQueryString(new Uri(post.VideoUrl).Query).Get("v");
+                                        <div class="video-thumbnail-wrapper">
+                                            <img src="https://img.youtube.com/vi/@videoId/maxresdefault.jpg" 
+                                                 alt="@post.Title" 
+                                                 class="content-card-image" 
+                                                 loading="lazy" />
+                                            <div class="video-play-overlay">
+                                                <i class="fas fa-play-circle"></i>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
+                                    else
+                                    {
+                                        @* Direct video file *@
+                                        <div class="video-thumbnail-wrapper">
+                                            <video class="content-card-image" preload="metadata">
+                                                <source src="@post.VideoUrl#t=0.1" type="video/mp4">
+                                            </video>
+                                            <div class="video-play-overlay">
+                                                <i class="fas fa-play-circle"></i>
+                                            </div>
+                                        </div>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                @* Default placeholder *@
-                                <img src="/images/post-placeholder.jpg" 
-                                     alt="@post.Title" 
-                                     class="content-card-image" 
-                                     loading="lazy" />
-                            }
-                        </div>
+                            </div>
+                        }
                         <div class="content-card-body">
                             <div class="content-card-meta">
                                 <span class="author-info">

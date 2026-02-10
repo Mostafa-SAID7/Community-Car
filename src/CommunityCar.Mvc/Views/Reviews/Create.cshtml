@@ -42,19 +42,9 @@
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="mb-4">
-                            <label asp-for="EntityId" class="form-label fw-bold">Entity ID</label>
-                            <input asp-for="EntityId" class="form-control" placeholder="Enter entity ID" readonly />
-                            <span asp-validation-for="EntityId" class="text-danger"></span>
-                            <small class="form-text text-muted">The ID of the item you're reviewing (automatically filled from the item page)</small>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="EntityType" class="form-label fw-bold">Entity Type</label>
-                            <input asp-for="EntityType" class="form-control" placeholder="e.g., Car, Guide, Event" readonly />
-                            <span asp-validation-for="EntityType" class="text-danger"></span>
-                            <small class="form-text text-muted">The type of item being reviewed (automatically filled)</small>
-                        </div>
+                        <!-- Hidden fields for EntityId and EntityType (automatically filled from item page) -->
+                        <input asp-for="EntityId" type="hidden" />
+                        <input asp-for="EntityType" type="hidden" />
 
                         <div class="mb-4">
                             <label asp-for="Type" class="form-label fw-bold">Review Type</label>

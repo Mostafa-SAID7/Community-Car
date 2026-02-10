@@ -1,39 +1,60 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.SendOtpViewModel
 @{
-    ViewData["Title"] = "Login with OTP";
+    ViewData["Title"] = Localizer["Login with OTP"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-phone" class="icon-placeholder"></i>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
+
+<div class="login-wrapper">
+    <div class="login-container wide">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="login-header p-4">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-phone-fill display-4 text-primary"></i>
                     </div>
-                    <h2 class="text-center mb-4">Login with OTP</h2>
-                    <p class="text-center text-muted mb-4">Enter your phone number to receive a verification code</p>
+                    <h2>@Localizer["Login with OTP"]</h2>
+                    <p class="text-muted">@Localizer["Enter your phone number to receive a verification code"]</p>
+                </div>
 
-                    <form asp-action="SendOtpCode" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-                        <div class="mb-4">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1234567890" autofocus />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                            <small class="form-text text-muted">Include country code (e.g., +1 for US)</small>
-                        </div>
-
+                <div class="p-4 pt-0">
+                    <form asp-action="SendOtpCode" method="post" class="login-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         <input asp-for="ReturnUrl" type="hidden" />
 
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Send Code</button>
-
-                        <div class="text-center">
-                            <p class="mb-0">
-                                <a asp-action="Login" class="text-decoration-none">Back to Login</a>
-                            </p>
+                        <div class="form-floating mb-3">
+                            <input asp-for="PhoneNumber" class="form-control" id="floatingPhone" placeholder="+1234567890" required autofocus />
+                            <label asp-for="PhoneNumber">@Localizer["Phone Number"]</label>
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            <small class="form-text text-muted">@Localizer["Include country code (e.g., +1 for US)"]</small>
                         </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">@Localizer["Send Code"]</button>
                     </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-1 d-none d-lg-flex align-items-center justify-content-center">
+                <div class="divider-vertical"></div>
+            </div>
+
+            <div class="col-lg-5 p-4 bg-light d-flex flex-column justify-content-center text-center rounded-end">
+                <div class="security-badge mb-4">
+                    <i class="fas fa-mobile-alt fa-5x text-primary animate__animated animate__pulse animate__infinite"></i>
+                </div>
+                <h3>@Localizer["OTP Login"]</h3>
+                <p class="text-muted small">@Localizer["OTP (One-Time Password) provides a secure, passwordless way to access your account."]</p>
+                <hr class="w-50 mx-auto my-4" />
+                <div class="login-footer">
+                    <a href="/@culture/Login" class="register-link fw-bold">@Localizer["Back to Login"]</a>
                 </div>
             </div>
         </div>

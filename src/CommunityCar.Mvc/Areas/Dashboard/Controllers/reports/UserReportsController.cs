@@ -10,7 +10,7 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Reports;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/Reports/Users")]
+[Route("{culture}/Dashboard/Reports/Users")]
 public class UserReportsController : Controller
 {
     private readonly IUserService _userService;
@@ -91,9 +91,9 @@ public class UserReportsController : Controller
                     Id = u.Id,
                     UserName = u.UserName ?? string.Empty,
                     Email = u.Email ?? string.Empty,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    FullName = $"{u.FirstName} {u.LastName}",
+                    FirstName = u.FirstName ?? string.Empty,
+                    LastName = u.LastName ?? string.Empty,
+                    FullName = $"{u.FirstName ?? string.Empty} {u.LastName ?? string.Empty}",
                     IsActive = u.IsActive,
                     EmailConfirmed = u.EmailConfirmed,
                     CreatedAt = u.CreatedAt.DateTime,

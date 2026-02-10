@@ -1,51 +1,58 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Upload Profile Picture";
+    ViewData["Title"] = Localizer["Upload Profile Picture"];
 }
 
-<div class="container mt-4">
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/profiles.css" asp-append-version="true" />
+}
+
+<div class="profile-container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-sm">
+            <div class="profile-content-card card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="bi bi-image"></i> Upload Profile Picture</h4>
+                    <h4 class="mb-0"><i class="bi bi-image"></i> @Localizer["Upload Profile Picture"]</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="UploadPicture" method="post" enctype="multipart/form-data">
-                        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                    <form asp-action="UploadPicture" method="post" enctype="multipart/form-data" class="profile-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
-                            <label for="profilePicture" class="form-label">Choose Picture</label>
+                            <label for="profilePicture" class="form-label">@Localizer["Choose Picture"]</label>
                             <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/jpeg,image/png,image/gif" required />
                             <small class="form-text text-muted">
-                                Accepted formats: JPG, PNG, GIF. Maximum size: 5MB
+                                @Localizer["Accepted formats"]
                             </small>
                         </div>
 
                         <div class="mb-3">
-                            <div id="imagePreview" class="text-center" class="d-none">
-                                <img id="preview" src="#" alt="Preview" class="img-fluid rounded" style="max-height: 300px;" />
+                            <div id="imagePreview" class="text-center d-none">
+                                <img id="preview" src="#" alt="@Localizer["Preview"]" class="img-fluid rounded shadow-sm" style="max-height: 300px;" />
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Edit" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Cancel
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Edit" class="profile-btn profile-btn-secondary">
+                                <i class="bi bi-arrow-left"></i> @Localizer["Cancel"]
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-upload"></i> Upload
+                            <button type="submit" class="profile-btn profile-btn-primary">
+                                <i class="bi bi-upload"></i> @Localizer["UploadBtn"]
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="alert alert-info mt-3">
-                <h6><i class="bi bi-info-circle"></i> Tips for a great profile picture:</h6>
+            <div class="alert alert-info mt-4">
+                <h6><i class="bi bi-info-circle"></i> @Localizer["Tips for a great profile picture:"]</h6>
                 <ul class="mb-0">
-                    <li>Use a clear, recent photo of yourself</li>
-                    <li>Make sure your face is visible</li>
-                    <li>Use good lighting</li>
-                    <li>Square images work best</li>
+                    <li>@Localizer["Use a clear, recent photo of yourself"]</li>
+                    <li>@Localizer["Make sure your face is visible"]</li>
+                    <li>@Localizer["Use good lighting"]</li>
+                    <li>@Localizer["Square images work best"]</li>
                 </ul>
             </div>
         </div>
@@ -59,8 +66,10 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('preview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
+                    const preview = document.getElementById('preview');
+                    const container = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    container.classList.remove('d-none');
                 };
                 reader.readAsDataURL(file);
             }

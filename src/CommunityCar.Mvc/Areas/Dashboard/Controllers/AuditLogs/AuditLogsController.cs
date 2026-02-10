@@ -10,7 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/AuditLogs")]
+[Route("{culture}/Dashboard/AuditLogs")]
 public class AuditLogsController : Controller
 {
     private readonly IAuditLogService _auditLogService;

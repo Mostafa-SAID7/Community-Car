@@ -1,35 +1,43 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.ConfirmPhoneNumberViewModel
 @{
-    ViewData["Title"] = "Confirm Phone Number";
+    ViewData["Title"] = Localizer["Confirm Phone Number"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Confirm Phone Number</h2>
-                    <p class="text-center text-muted mb-4">Add or update your phone number</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
 
-                    <form asp-action="SendPhoneConfirmationCode" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-                        <div class="mb-4">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1234567890" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                            <small class="form-text text-muted">Include country code (e.g., +1 for US)</small>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Send Verification Code</button>
-
-                        <div class="text-center">
-                            <a asp-controller="Profiles" asp-action="Index" class="text-decoration-none">Back to Profile</a>
-                        </div>
-                    </form>
-                </div>
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-header">
+            <div class="text-center mb-3">
+                <i class="bi bi-telephone-plus display-4 text-primary"></i>
             </div>
+            <h2>@Localizer["Confirm Phone Number"]</h2>
+            <p class="text-muted">@Localizer["Add or update your phone number"]</p>
         </div>
+
+        <form asp-action="SendPhoneConfirmationCode" method="post" class="login-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="PhoneNumber" class="form-control" id="floatingPhone" placeholder="+1234567890" required autofocus />
+                <label asp-for="PhoneNumber">@Localizer["Phone Number"]</label>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                <small class="form-text text-muted">@Localizer["Include country code (e.g., +1 for US)"]</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-4">@Localizer["Send Verification Code"]</button>
+
+            <div class="login-footer text-center">
+                <a asp-area="Identity" asp-controller="Profiles" asp-action="Index" class="register-link fw-bold">@Localizer["Back to Profile"]</a>
+            </div>
+        </form>
     </div>
 </div>
 

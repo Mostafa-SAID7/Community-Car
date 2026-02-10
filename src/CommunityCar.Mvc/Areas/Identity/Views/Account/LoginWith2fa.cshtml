@@ -1,39 +1,64 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Two-factor authentication";
+    ViewData["Title"] = Localizer["Two-factor authentication"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 }
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-left">
-            <h2>Two-factor authentication</h2>
-            <p class="text-muted">Your login is protected with an authenticator app. Enter your authenticator code below.</p>
-            
-            <form asp-area="Identity" asp-controller="Account" asp-action="LoginWith2fa" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-                <input type="hidden" name="rememberMe" value="@ViewData["RememberMe"]" />
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                
-                <div class="form-group mb-4">
-                    <label>Authenticator code</label>
-                    <input name="code" class="form-control form-control-lg text-center" autocomplete="off" placeholder="000000" required />
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
+
+<div class="login-wrapper">
+    <div class="login-container wide">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="login-header p-4">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-shield-lock display-4 text-primary"></i>
+                    </div>
+                    <h2>@Localizer["Two-factor authentication"]</h2>
+                    <p class="text-muted">@Localizer["Your login is protected with an authenticator app. Enter your authenticator code below."]</p>
                 </div>
-                
-                <div class="form-check mb-4 text-start">
-                    <input name="rememberMachine" type="checkbox" class="form-check-input" id="rememberMachine" />
-                    <label class="form-check-label" for="rememberMachine">Remember this machine</label>
+
+                <div class="p-4 pt-0">
+                    <form asp-area="Identity" asp-controller="Account" asp-action="LoginWith2fa" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="login-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="rememberMe" value="@ViewData["RememberMe"]" />
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        
+                        <div class="form-floating mb-4">
+                            <input name="code" class="form-control form-control-lg text-center" id="floatingCode" autocomplete="off" placeholder="000000" required autofocus />
+                            <label for="floatingCode">@Localizer["Authenticator code"]</label>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input name="rememberMachine" type="checkbox" class="form-check-input" id="rememberMachine" />
+                            <label class="form-check-label" for="rememberMachine">@Localizer["Remember this machine"]</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">@Localizer["Verify"]</button>
+                    </form>
                 </div>
-                
-                <button type="submit" class="btn btn-primary w-100 btn-lg">Verify</button>
-            </form>
-        </div>
-        <div class="login-divider"></div>
-        <div class="login-right">
-            <div class="security-badge mb-3">
-                <i class="fas fa-shield-alt fa-3x text-primary"></i>
             </div>
-            <h3>Extra Security</h3>
-            <p class="text-muted">2FA adds an extra layer of protection to your account by requiring more than just a password to log in.</p>
-            <hr class="w-50 my-4" />
-            <p class="small text-muted">Don't have access to your device? <a href="#">Use a recovery code</a></p>
+            
+            <div class="col-lg-1 d-none d-lg-flex align-items-center justify-content-center">
+                <div class="divider-vertical"></div>
+            </div>
+
+            <div class="col-lg-5 p-4 bg-light d-flex flex-column justify-content-center text-center rounded-end">
+                <div class="security-badge mb-4">
+                    <i class="fas fa-shield-alt fa-5x text-primary animate__animated animate__pulse animate__infinite"></i>
+                </div>
+                <h3>@Localizer["Extra Security"]</h3>
+                <p class="text-muted small">@Localizer["2FA adds an extra layer of protection to your account by requiring more than just a password to log in."]</p>
+                <hr class="w-50 mx-auto my-4" />
+                <p class="small text-muted mb-0">@Localizer["Don't have access to your device?"] <br>
+                    <a href="#" class="register-link fw-bold">@Localizer["Use a recovery code"]</a>
+                </p>
+            </div>
         </div>
     </div>
 </div>

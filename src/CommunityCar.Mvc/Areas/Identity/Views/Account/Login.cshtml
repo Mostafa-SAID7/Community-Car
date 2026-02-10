@@ -1,6 +1,8 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = Localizer["Log in"];
     ViewData["HideSidebars"] = true;
     var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 }
@@ -12,8 +14,8 @@
 <div class="login-wrapper">
     <div class="login-container">
         <div class="login-header">
-            <h2>Welcome Back</h2>
-            <p class="text-muted">Sign in to continue to Community Car</p>
+            <h2>@Localizer["Welcome Back"]</h2>
+            <p class="text-muted">@Localizer["Sign in to continue to Community Car"]</p>
         </div>
 
         <form action="/@culture/Login" method="post" class="login-form">
@@ -22,63 +24,65 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             
             <div class="form-floating mb-3">
-                <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
-                <label asp-for="Email">Email address</label>
+                <input asp-for="Email" type="text" class="form-control" id="floatingInput" placeholder="email@example.com / username / +1234567890" required>
+                <label asp-for="Email">@Localizer["Email, Username, or Phone"]</label>
                 <span asp-validation-for="Email" class="text-danger"></span>
+                <small class="form-text text-muted">@Localizer["You can use your email, username, or verified phone number to login"]</small>
             </div>
             
             <div class="form-floating mb-3 position-relative">
                 <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-                <label asp-for="Password">Password</label>
+                <label asp-for="Password">@Localizer["Password"]</label>
                 <span asp-validation-for="Password" class="text-danger"></span>
-                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3" 
-                        onclick="togglePassword()" class="z-10">
+                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted pe-3 z-10" 
+                        onclick="togglePassword('floatingPassword', 'toggleIcon')">
                     <i class="fas fa-eye" id="toggleIcon"></i>
                 </button>
             </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe">
-                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe">
+                    <label asp-for="RememberMe" class="form-check-label">@Localizer["Remember me"]</label>
+                </div>
+                <a href="/@culture/ForgotPassword" class="forgot-password">@Localizer["Forgot Password?"]</a>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-lg mb-4">Sign In</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">@Localizer["Sign In"]</button>
+            
+            <div class="text-center mb-4">
+                <a href="/@culture/LoginWithOtp" class="text-decoration-none">
+                    <i class="bi bi-phone-fill"></i> @Localizer["Login with OTP (SMS)"]
+                </a>
+            </div>
         </form>
 
         <div class="divider">
-            <span>Or continue with</span>
+            <span>@Localizer["Or continue with"]</span>
         </div>
 
         <form action="/@culture/Account/ExternalLogin" method="post" class="social-login">
             @Html.AntiForgeryToken()
             <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
             <button type="submit" name="provider" value="Google" class="social-btn google-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" />
-                <span>Google</span>
+                <img src="~/icons/gmail.png" alt="Google" />
+                <span>@Localizer["Google"]</span>
             </button>
             <button type="submit" name="provider" value="Facebook" class="social-btn facebook-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook" />
-                <span>Facebook</span>
+                <img src="~/icons/fb.png" alt="Facebook" />
+                <span>@Localizer["Facebook"]</span>
             </button>
         </form>
+
+        <div class="login-footer mt-4 text-center">
+            <p class="mb-0">@Localizer["Don't have an account?"] <a href="/@culture/Register" class="register-link fw-bold">@Localizer["Register Now"]</a></p>
+        </div>
     </div>
 </div>
 
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('floatingPassword');
-        const toggleIcon = document.getElementById('toggleIcon');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        }
-    }
-</script>
+@section Scripts {
+    <script src="~/js/identity-utils.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}
 
 

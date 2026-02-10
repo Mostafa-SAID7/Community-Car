@@ -1,6 +1,8 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.UserActivityViewModel
 @{
-    ViewData["Title"] = $"{Model.User.FirstName}'s Activity";
+    ViewData["Title"] = string.Format(Localizer["Activity Title"].Value, Model.User.FirstName);
     ViewData["PageType"] = "profile";
 }
 
@@ -16,7 +18,7 @@
                 <div class="card-body text-center">
                     @if (!string.IsNullOrEmpty(Model.User.ProfilePictureUrl))
                     {
-                        <img src="@Model.User.ProfilePictureUrl" alt="Profile Picture" class="profile-avatar-medium mb-3">
+                        <img src="@Model.User.ProfilePictureUrl" alt="@Localizer["Profile Picture"]" class="profile-avatar-medium mb-3">
                     }
                     else
                     {
@@ -27,7 +29,7 @@
                     <h5>@Model.User.FirstName @Model.User.LastName</h5>
                     <p class="text-muted small">@Model.User.Email</p>
                     <a asp-action="Index" asp-route-userId="@Model.User.Id" class="profile-btn profile-btn-secondary w-100">
-                        <i class="bi bi-person"></i> View Profile
+                        <i class="bi bi-person"></i> @Localizer["View Profile"]
                     </a>
                 </div>
             </div>
@@ -35,19 +37,19 @@
             <!-- Activity Stats -->
             <div class="profile-content-card card">
                 <div class="card-header">
-                    <h6 class="mb-0">Activity Summary</h6>
+                    <h6 class="mb-0">@Localizer["Activity Summary"]</h6>
                 </div>
                 <div class="list-group list-group-flush">
                     <div class="profile-list-item list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-question-circle text-primary me-2"></i> Questions</span>
+                        <span><i class="bi bi-question-circle text-primary me-2"></i> @Localizer["Questions"]</span>
                         <span class="profile-badge profile-badge-primary">@Model.TotalQuestions</span>
                     </div>
                     <div class="profile-list-item list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-chat-left-text text-success me-2"></i> Answers</span>
+                        <span><i class="bi bi-chat-left-text text-success me-2"></i> @Localizer["Answers"]</span>
                         <span class="profile-badge profile-badge-success">@Model.TotalAnswers</span>
                     </div>
                     <div class="profile-list-item list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-hand-thumbs-up text-info me-2"></i> Votes</span>
+                        <span><i class="bi bi-hand-thumbs-up text-info me-2"></i> @Localizer["Votes"]</span>
                         <span class="profile-badge profile-badge-info">@Model.TotalVotes</span>
                     </div>
                 </div>
@@ -58,7 +60,7 @@
         <div class="col-md-9">
             <div class="profile-content-card card">
                 <div class="card-header">
-                    <h4><i class="bi bi-clock-history me-2"></i> Recent Activity</h4>
+                    <h4><i class="bi bi-clock-history me-2"></i> @Localizer["Recent Activity"]</h4>
                 </div>
                 <div class="card-body">
                     @if (Model.RecentQuestions.Any())
@@ -74,8 +76,8 @@
                                         <div class="profile-timeline-content">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <h6 class="profile-timeline-title">Asked a question</h6>
-                                                    <small class="profile-timeline-date">@question.CreatedAt.ToString("MMM dd, yyyy 'at' h:mm tt")</small>
+                                                    <h6 class="profile-timeline-title">@Localizer["Asked a question"]</h6>
+                                                    <small class="profile-timeline-date">@question.CreatedAt.ToString("MMM dd, yyyy")</small>
                                                 </div>
                                             </div>
                                             <div class="mt-2">
@@ -84,9 +86,9 @@
                                                 </a>
                                                 <p class="profile-timeline-text">@(question.Content.Length > 200 ? question.Content.Substring(0, 200) + "..." : question.Content)</p>
                                                 <div class="d-flex gap-2">
-                                                    <span class="profile-badge profile-badge-secondary">@question.ViewCount views</span>
-                                                    <span class="profile-badge profile-badge-success">@question.AnswerCount answers</span>
-                                                    <span class="profile-badge profile-badge-info">@question.VoteCount votes</span>
+                                                    <span class="profile-badge profile-badge-secondary">@question.ViewCount @Localizer["views"]</span>
+                                                    <span class="profile-badge profile-badge-success">@question.AnswerCount @Localizer["answers"]</span>
+                                                    <span class="profile-badge profile-badge-info">@question.VoteCount @Localizer["votes"]</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -101,8 +103,8 @@
                             <div class="profile-empty-icon">
                                 <i class="bi bi-inbox"></i>
                             </div>
-                            <h5 class="profile-empty-title">No activity yet</h5>
-                            <p class="profile-empty-text">This user hasn't posted any questions yet.</p>
+                            <h5 class="profile-empty-title">@Localizer["No activity yet"]</h5>
+                            <p class="profile-empty-text">@Localizer["This user hasn't posted any questions yet."]</p>
                         </div>
                     }
                 </div>
@@ -110,6 +112,3 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    }

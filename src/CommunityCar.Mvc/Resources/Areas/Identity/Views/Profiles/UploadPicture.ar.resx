@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Upload Profile Picture" xml:space="preserve">
+    <value>تحميل الصورة الشخصية</value>
+  </data>
+  <data name="Choose Picture" xml:space="preserve">
+    <value>اختر صورة</value>
+  </data>
+  <data name="Accepted formats" xml:space="preserve">
+    <value>الصيغ المقبولة: JPG, PNG, GIF. الحد الأقصى للحجم: 5 ميجابايت</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>معاينة</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="UploadBtn" xml:space="preserve">
+    <value>تحميل</value>
+  </data>
+  <data name="Tips for a great profile picture:" xml:space="preserve">
+    <value>نصائح لصورة شخصية رائعة:</value>
+  </data>
+  <data name="Use a clear, recent photo of yourself" xml:space="preserve">
+    <value>استخدم صورة واضحة وحديثة لنفسك</value>
+  </data>
+  <data name="Make sure your face is visible" xml:space="preserve">
+    <value>تأكد من أن وجهك مرئي</value>
+  </data>
+  <data name="Use good lighting" xml:space="preserve">
+    <value>استخدم إضاءة جيدة</value>
+  </data>
+  <data name="Square images work best" xml:space="preserve">
+    <value>الصور المربعة تعمل بشكل أفضل</value>
+  </data>
+</root>

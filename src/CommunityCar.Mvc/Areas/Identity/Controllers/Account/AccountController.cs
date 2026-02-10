@@ -66,15 +66,43 @@ public class AccountController : Controller
             return View(model);
         }
 
+        // Find user by email, username, or verified phone number
+        ApplicationUser? user = null;
+        var identifier = model.Email.Trim();
+
+        // Try to find by email first
+        user = await _userManager.FindByEmailAsync(identifier);
+
+        // If not found, try username
+        if (user == null)
+        {
+            user = await _userManager.FindByNameAsync(identifier);
+        }
+
+        // If not found, try phone number (ONLY if verified)
+        if (user == null)
+        {
+            user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == identifier && u.PhoneNumberConfirmed);
+        }
+
+        // If no user found with any identifier
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login credentials.");
+            return View(model);
+        }
+
+        // Attempt sign in with the found user's username
         var result = await _signInManager.PasswordSignInAsync(
-            model.Email, 
+            user.UserName ?? string.Empty, 
             model.Password, 
             model.RememberMe, 
             lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("User {Email} logged in successfully.", model.Email);
+            _logger.LogInformation("User {UserName} logged in successfully.", user.UserName);
             return RedirectToLocal(returnUrl);
         }
 
@@ -85,7 +113,7 @@ public class AccountController : Controller
 
         if (result.IsLockedOut)
         {
-            _logger.LogWarning("User {Email} account locked out.", model.Email);
+            _logger.LogWarning("User {UserName} account locked out.", user.UserName);
             return RedirectToAction(nameof(Lockout));
         }
 
@@ -95,7 +123,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid email or password.");
+        ModelState.AddModelError(string.Empty, "Invalid login credentials.");
         return View(model);
     }
 
@@ -132,6 +160,14 @@ public class AccountController : Controller
             return View(model);
         }
 
+        // Check if email already exists
+        var existingUser = await _userManager.FindByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            TempData["Error"] = $"The email '{model.Email}' is already registered. Please use a different email or try logging in.";
+            return View(model);
+        }
+
         var user = new ApplicationUser
         {
             UserName = model.Email,
@@ -164,12 +200,21 @@ public class AccountController : Controller
 
             // Auto sign-in after registration
             await _signInManager.SignInAsync(user, isPersistent: false);
+            TempData["Success"] = "Registration successful! Welcome to CommunityCar.";
             return RedirectToLocal(returnUrl);
         }
 
         foreach (var error in result.Errors)
         {
-            ModelState.AddModelError(string.Empty, error.Description);
+            // Provide user-friendly error messages
+            if (error.Code == "DuplicateUserName" || error.Code == "DuplicateEmail")
+            {
+                TempData["Error"] = $"The email '{model.Email}' is already registered. Please use a different email or try logging in.";
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
 
         return View(model);
@@ -465,15 +510,19 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult ForgotPassword()
+    [Route("/{culture:alpha}/ForgotPassword")]
+    [ActionName("ForgotPassword")]
+    public IActionResult ForgotPasswordGet()
     {
-        return View();
+        return View(new ForgotPasswordViewModel());
     }
 
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    [Route("/{culture:alpha}/ForgotPassword")]
+    [ActionName("ForgotPassword")]
+    public async Task<IActionResult> ForgotPasswordPost(ForgotPasswordViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -504,6 +553,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/{culture:alpha}/ForgotPasswordConfirmation")]
     public IActionResult ForgotPasswordConfirmation()
     {
         return View();
@@ -511,6 +561,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/{culture:alpha}/ResetPassword")]
     public IActionResult ResetPassword(string? code = null)
     {
         if (code == null)
@@ -524,6 +575,7 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/ResetPassword")]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
         if (!ModelState.IsValid)
@@ -555,6 +607,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("/{culture:alpha}/ResetPasswordConfirmation")]
     public IActionResult ResetPasswordConfirmation()
     {
         return View();
@@ -566,6 +619,8 @@ public class AccountController : Controller
 
     [HttpGet]
     [Authorize]
+    [Route("/{culture:alpha}/Identity/Account/ChangePassword")]
+    [Route("/Identity/Account/ChangePassword")]
     public IActionResult ChangePassword()
     {
         return View();
@@ -574,20 +629,29 @@ public class AccountController : Controller
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Identity/Account/ChangePassword")]
+    [Route("/Identity/Account/ChangePassword")]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
     {
         if (!ModelState.IsValid)
         {
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            _logger.LogWarning("ChangePassword ModelState invalid: {Errors}", errors);
+            TempData["Error"] = "Please check the form for errors.";
             return View(model);
         }
 
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+            _logger.LogWarning("ChangePassword: Unable to load user with ID '{UserId}'", _userManager.GetUserId(User));
+            TempData["Error"] = "Unable to load user.";
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+        _logger.LogInformation("Attempting to change password for user {UserId}", user.Id);
         var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        
         if (result.Succeeded)
         {
             await _signInManager.RefreshSignInAsync(user);
@@ -596,6 +660,10 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Profiles", new { area = "Identity" });
         }
 
+        var resultErrors = string.Join(", ", result.Errors.Select(e => e.Description));
+        _logger.LogWarning("ChangePassword failed: {Errors}", resultErrors);
+        TempData["Error"] = $"Failed to change password: {result.Errors.FirstOrDefault()?.Description ?? "Unknown error"}";
+        
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
@@ -633,6 +701,14 @@ public class AccountController : Controller
             return LocalRedirect(returnUrl);
         }
 
+        return RedirectToAction("Index", "Feed", new { area = "" });
+    }
+
+    [HttpGet]
+    [Route("/{culture:alpha}/Logout")]
+    [Route("/Logout")]
+    public IActionResult LogoutGet(string? returnUrl = null)
+    {
         return RedirectToAction("Index", "Feed", new { area = "" });
     }
 
@@ -713,6 +789,8 @@ public class AccountController : Controller
 
     [HttpGet]
     [Authorize]
+    [Route("/{culture:alpha}/Identity/Account/VerifyPhoneNumber")]
+    [Route("/Identity/Account/VerifyPhoneNumber")]
     public IActionResult VerifyPhoneNumber(string phoneNumber)
     {
         var model = new VerifyPhoneNumberViewModel
@@ -723,23 +801,33 @@ public class AccountController : Controller
         return View(model);
     }
 
+
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Identity/Account/VerifyPhoneNumber")]
+    [Route("/Identity/Account/VerifyPhoneNumber")]
     public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
     {
         if (!ModelState.IsValid)
         {
+            var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            _logger.LogWarning("VerifyPhoneNumber ModelState invalid: {Errors}", errors);
+            TempData["Error"] = "Please check the form for errors.";
             return View(model);
         }
 
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+            _logger.LogWarning("VerifyPhoneNumber: Unable to load user");
+            TempData["Error"] = "Unable to load user.";
             return NotFound($"Unable to load user.");
         }
 
+        _logger.LogInformation("Attempting to verify phone {PhoneNumber} with code {Code}", model.PhoneNumber, model.Code);
         var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
+        
         if (result.Succeeded)
         {
             _logger.LogInformation("User confirmed phone number {PhoneNumber}", model.PhoneNumber);
@@ -747,6 +835,9 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Profiles", new { area = "Identity" });
         }
 
+        var resultErrors = string.Join(", ", result.Errors.Select(e => e.Description));
+        _logger.LogWarning("VerifyPhoneNumber failed: {Errors}", resultErrors);
+        TempData["Error"] = "Invalid verification code. Please try again.";
         ModelState.AddModelError(string.Empty, "Invalid verification code.");
         return View(model);
     }
@@ -754,6 +845,8 @@ public class AccountController : Controller
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Identity/Account/ResendPhoneConfirmationCode")]
+    [Route("/Identity/Account/ResendPhoneConfirmationCode")]
     public async Task<IActionResult> ResendPhoneConfirmationCode(string phoneNumber)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -1142,13 +1235,14 @@ public class AccountController : Controller
             _logger.LogInformation("Phone verification code sent to {PhoneNumber}", model.PhoneNumber);
         }
 
-        return View("VerifyPhoneNumber", new VerifyPhoneCodeViewModel { PhoneNumber = model.PhoneNumber });
+        return View("VerifyPhoneNumber", new VerifyPhoneNumberViewModel { PhoneNumber = model.PhoneNumber });
     }
 
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneCodeViewModel model)
+    [Route("Identity/Account/VerifyPhoneCode")]
+    public async Task<IActionResult> VerifyPhoneCode(VerifyPhoneCodeViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -1215,6 +1309,69 @@ public class AccountController : Controller
         }
 
         return RedirectToAction("Index", "Profiles", new { area = "Identity" });
+    }
+
+    #endregion
+
+    #region Two-Factor Authentication
+
+    [HttpGet]
+    [Authorize]
+    [Route("/{culture:alpha}/Account/TwoFactorAuthentication")]
+    [Route("/Account/TwoFactorAuthentication")]
+    public async Task<IActionResult> TwoFactorAuthentication()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var model = new TwoFactorAuthenticationViewModel
+        {
+            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
+            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
+            IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
+            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user)
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Account/Disable2fa")]
+    [Route("/Account/Disable2fa")]
+    public async Task<IActionResult> Disable2fa()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
+        if (!disable2faResult.Succeeded)
+        {
+            throw new InvalidOperationException($"Unexpected error occurred disabling 2FA.");
+        }
+
+        _logger.LogInformation("User {UserId} has disabled 2FA.", user.Id);
+        TempData["Success"] = "2FA has been disabled. You can re-enable it at any time.";
+        return RedirectToAction(nameof(TwoFactorAuthentication));
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    [Route("/{culture:alpha}/Account/ForgetBrowser")]
+    [Route("/Account/ForgetBrowser")]
+    public async Task<IActionResult> ForgetBrowser()
+    {
+        await _signInManager.ForgetTwoFactorClientAsync();
+        TempData["Success"] = "The current browser has been forgotten. You will be prompted for your 2FA code on your next login.";
+        return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
     #endregion

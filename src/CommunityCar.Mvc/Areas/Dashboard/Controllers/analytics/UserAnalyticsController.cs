@@ -10,6 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.analytics;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/UserAnalytics")]
 public class UserAnalyticsController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -167,7 +168,7 @@ public class UserAnalyticsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUserActivityData(string period = "30days")
+    public IActionResult GetUserActivityData(string period = "30days")
     {
         try
         {
@@ -179,22 +180,19 @@ public class UserAnalyticsController : Controller
                 _ => DateTimeOffset.UtcNow.AddDays(-30)
             };
 
-            var questions = await _questionService.GetQuestionsAsync(new QueryParameters { PageNumber = 1, PageSize = 10000 });
-            var posts = await _postService.GetPostsAsync(new QueryParameters { PageNumber = 1, PageSize = 10000 });
-
-            var dailyActivity = new Dictionary<string, int>();
+            var allUsers = _userManager.Users.Where(u => !u.IsDeleted).ToList();
+            var dailyRegistrations = new Dictionary<string, int>();
             var days = (DateTimeOffset.UtcNow - startDate).Days;
 
             for (int i = 0; i <= days; i++)
             {
                 var date = startDate.AddDays(i).Date;
                 var dateStr = date.ToString("MMM dd");
-                var count = questions.Items.Count(q => q.CreatedAt.Date == date) +
-                           posts.Items.Count(p => p.CreatedAt.Date == date);
-                dailyActivity[dateStr] = count;
+                var count = allUsers.Count(u => u.CreatedAt.Date == date);
+                dailyRegistrations[dateStr] = count;
             }
 
-            return Json(new { success = true, data = dailyActivity });
+            return Json(new { success = true, data = dailyRegistrations });
         }
         catch (Exception ex)
         {

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Profile Settings" xml:space="preserve">
+    <value>Profile Settings</value>
+  </data>
+  <data name="Notification Preferences" xml:space="preserve">
+    <value>Notification Preferences</value>
+  </data>
+  <data name="Receive notifications via email" xml:space="preserve">
+    <value>Receive notifications via email</value>
+  </data>
+  <data name="Receive notifications via SMS" xml:space="preserve">
+    <value>Receive notifications via SMS</value>
+  </data>
+  <data name="Privacy Settings" xml:space="preserve">
+    <value>Privacy Settings</value>
+  </data>
+  <data name="Allow others to view your profile" xml:space="preserve">
+    <value>Allow others to view your profile</value>
+  </data>
+  <data name="Display your email address on your profile" xml:space="preserve">
+    <value>Display your email address on your profile</value>
+  </data>
+  <data name="Display your phone number on your profile" xml:space="preserve">
+    <value>Display your phone number on your profile</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Save Settings" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
+  <data name="Change Password" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="To change your password, please visit the account security page." xml:space="preserve">
+    <value>To change your password, please visit the account security page.</value>
+  </data>
+  <data name="Two-Factor Authentication" xml:space="preserve">
+    <value>Two-Factor Authentication</value>
+  </data>
+  <data name="Add an extra layer of security to your account." xml:space="preserve">
+    <value>Add an extra layer of security to your account.</value>
+  </data>
+  <data name="Manage 2FA" xml:space="preserve">
+    <value>Manage 2FA</value>
+  </data>
+  <data name="Danger Zone" xml:space="preserve">
+    <value>Danger Zone</value>
+  </data>
+  <data name="Delete Account" xml:space="preserve">
+    <value>Delete Account</value>
+  </data>
+  <data name="Once you delete your account, there is no going back. Please be certain." xml:space="preserve">
+    <value>Once you delete your account, there is no going back. Please be certain.</value>
+  </data>
+  <data name="Delete My Account" xml:space="preserve">
+    <value>Delete My Account</value>
+  </data>
+  <data name="Warning!" xml:space="preserve">
+    <value>Warning!</value>
+  </data>
+  <data name="This action cannot be undone. All your data will be permanently deleted." xml:space="preserve">
+    <value>This action cannot be undone. All your data will be permanently deleted.</value>
+  </data>
+  <data name="Please enter your password to confirm account deletion:" xml:space="preserve">
+    <value>Please enter your password to confirm account deletion:</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+</root>

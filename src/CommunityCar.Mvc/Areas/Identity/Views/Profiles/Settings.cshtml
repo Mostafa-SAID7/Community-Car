@@ -1,6 +1,8 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.ProfileSettingsViewModel
 @{
-    ViewData["Title"] = "Profile Settings";
+    ViewData["Title"] = Localizer["Profile Settings"];
 }
 
 <div class="container mt-4">
@@ -9,19 +11,19 @@
             <!-- Settings Form -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="bi bi-gear"></i> Profile Settings</h4>
+                    <h4 class="mb-0"><i class="bi bi-gear"></i> @Localizer["Profile Settings"]</h4>
                 </div>
                 <div class="card-body">
                     <form asp-action="Settings" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                        <h5 class="mb-3"><i class="bi bi-bell"></i> Notification Preferences</h5>
+                        <h5 class="mb-3"><i class="bi bi-bell"></i> @Localizer["Notification Preferences"]</h5>
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input asp-for="EmailNotifications" class="form-check-input" type="checkbox" />
                                 <label asp-for="EmailNotifications" class="form-check-label"></label>
                             </div>
-                            <small class="text-muted">Receive notifications via email</small>
+                            <small class="text-muted">@Localizer["Receive notifications via email"]</small>
                         </div>
 
                         <div class="mb-4">
@@ -29,18 +31,18 @@
                                 <input asp-for="SmsNotifications" class="form-check-input" type="checkbox" />
                                 <label asp-for="SmsNotifications" class="form-check-label"></label>
                             </div>
-                            <small class="text-muted">Receive notifications via SMS</small>
+                            <small class="text-muted">@Localizer["Receive notifications via SMS"]</small>
                         </div>
 
                         <hr />
 
-                        <h5 class="mb-3"><i class="bi bi-shield-lock"></i> Privacy Settings</h5>
+                        <h5 class="mb-3"><i class="bi bi-shield-lock"></i> @Localizer["Privacy Settings"]</h5>
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input asp-for="PublicProfile" class="form-check-input" type="checkbox" />
                                 <label asp-for="PublicProfile" class="form-check-label"></label>
                             </div>
-                            <small class="text-muted">Allow others to view your profile</small>
+                            <small class="text-muted">@Localizer["Allow others to view your profile"]</small>
                         </div>
 
                         <div class="mb-3">
@@ -48,7 +50,7 @@
                                 <input asp-for="ShowEmail" class="form-check-input" type="checkbox" />
                                 <label asp-for="ShowEmail" class="form-check-label"></label>
                             </div>
-                            <small class="text-muted">Display your email address on your profile</small>
+                            <small class="text-muted">@Localizer["Display your email address on your profile"]</small>
                         </div>
 
                         <div class="mb-4">
@@ -56,15 +58,15 @@
                                 <input asp-for="ShowPhone" class="form-check-input" type="checkbox" />
                                 <label asp-for="ShowPhone" class="form-check-label"></label>
                             </div>
-                            <small class="text-muted">Display your phone number on your profile</small>
+                            <small class="text-muted">@Localizer["Display your phone number on your profile"]</small>
                         </div>
 
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Cancel
+                                <i class="bi bi-arrow-left"></i> @Localizer["Cancel"]
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Save Settings
+                                <i class="bi bi-check-lg"></i> @Localizer["Save Settings"]
                             </button>
                         </div>
                     </form>
@@ -74,12 +76,12 @@
             <!-- Password Change -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="bi bi-key"></i> Change Password</h5>
+                    <h5 class="mb-0"><i class="bi bi-key"></i> @Localizer["Change Password"]</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">To change your password, please visit the account security page.</p>
+                    <p class="text-muted">@Localizer["To change your password, please visit the account security page."]</p>
                     <a asp-area="Identity" asp-controller="Account" asp-action="ChangePassword" class="btn btn-warning">
-                        <i class="bi bi-key"></i> Change Password
+                        <i class="bi bi-key"></i> @Localizer["Change Password"]
                     </a>
                 </div>
             </div>
@@ -87,12 +89,12 @@
             <!-- Two-Factor Authentication -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-shield-check"></i> Two-Factor Authentication</h5>
+                    <h5 class="mb-0"><i class="bi bi-shield-check"></i> @Localizer["Two-Factor Authentication"]</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Add an extra layer of security to your account.</p>
+                    <p class="text-muted">@Localizer["Add an extra layer of security to your account."]</p>
                     <a asp-area="Identity" asp-controller="Account" asp-action="TwoFactorAuthentication" class="btn btn-info">
-                        <i class="bi bi-shield-check"></i> Manage 2FA
+                        <i class="bi bi-shield-check"></i> @Localizer["Manage 2FA"]
                     </a>
                 </div>
             </div>
@@ -100,14 +102,14 @@
             <!-- Danger Zone -->
             <div class="card shadow-sm border-danger">
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Danger Zone</h5>
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> @Localizer["Danger Zone"]</h5>
                 </div>
                 <div class="card-body">
-                    <h6 class="text-danger">Delete Account</h6>
-                    <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
+                    <h6 class="text-danger">@Localizer["Delete Account"]</h6>
+                    <p class="text-muted">@Localizer["Once you delete your account, there is no going back. Please be certain."]</p>
                     
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                        <i class="bi bi-trash"></i> Delete My Account
+                        <i class="bi bi-trash"></i> @Localizer["Delete My Account"]
                     </button>
                 </div>
             </div>
@@ -121,7 +123,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteAccountModalLabel">
-                    <i class="bi bi-exclamation-triangle"></i> Delete Account
+                    <i class="bi bi-exclamation-triangle"></i> @Localizer["Delete Account"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -129,18 +131,18 @@
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="alert alert-danger">
-                        <strong>Warning!</strong> This action cannot be undone. All your data will be permanently deleted.
+                        <strong>@Localizer["Warning!"]</strong> @Localizer["This action cannot be undone. All your data will be permanently deleted."]
                     </div>
-                    <p>Please enter your password to confirm account deletion:</p>
+                    <p>@Localizer["Please enter your password to confirm account deletion:"]</p>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label">@Localizer["Password"]</label>
                         <input type="password" class="form-control" id="password" name="password" required />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Delete My Account
+                        <i class="bi bi-trash"></i> @Localizer["Delete My Account"]
                     </button>
                 </div>
             </form>

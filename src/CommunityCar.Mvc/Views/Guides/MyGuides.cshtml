@@ -25,20 +25,23 @@
             {
                 <div class="col-lg-4 col-md-6">
                     <div class="card guide-card">
-                        <div class="position-relative">
-                            <span class="badge text-white category-badge">
-                                <i class="fas fa-folder me-1"></i>@guide.Category
-                            </span>
-                            <span class="badge text-white difficulty-badge difficulty-@guide.Difficulty.ToString().ToLower()">
-                                <i class="fas fa-signal me-1"></i>@guide.DifficultyName
-                            </span>
-                            <span class="badge bg-@(guide.Status.ToString() == "Published" ? "success" : guide.Status.ToString() == "Draft" ? "secondary" : "warning") position-absolute top-0 end-0 m-2">
-                                @guide.StatusName
-                            </span>
-                            <img src="@(guide.ImageUrl ?? "/images/guide-placeholder.jpg")" 
-                                 alt="@guide.Title" 
-                                 class="card-img-top guide-image" />
-                        </div>
+                        @if (!string.IsNullOrEmpty(guide.ImageUrl))
+                        {
+                            <div class="position-relative">
+                                <span class="badge text-white category-badge">
+                                    <i class="fas fa-folder me-1"></i>@guide.Category
+                                </span>
+                                <span class="badge text-white difficulty-badge difficulty-@guide.Difficulty.ToString().ToLower()">
+                                    <i class="fas fa-signal me-1"></i>@guide.DifficultyName
+                                </span>
+                                <span class="badge bg-@(guide.Status.ToString() == "Published" ? "success" : guide.Status.ToString() == "Draft" ? "secondary" : "warning") position-absolute top-0 end-0 m-2">
+                                    @guide.StatusName
+                                </span>
+                                <img src="@guide.ImageUrl" 
+                                     alt="@guide.Title" 
+                                     class="card-img-top guide-image" />
+                            </div>
+                        }
                         <div class="card-body d-flex flex-column">
                             <div class="guide-meta mb-2">
                                 <i class="fas fa-clock me-1"></i>@guide.EstimatedTimeMinutes min

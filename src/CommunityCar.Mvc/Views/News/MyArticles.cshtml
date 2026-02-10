@@ -28,20 +28,23 @@
             {
                 <div class="col-lg-4 col-md-6">
                     <div class="card news-card h-100">
-                        <div class="position-relative">
-                            @if (article.IsFeatured)
-                            {
-                                <span class="badge bg-warning text-dark featured-badge">
-                                    <i class="fas fa-star me-1"></i>Featured
+                        @if (!string.IsNullOrEmpty(article.ImageUrl))
+                        {
+                            <div class="position-relative">
+                                @if (article.IsFeatured)
+                                {
+                                    <span class="badge bg-warning text-dark featured-badge">
+                                        <i class="fas fa-star me-1"></i>Featured
+                                    </span>
+                                }
+                                <span class="badge bg-primary news-category-badge">
+                                    @article.Category
                                 </span>
-                            }
-                            <span class="badge bg-primary news-category-badge">
-                                @article.Category
-                            </span>
-                            <img src="@(article.ImageUrl ?? "/images/news-placeholder.svg")" 
-                                 alt="@article.Title" 
-                                 class="card-img-top news-image" />
-                        </div>
+                                <img src="@article.ImageUrl" 
+                                     alt="@article.Title" 
+                                     class="card-img-top news-image" />
+                            </div>
+                        }
                         <div class="card-body d-flex flex-column">
                             <div class="news-meta mb-2">
                                 <i class="fas fa-calendar me-1"></i>@article.PublishedAt?.ToString("MMM dd, yyyy")

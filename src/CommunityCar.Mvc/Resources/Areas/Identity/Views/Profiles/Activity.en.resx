@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Activity Title" xml:space="preserve">
+    <value>{0}'s Activity</value>
+  </data>
+  <data name="Profile Picture" xml:space="preserve">
+    <value>Profile Picture</value>
+  </data>
+  <data name="View Profile" xml:space="preserve">
+    <value>View Profile</value>
+  </data>
+  <data name="Activity Summary" xml:space="preserve">
+    <value>Activity Summary</value>
+  </data>
+  <data name="Questions" xml:space="preserve">
+    <value>Questions</value>
+  </data>
+  <data name="Answers" xml:space="preserve">
+    <value>Answers</value>
+  </data>
+  <data name="Votes" xml:space="preserve">
+    <value>Votes</value>
+  </data>
+  <data name="Recent Activity" xml:space="preserve">
+    <value>Recent Activity</value>
+  </data>
+  <data name="Asked a question" xml:space="preserve">
+    <value>Asked a question</value>
+  </data>
+  <data name="views" xml:space="preserve">
+    <value>views</value>
+  </data>
+  <data name="answers" xml:space="preserve">
+    <value>answers</value>
+  </data>
+  <data name="votes" xml:space="preserve">
+    <value>votes</value>
+  </data>
+  <data name="No activity yet" xml:space="preserve">
+    <value>No activity yet</value>
+  </data>
+  <data name="This user hasn't posted any questions yet." xml:space="preserve">
+    <value>This user hasn't posted any questions yet.</value>
+  </data>
+</root>

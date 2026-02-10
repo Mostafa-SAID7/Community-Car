@@ -6,7 +6,7 @@ using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.health;
 
 [Area("Dashboard")]
-[Route("Dashboard/[controller]")]
+[Route("{culture}/Dashboard/[controller]")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class HealthController : Controller
 {

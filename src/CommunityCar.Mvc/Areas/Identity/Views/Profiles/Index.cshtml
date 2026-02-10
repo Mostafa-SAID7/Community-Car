@@ -46,6 +46,20 @@
                                 {
                                     <span class="profile-meta-item"><i class="bi bi-link-45deg"></i> <a href="@Model.User.Website" target="_blank">@Localizer["Website"]</a></span>
                                 }
+                                @if (Model.IsOwnProfile && !string.IsNullOrEmpty(Model.User.PhoneNumber))
+                                {
+                                    <span class="profile-meta-item">
+                                        <i class="bi bi-telephone"></i> @Model.User.PhoneNumber
+                                        @if (Model.User.PhoneNumberConfirmed)
+                                        {
+                                            <i class="fas fa-check-circle text-success ms-1" title="@Localizer["Verified"]"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-exclamation-triangle text-warning ms-1" title="@Localizer["Not Verified"]"></i>
+                                        }
+                                    </span>
+                                }
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -58,6 +72,18 @@
                                     <a asp-action="Settings" class="profile-btn profile-btn-secondary">
                                         <i class="bi bi-gear"></i> @Localizer["Settings"]
                                     </a>
+                                    @if (string.IsNullOrEmpty(Model.User.PhoneNumber))
+                                    {
+                                        <a asp-area="Identity" asp-controller="Account" asp-action="ConfirmPhoneNumber" class="profile-btn profile-btn-success">
+                                            <i class="bi bi-telephone-plus"></i> @Localizer["Add Phone"]
+                                        </a>
+                                    }
+                                    else if (!Model.User.PhoneNumberConfirmed)
+                                    {
+                                        <a asp-area="Identity" asp-controller="Account" asp-action="ConfirmPhoneNumber" class="profile-btn profile-btn-warning">
+                                            <i class="bi bi-shield-check"></i> @Localizer["Verify Phone"]
+                                        </a>
+                                    }
                                 }
                                 else
                                 {

@@ -1,0 +1,162 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Identity
+@using CommunityCar.Domain.Entities.Identity.Users
+@inject IViewLocalizer Localizer
+@inject UserManager<ApplicationUser> UserManager
+@model CommunityCar.Web.Areas.Identity.ViewModels.TwoFactorAuthenticationViewModel
+@{
+    ViewData["Title"] = Localizer["Two-Factor Authentication"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-header">
+            <div class="text-center mb-3">
+                <i class="bi bi-shield-lock display-4 text-primary"></i>
+            </div>
+            <h2>@Localizer["Two-Factor Authentication"]</h2>
+            <p class="text-muted">@Localizer["Manage your two-factor authentication settings"]</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-shield-check"></i> @Localizer["Status"]
+                </h5>
+                @if (Model.Is2faEnabled)
+                {
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> @Localizer["Two-factor authentication is enabled"]
+                    </div>
+                    
+                    @if (Model.RecoveryCodesLeft == 0)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> @Localizer["You have no recovery codes left. Generate new recovery codes."]
+                        </div>
+                    }
+                    else if (Model.RecoveryCodesLeft <= 3)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> @Localizer["You have {0} recovery codes left.", Model.RecoveryCodesLeft]
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">
+                            <i class="bi bi-info-circle"></i> @Localizer["You have {0} recovery codes remaining.", Model.RecoveryCodesLeft]
+                        </p>
+                    }
+
+                    @if (Model.IsMachineRemembered)
+                    {
+                        <form asp-action="ForgetBrowser" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-x-circle"></i> @Localizer["Forget This Browser"]
+                            </button>
+                        </form>
+                    }
+
+                    <form asp-action="Disable2fa" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-shield-x"></i> @Localizer["Disable 2FA"]
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-shield-exclamation"></i> @Localizer["Two-factor authentication is not enabled"]
+                    </div>
+                    <p class="text-muted">
+                        @Localizer["Two-factor authentication adds an extra layer of security to your account. To enable, you'll need an authenticator app."]
+                    </p>
+                    <p class="text-muted mb-3">
+                        <strong>@Localizer["Note:"]</strong> @Localizer["This feature requires additional setup with an authenticator app (like Google Authenticator, Microsoft Authenticator, or Authy)."]
+                    </p>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-telephone-fill"></i> @Localizer["Phone-Based 2FA"]
+                </h5>
+                @{
+                    var user = await UserManager.GetUserAsync(User);
+                }
+                @if (!string.IsNullOrEmpty(user?.PhoneNumber))
+                {
+                    @if (user.PhoneNumberConfirmed)
+                    {
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> @Localizer["Your phone number is verified:"] <strong>@user.PhoneNumber</strong>
+                        </div>
+                        <p class="text-muted">
+                            @Localizer["You can use your verified phone number to login using OTP (One-Time Password) without entering your password."]
+                        </p>
+                        <a href="/LoginWithOtp" class="btn btn-outline-primary">
+                            <i class="bi bi-phone-fill"></i> @Localizer["Try Phone Login"]
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> @Localizer["Your phone number is not verified:"] <strong>@user.PhoneNumber</strong>
+                        </div>
+                        <p class="text-muted">
+                            @Localizer["Verify your phone number to enable phone-based login with OTP."]
+                        </p>
+                        <a asp-area="Identity" asp-controller="Account" asp-action="ConfirmPhoneNumber" class="btn btn-warning">
+                            <i class="bi bi-shield-check"></i> @Localizer["Verify Phone Number"]
+                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> @Localizer["No phone number added"]
+                    </div>
+                    <p class="text-muted">
+                        @Localizer["Add and verify a phone number to enable phone-based login with OTP for password-free access."]
+                    </p>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="ConfirmPhoneNumber" class="btn btn-success">
+                        <i class="bi bi-telephone-plus"></i> @Localizer["Add Phone Number"]
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a asp-area="Identity" asp-controller="Profiles" asp-action="Settings" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> @Localizer["Back to Settings"]
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.CreateWidgetViewModel
+@{
+    ViewData["Title"] = "Create Widget - Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Create Widget</h1>
+                    <p class="text-muted">Add a new widget to the dashboard</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Widgets
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Widget Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter widget title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Type" class="form-label">Widget Type</label>
+                            <select asp-for="Type" class="form-select">
+                                <option value="">Select widget type</option>
+                                <option value="Chart">Chart</option>
+                                <option value="Stats">Statistics</option>
+                                <option value="List">List</option>
+                                <option value="Calendar">Calendar</option>
+                                <option value="Map">Map</option>
+                                <option value="Feed">Feed</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ConfigJson" class="form-label">Configuration (JSON)</label>
+                            <textarea asp-for="ConfigJson" class="form-control font-monospace" rows="8" placeholder='{"key": "value"}'></textarea>
+                            <span asp-validation-for="ConfigJson" class="text-danger"></span>
+                            <small class="form-text text-muted">Enter widget configuration in JSON format</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Order" class="form-label">Display Order</label>
+                            <input asp-for="Order" type="number" class="form-control" placeholder="0" />
+                            <span asp-validation-for="Order" class="text-danger"></span>
+                            <small class="form-text text-muted">Lower numbers appear first</small>
+                        </div>
+
+                        <input asp-for="UserId" type="hidden" />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Create Widget
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Widget Types
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Chart</h6>
+                        <p class="text-muted small mb-0">Display data visualizations and graphs</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Statistics</h6>
+                        <p class="text-muted small mb-0">Show key metrics and numbers</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">List</h6>
+                        <p class="text-muted small mb-0">Display lists of items or activities</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Calendar</h6>
+                        <p class="text-muted small mb-0">Show events and schedules</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Map</h6>
+                        <p class="text-muted small mb-0">Display location-based data</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Feed</h6>
+                        <p class="text-muted small mb-0">Show activity feeds and updates</p>
+                    </div>
+                    <div class="mb-0">
+                        <h6 class="fw-bold">Custom</h6>
+                        <p class="text-muted small mb-0">Create custom widget layouts</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-code-square me-2"></i>Configuration Example
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded"><code>{
+  "refreshInterval": 30000,
+  "showHeader": true,
+  "theme": "light",
+  "dataSource": "api/endpoint"
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

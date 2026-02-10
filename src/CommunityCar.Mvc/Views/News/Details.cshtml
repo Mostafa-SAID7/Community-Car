@@ -88,7 +88,10 @@
                             <i class="fas fa-star me-2"></i>FEATURED
                         </div>
                     }
-                    <img src="@(article.ImageUrl ?? "/images/news-placeholder.svg")" class="news-hero-image" alt="@article.Title">
+                    @if (!string.IsNullOrEmpty(article.ImageUrl))
+                    {
+                        <img src="@article.ImageUrl" class="news-hero-image" alt="@article.Title">
+                    }
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-4">

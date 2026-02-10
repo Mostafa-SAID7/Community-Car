@@ -9,6 +9,7 @@ namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Reports;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
+[Route("{culture}/Dashboard/Reports/Content")]
 public class ContentReportsController : Controller
 {
     private readonly IQuestionService _questionService;

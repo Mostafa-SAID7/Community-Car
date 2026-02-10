@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.Localization;
 
 [Area("Dashboard")]
-[Route("Dashboard/Localization")]
+[Route("{culture}/Dashboard/Localization")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class LocalizationController : Controller
 {
@@ -486,6 +486,60 @@ public class LocalizationController : Controller
         {
             _logger.LogError(ex, "Error syncing translations to files");
             TempData["Error"] = _localizer["SyncToFilesFailed"].Value;
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpPost("SyncFromFiles")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SyncFromFiles()
+    {
+        try
+        {
+            var imported = await _localizationService.SyncFromJsonFilesAsync();
+            TempData["Success"] = string.Format("Successfully imported {0} translations from JSON files.", imported);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error syncing translations from files");
+            TempData["Error"] = "Failed to sync translations from JSON files.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpPost("SyncFromResx")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SyncFromResx()
+    {
+        try
+        {
+            var imported = await _localizationService.SyncFromResxFilesAsync();
+            TempData["Success"] = string.Format("Successfully imported {0} translations from RESX files.", imported);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error syncing translations from RESX files");
+            TempData["Error"] = "Failed to sync translations from RESX files.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpPost("SyncToResx")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SyncToResx()
+    {
+        try
+        {
+            var exported = await _localizationService.SyncToResxFilesAsync();
+            TempData["Success"] = string.Format("Successfully exported {0} translations to RESX files.", exported);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error syncing translations to RESX files");
+            TempData["Error"] = "Failed to sync translations to RESX files.";
             return RedirectToAction(nameof(Index));
         }
     }

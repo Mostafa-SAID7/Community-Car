@@ -1,39 +1,34 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Access Denied";
+    ViewData["Title"] = Localizer["Access denied"];
     ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
 }
 
-<link rel="stylesheet" href="~/css/pages/qa.css" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
 
-<div class="qa-container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 col-lg-6 text-center">
-            <!-- Used .question-detail for the premium glassmorphism card look -->
-            <div class="question-detail text-center py-5">
-                <div class="mb-4">
-                     <i class="fas fa-lock fa-4x text-danger mb-4"></i>
-                </div>
-                
-                <h1 class="question-detail-title text-danger mb-3">Access Denied</h1>
-                
-                <div class="question-content mb-4">
-                    <p class="lead text-muted mb-4">
-                        You don't have permission to access this page.
-                    </p>
-                    <p class="text-secondary mb-4 mx-auto" style="max-width: 80%;">
-                        This area is restricted to administrators only. If you believe you should have access, please contact your system administrator.
-                    </p>
-                </div>
-
-                <div class="d-flex gap-3 justify-content-center">
-                    <a asp-controller="Feed" asp-action="Index" asp-area="" class="btn btn-primary px-4 py-2">
-                        <i class="fas fa-home me-2"></i>Go to Home
-                    </a>
-                    <a asp-area="Identity" asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary px-4 py-2">
-                        <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-                    </a>
-                </div>
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-header text-center">
+            <div class="mb-4">
+                <i class="fas fa-ban fa-4x text-danger animate__animated animate__headShake"></i>
             </div>
+            <h2>@Localizer["Restricted Area"]</h2>
+            <div class="mt-3">
+                <p class="text-muted">@Localizer["It looks like you don't have the necessary permissions to view this page. If you believe this is an error, please contact your administrator."]</p>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3 mt-4">
+            <a asp-controller="Feed" asp-action="Index" asp-area="" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-home me-2"></i>@Localizer["Back to Home"]
+            </a>
+            <a asp-area="Identity" asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary btn-lg w-100">
+                <i class="fas fa-sign-out-alt me-2"></i>@Localizer["Sign Out"]
+            </a>
         </div>
     </div>
 </div>

@@ -68,6 +68,9 @@ public class FeedController : Controller
     {
         try
         {
+            // Show right sidebar on Feed page
+            ViewData["HideRightSidebar"] = false;
+            
             var userId = GetCurrentUserId();
             var parameters = new QueryParameters { PageNumber = page, PageSize = pageSize };
             
@@ -165,6 +168,8 @@ public class FeedController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Trending(int page = 1, int pageSize = 20)
     {
+        // Show right sidebar on Feed page
+        ViewData["HideRightSidebar"] = false;
         return await Index(sortBy: FeedSortType.Trending, page: page, pageSize: pageSize);
     }
 
@@ -172,6 +177,8 @@ public class FeedController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Popular(int page = 1, int pageSize = 20)
     {
+        // Show right sidebar on Feed page
+        ViewData["HideRightSidebar"] = false;
         return await Index(sortBy: FeedSortType.Popular, page: page, pageSize: pageSize);
     }
 

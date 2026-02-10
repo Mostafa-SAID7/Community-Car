@@ -10,6 +10,17 @@ const PostHubConnection = (function() {
 
     // Initialize connection
     function init() {
+        // Skip initialization on login/register pages
+        const currentPath = window.location.pathname.toLowerCase();
+        if (currentPath.includes('/login') || 
+            currentPath.includes('/register') ||
+            currentPath.includes('/forgotpassword') ||
+            currentPath.includes('/resetpassword') ||
+            currentPath.includes('/account/')) {
+            console.log('PostHub skipped on authentication pages');
+            return;
+        }
+
         if (connection) {
             console.log('PostHub already initialized');
             return;

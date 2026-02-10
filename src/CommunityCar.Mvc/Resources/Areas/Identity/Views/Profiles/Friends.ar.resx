@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Friends Title" xml:space="preserve">
+    <value>أصدقاء {0}</value>
+  </data>
+  <data name="Profile Picture" xml:space="preserve">
+    <value>الصورة الشخصية</value>
+  </data>
+  <data name="friend" xml:space="preserve">
+    <value>صديق</value>
+  </data>
+  <data name="friends" xml:space="preserve">
+    <value>أصدقاء</value>
+  </data>
+  <data name="Back to Profile" xml:space="preserve">
+    <value>العودة للملف الشخصي</value>
+  </data>
+  <data name="Search friends..." xml:space="preserve">
+    <value>البحث عن أصدقاء...</value>
+  </data>
+  <data name="Sort by Name" xml:space="preserve">
+    <value>فرز حسب الاسم</value>
+  </data>
+  <data name="Recently Added" xml:space="preserve">
+    <value>أضيف مؤخراً</value>
+  </data>
+  <data name="View Profile" xml:space="preserve">
+    <value>عرض الملف الشخصي</value>
+  </data>
+  <data name="Remove Friend" xml:space="preserve">
+    <value>إزالة صديق</value>
+  </data>
+  <data name="Are you sure you want to remove this friend?" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في إزالة هذا الصديق؟</value>
+  </data>
+  <data name="Friends since" xml:space="preserve">
+    <value>أصدقاء منذ {0}</value>
+  </data>
+  <data name="No friends yet" xml:space="preserve">
+    <value>لا يوجد أصدقاء بعد</value>
+  </data>
+  <data name="Start connecting with other members!" xml:space="preserve">
+    <value>ابدأ التواصل مع الأعضاء الآخرين!</value>
+  </data>
+  <data name="Find Friends" xml:space="preserve">
+    <value>البحث عن أصدقاء</value>
+  </data>
+  <data name="This user hasn't added any friends yet." xml:space="preserve">
+    <value>هذا المستخدم لم يضف أي أصدقاء بعد.</value>
+  </data>
+</root>

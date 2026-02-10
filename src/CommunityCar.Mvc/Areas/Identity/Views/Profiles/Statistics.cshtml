@@ -1,6 +1,8 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.UserStatisticsViewModel
 @{
-    ViewData["Title"] = $"{Model.User.FirstName}'s Statistics";
+    ViewData["Title"] = string.Format(Localizer["Statistics Title"].Value, Model.User.FirstName);
     ViewData["PageType"] = "profile";
 }
 
@@ -12,28 +14,28 @@
     <div class="row">
         <!-- User Info -->
         <div class="col-12 mb-4">
-            <div class="card shadow-sm">
+            <div class="profile-content-card card shadow-sm">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-2 text-center">
                             @if (!string.IsNullOrEmpty(Model.User.ProfilePictureUrl))
                             {
-                                <img src="@Model.User.ProfilePictureUrl" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 100px; height: 100px; object-fit: cover;">
+                                <img src="@Model.User.ProfilePictureUrl" alt="@Localizer["Profile Picture"]" class="profile-avatar-small">
                             }
                             else
                             {
-                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 100px; height: 100px; font-size: 36px;">
+                                <div class="profile-avatar-fallback profile-avatar-small mx-auto">
                                     @Model.User.FirstName.Substring(0, 1)@Model.User.LastName.Substring(0, 1)
                                 </div>
                             }
                         </div>
                         <div class="col-md-8">
                             <h3 class="mb-1">@Model.User.FirstName @Model.User.LastName</h3>
-                            <p class="text-muted mb-0">Member since @Model.MemberSince.ToString("MMMM yyyy")</p>
+                            <p class="text-muted mb-0">@string.Format(Localizer["Member since"].Value, Model.MemberSince.ToString("MMMM yyyy"))</p>
                         </div>
                         <div class="col-md-2 text-end">
-                            <a asp-action="Index" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">
-                                <i class="bi bi-arrow-left"></i> Back to Profile
+                            <a asp-action="Index" asp-route-userId="@Model.User.Id" class="profile-btn profile-btn-secondary">
+                                <i class="bi bi-arrow-left"></i> @Localizer["Back to Profile"]
                             </a>
                         </div>
                     </div>
@@ -43,74 +45,74 @@
 
         <!-- Statistics Cards -->
         <div class="col-md-3 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-body text-center">
                     <div class="display-4 text-primary mb-2">
                         <i class="bi bi-trophy"></i>
                     </div>
                     <h2 class="mb-0">@Model.ReputationPoints</h2>
-                    <p class="text-muted mb-0">Reputation Points</p>
+                    <p class="text-muted mb-0">@Localizer["Reputation Points"]</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-body text-center">
                     <div class="display-4 text-success mb-2">
                         <i class="bi bi-question-circle"></i>
                     </div>
                     <h2 class="mb-0">@Model.TotalQuestions</h2>
-                    <p class="text-muted mb-0">Questions Asked</p>
+                    <p class="text-muted mb-0">@Localizer["Questions Asked"]</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-body text-center">
                     <div class="display-4 text-info mb-2">
                         <i class="bi bi-chat-left-text"></i>
                     </div>
                     <h2 class="mb-0">@Model.TotalAnswers</h2>
-                    <p class="text-muted mb-0">Answers Given</p>
+                    <p class="text-muted mb-0">@Localizer["Answers Given"]</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-body text-center">
                     <div class="display-4 text-warning mb-2">
                         <i class="bi bi-hand-thumbs-up"></i>
                     </div>
                     <h2 class="mb-0">@Model.TotalVotes</h2>
-                    <p class="text-muted mb-0">Votes Received</p>
+                    <p class="text-muted mb-0">@Localizer["Votes Received"]</p>
                 </div>
             </div>
         </div>
 
         <!-- Community Stats -->
         <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-people"></i> Community Engagement</h5>
+                    <h5 class="mb-0"><i class="bi bi-people"></i> @Localizer["Community Engagement"]</h5>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-6 mb-3">
                             <h3 class="text-primary">@Model.TotalFriends</h3>
-                            <p class="text-muted mb-0">Friends</p>
+                            <p class="text-muted mb-0">@Localizer["Friends"]</p>
                         </div>
                         <div class="col-6 mb-3">
                             <h3 class="text-success">@Model.BadgesCount</h3>
-                            <p class="text-muted mb-0">Badges Earned</p>
+                            <p class="text-muted mb-0">@Localizer["Badges Earned"]</p>
                         </div>
                     </div>
                     <hr />
                     <div class="d-grid gap-2">
-                        <a asp-action="Friends" asp-route-userId="@Model.User.Id" class="btn btn-outline-primary">
-                            <i class="bi bi-people"></i> View Friends
+                        <a asp-action="Friends" asp-route-userId="@Model.User.Id" class="profile-btn profile-btn-primary">
+                            <i class="bi bi-people"></i> @Localizer["View Friends"]
                         </a>
                     </div>
                 </div>
@@ -119,14 +121,14 @@
 
         <!-- Activity Breakdown -->
         <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="profile-content-card card shadow-sm h-100">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Activity Breakdown</h5>
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> @Localizer["Activity Breakdown"]</h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
-                            <span>Questions</span>
+                            <span>@Localizer["Questions"]</span>
                             <span>@Model.TotalQuestions</span>
                         </div>
                         <div class="progress" style="height: 20px;">
@@ -135,7 +137,7 @@
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
-                            <span>Answers</span>
+                            <span>@Localizer["Answers"]</span>
                             <span>@Model.TotalAnswers</span>
                         </div>
                         <div class="progress" style="height: 20px;">
@@ -144,7 +146,7 @@
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
-                            <span>Votes</span>
+                            <span>@Localizer["Votes"]</span>
                             <span>@Model.TotalVotes</span>
                         </div>
                         <div class="progress" style="height: 20px;">
@@ -157,9 +159,9 @@
 
         <!-- Achievements -->
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="profile-content-card card shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="bi bi-award"></i> Achievements & Badges</h5>
+                    <h5 class="mb-0"><i class="bi bi-award"></i> @Localizer["Achievements & Badges"]</h5>
                 </div>
                 <div class="card-body">
                     @if (Model.BadgesCount > 0)
@@ -167,7 +169,7 @@
                         <div class="row">
                             <!-- Badges will be displayed here when implemented -->
                             <div class="col-12 text-center py-4">
-                                <p class="text-muted">Badges feature coming soon!</p>
+                                <p class="text-muted">@Localizer["Badges feature coming soon!"]</p>
                             </div>
                         </div>
                     }
@@ -175,8 +177,8 @@
                     {
                         <div class="text-center py-4">
                             <i class="bi bi-award display-1 text-muted"></i>
-                            <h5 class="mt-3 text-muted">No badges yet</h5>
-                            <p class="text-muted">Keep contributing to earn badges!</p>
+                            <h5 class="mt-3 text-muted">@Localizer["No badges yet"]</h5>
+                            <p class="text-muted">@Localizer["Keep contributing to earn badges!"]</p>
                         </div>
                     }
                 </div>

@@ -34,8 +34,8 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="Code" class="form-label"></label>
-                            <input asp-for="Code" class="form-control" placeholder="e.g., TOTAL_USERS" />
-                            <small class="form-text text-muted">Use uppercase letters, numbers, and underscores only.</small>
+                            <input asp-for="Code" class="form-control text-uppercase" id="kpiCode" placeholder="e.g., TOTAL_USERS" pattern="[A-Z0-9_]+" />
+                            <small class="form-text text-muted">Code must contain only uppercase letters, numbers, and underscores.</small>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
 
@@ -58,14 +58,14 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="Category" class="form-label"></label>
-                            <select asp-for="Category" class="form-control">
-                                <option value="">-- Select Category --</option>
+                            <input asp-for="Category" class="form-control" list="categoryList" placeholder="Select or type a new category" />
+                            <datalist id="categoryList">
                                 @foreach (var category in Model.AvailableCategories)
                                 {
                                     <option value="@category">@category</option>
                                 }
-                            </select>
-                            <small class="form-text text-muted">Or type a new category name.</small>
+                            </datalist>
+                            <small class="form-text text-muted">Select from existing categories or type a new category name.</small>
                             <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
 
@@ -92,4 +92,43 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeInput = document.getElementById('kpiCode');
+            
+            if (codeInput) {
+                // Auto-format to uppercase and filter invalid characters
+                codeInput.addEventListener('input', function(e) {
+                    let value = e.target.value;
+                    // Convert to uppercase and remove invalid characters
+                    value = value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+                    e.target.value = value;
+                });
+
+                // Prevent paste of invalid characters
+                codeInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanedText = pastedText.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+                    document.execCommand('insertText', false, cleanedText);
+                });
+
+                // Validate on form submit
+                const form = codeInput.closest('form');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        const codeValue = codeInput.value;
+                        const validPattern = /^[A-Z0-9_]+$/;
+                        
+                        if (codeValue && !validPattern.test(codeValue)) {
+                            e.preventDefault();
+                            alert('Code must contain only uppercase letters, numbers, and underscores.');
+                            codeInput.focus();
+                            return false;
+                        }
+                    });
+                }
+            }
+        });
+    </script>
 }

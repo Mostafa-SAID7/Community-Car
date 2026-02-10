@@ -10,7 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.security;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("Dashboard/Security")]
+[Route("{culture}/Dashboard/Security")]
 public class SecurityController : Controller
 {
     private readonly ISecurityAlertService _securityAlertService;

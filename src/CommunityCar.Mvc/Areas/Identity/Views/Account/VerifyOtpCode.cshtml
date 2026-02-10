@@ -1,70 +1,94 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model CommunityCar.Web.Areas.Identity.ViewModels.VerifyOtpViewModel
 @{
-    ViewData["Title"] = "Verify OTP Code";
+    ViewData["Title"] = Localizer["Verify OTP Code"];
+    ViewData["HideSidebars"] = true;
+    ViewData["HideFooter"] = true;
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-shield-check" class="icon-placeholder"></i>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css" />
+}
+
+<div class="login-wrapper">
+    <div class="login-container wide">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="login-header p-4">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-shield-check display-4 text-primary"></i>
                     </div>
-                    <h2 class="text-center mb-4">Verify Code</h2>
-                    <p class="text-center text-muted mb-4">
-                        Enter the 6-digit code sent to<br />
+                    <h2>@Localizer["Verify OTP Code"]</h2>
+                    <p class="text-muted">
+                        @Localizer["Enter the 6-digit code sent to"]<br />
                         <strong>@Model.PhoneNumber</strong>
                     </p>
+                </div>
 
+                <div class="p-4 pt-0">
                     @if (TempData["Info"] != null)
                     {
-                        <div class="alert alert-info" role="alert">
-                            @TempData["Info"]
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i> @TempData["Info"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
 
                     @if (TempData["Success"] != null)
                     {
-                        <div class="alert alert-success" role="alert">
-                            @TempData["Success"]
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
 
-                    <form asp-action="VerifyOtpCode" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
+                    <form asp-action="VerifyOtpCode" method="post" class="login-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         <input asp-for="PhoneNumber" type="hidden" />
                         <input asp-for="ReturnUrl" type="hidden" />
 
-                        <div class="mb-3">
-                            <label asp-for="Code" class="form-label"></label>
-                            <input asp-for="Code" class="form-control text-center" 
-                                   style="font-size: 1.5rem; letter-spacing: 0.5rem;" 
-                                   maxlength="6" 
-                                   placeholder="000000" 
-                                   autofocus />
+                        <div class="form-floating mb-4">
+                            <input asp-for="Code" class="form-control form-control-lg text-center" id="floatingCode" autocomplete="off" placeholder="000000" required autofocus maxlength="6" />
+                            <label asp-for="Code">@Localizer["Verification Code"]</label>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input asp-for="RememberMe" class="form-check-input" />
-                                <label asp-for="RememberMe" class="form-check-label"></label>
-                            </div>
+                        <div class="form-check mb-4">
+                            <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe" />
+                            <label asp-for="RememberMe" class="form-check-label" for="rememberMe">@Localizer["Remember this device"]</label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Verify & Login</button>
-
-                        <div class="text-center">
-                            <p class="mb-2">Didn't receive the code?</p>
-                            <form asp-action="ResendOtpCode" method="post" class="d-inline">
-                                <input type="hidden" name="phoneNumber" value="@Model.PhoneNumber" />
-                                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
-                                <button type="submit" class="btn btn-link p-0">Resend Code</button>
-                            </form>
-                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">@Localizer["Verify & Login"]</button>
                     </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-2 text-muted small">@Localizer["Didn't receive the code?"]</p>
+                        <form asp-action="ResendOtpCode" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="phoneNumber" value="@Model.PhoneNumber" />
+                            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                            <button type="submit" class="btn btn-link text-decoration-none p-0">@Localizer["Resend Code"]</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-1 d-none d-lg-flex align-items-center justify-content-center">
+                <div class="divider-vertical"></div>
+            </div>
+
+            <div class="col-lg-5 p-4 bg-light d-flex flex-column justify-content-center text-center rounded-end">
+                <div class="security-badge mb-4">
+                    <i class="fas fa-user-shield fa-5x text-primary animate__animated animate__pulse animate__infinite"></i>
+                </div>
+                <h3>@Localizer["Security Verification"]</h3>
+                <p class="text-muted small">@Localizer["Please enter the verification code to continue. The code is valid for a limited time."]</p>
+                <hr class="w-50 mx-auto my-4" />
+                <div class="login-footer">
+                    <a href="/@culture/Login" class="register-link fw-bold">@Localizer["Back to Login"]</a>
                 </div>
             </div>
         </div>

@@ -4,44 +4,48 @@
     ViewData["Title"] = Localizer["AI Assistant"];
 }
 
-<div class="ai-assistant-container">
-    <div class="chat-header">
-        <div class="assistant-info">
-            <div class="assistant-avatar">
-                <i class="fas fa-robot"></i>
-                <div class="status-indicator"></div>
+<div class="chat-page-container">
+    <div class="ai-assistant-container chat-container">
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="user-info">
+                    <div class="user-avatar-wrapper assistant-avatar">
+                        <img src="/img/avatars/ai-assistant.png" class="assistant-avatar" onerror="this.outerHTML='<i class=\'fas fa-robot\'></i>'">
+                        <div class="status-indicator status-online"></div>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-white">@Localizer["Community Car Assistant"]</h5>
+                        <p class="mb-0 text-muted small">@Localizer["Always here to help"]</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-icon btn-light btn-sm" id="clearChat" title="@Localizer["Clear Conversation"]">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
             </div>
-            <div>
-                <h4 class="mb-0">@Localizer["Community Car Assistant"]</h4>
-                <p class="mb-0 text-muted small">@Localizer["Always here to help"]</p>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="btn btn-icon btn-light" id="clearChat" title="@Localizer["Clear Conversation"]">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
 
-    <div class="chat-messages" id="chatMessages">
-        <div class="message assistant">
-            <div class="message-bubble">
-                @Localizer["Hello! I'm your AI Assistant. How can I help you navigate Community Car today?"]
+            <div class="chat-messages custom-scrollbar" id="chatMessages">
+                <div class="message received assistant">
+                    <div class="message-bubble">
+                        @Localizer["Hello! I'm your AI Assistant. How can I help you navigate Community Car today?"]
+                    </div>
+                    <div class="message-time">@DateTime.Now.ToString("HH:mm")</div>
+                </div>
             </div>
-            <div class="message-time">@DateTime.Now.ToString("HH:mm")</div>
-        </div>
-    </div>
 
-    <div class="chat-input-area">
-        <form id="chatForm" class="d-flex gap-2">
-            @Html.AntiForgeryToken()
-            <div class="input-wrapper flex-grow-1">
-                <input type="text" id="userInput" class="form-control" autocomplete="off" placeholder="@Localizer["Type your message..."]">
+            <div class="chat-input-area">
+                <form id="chatForm" class="d-flex gap-2">
+                    @Html.AntiForgeryToken()
+                    <div class="input-wrapper flex-grow-1">
+                        <input type="text" id="userInput" class="form-control" autocomplete="off" placeholder="@Localizer["Type your message..."]">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary btn-send">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -50,5 +54,7 @@
 }
 
 @section Styles {
+    <link rel="stylesheet" href="~/css/pages/chat-ui-standard.css" />
     <link rel="stylesheet" href="~/css/pages/ai-assistant.css" />
 }
+

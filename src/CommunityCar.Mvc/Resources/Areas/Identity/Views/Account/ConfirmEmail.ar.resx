@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Email Confirmation" xml:space="preserve">
+    <value>تأكيد البريد الإلكتروني</value>
+  </data>
+  <data name="Email Confirmed" xml:space="preserve">
+    <value>تم تأكيد البريد الإلكتروني</value>
+  </data>
+  <data name="Confirmation Failed" xml:space="preserve">
+    <value>فشل التأكيد</value>
+  </data>
+  <data name="Go to Login" xml:space="preserve">
+    <value>الذهاب لتسجيل الدخول</value>
+  </data>
+  <data name="Back to Login" xml:space="preserve">
+    <value>العودة لتسجيل الدخول</value>
+  </data>
+  <data name="Thank you for confirming your email." xml:space="preserve">
+    <value>شكراً لك على تأكيد بريدك الإلكتروني.</value>
+  </data>
+  <data name="There was an error confirming your email." xml:space="preserve">
+    <value>حدث خطأ أثناء تأكيد بريدك الإلكتروني.</value>
+  </data>
+</root>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Edit Profile" xml:space="preserve">
+    <value>تعديل الملف الشخصي</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>الاسم الأول</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>اسم العائلة</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Bio" xml:space="preserve">
+    <value>السيرة الذاتية</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>الموقع الإلكتروني</value>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>تاريخ الميلاد</value>
+  </data>
+  <data name="Email cannot be changed here. Contact support if needed." xml:space="preserve">
+    <value>لا يمكن تغيير البريد الإلكتروني هنا. اتصل بالدعم إذا لزم الأمر.</value>
+  </data>
+  <data name="Tell us about yourself..." xml:space="preserve">
+    <value>أخبرنا عن نفسك...</value>
+  </data>
+  <data name="Maximum 500 characters" xml:space="preserve">
+    <value>بحد أقصى 500 حرف</value>
+  </data>
+  <data name="City, Country" xml:space="preserve">
+    <value>المدينة، البلد</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Save Changes" xml:space="preserve">
+    <value>حفظ التغييرات</value>
+  </data>
+  <data name="Profile Picture" xml:space="preserve">
+    <value>الصورة الشخصية</value>
+  </data>
+  <data name="Upload New Picture" xml:space="preserve">
+    <value>تحميل صورة جديدة</value>
+  </data>
+  <data name="Remove Picture" xml:space="preserve">
+    <value>إزالة الصورة</value>
+  </data>
+  <data name="Are you sure you want to remove your profile picture?" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في إزالة صورتك الشخصية؟</value>
+  </data>
+</root>
