@@ -1,0 +1,166 @@
+/* Tag Input Component Styles */
+
+.tag-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.tag-input-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 0.375rem;
+    background-color: var(--input-bg, #fff);
+    min-height: 42px;
+    cursor: text;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tag-input-wrapper:focus-within {
+    border-color: var(--primary-color, #0d6efd);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color, #0d6efd) 0%, var(--secondary-color, #6610f2) 100%);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: tagFadeIn 0.2s ease;
+}
+
+@keyframes tagFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tag-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tag-remove:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tag-remove i {
+    font-size: 0.625rem;
+}
+
+.tag-type-input {
+    flex: 1;
+    min-width: 120px;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0.25rem;
+    font-size: 0.9375rem;
+}
+
+.tag-type-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.tag-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--dropdown-bg, #fff);
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tag-suggestion-item {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    font-size: 0.9375rem;
+}
+
+.tag-suggestion-item:hover {
+    background-color: var(--hover-bg, #f8f9fa);
+}
+
+.tag-suggestion-item:active {
+    background-color: var(--active-bg, #e9ecef);
+}
+
+/* Dark theme support */
+[data-theme="dark"] .tag-input-wrapper {
+    background-color: var(--dark-input-bg, #2d3748);
+    border-color: var(--dark-border-color, #4a5568);
+}
+
+[data-theme="dark"] .tag-type-input {
+    color: var(--dark-text-color, #e2e8f0);
+}
+
+[data-theme="dark"] .tag-suggestions {
+    background-color: var(--dark-dropdown-bg, #2d3748);
+    border-color: var(--dark-border-color, #4a5568);
+}
+
+[data-theme="dark"] .tag-suggestion-item:hover {
+    background-color: var(--dark-hover-bg, #4a5568);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .tag-badge {
+        font-size: 0.8125rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .tag-type-input {
+        font-size: 0.875rem;
+    }
+}

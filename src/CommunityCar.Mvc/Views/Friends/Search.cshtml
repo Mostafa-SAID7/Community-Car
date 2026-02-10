@@ -66,12 +66,24 @@
 
     <!-- Search Bar -->
     <div class="friends-search">
-        <form asp-action="Search" method="get" class="search-input-group">
+        <form asp-action="Search" method="get" class="search-input-group" id="friendSearchForm">
             <i class="fas fa-search"></i>
-            <input type="text" name="query" class="form-control" placeholder="@Localizer["Search by name or username..."]" value="@ViewBag.SearchQuery" autofocus>
+            <input type="text" name="query" id="friendSearchInput" class="form-control" placeholder="@Localizer["Search by name or username..."]" value="@ViewBag.SearchQuery" autofocus autocomplete="off">
+            <div id="searchSpinner" class="search-spinner" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
         </form>
     </div>
 
+    <!-- Live Search Results Container -->
+    <div id="liveSearchResults" style="display: none;">
+        <div class="row g-4" id="searchResultsGrid">
+            <!-- Results will be populated here -->
+        </div>
+    </div>
+
+    <!-- Original Results Container -->
+    <div id="originalResults">
     @if (ViewBag.SearchQuery != null)
     {
         @if (!Model.Any())
@@ -160,6 +172,7 @@
             </a>
         </div>
     }
+    </div>
 </div>
 
 

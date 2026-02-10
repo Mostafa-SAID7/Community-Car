@@ -256,6 +256,7 @@
 
 .search-input-group input {
     padding-left: 3rem;
+    padding-right: 3rem;
     border-radius: var(--radius-full);
     border: 2px solid var(--border-primary);
     height: 50px;
@@ -275,4 +276,19 @@
     color: var(--text-tertiary);
     font-size: 1.1rem;
     pointer-events: none;
+}
+
+.search-spinner {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.search-spinner i {
+    position: static;
+    transform: none;
 }

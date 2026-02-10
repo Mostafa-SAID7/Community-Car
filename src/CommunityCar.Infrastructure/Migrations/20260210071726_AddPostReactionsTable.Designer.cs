@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CommunityCar.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260209071503_AddCommunityEntities")]
-    partial class AddCommunityEntities
+    [Migration("20260210071726_AddPostReactionsTable")]
+    partial class AddPostReactionsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -676,9 +676,14 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FriendId");
+                    b.HasIndex("FriendId", "Status")
+                        .HasDatabaseName("IX_Friendships_FriendId_Status");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "FriendId")
+                        .HasDatabaseName("IX_Friendships_UserId_FriendId");
+
+                    b.HasIndex("UserId", "Status")
+                        .HasDatabaseName("IX_Friendships_UserId_Status");
 
                     b.ToTable("Friendships", (string)null);
                 });
@@ -1798,6 +1803,9 @@ namespace CommunityCar.Infrastructure.Migrations
 
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
 
                     b.Property<int>("CommentCount")
                         .HasColumnType("int");

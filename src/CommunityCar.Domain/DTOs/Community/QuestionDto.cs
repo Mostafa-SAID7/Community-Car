@@ -15,6 +15,9 @@ public class QuestionDto
     public Guid? CategoryId { get; set; }
     public CategoryDto? Category { get; set; }
     
+    public Guid? GroupId { get; set; }
+    public string? GroupName { get; set; }
+    
     public string? Tags { get; set; } // Legacy field
     public List<TagDto> TagList { get; set; } = new();
     

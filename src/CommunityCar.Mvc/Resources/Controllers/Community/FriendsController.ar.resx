@@ -262,4 +262,7 @@
   <data name="You have {0} pending friend request(s)." xml:space="preserve">
     <value>لديك {0} طلب صداقة معلق.</value>
   </data>
+  <data name="PleaseUseAcceptButton" xml:space="preserve">
+    <value>يرجى استخدام زر القبول في صفحة طلبات الصداقة لقبول طلبات الصداقة.</value>
+  </data>
 </root>

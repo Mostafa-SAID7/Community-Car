@@ -41,19 +41,25 @@
             <!-- Search Bar -->
             <div class="row g-3 mb-4">
                 <div class="col-12">
-                    <div class="search-wrapper position-relative">
-                        <input type="text" 
-                               id="postSearchInput" 
-                               class="form-control form-control-lg ps-5" 
-                               placeholder="Search posts by title, content, or tags..."
-                               autocomplete="off">
-                        <i class="fas fa-search search-icon"></i>
-                        <div id="searchSpinner" class="search-spinner d-none">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
+                    <form method="get" asp-action="Index" asp-controller="Posts" class="search-form">
+                        <div class="search-wrapper position-relative">
+                            <input type="text" 
+                                   name="search"
+                                   id="postSearchInput" 
+                                   class="form-control form-control-lg ps-5" 
+                                   placeholder="Search posts by title, content, or tags..."
+                                   value="@Context.Request.Query["search"]"
+                                   autocomplete="off">
+                            <i class="fas fa-search search-icon"></i>
+                            @if (currentType != null)
+                            {
+                                <input type="hidden" name="type" value="@currentType" />
+                            }
+                            <button type="submit" class="btn btn-purple position-absolute end-0 top-50 translate-middle-y me-2">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -62,21 +68,19 @@
                 <span class="fw-bold me-2 filter-label">
                     <i class="fas fa-filter me-1"></i>Post Type:
                 </span>
-                <button type="button" 
-                        class="btn btn-sm filter-btn @(currentType == null ? "btn-purple active" : "btn-outline-purple")"
-                        data-type="">
+                <a href="@Url.Action("Index", "Posts")" 
+                   class="btn btn-sm @(currentType == null ? "btn-purple active" : "btn-outline-purple")">
                     <i class="fas fa-th me-1"></i>All Types
-                </button>
+                </a>
                 @if (postTypes != null)
                 {
                     @foreach (var type in postTypes)
                     {
                         var typeValue = (CommunityCar.Domain.Enums.Community.post.PostType)type;
-                        <button type="button" 
-                                class="btn btn-sm filter-btn @(currentType == typeValue ? "btn-purple active" : "btn-outline-purple")"
-                                data-type="@typeValue">
+                        <a href="@Url.Action("Index", "Posts", new { type = typeValue })" 
+                           class="btn btn-sm @(currentType == typeValue ? "btn-purple active" : "btn-outline-purple")">
                             @typeValue.ToString()
-                        </button>
+                        </a>
                     }
                 }
                 <div class="ms-auto">
@@ -182,6 +186,14 @@
                             <p class="content-card-content">
                                 @(post.Content?.Length > 120 ? post.Content.Substring(0, 120) + "..." : post.Content)
                             </p>
+                            @if (!string.IsNullOrEmpty(post.CategoryName))
+                            {
+                                <div class="mb-2">
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-folder me-1"></i>@post.CategoryName
+                                    </span>
+                                </div>
+                            }
                             @if (!string.IsNullOrEmpty(post.Tags))
                             {
                                 <div class="card-tags">

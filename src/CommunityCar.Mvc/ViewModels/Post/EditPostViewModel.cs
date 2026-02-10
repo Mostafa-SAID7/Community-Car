@@ -18,6 +18,8 @@ public class EditPostViewModel
     [Required(ErrorMessage = "Post type is required")]
     public PostType Type { get; set; }
 
+    public PostCategory Category { get; set; } = PostCategory.General;
+
     [Required(ErrorMessage = "Status is required")]
     public PostStatus Status { get; set; } = PostStatus.Draft;
 

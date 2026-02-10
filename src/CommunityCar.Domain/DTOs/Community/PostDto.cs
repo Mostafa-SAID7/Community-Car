@@ -10,6 +10,8 @@ public class PostDto
     public string Content { get; set; } = string.Empty;
     public PostType Type { get; set; }
     public string TypeName { get; set; } = string.Empty;
+    public PostCategory Category { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
     public PostStatus Status { get; set; }
     public string StatusName { get; set; } = string.Empty;
     

@@ -32,6 +32,23 @@ public class MapService : IMapService
         var location = new Location(latitude, longitude, address);
         var mapPoint = new MapPoint(name, location, type, ownerId, description);
         
+        // Check for duplicate slug and make it unique if necessary
+        var baseSlug = mapPoint.Slug;
+        var slug = baseSlug;
+        var counter = 1;
+        
+        while (await _context.Set<MapPoint>().AnyAsync(m => m.Slug == slug))
+        {
+            slug = $"{baseSlug}-{counter}";
+            counter++;
+        }
+        
+        // Update the slug if it was modified
+        if (slug != baseSlug)
+        {
+            mapPoint.Slug = slug;
+        }
+        
         // Auto-publish the map point so it appears in the index immediately
         mapPoint.Publish();
         
@@ -48,6 +65,24 @@ public class MapService : IMapService
         
         var location = new Location(latitude, longitude, address);
         mapPoint.Update(name, location, type, description);
+        
+        // Check for duplicate slug and make it unique if necessary (excluding current map point)
+        var baseSlug = mapPoint.Slug;
+        var slug = baseSlug;
+        var counter = 1;
+        
+        while (await _context.Set<MapPoint>().AnyAsync(m => m.Slug == slug && m.Id != mapPointId))
+        {
+            slug = $"{baseSlug}-{counter}";
+            counter++;
+        }
+        
+        // Update the slug if it was modified
+        if (slug != baseSlug)
+        {
+            mapPoint.Slug = slug;
+        }
+        
         await _context.SaveChangesAsync();
         _logger.LogInformation("Map point updated: {MapPointId}", mapPointId);
         return mapPoint;

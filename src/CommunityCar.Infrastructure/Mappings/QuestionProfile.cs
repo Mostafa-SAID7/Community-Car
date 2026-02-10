@@ -25,6 +25,8 @@ public class QuestionProfile : Profile
             .ForMember(dest => dest.ShareCount, opt => opt.MapFrom(src => src.Shares != null ? src.Shares.Count : 0))
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+            .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.GroupId))
+            .ForMember(dest => dest.GroupName, opt => opt.MapFrom(src => src.Group != null ? src.Group.Name : null))
             .ForMember(dest => dest.TagList, opt => opt.MapFrom(src => src.QuestionTags != null ? src.QuestionTags.Select(qt => qt.Tag) : new List<Tag>()))
             .ForMember(dest => dest.Slug, opt => opt.MapFrom(src => src.Slug));
 

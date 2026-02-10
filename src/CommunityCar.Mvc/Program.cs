@@ -1,3 +1,5 @@
+using CommunityCar.Infrastructure.Data.Seed;
+
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +45,6 @@ try
     builder.Services.AddFluentValidationAutoValidation();
     builder.Services.AddFluentValidationClientsideAdapters();
     builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Web.Areas.Identity.Validators.RegisterValidator>();
-    builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Web.Validators.CreatePostViewModelValidator>();
 
     // Localization Configuration
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -61,7 +62,7 @@ try
 
     var app = builder.Build();
 
-    // Run migrations only
+    // Run migrations and seed database
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
@@ -72,10 +73,36 @@ try
             var context = services.GetRequiredService<CommunityCar.Infrastructure.Data.ApplicationDbContext>();
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migrations completed successfully.");
+            
+            // Check if seeding is enabled
+            var configuration = services.GetRequiredService<IConfiguration>();
+            var enableSeeding = configuration.GetValue<bool>("Database:EnableSeeding", false);
+            
+            if (enableSeeding)
+            {
+                logger.LogInformation("Starting database seeding...");
+                
+                // Seed base data (users, roles, categories, groups)
+                await services.SeedDatabase();
+                
+                // Seed community content (posts, guides, news, etc.)
+                await PostSeeder.SeedAsync(context);
+                await GuideSeeder.SeedAsync(context);
+                await QuestionSeeder.SeedAsync(context);
+                await MapPointSeeder.SeedAsync(context);
+                await ChatSeeder.SeedAsync(context);
+                await NewsSeeder.SeedAsync(context);
+                
+                logger.LogInformation("Database seeding completed successfully.");
+            }
+            else
+            {
+                logger.LogInformation("Database seeding is disabled in configuration.");
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while migrating the database.");
+            logger.LogError(ex, "An error occurred while migrating or seeding the database.");
         }
     }
 

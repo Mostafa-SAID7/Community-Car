@@ -15,6 +15,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/components/cards.css" />
     <link rel="stylesheet" href="~/css/pages/posts.css" />
+    <link rel="stylesheet" href="~/css/components/tag-input.css" />
 }
 
 <partial name="_InnerPageHeader" />
@@ -116,62 +117,64 @@
 
                         <div class="mb-4 post-type-fields" id="imageFields" style="display: @(Model.Type == PostType.Image ? "block" : "none")">
                             <label class="form-label fw-bold">
-                                <i class="fas fa-image me-1"></i>Image
+                                <i class="fas fa-image me-1"></i>Image Upload
                             </label>
-                            <div class="mb-3">
-                                <label class="form-label small">Upload Image File</label>
-                                <input asp-for="ImageFile" type="file" class="form-control rounded-3" accept="image/*" id="imageFileInput" />
-                                <small class="form-text text-muted">Max size: 10 MB. Allowed formats: JPG, PNG, GIF, WebP</small>
-                                <span asp-validation-for="ImageFile" class="text-danger d-block"></span>
+                            <input asp-for="ImageFile" type="file" class="form-control rounded-3" accept="image/*" id="imageFileInput" />
+                            <small class="form-text text-muted">Max size: 10 MB. Allowed formats: JPG, PNG, GIF, WebP, BMP</small>
+                            <span asp-validation-for="ImageFile" class="text-danger d-block"></span>
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mt-2">
+                                    <small class="text-muted">Current image:</small>
+                                    <div id="imagePreview" class="preview-container">
+                                        <img id="imagePreviewImg" src="@Model.ImageUrl" alt="Current image" />
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
                                 <div id="imagePreview" class="preview-container">
                                     <img id="imagePreviewImg" src="" alt="Image preview" />
                                 </div>
-                            </div>
-                            <div class="text-center my-2">
-                                <span class="text-muted">OR</span>
-                            </div>
-                            <div>
-                                <label class="form-label small">Image URL</label>
-                                <input asp-for="ImageUrl" class="form-control rounded-3" placeholder="https://example.com/image.jpg" />
-                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                            </div>
+                            }
                         </div>
 
                         <div class="mb-4 post-type-fields" id="videoFields" style="display: @(Model.Type == PostType.Video ? "block" : "none")">
                             <label class="form-label fw-bold">
-                                <i class="fas fa-video me-1"></i>Video
+                                <i class="fas fa-video me-1"></i>Video Upload
                             </label>
-                            <div class="mb-3">
-                                <label class="form-label small">Upload Video File</label>
-                                <input asp-for="VideoFile" type="file" class="form-control rounded-3" accept="video/*" id="videoFileInput" />
-                                <small class="form-text text-muted">Max size: 50 MB. Allowed formats: MP4, WebM, OGG, MOV</small>
-                                <span asp-validation-for="VideoFile" class="text-danger d-block"></span>
+                            <input asp-for="VideoFile" type="file" class="form-control rounded-3" accept="video/*" id="videoFileInput" />
+                            <small class="form-text text-muted">Max size: 50 MB. Allowed formats: MP4, WebM, OGG, MOV, AVI</small>
+                            <span asp-validation-for="VideoFile" class="text-danger d-block"></span>
+                            @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                            {
+                                <div class="mt-2">
+                                    <small class="text-muted">Current video:</small>
+                                    <div id="videoPreview" class="preview-container">
+                                        <video id="videoPreviewPlayer" src="@Model.VideoUrl" controls></video>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
                                 <div id="videoPreview" class="preview-container">
                                     <video id="videoPreviewPlayer" controls></video>
                                 </div>
-                            </div>
-                            <div class="text-center my-2">
-                                <span class="text-muted">OR</span>
-                            </div>
-                            <div>
-                                <label class="form-label small">Video URL</label>
-                                <input asp-for="VideoUrl" class="form-control rounded-3" placeholder="https://youtube.com/watch?v=..." />
-                                <span asp-validation-for="VideoUrl" class="text-danger"></span>
-                            </div>
+                            }
                         </div>
 
                         <div id="linkFields" class="post-type-fields" style="display: @(Model.Type == PostType.Link ? "block" : "none")">
                             <div class="mb-4">
                                 <label asp-for="LinkUrl" class="form-label fw-bold">
-                                    <i class="fas fa-link me-1"></i>Link URL
+                                    <i class="fas fa-link me-1"></i>Link URL <span class="text-danger">*</span>
                                 </label>
-                                <input asp-for="LinkUrl" class="form-control rounded-3" placeholder="https://example.com" />
+                                <input asp-for="LinkUrl" class="form-control rounded-3" placeholder="https://example.com" required />
                                 <span asp-validation-for="LinkUrl" class="text-danger"></span>
                             </div>
 
                             <div class="mb-4">
-                                <label asp-for="LinkTitle" class="form-label fw-bold">Link Title</label>
-                                <input asp-for="LinkTitle" class="form-control rounded-3" placeholder="Title of the linked content" />
+                                <label asp-for="LinkTitle" class="form-label fw-bold">Link Title <span class="text-danger">*</span></label>
+                                <input asp-for="LinkTitle" class="form-control rounded-3" placeholder="Title of the linked content" required />
                                 <span asp-validation-for="LinkTitle" class="text-danger"></span>
                             </div>
 
@@ -183,12 +186,23 @@
                         </div>
 
                         <div class="mb-4">
+                            <label asp-for="Category" class="form-label fw-bold">
+                                <i class="fas fa-folder me-1"></i>Category
+                            </label>
+                            <select asp-for="Category" class="form-control rounded-3" asp-items="Html.GetEnumSelectList<PostCategory>()">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                            <small class="form-text text-muted">Choose a category for better organization</small>
+                        </div>
+
+                        <div class="mb-4">
                             <label asp-for="Tags" class="form-label fw-bold">
                                 <i class="fas fa-tags me-1"></i>Tags
                             </label>
-                            <input asp-for="Tags" class="form-control rounded-3" placeholder="Separate tags with commas (e.g., cars, maintenance, tips)" />
+                            <input asp-for="Tags" class="form-control rounded-3" placeholder="Type to add tags (max 3)" value="@Model.Tags" data-tag-input="true" data-max-tags="3" />
                             <span asp-validation-for="Tags" class="text-danger"></span>
-                            <small class="form-text text-muted">Add relevant tags to help others find your post</small>
+                            <small class="form-text text-muted">Press Enter to add a tag. Maximum 3 tags allowed.</small>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
@@ -214,6 +228,7 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/components/tag-input.js"></script>
     <script src="~/js/pages/posts.js"></script>
     <script src="~/js/pages/posts-validation.js"></script>
 }

@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('userInput');
     const chatMessages = document.getElementById('chatMessages');
     const clearChat = document.getElementById('clearChat');
-    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
     if (!chatForm) return;
 
@@ -20,11 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const typingId = addTypingIndicator();
 
         try {
-            const response = await fetch('/AI/Assistant/SendMessage', {
+            const url = CultureHelper.addCultureToUrl('/AI/Assistant/SendMessage');
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ message: message })
             });
@@ -35,12 +34,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.success) {
                 appendMessage('assistant', data.response);
             } else {
-                appendMessage('assistant', 'Sorry, I couldn\'t process that. Please try again.');
+                appendMessage('assistant', data.message || 'Sorry, I couldn\'t process that. Please try again.');
             }
         } catch (error) {
             console.error('Chat error:', error);
             removeTypingIndicator(typingId);
-            appendMessage('assistant', 'An error occurred. check your connection.');
+            appendMessage('assistant', 'An error occurred. Please check your connection and try again.');
         }
     });
 

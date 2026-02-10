@@ -37,15 +37,16 @@ public class PostService : IPostService
         string content,
         PostType type,
         Guid authorId,
+        PostCategory category = PostCategory.General,
         Guid? groupId = null,
         PostStatus status = PostStatus.Draft)
     {
-        var post = new Post(title, content, type, authorId, groupId, status);
+        var post = new Post(title, content, type, authorId, category, groupId, status);
         
         _context.Set<Post>().Add(post);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Post created: {PostId} by user {UserId} with status {Status}", post.Id, authorId, status);
+        _logger.LogInformation("Post created: {PostId} by user {UserId} with status {Status} and category {Category}", post.Id, authorId, status, category);
         return post;
     }
 
@@ -54,6 +55,7 @@ public class PostService : IPostService
         string title,
         string content,
         PostType type,
+        PostCategory? category = null,
         PostStatus? status = null)
     {
         var post = await _context.Set<Post>()
@@ -62,10 +64,10 @@ public class PostService : IPostService
         if (post == null)
             throw new NotFoundException("Post not found");
 
-        post.Update(title, content, type, status);
+        post.Update(title, content, type, category, status);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Post updated: {PostId} with status {Status}", postId, status);
+        _logger.LogInformation("Post updated: {PostId} with status {Status} and category {Category}", postId, status, category);
         return post;
     }
 
@@ -316,6 +318,26 @@ public class PostService : IPostService
         post.IncrementShares();
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<PostLikerDto>> GetPostLikersAsync(Guid postId, QueryParameters parameters)
+    {
+        var likes = await _context.Set<PostReaction>()
+            .Where(l => l.PostId == postId && l.ReactionType == Domain.Enums.Community.qa.ReactionType.Like)
+            .OrderByDescending(l => l.CreatedAt)
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .Select(l => new PostLikerDto
+            {
+                UserId = l.UserId,
+                UserName = l.User.UserName ?? "Unknown",
+                UserAvatar = l.User.ProfilePictureUrl,
+                LikedAt = l.CreatedAt
+            })
+            .ToListAsync();
+
+        return likes;
+    }
+
 
     public async Task<PostComment> AddCommentAsync(
         Guid postId,

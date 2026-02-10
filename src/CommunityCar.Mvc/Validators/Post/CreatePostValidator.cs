@@ -29,6 +29,28 @@ public class CreatePostValidator : AbstractValidator<CreatePostViewModel>
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Invalid post status");
 
+        // Link URL is required when post type is Link
+        RuleFor(x => x.LinkUrl)
+            .NotEmpty().WithMessage("Link URL is required for Link posts")
+            .Must(BeValidUrl).WithMessage("Please enter a valid URL")
+            .When(x => x.Type == PostType.Link);
+
+        // Link URL validation for other post types (optional)
+        RuleFor(x => x.LinkUrl)
+            .Must(BeValidUrl).WithMessage("Please enter a valid URL")
+            .When(x => x.Type != PostType.Link && !string.IsNullOrEmpty(x.LinkUrl));
+
+        // Link title is required when post type is Link
+        RuleFor(x => x.LinkTitle)
+            .NotEmpty().WithMessage("Link title is required for Link posts")
+            .MaximumLength(200).WithMessage("Link title cannot exceed 200 characters")
+            .When(x => x.Type == PostType.Link);
+
+        // Link title validation when URL is provided for other post types
+        RuleFor(x => x.LinkTitle)
+            .MaximumLength(200).WithMessage("Link title cannot exceed 200 characters")
+            .When(x => x.Type != PostType.Link && !string.IsNullOrEmpty(x.LinkUrl));
+
         // Image file validation
         RuleFor(x => x.ImageFile)
             .Must(BeValidImageSize).WithMessage($"Image file size cannot exceed {MaxImageSize / 1024 / 1024} MB")
@@ -40,17 +62,6 @@ public class CreatePostValidator : AbstractValidator<CreatePostViewModel>
             .Must(BeValidVideoSize).WithMessage($"Video file size cannot exceed {MaxVideoSize / 1024 / 1024} MB")
             .Must(BeValidVideoExtension).WithMessage($"Only {string.Join(", ", AllowedVideoExtensions)} video formats are allowed")
             .When(x => x.VideoFile != null);
-
-        // Link URL validation
-        RuleFor(x => x.LinkUrl)
-            .Must(BeValidUrl).WithMessage("Please enter a valid URL")
-            .When(x => !string.IsNullOrEmpty(x.LinkUrl));
-
-        // Link title validation when URL is provided
-        RuleFor(x => x.LinkTitle)
-            .NotEmpty().WithMessage("Link title is required when providing a URL")
-            .MaximumLength(200).WithMessage("Link title cannot exceed 200 characters")
-            .When(x => !string.IsNullOrEmpty(x.LinkUrl));
 
         // Tags validation
         RuleFor(x => x.Tags)

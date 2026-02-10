@@ -37,7 +37,7 @@ public static class EventSeeder
             isOnline: false
         );
         carShow.SetAddress("123 Park Avenue, Central City", 40.7128m, -74.0060m);
-        carShow.SetImageUrl("/images/events/classic-car-show.jpg");
+        carShow.SetImageUrl("/uploads/events/classic-car-show.jpg");
         carShow.SetFeatured(true);
         carShow.Publish();
         events.Add(carShow);
@@ -55,7 +55,7 @@ public static class EventSeeder
             isOnline: true
         );
         evWorkshop.SetOnlineUrl("https://meet.communitycar.com/ev-workshop");
-        evWorkshop.SetImageUrl("/images/events/ev-workshop.jpg");
+        evWorkshop.SetImageUrl("/uploads/events/ev-workshop.jpg");
         evWorkshop.Publish();
         events.Add(evWorkshop);
 
@@ -72,7 +72,7 @@ public static class EventSeeder
             isOnline: false
         );
         roadTrip.SetAddress("Mountain View Trail Head, North Region", 39.7392m, -104.9903m);
-        roadTrip.SetImageUrl("/images/events/mountain-road-trip.jpg");
+        roadTrip.SetImageUrl("/uploads/events/mountain-road-trip.jpg");
         roadTrip.SetFeatured(true);
         roadTrip.Publish();
         events.Add(roadTrip);
@@ -90,7 +90,7 @@ public static class EventSeeder
             isOnline: false
         );
         racing.SetAddress("Speedway Circuit, Track Road 100", 34.0522m, -118.2437m);
-        racing.SetImageUrl("/images/events/track-day.jpg");
+        racing.SetImageUrl("/uploads/events/track-day.jpg");
         racing.Publish();
         events.Add(racing);
 
@@ -107,7 +107,7 @@ public static class EventSeeder
             isOnline: false
         );
         charity.SetAddress("Main Street, Downtown District", 37.7749m, -122.4194m);
-        charity.SetImageUrl("/images/events/charity-parade.jpg");
+        charity.SetImageUrl("/uploads/events/charity-parade.jpg");
         charity.Publish();
         charity.Complete();
         events.Add(charity);

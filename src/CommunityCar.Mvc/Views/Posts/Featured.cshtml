@@ -58,6 +58,14 @@
                             <p class="post-content text-muted small mb-3 flex-grow-1">
                                 @(post.Content?.Length > 120 ? post.Content.Substring(0, 120) + "..." : post.Content)
                             </p>
+                            @if (!string.IsNullOrEmpty(post.CategoryName))
+                            {
+                                <div class="mb-2">
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-folder me-1"></i>@post.CategoryName
+                                    </span>
+                                </div>
+                            }
                             @if (!string.IsNullOrEmpty(post.Tags))
                             {
                                 <div class="mb-2">

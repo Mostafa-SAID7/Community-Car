@@ -52,7 +52,7 @@ public static class PostSeeder
             PostType.Image,
             users[1].Id
         );
-        post2.SetMedia("/images/posts/project-car.jpg", null);
+        post2.SetMedia("/uploads/posts/project-car.jpg", null);
         post2.Publish();
         posts.Add(post2);
 
@@ -185,7 +185,7 @@ public static class GroupSeeder
             users[0].Id,
             false
         );
-        g1.SetImage("/images/groups/jdm.jpg");
+        g1.SetImage("/uploads/groups/jdm.jpg");
         groups.Add(g1);
 
         var g2 = new CommunityGroup(
@@ -194,7 +194,7 @@ public static class GroupSeeder
             users[1].Id,
             false
         );
-        g2.SetImage("/images/groups/offroad.jpg");
+        g2.SetImage("/uploads/groups/offroad.jpg");
         groups.Add(g2);
 
         await context.CommunityGroups.AddRangeAsync(groups);
@@ -345,7 +345,7 @@ public static class NewsSeeder
             users[0].Id
         );
         n1.Publish();
-        n1.SetImage("/images/news/new-model.jpg");
+        n1.SetImage("/uploads/news/new-model.jpg");
         news.Add(n1);
 
         var n2 = new NewsArticle(
@@ -356,7 +356,7 @@ public static class NewsSeeder
             users[0].Id
         );
         n2.Publish();
-        n2.SetImage("/images/news/winter-tips.jpg");
+        n2.SetImage("/uploads/news/winter-tips.jpg");
         news.Add(n2);
 
         await context.NewsArticles.AddRangeAsync(news);

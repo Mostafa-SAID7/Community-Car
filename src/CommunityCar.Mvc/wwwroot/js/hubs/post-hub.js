@@ -79,7 +79,6 @@ const PostHubConnection = (function() {
             isConnected = true;
             reconnectAttempts = 0;
             console.log('PostHub connected successfully');
-            showToast('Connected to post updates', 'success');
         } catch (err) {
             isConnected = false;
             console.error('PostHub connection error:', err);
@@ -89,8 +88,6 @@ const PostHubConnection = (function() {
                 const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
                 console.log(`Retrying connection in ${delay}ms...`);
                 setTimeout(startConnection, delay);
-            } else {
-                showToast('Failed to connect to real-time updates', 'error');
             }
         }
     }
@@ -104,21 +101,21 @@ const PostHubConnection = (function() {
     function onReconnecting(error) {
         isConnected = false;
         console.log('PostHub reconnecting...', error);
-        showToast('Reconnecting to post updates...', 'info');
     }
 
     function onReconnected(connectionId) {
         isConnected = true;
         reconnectAttempts = 0;
         console.log('PostHub reconnected', connectionId);
-        showToast('Reconnected to post updates', 'success');
     }
 
     // Event Handlers
 
     function handlePostCreated(data) {
         console.log('Post created:', data);
-        showToast(data.Message || 'Post created successfully!', 'success');
+        if (window.Toast) {
+            window.Toast.show(data.Message || 'Post created successfully!', 'success', 'Post Created');
+        }
         
         // Trigger custom event for other components
         document.dispatchEvent(new CustomEvent('postCreated', { detail: data }));
@@ -131,7 +128,9 @@ const PostHubConnection = (function() {
 
     function handlePostUpdated(data) {
         console.log('Post updated:', data);
-        showToast(data.Message || 'Post updated successfully!', 'success');
+        if (window.Toast) {
+            window.Toast.show(data.Message || 'Post updated successfully!', 'success', 'Post Updated');
+        }
         
         // Trigger custom event
         document.dispatchEvent(new CustomEvent('postUpdated', { detail: data }));
@@ -142,7 +141,9 @@ const PostHubConnection = (function() {
 
     function handlePostDeleted(data) {
         console.log('Post deleted:', data);
-        showToast(data.Message || 'Post deleted successfully!', 'success');
+        if (window.Toast) {
+            window.Toast.show(data.Message || 'Post deleted successfully!', 'success', 'Post Deleted');
+        }
         
         // Trigger custom event
         document.dispatchEvent(new CustomEvent('postDeleted', { detail: data }));
@@ -154,18 +155,10 @@ const PostHubConnection = (function() {
     function handleFriendPublishedPost(data) {
         console.log('Friend published post:', data);
         
-        // Show notification
-        showNotification(
-            'New Post',
-            `Your friend published a new post`,
-            'info',
-            () => {
-                // Navigate to post
-                if (data.Post && data.Post.Slug) {
-                    window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.Post.Slug}`);
-                }
-            }
-        );
+        // Show toast notification
+        if (window.Toast) {
+            window.Toast.show('Your friend published a new post!', 'info', 'New Post');
+        }
         
         // Trigger custom event
         document.dispatchEvent(new CustomEvent('friendPublishedPost', { detail: data }));
@@ -177,40 +170,25 @@ const PostHubConnection = (function() {
     function handlePostLiked(data) {
         console.log('Post liked:', data);
         
-        showNotification(
-            'New Like',
-            `${data.LikerName} liked your post "${data.PostTitle}"`,
-            'success',
-            () => {
-                window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.PostId}`);
-            }
-        );
+        if (window.Toast) {
+            window.Toast.show(`${data.LikerName} liked your post "${data.PostTitle}"`, 'success', 'New Like');
+        }
     }
 
     function handlePostCommented(data) {
         console.log('Post commented:', data);
         
-        showNotification(
-            'New Comment',
-            `${data.CommenterName} commented on your post "${data.PostTitle}"`,
-            'info',
-            () => {
-                window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.PostId}`);
-            }
-        );
+        if (window.Toast) {
+            window.Toast.show(`${data.CommenterName} commented on your post "${data.PostTitle}"`, 'info', 'New Comment');
+        }
     }
 
     function handlePostShared(data) {
         console.log('Post shared:', data);
         
-        showNotification(
-            'Post Shared',
-            `${data.SharerName} shared your post "${data.PostTitle}"`,
-            'success',
-            () => {
-                window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.PostId}`);
-            }
-        );
+        if (window.Toast) {
+            window.Toast.show(`${data.SharerName} shared your post "${data.PostTitle}"`, 'success', 'Post Shared');
+        }
     }
 
     function handlePostEngagementUpdated(data) {
@@ -254,20 +232,17 @@ const PostHubConnection = (function() {
     function handleCommentReply(data) {
         console.log('Comment reply received:', data);
         
-        showNotification(
-            'New Reply',
-            `${data.ReplierName} replied to your comment on "${data.PostTitle}"`,
-            'info',
-            () => {
-                window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.PostId}`);
-            }
-        );
+        if (window.Toast) {
+            window.Toast.show(`${data.ReplierName} replied to your comment on "${data.PostTitle}"`, 'info', 'New Reply');
+        }
     }
 
     function handlePostStatusChanged(data) {
         console.log('Post status changed:', data);
         
-        showToast(`Post status changed to ${data.NewStatus}`, 'info');
+        if (window.Toast) {
+            window.Toast.show(`Post status changed to ${data.NewStatus}`, 'info');
+        }
         
         // Update status in DOM
         updatePostStatus(data.PostId, data.NewStatus);
@@ -276,7 +251,9 @@ const PostHubConnection = (function() {
     function handlePostPinStatusChanged(data) {
         console.log('Post pin status changed:', data);
         
-        showToast(data.Message, 'success');
+        if (window.Toast) {
+            window.Toast.show(data.Message, 'success');
+        }
         
         // Update pin status in DOM
         updatePostPinStatus(data.PostId, data.IsPinned);
@@ -285,73 +262,27 @@ const PostHubConnection = (function() {
     function handlePostMilestone(data) {
         console.log('Post milestone reached:', data);
         
-        showNotification(
-            'Milestone Reached! 🎉',
-            data.Message,
-            'success',
-            () => {
-                window.location.href = CultureHelper.addCultureToUrl(`/Posts/Details/${data.PostId}`);
-            }
-        );
+        if (window.Toast) {
+            window.Toast.show(data.Message, 'success', 'Milestone Reached! 🎉');
+        }
     }
 
     function handleSystemAnnouncement(data) {
         console.log('System announcement:', data);
         
-        showNotification(
-            'System Announcement',
-            data.Message,
-            data.Type || 'info'
-        );
+        if (window.Toast) {
+            window.Toast.show(data.Message, data.Type || 'info', 'System Announcement');
+        }
     }
 
     // Helper Functions
 
-    function showToast(message, type = 'info') {
-        if (typeof Toastify !== 'undefined') {
-            Toastify({
-                text: message,
-                duration: 3000,
-                gravity: 'top',
-                position: 'right',
-                backgroundColor: getToastColor(type),
-                stopOnFocus: true,
-                className: 'toast-notification'
-            }).showToast();
-        } else if (typeof toastr !== 'undefined') {
-            toastr[type](message);
+    function showToast(message, type = 'info', title = '') {
+        if (window.Toast) {
+            window.Toast.show(message, type, title);
         } else {
             console.log(`Toast [${type}]: ${message}`);
         }
-    }
-
-    function showNotification(title, message, type = 'info', onClick = null) {
-        // Try browser notification first
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification(title, {
-                body: message,
-                icon: '/images/logo.png',
-                badge: '/images/badge.png',
-                tag: 'post-notification'
-            });
-            
-            if (onClick) {
-                notification.onclick = onClick;
-            }
-        } else {
-            // Fallback to toast
-            showToast(`${title}: ${message}`, type);
-        }
-    }
-
-    function getToastColor(type) {
-        const colors = {
-            success: 'linear-gradient(to right, #00b09b, #96c93d)',
-            error: 'linear-gradient(to right, #ff5f6d, #ffc371)',
-            warning: 'linear-gradient(to right, #f7b733, #fc4a1a)',
-            info: 'linear-gradient(to right, #4facfe, #00f2fe)'
-        };
-        return colors[type] || colors.info;
     }
 
     function updatePostInDOM(post) {
@@ -455,26 +386,15 @@ const PostHubConnection = (function() {
         }
     }
 
-    // Request notification permission
-    function requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                console.log('Notification permission:', permission);
-            });
-        }
-    }
-
     // Public API
     return {
         init: init,
         isConnected: () => isConnected,
-        getConnection: () => connection,
-        requestNotificationPermission: requestNotificationPermission
+        getConnection: () => connection
     };
 })();
 
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     PostHubConnection.init();
-    PostHubConnection.requestNotificationPermission();
 });

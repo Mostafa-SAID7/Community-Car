@@ -282,12 +282,32 @@ const PostsModule = (function() {
         });
     }
 
+    // Form Validation for Link Posts
+    function initFormValidation() {
+        $('form[action*="Create"], form[action*="Edit"]').on('submit', function(e) {
+            const postType = $('#postTypeInput').val();
+            const linkUrl = $('input[name="LinkUrl"]').val();
+
+            // Validate Link URL is required for Link post type
+            if (postType === 'Link' && !linkUrl.trim()) {
+                e.preventDefault();
+                showError('Link URL is required for Link posts');
+                $('input[name="LinkUrl"]').focus();
+                return false;
+            }
+
+            return true;
+        });
+    }
+
     // Live Search Functionality
     function initLiveSearch() {
         const $searchInput = $('#postSearchInput');
         const $searchSpinner = $('#searchSpinner');
         
         if ($searchInput.length === 0) return;
+
+        let searchTimeout;
 
         $searchInput.on('input', function() {
             const searchTerm = $(this).val().trim();
@@ -298,23 +318,50 @@ const PostsModule = (function() {
             }
 
             // Show spinner
-            $searchSpinner.removeClass('d-none');
+            if (searchTerm.length > 0) {
+                $searchSpinner.removeClass('d-none');
+            }
 
             // Debounce search
             searchTimeout = setTimeout(function() {
-                currentSearchTerm = searchTerm;
-                performSearch();
-            }, config.searchDebounceDelay);
+                if (searchTerm.length >= 2) {
+                    // Navigate to search results
+                    const currentType = new URLSearchParams(window.location.search).get('type');
+                    let url = CultureHelper.addCultureToUrl('/Posts');
+                    const params = [];
+                    if (searchTerm) params.push('search=' + encodeURIComponent(searchTerm));
+                    if (currentType) params.push('type=' + currentType);
+                    if (params.length > 0) url += '?' + params.join('&');
+                    
+                    window.location.href = url;
+                } else if (searchTerm.length === 0) {
+                    // Clear search - reload without search parameter
+                    const currentType = new URLSearchParams(window.location.search).get('type');
+                    let url = CultureHelper.addCultureToUrl('/Posts');
+                    if (currentType) url += '?type=' + currentType;
+                    
+                    window.location.href = url;
+                }
+            }, 800);
         });
 
         // Clear search on ESC key
         $searchInput.on('keydown', function(e) {
             if (e.key === 'Escape') {
                 $(this).val('');
-                currentSearchTerm = '';
-                performSearch();
+                const currentType = new URLSearchParams(window.location.search).get('type');
+                let url = CultureHelper.addCultureToUrl('/Posts');
+                if (currentType) url += '?type=' + currentType;
+                window.location.href = url;
             }
         });
+
+        // Set initial value from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            $searchInput.val(searchParam);
+        }
     }
 
     // Filter Buttons Handler
@@ -323,15 +370,14 @@ const PostsModule = (function() {
             e.preventDefault();
             const filterType = $(this).data('type');
             
-            // Update active state
-            $('.filter-btn').removeClass('active btn-purple').addClass('btn-outline-purple');
-            $(this).addClass('active btn-purple').removeClass('btn-outline-purple');
+            // Build URL with culture prefix
+            let url = CultureHelper.addCultureToUrl('/Posts');
+            if (filterType) {
+                url += '?type=' + filterType;
+            }
             
-            // Update current filter
-            currentFilter = filterType;
-            
-            // Perform search with filter
-            performSearch();
+            // Navigate to the filtered URL
+            window.location.href = url;
         });
     }
 
@@ -770,6 +816,7 @@ const PostsModule = (function() {
                 initFilePreview();
                 initPaginationScroll();
                 initCommentForm();
+                initFormValidation();
                 initLiveSearch();
                 initFilterButtons();
                 initPaginationHandlers();

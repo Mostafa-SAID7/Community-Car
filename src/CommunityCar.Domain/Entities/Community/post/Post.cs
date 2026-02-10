@@ -10,6 +10,7 @@ public class Post : AggregateRoot
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public PostType Type { get; set; }
+    public PostCategory Category { get; set; } = PostCategory.General;
     public PostStatus Status { get; set; }
     
     public Guid AuthorId { get; set; }
@@ -46,6 +47,7 @@ public class Post : AggregateRoot
         string content,
         PostType type,
         Guid authorId,
+        PostCategory category = PostCategory.General,
         Guid? groupId = null,
         PostStatus status = PostStatus.Draft)
     {
@@ -56,6 +58,7 @@ public class Post : AggregateRoot
         Title = title;
         Content = content;
         Type = type;
+        Category = category;
         AuthorId = authorId;
         GroupId = groupId;
         Status = status;
@@ -68,7 +71,7 @@ public class Post : AggregateRoot
         }
     }
 
-    public void Update(string title, string content, PostType type, PostStatus? status = null)
+    public void Update(string title, string content, PostType type, PostCategory? category = null, PostStatus? status = null)
     {
         Guard.Against.NullOrWhiteSpace(title, nameof(title));
         Guard.Against.NullOrWhiteSpace(content, nameof(content));
@@ -77,6 +80,12 @@ public class Post : AggregateRoot
         Content = content;
         Type = type;
         Slug = SlugHelper.GenerateSlug(title);
+        
+        // Update category if provided
+        if (category.HasValue)
+        {
+            Category = category.Value;
+        }
         
         // Update status if provided
         if (status.HasValue && status.Value != Status)
@@ -121,5 +130,15 @@ public class Post : AggregateRoot
         LinkUrl = linkUrl;
         LinkTitle = linkTitle;
         LinkDescription = linkDescription;
+    }
+    
+    public void SetTags(string? tags)
+    {
+        Tags = tags;
+    }
+    
+    public void SetCategory(PostCategory category)
+    {
+        Category = category;
     }
 }

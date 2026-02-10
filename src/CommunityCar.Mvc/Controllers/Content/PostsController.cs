@@ -46,7 +46,8 @@ public class PostsController : Controller
         int page = 1,
         int pageSize = 12,
         PostType? type = null,
-        Guid? groupId = null)
+        Guid? groupId = null,
+        string? search = null)
     {
         try
         {
@@ -60,9 +61,28 @@ public class PostsController : Controller
                 groupId,
                 currentUserId);
 
+            // Apply client-side search filter if search term provided
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                var filteredItems = result.Items.Where(p =>
+                    (p.Title?.ToLower().Contains(searchLower) ?? false) ||
+                    (p.Content?.ToLower().Contains(searchLower) ?? false) ||
+                    (p.Tags?.ToLower().Contains(searchLower) ?? false) ||
+                    (p.AuthorName?.ToLower().Contains(searchLower) ?? false)
+                ).ToList();
+
+                result = new PagedResult<Domain.DTOs.Community.PostDto>(
+                    filteredItems,
+                    filteredItems.Count,
+                    page,
+                    pageSize);
+            }
+
             ViewBag.CurrentType = type;
             ViewBag.GroupId = groupId;
             ViewBag.PostTypes = Enum.GetValues<PostType>();
+            ViewBag.SearchTerm = search;
 
             return View(result);
         }
@@ -141,6 +161,7 @@ public class PostsController : Controller
     public async Task<IActionResult> Create()
     {
         ViewBag.PostTypes = Enum.GetValues<PostType>();
+        ViewBag.PostCategories = Enum.GetValues<PostCategory>();
         
         var userId = GetCurrentUserId();
         if (userId.HasValue)
@@ -197,6 +218,7 @@ public class PostsController : Controller
             if (!ModelState.IsValid)
             {
                 ViewBag.PostTypes = Enum.GetValues<PostType>();
+                ViewBag.PostCategories = Enum.GetValues<PostCategory>();
                 
                 var userId = GetCurrentUserId();
                 if (userId.HasValue)
@@ -210,8 +232,8 @@ public class PostsController : Controller
 
             var currentUserId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
 
-            // Handle image upload using FileStorageService
-            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            // Handle image upload only for Image type posts
+            if (model.Type == PostType.Image && model.ImageFile != null && model.ImageFile.Length > 0)
             {
                 model.ImageUrl = await _fileStorageService.SaveFileAsync(
                     model.ImageFile, 
@@ -219,8 +241,8 @@ public class PostsController : Controller
                     $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}");
             }
             
-            // Handle video upload using FileStorageService
-            if (model.VideoFile != null && model.VideoFile.Length > 0)
+            // Handle video upload only for Video type posts
+            if (model.Type == PostType.Video && model.VideoFile != null && model.VideoFile.Length > 0)
             {
                 model.VideoUrl = await _fileStorageService.SaveFileAsync(
                     model.VideoFile, 
@@ -233,11 +255,13 @@ public class PostsController : Controller
                 model.Content,
                 model.Type,
                 currentUserId,
+                model.Category,
                 model.GroupId,
                 model.Status);
             
-            // Update media URLs if files were uploaded
-            if (!string.IsNullOrEmpty(model.ImageUrl) || !string.IsNullOrEmpty(model.VideoUrl))
+            // Update media URLs only if files were uploaded for the correct post type
+            if ((model.Type == PostType.Image && !string.IsNullOrEmpty(model.ImageUrl)) || 
+                (model.Type == PostType.Video && !string.IsNullOrEmpty(model.VideoUrl)))
             {
                 post.SetMedia(model.ImageUrl, model.VideoUrl);
                 await _postService.SaveChangesAsync();
@@ -249,6 +273,17 @@ public class PostsController : Controller
                 post.SetLink(model.LinkUrl, model.LinkTitle, model.LinkDescription);
                 await _postService.SaveChangesAsync();
             }
+            
+            // Update tags if provided
+            if (!string.IsNullOrEmpty(model.Tags))
+            {
+                post.SetTags(model.Tags);
+                await _postService.SaveChangesAsync();
+            }
+            
+            // Update category
+            post.SetCategory(model.Category);
+            await _postService.SaveChangesAsync();
 
             // Send real-time notifications
             try
@@ -294,7 +329,7 @@ public class PostsController : Controller
                 // Don't fail the request if notifications fail
             }
 
-            TempData["Success"] = _localizer["PostCreated"].Value;
+            TempData["SuccessToast"] = _localizer["PostCreated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
@@ -302,6 +337,7 @@ public class PostsController : Controller
             _logger.LogError(ex, "Error creating post");
             ModelState.AddModelError("", _localizer["FailedToCreatePost"].Value);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
+            ViewBag.PostCategories = Enum.GetValues<PostCategory>();
             
             var userId = GetCurrentUserId();
             if (userId.HasValue)
@@ -348,10 +384,12 @@ public class PostsController : Controller
                 LinkUrl = postDto.LinkUrl,
                 LinkTitle = postDto.LinkTitle,
                 LinkDescription = postDto.LinkDescription,
-                Tags = postDto.Tags
+                Tags = postDto.Tags,
+                Category = postDto.Category
             };
 
             ViewBag.PostTypes = Enum.GetValues<PostType>();
+            ViewBag.PostCategories = Enum.GetValues<PostCategory>();
             return View(model);
         }
         catch (Exception ex)
@@ -412,11 +450,12 @@ public class PostsController : Controller
             if (!ModelState.IsValid)
             {
                 ViewBag.PostTypes = Enum.GetValues<PostType>();
+                ViewBag.PostCategories = Enum.GetValues<PostCategory>();
                 return View(model);
             }
 
-            // Handle image upload using FileStorageService
-            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            // Handle image upload only for Image type posts
+            if (model.Type == PostType.Image && model.ImageFile != null && model.ImageFile.Length > 0)
             {
                 model.ImageUrl = await _fileStorageService.SaveFileAsync(
                     model.ImageFile, 
@@ -424,8 +463,8 @@ public class PostsController : Controller
                     $"{currentUserId}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}");
             }
             
-            // Handle video upload using FileStorageService
-            if (model.VideoFile != null && model.VideoFile.Length > 0)
+            // Handle video upload only for Video type posts
+            if (model.Type == PostType.Video && model.VideoFile != null && model.VideoFile.Length > 0)
             {
                 model.VideoUrl = await _fileStorageService.SaveFileAsync(
                     model.VideoFile, 
@@ -438,10 +477,12 @@ public class PostsController : Controller
                 model.Title,
                 model.Content,
                 model.Type,
+                model.Category,
                 model.Status);
             
-            // Update media URLs if files were uploaded or URLs provided
-            if (!string.IsNullOrEmpty(model.ImageUrl) || !string.IsNullOrEmpty(model.VideoUrl))
+            // Update media URLs only if files were uploaded for the correct post type
+            if ((model.Type == PostType.Image && !string.IsNullOrEmpty(model.ImageUrl)) || 
+                (model.Type == PostType.Video && !string.IsNullOrEmpty(model.VideoUrl)))
             {
                 post.SetMedia(model.ImageUrl, model.VideoUrl);
                 await _postService.SaveChangesAsync();
@@ -451,6 +492,13 @@ public class PostsController : Controller
             if (!string.IsNullOrEmpty(model.LinkUrl))
             {
                 post.SetLink(model.LinkUrl, model.LinkTitle, model.LinkDescription);
+                await _postService.SaveChangesAsync();
+            }
+            
+            // Update tags if provided
+            if (!string.IsNullOrEmpty(model.Tags))
+            {
+                post.SetTags(model.Tags);
                 await _postService.SaveChangesAsync();
             }
 
@@ -475,7 +523,7 @@ public class PostsController : Controller
                 // Don't fail the request if notifications fail
             }
 
-            TempData["Success"] = _localizer["PostUpdated"].Value;
+            TempData["SuccessToast"] = _localizer["PostUpdated"].Value;
             return RedirectToAction(nameof(Details), new { slug = post.Slug });
         }
         catch (Exception ex)
@@ -483,6 +531,7 @@ public class PostsController : Controller
             _logger.LogError(ex, "Error updating post {PostId}", id);
             ModelState.AddModelError("", _localizer["FailedToUpdatePost"].Value);
             ViewBag.PostTypes = Enum.GetValues<PostType>();
+            ViewBag.PostCategories = Enum.GetValues<PostCategory>();
             return View(model);
         }
     }
@@ -519,6 +568,40 @@ public class PostsController : Controller
         {
             _logger.LogError(ex, "Error publishing post {PostId}", id);
             return Json(new { success = false, message = _localizer["FailedToPublishPost"].Value });
+        }
+    }
+
+    // POST: Post/TogglePin/{id}
+    [Authorize]
+    [HttpPost("TogglePin/{id:guid}")]
+    public async Task<IActionResult> TogglePin(Guid id)
+    {
+        try
+        {
+            var currentUserId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+            var postDto = await _postService.GetPostByIdAsync(id, currentUserId);
+            
+            if (postDto == null)
+                return Json(new { success = false, message = _localizer["PostNotFound"].Value });
+            
+            if (!postDto.IsAuthor)
+                return Json(new { success = false, message = _localizer["OnlyAuthorCanPinPost"].Value });
+            
+            if (postDto.IsPinned)
+            {
+                await _postService.UnpinPostAsync(id);
+                return Json(new { success = true, isPinned = false, message = _localizer["PostUnpinned"].Value });
+            }
+            else
+            {
+                await _postService.PinPostAsync(id);
+                return Json(new { success = true, isPinned = true, message = _localizer["PostPinned"].Value });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling pin for post {PostId}", id);
+            return Json(new { success = false, message = _localizer["FailedToTogglePin"].Value });
         }
     }
 
@@ -594,6 +677,58 @@ public class PostsController : Controller
         {
             _logger.LogError(ex, "Error incrementing shares for post {PostId}", id);
             return Json(new { success = false, message = _localizer["FailedToCountShare"].Value });
+        }
+    }
+
+    // GET: Post/GetLikers/{id}
+    [HttpGet("GetLikers/{id:guid}")]
+    public async Task<IActionResult> GetLikers(Guid id)
+    {
+        try
+        {
+            var currentUserId = GetCurrentUserId();
+            var likers = await _postService.GetPostLikersAsync(id, new QueryParameters { PageSize = 50 });
+            
+            var likersData = likers.Select(l => new
+            {
+                userId = l.UserId,
+                userName = l.UserName,
+                userAvatar = l.UserAvatar ?? "/images/default-avatar.svg"
+            }).ToList();
+
+            return Json(new { success = true, likers = likersData, total = likers.Count() });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting likers for post {PostId}", id);
+            return Json(new { success = false, message = _localizer["FailedToGetLikers"].Value });
+        }
+    }
+
+    // POST: Post/AddReaction/{id}
+    [Authorize]
+    [HttpPost("AddReaction/{id:guid}")]
+    public async Task<IActionResult> AddReaction(Guid id, string reactionType)
+    {
+        try
+        {
+            var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+            
+            // For now, treat reactions as likes
+            var result = await _postService.ToggleLikeAsync(id, userId);
+
+            return Json(new 
+            { 
+                success = true, 
+                reactionType = reactionType,
+                totalLikes = result.TotalLikes,
+                message = _localizer["ReactionAdded"].Value 
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding reaction to post {PostId}", id);
+            return Json(new { success = false, message = _localizer["FailedToAddReaction"].Value });
         }
     }
 

@@ -9,8 +9,8 @@ namespace CommunityCar.Domain.Interfaces.Community;
 public interface IPostService
 {
     // CRUD Operations
-    Task<Post> CreatePostAsync(string title, string content, PostType type, Guid authorId, Guid? groupId = null, PostStatus status = PostStatus.Draft);
-    Task<Post> UpdatePostAsync(Guid postId, string title, string content, PostType type, PostStatus? status = null);
+    Task<Post> CreatePostAsync(string title, string content, PostType type, Guid authorId, PostCategory category = PostCategory.General, Guid? groupId = null, PostStatus status = PostStatus.Draft);
+    Task<Post> UpdatePostAsync(Guid postId, string title, string content, PostType type, PostCategory? category = null, PostStatus? status = null);
     Task DeletePostAsync(Guid postId);
     
     // Query Operations
@@ -32,6 +32,7 @@ public interface IPostService
     // Engagement
     Task IncrementViewsAsync(Guid postId);
     Task<LikePostResult> ToggleLikeAsync(Guid postId, Guid userId);
+    Task<List<PostLikerDto>> GetPostLikersAsync(Guid postId, QueryParameters parameters);
     Task IncrementSharesAsync(Guid postId);
     
     // Comments

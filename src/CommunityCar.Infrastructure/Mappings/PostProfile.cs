@@ -11,6 +11,7 @@ public class PostProfile : Profile
         CreateMap<Post, PostDto>()
             .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.Type.ToString()))
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.ToString()))
             .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author != null ? src.Author.UserName : "Unknown"))
             .ForMember(dest => dest.AuthorAvatar, opt => opt.MapFrom(src => src.Author != null ? src.Author.ProfilePictureUrl : null))
             .ForMember(dest => dest.IsAuthor, opt => opt.Ignore())

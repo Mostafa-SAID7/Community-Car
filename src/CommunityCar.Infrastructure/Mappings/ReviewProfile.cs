@@ -13,6 +13,8 @@ public class ReviewProfile : Profile
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.ToString()))
             .ForMember(dest => dest.ReviewerName, opt => opt.MapFrom(src => src.Reviewer.UserName ?? "Unknown"))
             .ForMember(dest => dest.ReviewerAvatar, opt => opt.MapFrom(src => src.Reviewer.ProfilePictureUrl))
+            .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.GroupId))
+            .ForMember(dest => dest.GroupName, opt => opt.MapFrom(src => src.Group != null ? src.Group.Name : null))
             .ForMember(dest => dest.IsReviewer, opt => opt.Ignore())
             .ForMember(dest => dest.CurrentUserReaction, opt => opt.Ignore());
 

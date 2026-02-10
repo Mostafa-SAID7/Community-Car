@@ -1,5 +1,6 @@
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Entities.Identity.Users;
+using CommunityCar.Domain.Entities.Community.groups;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Utilities;
 
@@ -14,6 +15,9 @@ public class Review : AggregateRoot
     
     public Guid ReviewerId { get; private set; }
     public virtual ApplicationUser Reviewer { get; private set; } = null!;
+    
+    public Guid? GroupId { get; private set; }
+    public virtual CommunityGroup? Group { get; private set; }
     
     public int Rating { get; private set; } // 1-5 stars
     public string Title { get; private set; } = string.Empty;
@@ -51,7 +55,8 @@ public class Review : AggregateRoot
         string title,
         string comment,
         bool isVerifiedPurchase = false,
-        bool isRecommended = true)
+        bool isRecommended = true,
+        Guid? groupId = null)
     {
         Guard.Against.Empty(entityId, nameof(entityId));
         Guard.Against.NullOrWhiteSpace(entityType, nameof(entityType));
@@ -71,6 +76,7 @@ public class Review : AggregateRoot
         Comment = comment;
         IsVerifiedPurchase = isVerifiedPurchase;
         IsRecommended = isRecommended;
+        GroupId = groupId;
         Status = ReviewStatus.Pending;
         Slug = SlugHelper.GenerateSlug(title);
     }

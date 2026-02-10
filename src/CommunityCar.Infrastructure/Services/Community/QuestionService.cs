@@ -89,7 +89,7 @@ public class QuestionService : IQuestionService
             throw new Exception($"Daily question limit reached ({limit}) for your rank ({user.Rank.ToString()}). Upgrade your rank to increase your limit!");
         }
 
-        var question = new Question(title, content, authorId, categoryId, tags);
+        var question = new Question(title, content, authorId, categoryId, null, tags);
         await _questionRepository.AddAsync(question);
         
         // Award points
@@ -121,7 +121,7 @@ public class QuestionService : IQuestionService
         if (question == null)
             throw new Exception($"Question with ID {questionId} not found.");
 
-        question.Update(title, content, categoryId, tags);
+        question.Update(title, content, categoryId, null, tags);
         await _uow.SaveChangesAsync();
         
         // Notify friends of update

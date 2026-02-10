@@ -61,6 +61,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     // Community Features
     public DbSet<CommunityCar.Domain.Entities.Community.events.CommunityEvent> Events => Set<CommunityCar.Domain.Entities.Community.events.CommunityEvent>();
     public DbSet<CommunityCar.Domain.Entities.Community.post.Post> Posts => Set<CommunityCar.Domain.Entities.Community.post.Post>();
+    public DbSet<CommunityCar.Domain.Entities.Community.post.PostReaction> PostReactions => Set<CommunityCar.Domain.Entities.Community.post.PostReaction>();
     public DbSet<CommunityCar.Domain.Entities.Community.guides.Guide> Guides => Set<CommunityCar.Domain.Entities.Community.guides.Guide>();
     public DbSet<CommunityCar.Domain.Entities.Community.reviews.Review> Reviews => Set<CommunityCar.Domain.Entities.Community.reviews.Review>();
     public DbSet<CommunityCar.Domain.Entities.Community.news.NewsArticle> NewsArticles => Set<CommunityCar.Domain.Entities.Community.news.NewsArticle>();

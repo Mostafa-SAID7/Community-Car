@@ -18,6 +18,9 @@ public class ReviewDto
     public string AuthorName { get; set; } = string.Empty;
     public string? ReviewerAvatar { get; set; }
     
+    public Guid? GroupId { get; set; }
+    public string? GroupName { get; set; }
+    
     public int Rating { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;

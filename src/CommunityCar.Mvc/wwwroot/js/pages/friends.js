@@ -1,6 +1,7 @@
 /**
  * Friends Page JavaScript
  * Handles AJAX operations for friend requests, accepts, rejects, blocks, etc.
+ * Also handles live search functionality
  */
 
 (function () {
@@ -39,6 +40,147 @@
         }, 300);
     }
 
+    // ===== LIVE SEARCH FUNCTIONALITY =====
+    let searchTimeout;
+    const searchInput = document.getElementById('friendSearchInput');
+    const searchSpinner = document.getElementById('searchSpinner');
+    const liveSearchResults = document.getElementById('liveSearchResults');
+    const originalResults = document.getElementById('originalResults');
+    const searchResultsGrid = document.getElementById('searchResultsGrid');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+
+            // If query is empty, show original results
+            if (query.length === 0) {
+                if (liveSearchResults) liveSearchResults.style.display = 'none';
+                if (originalResults) originalResults.style.display = 'block';
+                if (searchSpinner) searchSpinner.style.display = 'none';
+                return;
+            }
+
+            // Show spinner
+            if (searchSpinner) searchSpinner.style.display = 'block';
+
+            // Debounce search - wait 500ms after user stops typing
+            searchTimeout = setTimeout(() => {
+                performLiveSearch(query);
+            }, 500);
+        });
+
+        // Prevent form submission on Enter key
+        const searchForm = document.getElementById('friendSearchForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query.length > 0) {
+                    performLiveSearch(query);
+                }
+            });
+        }
+    }
+
+    function performLiveSearch(query) {
+        const url = CultureHelper.addCultureToUrl(`/Friends/SearchApi?query=${encodeURIComponent(query)}`);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (searchSpinner) searchSpinner.style.display = 'none';
+
+                if (data.success) {
+                    displaySearchResults(data.users, query);
+                } else {
+                    showToast(data.message || 'Failed to search users', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                if (searchSpinner) searchSpinner.style.display = 'none';
+                showToast('An error occurred while searching', 'danger');
+            });
+    }
+
+    function displaySearchResults(users, query) {
+        if (!searchResultsGrid || !liveSearchResults || !originalResults) return;
+
+        // Hide original results, show live results
+        originalResults.style.display = 'none';
+        liveSearchResults.style.display = 'block';
+
+        // Clear previous results
+        searchResultsGrid.innerHTML = '';
+
+        if (users.length === 0) {
+            searchResultsGrid.innerHTML = `
+                <div class="col-12">
+                    <div class="friends-empty">
+                        <div class="friends-empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="fw-bold mb-2">No Results Found</h3>
+                        <p class="text-muted mb-4">Try searching with different keywords.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Display results
+        users.forEach(user => {
+            const userCard = createUserCard(user);
+            searchResultsGrid.appendChild(userCard);
+        });
+    }
+
+    function createUserCard(user) {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4';
+
+        const avatarHtml = user.profilePictureUrl 
+            ? `<img src="${user.profilePictureUrl}" alt="${user.name}" class="friend-avatar">`
+            : `<div class="friend-avatar-placeholder">${user.name.substring(0, 1)}</div>`;
+
+        const profileUrl = CultureHelper.addCultureToUrl(`/Identity/Profiles/Index/${user.id}`);
+
+        col.innerHTML = `
+            <div class="friend-card">
+                <div class="friend-avatar-container">
+                    ${avatarHtml}
+                    <div class="friend-info">
+                        <a href="${profileUrl}" class="friend-name">
+                            ${user.name}
+                        </a>
+                        <div class="friend-meta">
+                            ${user.username}
+                        </div>
+                    </div>
+                </div>
+                <div class="friend-actions mt-auto d-flex gap-2">
+                    <a href="${profileUrl}" class="btn btn-outline-secondary rounded-pill flex-grow-1">
+                        <i class="fas fa-user me-2"></i> Profile
+                    </a>
+                    <form class="flex-grow-1 ajax-add-friend-form">
+                        <input type="hidden" name="__RequestVerificationToken" value="${getAntiForgeryToken()}" />
+                        <input type="hidden" name="friendId" value="${user.id}" />
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                            <i class="fas fa-user-plus me-2"></i> Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        return col;
+    }
+
+    // ===== FRIEND REQUEST HANDLERS =====
+
     // Handle Accept Friend Request
     document.addEventListener('submit', function (e) {
         if (e.target.classList.contains('ajax-accept-form')) {
@@ -58,10 +200,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -117,10 +261,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -175,10 +321,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -228,10 +376,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -281,10 +431,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -329,10 +481,12 @@
             fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getAntiForgeryToken()
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: new URLSearchParams({ friendId: friendId })
+                body: new URLSearchParams({ 
+                    friendId: friendId,
+                    __RequestVerificationToken: getAntiForgeryToken()
+                })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -361,5 +515,49 @@
     // Note: SignalR event listeners are handled by friends-hub.js
     // The hub dispatches custom events that trigger notifications automatically
     // No need to duplicate event listeners here
+
+    // Live Search Functionality for Friends Search Page
+    const searchInput = document.querySelector('.friends-search input[name="query"]');
+    if (searchInput) {
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            // If query is empty, redirect to search page without query
+            if (query.length === 0) {
+                searchTimeout = setTimeout(() => {
+                    const url = CultureHelper.addCultureToUrl('/Friends/Search');
+                    window.location.href = url;
+                }, 500);
+                return;
+            }
+            
+            // Wait for user to stop typing (debounce)
+            searchTimeout = setTimeout(() => {
+                if (query.length >= 2) {
+                    // Redirect to search with query parameter
+                    const url = CultureHelper.addCultureToUrl(`/Friends/Search?query=${encodeURIComponent(query)}`);
+                    window.location.href = url;
+                }
+            }, 500); // Wait 500ms after user stops typing
+        });
+        
+        // Also handle form submission
+        const searchForm = document.querySelector('.friends-search form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query.length >= 2) {
+                    const url = CultureHelper.addCultureToUrl(`/Friends/Search?query=${encodeURIComponent(query)}`);
+                    window.location.href = url;
+                }
+            });
+        }
+    }
 
 })();

@@ -46,7 +46,7 @@
                     {
                         foreach (var conv in conversations)
                         {
-                            <a href="@Url.Action("Conversation", new { id = conv.UserId })" 
+                            <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = conv.UserId })" 
                                class="text-decoration-none conversation-wrapper"
                                data-username="@conv.UserName.ToLower()"
                                data-user-id="@conv.UserId">

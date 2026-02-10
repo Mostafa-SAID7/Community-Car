@@ -333,6 +333,18 @@ public class FriendsController : Controller
 
         return RedirectToAction(nameof(Requests));
     }
+    [HttpGet("AcceptRequest")]
+    public IActionResult AcceptRequestGet(Guid? friendId)
+    {
+        // GET requests should redirect to the Requests page
+        // The actual accept action requires POST for security
+        if (friendId.HasValue)
+        {
+            TempData["Info"] = _localizer["PleaseUseAcceptButton"].Value;
+        }
+        return RedirectToAction(nameof(Requests));
+    }
+
 
     [HttpPost("AcceptRequestJson")]
     [ValidateAntiForgeryToken]

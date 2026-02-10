@@ -32,12 +32,11 @@ namespace CommunityCar.Mvc.Areas.AI.Controllers
         }
 
         [HttpPost("SendMessage")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendMessage([FromBody] ChatMessageRequest request)
         {
             if (string.IsNullOrWhiteSpace(request?.Message))
             {
-                return BadRequest("Message cannot be empty.");
+                return Json(new { success = false, message = "Message cannot be empty." });
             }
 
             try
@@ -50,7 +49,7 @@ namespace CommunityCar.Mvc.Areas.AI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in SendMessage");
-                return Json(new { success = false, message = "Failed to get AI response." });
+                return Json(new { success = false, message = "Failed to get AI response. Please try again." });
             }
         }
     }

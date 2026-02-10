@@ -55,7 +55,7 @@
             @foreach (var conv in Model)
             {
                 <div class="col-12 conversation-wrapper" data-username="@conv.UserName.ToLower()">
-                    <a href="@Url.Action("Conversation", new { area = "Communications", id = conv.UserId })" class="text-decoration-none">
+                    <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = conv.UserId })" class="text-decoration-none">
                         <div class="card conversation-card p-3">
                             <div class="d-flex align-items-center">
                                 <div class="position-relative me-3">
@@ -117,7 +117,7 @@
                 <div class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
                     @foreach (var friend in friends.Take(20))
                     {
-                        <a href="@Url.Action("Conversation", new { area = "Communications", id = friend.FriendId })" 
+                        <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = friend.FriendId })" 
                            class="list-group-item list-group-item-action border-0 py-3 bg-transparent">
                             <div class="d-flex align-items-center">
                                 <div class="position-relative me-3">
