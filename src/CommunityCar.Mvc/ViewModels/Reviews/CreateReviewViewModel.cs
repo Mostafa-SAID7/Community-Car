@@ -36,4 +36,6 @@ public class CreateReviewViewModel
     public bool IsVerifiedPurchase { get; set; }
 
     public bool IsRecommended { get; set; } = true;
+
+    public Guid? GroupId { get; set; }
 }

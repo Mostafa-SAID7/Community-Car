@@ -135,7 +135,7 @@ public class ReviewsController : Controller
     // GET: Reviews/Create
     [Authorize]
     [HttpGet("Create")]
-    public IActionResult Create(Guid? entityId, string? entityType, ReviewType? type)
+    public IActionResult Create(Guid? entityId, string? entityType, ReviewType? type, Guid? groupId)
     {
         var model = new CreateReviewViewModel();
         
@@ -147,6 +147,9 @@ public class ReviewsController : Controller
         
         if (type.HasValue)
             model.Type = type.Value;
+
+        if (groupId.HasValue)
+            model.GroupId = groupId.Value;
 
         ViewBag.Types = Enum.GetValues<ReviewType>();
         return View(model);
@@ -179,7 +182,8 @@ public class ReviewsController : Controller
                 model.Pros,
                 model.Cons,
                 model.IsVerifiedPurchase,
-                model.IsRecommended);
+                model.IsRecommended,
+                model.GroupId);
 
             TempData["Success"] = _localizer["ReviewSubmittedForApproval"].Value;
             return RedirectToAction(nameof(Details), new { slug = review.Slug });

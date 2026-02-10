@@ -38,7 +38,8 @@ public class ReviewService : IReviewService
         string? pros = null,
         string? cons = null,
         bool isVerifiedPurchase = false,
-        bool isRecommended = true)
+        bool isRecommended = true,
+        Guid? groupId = null)
     {
         var review = new Review(
             entityId,
@@ -49,7 +50,8 @@ public class ReviewService : IReviewService
             title,
             content,
             isVerifiedPurchase,
-            isRecommended);
+            isRecommended,
+            groupId);
 
         // Set optional properties
         if (!string.IsNullOrEmpty(pros) || !string.IsNullOrEmpty(cons))
