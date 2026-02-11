@@ -36,6 +36,8 @@ public class DashboardController : Controller
         var userGrowth = await _dashboardService.GetUserGrowthAsync();
         var topContentTypes = await _dashboardService.GetTopContentTypesAsync();
         var engagementMetrics = await _dashboardService.GetEngagementMetricsAsync();
+        var usersByLocation = await _dashboardService.GetUsersByLocationAsync();
+        var usersByLocation = await _dashboardService.GetUsersByLocationAsync();
         
         var summaryViewModel = new DashboardSummaryViewModel
         {
@@ -72,6 +74,9 @@ public class DashboardController : Controller
         // Engagement Metrics Chart Data (Bar)
         ViewBag.EngagementData = engagementMetrics.Values.ToList();
         ViewBag.EngagementLabels = engagementMetrics.Keys.ToList();
+        
+        // Users by Location Data (Geo Chart)
+        ViewBag.LocationData = usersByLocation;
         
         return View(summaryViewModel);
     }

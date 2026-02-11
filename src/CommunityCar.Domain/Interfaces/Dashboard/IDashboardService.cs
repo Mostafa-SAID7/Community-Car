@@ -10,4 +10,5 @@ public interface IDashboardService
     Task<IEnumerable<KPIValue>> GetUserGrowthAsync();
     Task<IEnumerable<KPIValue>> GetTopContentTypesAsync();
     Task<Dictionary<string, int>> GetEngagementMetricsAsync();
+    Task<Dictionary<string, int>> GetUsersByLocationAsync();
 }

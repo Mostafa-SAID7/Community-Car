@@ -192,4 +192,34 @@ public class DashboardService : IDashboardService
             { "Events", totalEvents }
         };
     }
+
+    public async Task<Dictionary<string, int>> GetUsersByLocationAsync()
+    {
+        var users = await _userRepository.GetAllAsync();
+        
+        var locationGroups = users
+            .Where(u => !string.IsNullOrWhiteSpace(u.Location))
+            .GroupBy(u => u.Location!.Trim())
+            .Select(g => new { Location = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(20) // Limit to top 20 locations
+            .ToDictionary(x => x.Location, x => x.Count);
+        
+        return locationGroups;
+    }
 }
+
+    public async Task<Dictionary<string, int>> GetUsersByLocationAsync()
+    {
+        var users = await _userRepository.GetAllAsync();
+        
+        // Group users by location and count them
+        var usersByLocation = users
+            .Where(u => !string.IsNullOrWhiteSpace(u.Location))
+            .GroupBy(u => u.Location!.Trim())
+            .Select(g => new { Location = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .ToDictionary(x => x.Location, x => x.Count);
+        
+        return usersByLocation;
+    }

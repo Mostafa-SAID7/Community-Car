@@ -243,13 +243,13 @@
                 </div>
             </div>
 
-            <!-- Engagement Metrics Chart -->
+            <!-- Users by Location (Geo Chart) -->
             <div class="dashboard-card dashboard-card-warning">
                 <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">@Localizer["Engagement Metrics"]</h5>
+                    <h5 class="dashboard-card-title">@Localizer["Users by Location"]</h5>
                 </div>
                 <div class="dashboard-card-body">
-                    <canvas id="engagementChart" height="200"></canvas>
+                    <div id="geoChart" style="width: 100%; height: 300px;"></div>
                     <div class="dashboard-progress-wrapper">
                         <div class="dashboard-progress-header">
                             <span class="dashboard-progress-label">@Localizer["Engagement Rate"]</span>
@@ -334,7 +334,15 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
+        // Load Google Charts
+        google.charts.load('current', {
+            'packages': ['geochart'],
+            'mapsApiKey': 'YOUR_API_KEY' // Optional: Add your Google Maps API key for better performance
+        });
+        google.charts.setOnLoadCallback(drawGeoChart);
+
         // Activity Chart (Line)
         const activityCtx = document.getElementById('activityChart');
         const activityData = @Html.Raw(Json.Serialize(ViewBag.ActivityData ?? new List<int>()));
@@ -447,46 +455,46 @@
             }
         });
 
-        // Engagement Metrics Chart (Bar)
-        const engagementCtx = document.getElementById('engagementChart');
-        const engagementData = @Html.Raw(Json.Serialize(ViewBag.EngagementData ?? new List<int>()));
-        const engagementLabels = @Html.Raw(Json.Serialize(ViewBag.EngagementLabels ?? new List<string>()));
+        // Users by Location Geo Chart
+        function drawGeoChart() {
+            const locationData = @Html.Raw(Json.Serialize(ViewBag.LocationData ?? new Dictionary<string, int>()));
+            
+            // Convert location data to array format for Google Charts
+            const dataArray = [['Country', 'Users']];
+            for (const [location, count] of Object.entries(locationData)) {
+                dataArray.push([location, count]);
+            }
+            
+            const data = google.visualization.arrayToDataTable(dataArray);
 
-        new Chart(engagementCtx, {
-            type: 'bar',
-            data: {
-                labels: engagementLabels,
-                datasets: [{
-                    label: '@Localizer["Interactions"]',
-                    data: engagementData,
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(34, 197, 94, 0.8)',
-                        'rgba(251, 44, 54, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(168, 85, 247, 0.8)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
+            const options = {
+                colorAxis: {
+                    colors: ['#e3f2fd', '#2196f3', '#0d47a1']
+                },
+                backgroundColor: 'transparent',
+                datalessRegionColor: '#f5f5f5',
+                defaultColor: '#f5f5f5',
+                legend: {
+                    textStyle: {
+                        color: 'var(--color-text-primary)',
+                        fontSize: 12
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+                tooltip: {
+                    textStyle: {
+                        fontSize: 13
                     }
                 }
-            }
-        });
+            };
+
+            const chart = new google.visualization.GeoChart(document.getElementById('geoChart'));
+            chart.draw(data, options);
+            
+            // Redraw chart on window resize
+            window.addEventListener('resize', function() {
+                chart.draw(data, options);
+            });
+        }
     </script>
 }
 
