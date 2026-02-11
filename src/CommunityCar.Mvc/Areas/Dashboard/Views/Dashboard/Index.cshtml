@@ -6,7 +6,7 @@
     ViewData["Title"] = Localizer["Dashboard"];
 }
 
-<div class="container-fluid py-4">
+<div class="dashboard-container">
     <!-- Dashboard Header -->
     <div class="dashboard-page-header">
         <div class="dashboard-header-content">
@@ -15,22 +15,25 @@
                 <p class="dashboard-subtitle">@Localizer["Welcome back! Here's what's happening."]</p>
             </div>
             <div class="dashboard-header-actions">
-                <button class="btn btn-outline-secondary dashboard-action-btn" onclick="location.reload()">
-                    <i class="fas fa-sync-alt me-2"></i>@Localizer["Refresh"]
+                <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>@Localizer["Refresh"]</span>
                 </button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle dashboard-action-btn" data-bs-toggle="dropdown">
-                        <i class="fas fa-download me-2"></i>@Localizer["Export"]
+                <div class="dashboard-dropdown">
+                    <button type="button" class="dashboard-btn dashboard-btn-primary" data-bs-toggle="dropdown">
+                        <i class="fas fa-download"></i>
+                        <span>@Localizer["Export"]</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="@Url.Action("ExportReport", new { format = "csv" })">
-                            <i class="fas fa-file-csv me-2"></i>CSV
+                    <ul class="dashboard-dropdown-menu">
+                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "csv" })">
+                            <i class="fas fa-file-csv"></i>CSV
                         </a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("ExportReport", new { format = "json" })">
-                            <i class="fas fa-file-code me-2"></i>JSON
+                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "json" })">
+                            <i class="fas fa-file-code"></i>JSON
                         </a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("ExportReport", new { format = "pdf" })">
-                            <i class="fas fa-file-pdf me-2"></i>PDF
+                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "pdf" })">
+                            <i class="fas fa-file-pdf"></i>PDF
                         </a></li>
                     </ul>
                 </div>
@@ -43,108 +46,84 @@
         <div class="dashboard-tabs-container">
             <a href="@Url.Action("Index", "Dashboard", new { area = "Dashboard" })" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
-                <i class="fas fa-chart-line me-2"></i>
+                <i class="fas fa-chart-line"></i>
                 <span>@Localizer["Overview"]</span>
             </a>
             <a href="@Url.Action("Index", "KPIs", new { area = "Dashboard" })" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "KPIs" ? "active" : "")">
-                <i class="fas fa-chart-bar me-2"></i>
+                <i class="fas fa-chart-bar"></i>
                 <span>@Localizer["KPIs"]</span>
             </a>
             <a href="@Url.Action("Index", "Trends", new { area = "Dashboard" })" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Trends" ? "active" : "")">
-                <i class="fas fa-chart-area me-2"></i>
+                <i class="fas fa-chart-area"></i>
                 <span>@Localizer["Trends"]</span>
             </a>
             <a href="@Url.Action("Index", "Widgets", new { area = "Dashboard" })" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Widgets" ? "active" : "")">
-                <i class="fas fa-th me-2"></i>
+                <i class="fas fa-th"></i>
                 <span>@Localizer["Widgets"]</span>
             </a>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card border border-primary shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-icon bg-primary-subtle text-primary rounded-3 p-3">
-                                <i class="fas fa-users fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="text-muted small text-uppercase fw-bold">@Localizer["Total Users"]</div>
-                            <div class="h3 mb-0 fw-bold">@Model.TotalUsers.ToString("N0")</div>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i>@Model.UserGrowthPercentage.ToString("F1")% @Localizer["from last month"]
-                            </small>
-                        </div>
+    <div class="dashboard-stats-grid">
+        <div class="dashboard-stat-card dashboard-stat-card-primary">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-primary">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Total Users"]</div>
+                    <div class="dashboard-stat-value">@Model.TotalUsers.ToString("N0")</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-positive">
+                        <i class="fas fa-arrow-up"></i>@Model.UserGrowthPercentage.ToString("F1")% @Localizer["from last month"]
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
-            <div class="card border border-success shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-icon bg-success-subtle text-success rounded-3 p-3">
-                                <i class="fas fa-user-friends fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="text-muted small text-uppercase fw-bold">@Localizer["Friendships"]</div>
-                            <div class="h3 mb-0 fw-bold">@Model.TotalFriendships.ToString("N0")</div>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i>8% @Localizer["from last month"]
-                            </small>
-                        </div>
+        <div class="dashboard-stat-card dashboard-stat-card-success">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-success">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Friendships"]</div>
+                    <div class="dashboard-stat-value">@Model.TotalFriendships.ToString("N0")</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-positive">
+                        <i class="fas fa-arrow-up"></i>8% @Localizer["from last month"]
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
-            <div class="card border border-warning shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-icon bg-warning-subtle text-warning rounded-3 p-3">
-                                <i class="fas fa-calendar-alt fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="text-muted small text-uppercase fw-bold">@Localizer["Active Events"]</div>
-                            <div class="h3 mb-0 fw-bold">@Model.ActiveEvents.ToString("N0")</div>
-                            <small class="text-info">
-                                <i class="fas fa-calendar me-1"></i>@Localizer["This month"]
-                            </small>
-                        </div>
+        <div class="dashboard-stat-card dashboard-stat-card-warning">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-warning">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Active Events"]</div>
+                    <div class="dashboard-stat-value">@Model.ActiveEvents.ToString("N0")</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-info">
+                        <i class="fas fa-calendar"></i>@Localizer["This month"]
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
-            <div class="card border border-info shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-icon bg-info-subtle text-info rounded-3 p-3">
-                                <i class="fas fa-heart-pulse fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <div class="text-muted small text-uppercase fw-bold">@Localizer["System Health"]</div>
-                            <div class="h3 mb-0 fw-bold">@Model.SystemHealth%</div>
-                            <small class="text-success">
-                                <i class="fas fa-check-circle me-1"></i>@Localizer["All systems operational"]
-                            </small>
-                        </div>
+        <div class="dashboard-stat-card dashboard-stat-card-info">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-info">
+                    <i class="fas fa-heart-pulse"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["System Health"]</div>
+                    <div class="dashboard-stat-value">@Model.SystemHealth%</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-positive">
+                        <i class="fas fa-check-circle"></i>@Localizer["All systems operational"]
                     </div>
                 </div>
             </div>
@@ -152,100 +131,72 @@
     </div>
 
     <!-- Additional Metrics Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-primary border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["Total Posts"]</div>
-                    <div class="h4 mb-0 fw-bold text-primary">@Model.TotalPosts.ToString("N0")</div>
-                </div>
-            </div>
+    <div class="dashboard-metrics-grid">
+        <div class="dashboard-metric-card dashboard-metric-card-primary">
+            <div class="dashboard-metric-label">@Localizer["Total Posts"]</div>
+            <div class="dashboard-metric-value">@Model.TotalPosts.ToString("N0")</div>
         </div>
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-info border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["Questions"]</div>
-                    <div class="h4 mb-0 fw-bold text-info">@Model.TotalQuestions.ToString("N0")</div>
-                </div>
-            </div>
+        <div class="dashboard-metric-card dashboard-metric-card-info">
+            <div class="dashboard-metric-label">@Localizer["Questions"]</div>
+            <div class="dashboard-metric-value">@Model.TotalQuestions.ToString("N0")</div>
         </div>
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-success border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["Groups"]</div>
-                    <div class="h4 mb-0 fw-bold text-success">@Model.TotalGroups.ToString("N0")</div>
-                </div>
-            </div>
+        <div class="dashboard-metric-card dashboard-metric-card-success">
+            <div class="dashboard-metric-label">@Localizer["Groups"]</div>
+            <div class="dashboard-metric-value">@Model.TotalGroups.ToString("N0")</div>
         </div>
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-warning border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["Reviews"]</div>
-                    <div class="h4 mb-0 fw-bold text-warning">@Model.TotalReviews.ToString("N0")</div>
-                </div>
-            </div>
+        <div class="dashboard-metric-card dashboard-metric-card-warning">
+            <div class="dashboard-metric-label">@Localizer["Reviews"]</div>
+            <div class="dashboard-metric-value">@Model.TotalReviews.ToString("N0")</div>
         </div>
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-danger border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["Guides"]</div>
-                    <div class="h4 mb-0 fw-bold text-danger">@Model.TotalGuides.ToString("N0")</div>
-                </div>
-            </div>
+        <div class="dashboard-metric-card dashboard-metric-card-danger">
+            <div class="dashboard-metric-label">@Localizer["Guides"]</div>
+            <div class="dashboard-metric-value">@Model.TotalGuides.ToString("N0")</div>
         </div>
-        <div class="col-xl-2 col-md-4 col-sm-6">
-            <div class="card border-start border-secondary border-4 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="text-muted small text-uppercase fw-bold mb-1">@Localizer["News"]</div>
-                    <div class="h4 mb-0 fw-bold text-secondary">@Model.TotalNews.ToString("N0")</div>
-                </div>
-            </div>
+        <div class="dashboard-metric-card dashboard-metric-card-secondary">
+            <div class="dashboard-metric-label">@Localizer["News"]</div>
+            <div class="dashboard-metric-value">@Model.TotalNews.ToString("N0")</div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Left Column: Weekly Activity, User Growth, Recent Activity -->
-        <div class="col-xl-8">
+    <div class="dashboard-content-grid">
+        <!-- Left Column: Charts and Activity -->
+        <div class="dashboard-content-main">
             <!-- Weekly Activity Chart -->
-            <div class="card border border-primary shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold">@Localizer["Weekly Activity"]</h5>
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-outline-secondary active">@Localizer["Week"]</button>
-                            <button type="button" class="btn btn-outline-secondary">@Localizer["Month"]</button>
-                            <button type="button" class="btn btn-outline-secondary">@Localizer["Year"]</button>
-                        </div>
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Weekly Activity"]</h5>
+                    <div class="dashboard-btn-group">
+                        <button type="button" class="dashboard-btn-group-item active">@Localizer["Week"]</button>
+                        <button type="button" class="dashboard-btn-group-item">@Localizer["Month"]</button>
+                        <button type="button" class="dashboard-btn-group-item">@Localizer["Year"]</button>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="dashboard-card-body">
                     <canvas id="activityChart" height="80"></canvas>
                 </div>
             </div>
 
             <!-- User Growth Trend Chart -->
-            <div class="card border border-success shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="mb-0 fw-bold">@Localizer["User Growth Trend"]</h5>
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["User Growth Trend"]</h5>
                 </div>
-                <div class="card-body">
+                <div class="dashboard-card-body">
                     <canvas id="growthChart" height="80"></canvas>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="card border border-warning shadow-sm">
-                <div class="card-header bg-light border-bottom py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold">@Localizer["Recent Activity"]</h5>
-                        <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="btn btn-sm btn-outline-danger">
-                            @Localizer["View All"]
-                        </a>
-                    </div>
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Recent Activity"]</h5>
+                    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="dashboard-btn dashboard-btn-sm dashboard-btn-danger">
+                        @Localizer["View All"]
+                    </a>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                <div class="dashboard-card-body">
+                    <div class="dashboard-table-wrapper">
+                        <table class="dashboard-table">
                             <thead>
                                 <tr>
                                     <th>@Localizer["Time"]</th>
@@ -256,22 +207,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><small class="text-muted">@DateTime.Now.AddMinutes(-5).ToString("HH:mm")</small></td>
+                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-5).ToString("HH:mm")</span></td>
                                     <td>Admin User</td>
                                     <td>Updated system settings</td>
-                                    <td><span class="badge bg-success">Success</span></td>
+                                    <td><span class="dashboard-badge dashboard-badge-success">Success</span></td>
                                 </tr>
                                 <tr>
-                                    <td><small class="text-muted">@DateTime.Now.AddMinutes(-15).ToString("HH:mm")</small></td>
+                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-15).ToString("HH:mm")</span></td>
                                     <td>System</td>
                                     <td>Database backup completed</td>
-                                    <td><span class="badge bg-info">Info</span></td>
+                                    <td><span class="dashboard-badge dashboard-badge-info">Info</span></td>
                                 </tr>
                                 <tr>
-                                    <td><small class="text-muted">@DateTime.Now.AddMinutes(-30).ToString("HH:mm")</small></td>
+                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-30).ToString("HH:mm")</span></td>
                                     <td>Admin User</td>
                                     <td>Created new user account</td>
-                                    <td><span class="badge bg-success">Success</span></td>
+                                    <td><span class="dashboard-badge dashboard-badge-success">Success</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -280,94 +231,99 @@
             </div>
         </div>
 
-        <!-- Right Column: Content Distribution, Engagement, System Status, Quick Actions -->
-        <div class="col-xl-4">
+        <!-- Right Column: Widgets -->
+        <div class="dashboard-content-sidebar">
             <!-- Content Distribution Chart -->
-            <div class="card border border-primary shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="mb-0 fw-bold">@Localizer["Content Distribution"]</h5>
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
                 </div>
-                <div class="card-body">
+                <div class="dashboard-card-body">
                     <canvas id="contentChart" height="200"></canvas>
                 </div>
             </div>
 
             <!-- Engagement Metrics Chart -->
-            <div class="card border border-warning shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="mb-0 fw-bold">@Localizer["Engagement Metrics"]</h5>
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Engagement Metrics"]</h5>
                 </div>
-                <div class="card-body">
+                <div class="dashboard-card-body">
                     <canvas id="engagementChart" height="200"></canvas>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">@Localizer["Engagement Rate"]</span>
-                            <span class="fw-bold">@Model.EngagementRate.ToString("F1")%</span>
+                    <div class="dashboard-progress-wrapper">
+                        <div class="dashboard-progress-header">
+                            <span class="dashboard-progress-label">@Localizer["Engagement Rate"]</span>
+                            <span class="dashboard-progress-value">@Model.EngagementRate.ToString("F1")%</span>
                         </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success" style="width: @Model.EngagementRate%"></div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: @Model.EngagementRate%"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- System Status -->
-            <div class="card border border-info shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="mb-0 fw-bold">@Localizer["System Status"]</h5>
+            <div class="dashboard-card dashboard-card-info">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["System Status"]</h5>
                 </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <small class="text-muted">@Localizer["Database"]</small>
-                            <small class="text-success fw-bold">@Localizer["Online"]</small>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["Database"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Online"]</span>
                         </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-success" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <small class="text-muted">@Localizer["API Services"]</small>
-                            <small class="text-success fw-bold">@Localizer["Running"]</small>
-                        </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
                         </div>
                     </div>
-                    <div class="mb-0">
-                        <div class="d-flex justify-content-between mb-1">
-                            <small class="text-muted">@Localizer["Cache"]</small>
-                            <small class="text-success fw-bold">@Localizer["Active"]</small>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["API Services"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Running"]</span>
                         </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["Cache"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Active"]</span>
+                        </div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Actions -->
-            <div class="card border border-success shadow-sm">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="mb-0 fw-bold">@Localizer["Quick Actions"]</h5>
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Quick Actions"]</h5>
                 </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="btn btn-outline-danger text-start">
-                            <i class="fas fa-users me-2"></i>@Localizer["Manage Users"]
+                <div class="dashboard-card-body">
+                    <div class="dashboard-actions-list">
+                        <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-danger">
+                            <i class="fas fa-users"></i>
+                            <span>@Localizer["Manage Users"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="ContentManagement" asp-action="Index" class="btn btn-outline-success text-start">
-                            <i class="fas fa-layer-group me-2"></i>@Localizer["Manage Content"]
+                        <a asp-area="Dashboard" asp-controller="ContentManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-success">
+                            <i class="fas fa-layer-group"></i>
+                            <span>@Localizer["Manage Content"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="btn btn-outline-info text-start">
-                            <i class="fas fa-chart-bar me-2"></i>@Localizer["View Reports"]
+                        <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="dashboard-action-item dashboard-action-item-info">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>@Localizer["View Reports"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="btn btn-outline-warning text-start">
-                            <i class="fas fa-shield-halved me-2"></i>@Localizer["Security Alerts"]
+                        <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="dashboard-action-item dashboard-action-item-warning">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>@Localizer["Security Alerts"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="btn btn-outline-secondary text-start">
-                            <i class="fas fa-cog me-2"></i>@Localizer["System Settings"]
+                        <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="dashboard-action-item dashboard-action-item-secondary">
+                            <i class="fas fa-cog"></i>
+                            <span>@Localizer["System Settings"]</span>
                         </a>
                     </div>
                 </div>
