@@ -106,6 +106,25 @@
 .overflow-y-auto { overflow-y: auto; }
 .overflow-x-auto { overflow-x: auto; }
 
+/* Tab Navigation - Remove Scroll */
+.nav-tabs,
+.profile-tabs,
+.system-nav-tabs,
+.settings-nav-tabs,
+.security-nav-tabs {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    flex-wrap: wrap !important;
+    -webkit-overflow-scrolling: auto !important;
+    scrollbar-width: auto !important;
+}
+
+/* Remove scrollbar hiding from tabs */
+.nav-tabs::-webkit-scrollbar,
+.profile-tabs::-webkit-scrollbar {
+    display: block !important;
+}
+
 /* Text Utilities */
 .text-truncate {
     overflow: hidden;

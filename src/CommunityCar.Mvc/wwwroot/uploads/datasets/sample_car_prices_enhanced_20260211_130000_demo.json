@@ -1,0 +1,316 @@
+{
+  "metadata": {
+    "datasetName": "US Car Market Prices",
+    "country": "United States",
+    "currency": "USD",
+    "lastUpdated": "2026-02-11",
+    "source": "Multiple Dealers and Private Sellers",
+    "recordCount": 20,
+    "priceRange": {
+      "min": 18500,
+      "max": 48900,
+      "average": 30545
+    }
+  },
+  "vehicles": [
+    {
+      "id": 1,
+      "make": "Toyota",
+      "model": "Camry",
+      "trim": "XLE Hybrid",
+      "year": 2022,
+      "price": 24500,
+      "originalMSRP": 32000,
+      "depreciation": 23.4,
+      "mileage": 15000,
+      "condition": "Excellent",
+      "conditionScore": 9.5,
+      "specifications": {
+        "engine": "2.5L I4 Hybrid",
+        "horsepower": 208,
+        "transmission": "Automatic CVT",
+        "drivetrain": "FWD",
+        "fuelType": "Hybrid",
+        "mpgCity": 51,
+        "mpgHighway": 53,
+        "mpgCombined": 52,
+        "fuelTankCapacity": 13.2,
+        "bodyType": "Sedan",
+        "doors": 4,
+        "seats": 5,
+        "color": "Celestial Silver Metallic",
+        "interiorColor": "Black Leather"
+      },
+      "features": [
+        "Leather Seats",
+        "Sunroof",
+        "Navigation System",
+        "Backup Camera",
+        "Blind Spot Monitor",
+        "Adaptive Cruise Control",
+        "Lane Departure Warning",
+        "Apple CarPlay",
+        "Android Auto",
+        "Wireless Charging"
+      ],
+      "safety": {
+        "rating": 5,
+        "airbags": 10,
+        "abs": true,
+        "stabilityControl": true,
+        "tractionControl": true,
+        "crashTestScore": 95
+      },
+      "history": {
+        "accidents": 0,
+        "owners": 1,
+        "title": "Clean",
+        "serviceRecords": 3,
+        "lastServiceDate": "2026-01-15",
+        "carfaxScore": 98
+      },
+      "seller": {
+        "type": "Dealer",
+        "name": "CarMax Los Angeles",
+        "location": "Los Angeles, CA",
+        "rating": 4.5,
+        "phone": "(555) 123-4567"
+      },
+      "listing": {
+        "vin": "1HGBH41JXMN109186",
+        "stockNumber": "CM2022-001",
+        "daysOnMarket": 15,
+        "views": 342,
+        "saves": 28,
+        "priceHistory": [
+          {"date": "2026-01-20", "price": 25000},
+          {"date": "2026-02-01", "price": 24500}
+        ]
+      },
+      "warranty": {
+        "remaining": 36,
+        "type": "Manufacturer",
+        "coverage": "Powertrain and Hybrid Components",
+        "transferable": true
+      },
+      "financing": {
+        "available": true,
+        "apr": 4.9,
+        "monthlyPayment": 445,
+        "term": 60
+      }
+    },
+    {
+      "id": 2,
+      "make": "Ford",
+      "model": "F-150",
+      "trim": "Lariat 4WD",
+      "year": 2023,
+      "price": 38900,
+      "originalMSRP": 52000,
+      "depreciation": 25.2,
+      "mileage": 8500,
+      "condition": "Excellent",
+      "conditionScore": 9.8,
+      "specifications": {
+        "engine": "3.5L EcoBoost V6",
+        "horsepower": 400,
+        "torque": 500,
+        "transmission": "10-Speed Automatic",
+        "drivetrain": "4WD",
+        "fuelType": "Gasoline",
+        "mpgCity": 20,
+        "mpgHighway": 24,
+        "mpgCombined": 22,
+        "fuelTankCapacity": 26,
+        "bodyType": "Pickup Truck",
+        "doors": 4,
+        "seats": 6,
+        "bedLength": "5.5 ft",
+        "towingCapacity": 13200,
+        "payloadCapacity": 2120,
+        "color": "Velocity Blue",
+        "interiorColor": "Black Leather"
+      },
+      "features": [
+        "4WD",
+        "Tow Package",
+        "Spray-In Bed Liner",
+        "Backup Camera",
+        "360-Degree Camera",
+        "Adaptive Cruise Control",
+        "Lane Keeping Assist",
+        "Blind Spot Monitor",
+        "Heated Seats",
+        "Cooled Seats",
+        "Power Tailgate",
+        "Remote Start",
+        "FordPass Connect",
+        "B&O Sound System"
+      ],
+      "safety": {
+        "rating": 4,
+        "airbags": 7,
+        "abs": true,
+        "stabilityControl": true,
+        "tractionControl": true,
+        "crashTestScore": 88
+      },
+      "history": {
+        "accidents": 0,
+        "owners": 1,
+        "title": "Clean",
+        "serviceRecords": 1,
+        "lastServiceDate": "2026-01-10",
+        "carfaxScore": 100
+      },
+      "seller": {
+        "type": "Dealer",
+        "name": "Ford of Dallas",
+        "location": "Dallas, TX",
+        "rating": 4.7,
+        "phone": "(555) 234-5678"
+      },
+      "listing": {
+        "vin": "1FTFW1E85NFA12345",
+        "stockNumber": "F150-2023-042",
+        "daysOnMarket": 8,
+        "views": 567,
+        "saves": 45,
+        "priceHistory": [
+          {"date": "2026-02-01", "price": 40000},
+          {"date": "2026-02-08", "price": 38900}
+        ]
+      },
+      "warranty": {
+        "remaining": 48,
+        "type": "Manufacturer",
+        "coverage": "Bumper-to-Bumper and Powertrain",
+        "transferable": true
+      },
+      "financing": {
+        "available": true,
+        "apr": 5.4,
+        "monthlyPayment": 715,
+        "term": 60
+      }
+    },
+    {
+      "id": 3,
+      "make": "Tesla",
+      "model": "Model 3",
+      "trim": "Long Range AWD",
+      "year": 2023,
+      "price": 42900,
+      "originalMSRP": 50000,
+      "depreciation": 14.2,
+      "mileage": 12000,
+      "condition": "Excellent",
+      "conditionScore": 9.7,
+      "specifications": {
+        "engine": "Dual Motor Electric",
+        "horsepower": 346,
+        "torque": 389,
+        "transmission": "Single-Speed Direct Drive",
+        "drivetrain": "AWD",
+        "fuelType": "Electric",
+        "range": 358,
+        "batteryCapacity": 82,
+        "chargingTime": {
+          "level2": 8.5,
+          "supercharger": 0.5
+        },
+        "mpge": 132,
+        "bodyType": "Sedan",
+        "doors": 4,
+        "seats": 5,
+        "color": "Pearl White Multi-Coat",
+        "interiorColor": "Black Premium"
+      },
+      "features": [
+        "Autopilot",
+        "Full Self-Driving Capability",
+        "Premium Audio",
+        "Glass Roof",
+        "Heated Seats (All)",
+        "Power Trunk",
+        "Wireless Charging",
+        "Premium Connectivity",
+        "Sentry Mode",
+        "Dog Mode",
+        "Camp Mode",
+        "Over-the-Air Updates"
+      ],
+      "safety": {
+        "rating": 5,
+        "airbags": 8,
+        "abs": true,
+        "stabilityControl": true,
+        "tractionControl": true,
+        "crashTestScore": 98,
+        "autopilotSafety": true
+      },
+      "history": {
+        "accidents": 0,
+        "owners": 1,
+        "title": "Clean",
+        "serviceRecords": 0,
+        "lastServiceDate": null,
+        "carfaxScore": 100
+      },
+      "seller": {
+        "type": "Private",
+        "name": "John Smith",
+        "location": "San Francisco, CA",
+        "rating": 4.9,
+        "phone": "(555) 345-6789"
+      },
+      "listing": {
+        "vin": "5YJ3E1EA5NF123456",
+        "stockNumber": null,
+        "daysOnMarket": 5,
+        "views": 892,
+        "saves": 67,
+        "priceHistory": [
+          {"date": "2026-02-06", "price": 42900}
+        ]
+      },
+      "warranty": {
+        "remaining": 36,
+        "type": "Manufacturer",
+        "coverage": "Vehicle and Battery",
+        "batteryWarranty": 96,
+        "transferable": true
+      },
+      "charging": {
+        "homeChargerIncluded": true,
+        "superchargerAccess": "Unlimited",
+        "chargingCost": {
+          "perKWh": 0.28,
+          "fullCharge": 23
+        }
+      },
+      "financing": {
+        "available": true,
+        "apr": 3.9,
+        "monthlyPayment": 775,
+        "term": 60
+      }
+    }
+  ],
+  "marketInsights": {
+    "trending": ["Electric Vehicles", "Hybrid SUVs", "Pickup Trucks"],
+    "priceChanges": {
+      "lastWeek": -2.3,
+      "lastMonth": -4.1
+    },
+    "demandScore": 8.5,
+    "inventoryLevel": "Moderate",
+    "bestDeals": [1, 5, 8],
+    "recommendations": {
+      "bestValue": "Toyota Camry Hybrid - Great fuel economy and reliability",
+      "bestPerformance": "Ford F-150 - Powerful towing and payload capacity",
+      "bestTechnology": "Tesla Model 3 - Advanced autopilot and OTA updates"
+    }
+  }
+}

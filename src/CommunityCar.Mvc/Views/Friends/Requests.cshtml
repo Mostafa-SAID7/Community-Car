@@ -35,7 +35,7 @@
         </a>
         <a class="nav-link active" asp-action="Requests">
             <i class="fas fa-user-plus"></i> @Localizer["Received"]
-            @if (ViewBag.RequestCount > 0) { <span class="badge bg-white text-primary ms-2">@ViewBag.RequestCount</span> }
+            @if (ViewBag.RequestCount > 0) { <span class="badge  text-primary ms-2">@ViewBag.RequestCount</span> }
         </a>
         <a class="nav-link" asp-action="SentRequests">
             <i class="fas fa-paper-plane"></i> @Localizer["Sent"]

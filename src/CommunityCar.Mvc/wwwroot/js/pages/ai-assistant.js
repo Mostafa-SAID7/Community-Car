@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!chatForm) return;
 
+    // Load and display uploaded datasets on page load
+    loadDatasets();
+
     // Quick action buttons
     document.querySelectorAll('.quick-action-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -129,10 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('file', file);
 
         // Add user message about upload
-        appendMessage('user', `📎 Uploaded dataset: ${file.name}`);
+        appendMessage('user', `📎 Uploading dataset: ${file.name}`);
         
-        // Add typing indicator
-        const typingId = addTypingIndicator();
+        // Add typing indicator with custom message
+        const typingId = addTypingIndicator('Analyzing your data...');
 
         try {
             const url = CultureHelper.addCultureToUrl('/AI/Assistant/UploadDataset');
@@ -145,13 +148,15 @@ document.addEventListener('DOMContentLoaded', function () {
             removeTypingIndicator(typingId);
 
             if (data.success) {
-                appendMessage('assistant', `✅ Dataset "${data.fileName}" (${data.fileSize}) uploaded successfully!\n\n${data.response}`);
+                appendMessage('assistant', data.response);
                 // Clear file preview after successful upload
                 setTimeout(() => {
                     uploadedFile = null;
                     fileInput.value = '';
                     filePreview.style.display = 'none';
                 }, 2000);
+                // Reload datasets list
+                loadDatasets();
             } else {
                 appendMessage('assistant', `❌ ${data.message}`);
             }
@@ -168,24 +173,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.className = `message ${sender === 'user' ? 'sent' : 'received'} ${sender}`;
         
-        // Format text with line breaks
-        const formattedText = text.replace(/\n/g, '<br>');
+        // Format text with line breaks and make numbered options clickable
+        let formattedText = text.replace(/\n/g, '<br>');
+        
+        // Make numbered options clickable (1️⃣, 2️⃣, etc.)
+        formattedText = formattedText.replace(/([1-5]️⃣)\s+([^\n<]+)/g, function(match, number, text) {
+            const numValue = number.charAt(0);
+            return `<span class="clickable-option" data-option="${numValue}">${number} ${text}</span>`;
+        });
         
         div.innerHTML = `
             <div class="message-bubble">${formattedText}</div>
             <div class="message-time">${time}</div>
         `;
         chatMessages.appendChild(div);
+        
+        // Add click handlers to clickable options
+        div.querySelectorAll('.clickable-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const optionNumber = this.getAttribute('data-option');
+                userInput.value = optionNumber;
+                chatForm.dispatchEvent(new Event('submit'));
+            });
+        });
+        
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function addTypingIndicator() {
+    function addTypingIndicator(message = null) {
         const id = 'typing-' + Date.now();
         const div = document.createElement('div');
         div.id = id;
         div.className = 'message received assistant';
         div.innerHTML = `
             <div class="message-bubble">
+                ${message ? `<div class="small text-muted mb-1">${message}</div>` : ''}
                 <div class="typing">
                     <span></span><span></span><span></span>
                 </div>
@@ -207,5 +229,62 @@ document.addEventListener('DOMContentLoaded', function () {
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Load datasets function
+    async function loadDatasets() {
+        try {
+            const url = CultureHelper.addCultureToUrl('/AI/Assistant/ListDatasets');
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.success && data.datasets && data.datasets.length > 0) {
+                displayDatasets(data.datasets);
+            }
+        } catch (error) {
+            console.error('Error loading datasets:', error);
+        }
+    }
+
+    function displayDatasets(datasets) {
+        // Find or create datasets list in the right sidebar
+        const datasetsCard = document.querySelector('.card-header h6 i.fa-database')?.closest('.card');
+        if (!datasetsCard) return;
+
+        const cardBody = datasetsCard.querySelector('.card-body');
+        
+        // Create datasets list
+        let datasetsList = cardBody.querySelector('.datasets-list');
+        if (!datasetsList) {
+            datasetsList = document.createElement('div');
+            datasetsList.className = 'datasets-list mt-3';
+            cardBody.appendChild(datasetsList);
+        }
+
+        datasetsList.innerHTML = `
+            <p class="small text-muted mb-2">Recent uploads:</p>
+            <div class="list-group list-group-flush">
+                ${datasets.map(ds => `
+                    <div class="list-group-item list-group-item-action border-0 p-2 dataset-item" data-filename="${ds.fileName}">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-file-csv text-primary"></i>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="small text-truncate" title="${ds.fileName}">${ds.fileName}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">${ds.size} • ${ds.uploadedDate}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Add click handlers to dataset items
+        datasetsList.querySelectorAll('.dataset-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const filename = this.getAttribute('data-filename');
+                userInput.value = `Tell me about the dataset: ${filename}`;
+                chatForm.dispatchEvent(new Event('submit'));
+            });
+        });
     }
 });

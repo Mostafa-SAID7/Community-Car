@@ -1,0 +1,281 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.AuditLogIndexViewModel
+@{
+    ViewData["Title"] = Localizer["PageTitle"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-3">
+                <i class="bi bi-shield-check"></i> @Localizer["PageTitle"]
+            </h1>
+            <p class="text-muted">@Localizer["TrackDescription"]</p>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-file-text fs-2 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["TotalLogs"]</h6>
+                            <h3 class="mb-0">@Model.Statistics.TotalLogs.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @foreach (var action in Model.Statistics.ActionCounts.Take(3))
+        {
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-@(GetActionIcon(action.Key)) fs-2 text-@(GetActionColor(action.Key))"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1">@action.Key</h6>
+                                <h3 class="mb-0">@action.Value.ToString("N0")</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header ">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel"></i> @Localizer["Filters"]
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">@Localizer["UserName"]</label>
+                        <input type="text" class="form-control" name="userName" value="@Model.Filter.UserName" placeholder="Search by user..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Entity</label>
+                        <select class="form-select" name="entityName">
+                            <option value="">@Localizer["AllEntities"]</option>
+                            @foreach (var entity in Model.Filter.AvailableEntities)
+                            {
+                                <option value="@entity" selected="@(Model.Filter.EntityName == entity)">@entity</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Action</label>
+                        <select class="form-select" name="action">
+                            <option value="">@Localizer["AllActions"]</option>
+                            @foreach (var action in Model.Filter.AvailableActions)
+                            {
+                                <option value="@action" selected="@(Model.Filter.Action == action)">@action</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" name="startDate" value="@Model.Filter.StartDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="endDate" value="@Model.Filter.EndDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search"></i> @Localizer["FilterButton"]
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> @Localizer["ClearButton"]
+                        </a>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <a href="@Url.Action("Export", new { userName = Model.Filter.UserName, entityName = Model.Filter.EntityName, action = Model.Filter.Action, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })" class="btn btn-success">
+                            <i class="bi bi-download"></i> @Localizer["ExportCSV"]
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header ">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> @Localizer["AuditLogEntries"]
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.AuditLogs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Localizer["Timestamp"]</th>
+                                <th>@Localizer["User"]</th>
+                                <th>@Localizer["Action"]</th>
+                                <th>@Localizer["Entity"]</th>
+                                <th>@Localizer["EntityID"]</th>
+                                <th>@Localizer["Description"]</th>
+                                <th>@Localizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.AuditLogs)
+                            {
+                                <tr>
+                                    <td>
+                                        <small class="text-muted">
+                                            @log.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(log.UserName))
+                                        {
+                                            <span class="badge bg-info">@log.UserName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">System</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(GetActionColor(log.Action))">
+                                            <i class="bi bi-@(GetActionIcon(log.Action))"></i> @log.Action
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <code class="text-primary">@log.EntityName</code>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted font-monospace">@log.EntityId</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(log.Description))
+                                        {
+                                            <span>@(log.Description.Length > 50 ? log.Description.Substring(0, 50) + "..." : log.Description)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = log.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> @Localizer["View"]
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.Pagination.TotalPages > 1)
+                {
+                    <div class="card-footer ">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item @(!Model.Pagination.HasPreviousPage ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, pageSize = Model.Pagination.PageSize, userName = Model.Filter.UserName, entityName = Model.Filter.EntityName, action = Model.Filter.Action, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })">
+                                        @Localizer["Previous"]
+                                    </a>
+                                </li>
+
+                                @for (int i = Math.Max(1, Model.Pagination.CurrentPage - 2); i <= Math.Min(Model.Pagination.TotalPages, Model.Pagination.CurrentPage + 2); i++)
+                                {
+                                    <li class="page-item @(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = Model.Pagination.PageSize, userName = Model.Filter.UserName, entityName = Model.Filter.EntityName, action = Model.Filter.Action, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(!Model.Pagination.HasNextPage ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, pageSize = Model.Pagination.PageSize, userName = Model.Filter.UserName, entityName = Model.Filter.EntityName, action = Model.Filter.Action, startDate = Model.Filter.StartDate, endDate = Model.Filter.EndDate })">
+                                        @Localizer["Next"]
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="text-center text-muted mt-2">
+                            <small>@string.Format(Localizer["ShowingEntries"].Value, (Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize + 1, Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount), Model.Pagination.TotalCount)</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">@Localizer["NoLogsFound"]</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetActionIcon(string action)
+    {
+        return action.ToLower() switch
+        {
+            "create" => "plus-circle",
+            "update" => "pencil-square",
+            "delete" => "trash",
+            "login" => "box-arrow-in-right",
+            "logout" => "box-arrow-right",
+            "view" => "eye",
+            "export" => "download",
+            "import" => "upload",
+            _ => "circle"
+        };
+    }
+
+    string GetActionColor(string action)
+    {
+        return action.ToLower() switch
+        {
+            "create" => "success",
+            "update" => "warning",
+            "delete" => "danger",
+            "login" => "info",
+            "logout" => "secondary",
+            "view" => "primary",
+            "export" => "success",
+            "import" => "info",
+            _ => "secondary"
+        };
+    }
+}

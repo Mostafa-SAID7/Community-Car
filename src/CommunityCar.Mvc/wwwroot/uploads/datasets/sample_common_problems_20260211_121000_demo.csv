@@ -1,0 +1,16 @@
+Make,Model,YearRange,Problem,Severity,AffectedMiles,RepairCost,Frequency,RecallIssued,TSBIssued
+Honda,Accord,2018-2020,Transmission Judder,Medium,30000-60000,2500,Common,No,Yes
+Toyota,Camry,2018-2019,Excessive Oil Consumption,High,50000-80000,3500,Occasional,Yes,Yes
+Ford,F-150,2015-2018,Cam Phaser Failure,High,80000-120000,4500,Common,No,Yes
+Chevrolet,Silverado,2019-2021,Lifter Failure,High,40000-70000,5000,Occasional,No,Yes
+Nissan,Altima,2013-2018,CVT Transmission Failure,High,60000-100000,4000,Common,Yes,Yes
+Jeep,Grand Cherokee,2011-2019,TIPM Failure,High,50000-90000,1200,Common,No,Yes
+Subaru,Outback,2010-2014,Head Gasket Failure,High,100000-150000,2500,Common,No,Yes
+BMW,3 Series,2012-2018,Timing Chain Issues,High,80000-120000,3500,Occasional,No,Yes
+Volkswagen,Jetta,2011-2016,DSG Transmission Problems,Medium,60000-100000,2800,Common,Yes,Yes
+Mazda,CX-5,2013-2016,Touchscreen Failure,Low,40000-80000,800,Occasional,No,Yes
+Hyundai,Sonata,2011-2019,Engine Seizure,High,70000-120000,6000,Rare,Yes,Yes
+Kia,Optima,2011-2019,Engine Failure,High,70000-120000,6000,Rare,Yes,Yes
+Ford,Focus,2012-2016,Dual Clutch Transmission,High,30000-60000,3000,Common,Yes,Yes
+Ram,1500,2019-2021,Electrical Issues,Medium,20000-50000,1500,Common,No,Yes
+Tesla,Model S,2012-2016,MCU Failure,Medium,60000-100000,2500,Common,No,Yes

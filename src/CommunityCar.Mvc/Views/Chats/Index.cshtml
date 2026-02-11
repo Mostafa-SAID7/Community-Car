@@ -35,7 +35,7 @@
 
             <div class="mb-3">
                 <div class="input-group shadow-sm rounded-pill overflow-hidden">
-                    <span class="input-group-text bg-white border-0 ps-4">
+                    <span class="input-group-text  border-0 ps-4">
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" id="searchConversations" class="form-control border-0 py-3" placeholder="Search conversations...">
@@ -113,7 +113,7 @@
         <!-- Friends List Sidebar -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 100px;">
-                <div class="card-header bg-white border-0 pt-4 pb-3">
+                <div class="card-header  border-0 pt-4 pb-3">
                     <h5 class="fw-bold mb-0">
                         <i class="fas fa-user-friends me-2 text-primary"></i>Friends
                     </h5>
@@ -122,7 +122,7 @@
                 <div class="card-body p-0">
                     @if (friends != null && friends.Any())
                     {
-                        <div class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                        <div class="list-group" style="max-height: 500px; overflow-y: auto;">
                             @foreach (var friend in friends.Take(20))
                             {
                                 <a href="@Url.Action("Conversation", "Chats", new { area = "Communications", id = friend.FriendId })" 
@@ -155,7 +155,7 @@
                         </div>
                         @if (friends.Count > 20)
                         {
-                            <div class="card-footer bg-white border-0 text-center py-3">
+                            <div class="card-footer  border-0 text-center py-3">
                                 <a asp-controller="Friends" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill">
                                     View All Friends (@friends.Count)
                                 </a>

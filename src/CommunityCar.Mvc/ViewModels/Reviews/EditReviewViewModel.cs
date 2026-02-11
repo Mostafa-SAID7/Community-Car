@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommunityCar.Mvc.ViewModels.Reviews;
@@ -25,4 +26,10 @@ public class EditReviewViewModel
     public string? Cons { get; set; }
 
     public bool IsRecommended { get; set; } = true;
+    
+    // Image upload support
+    public List<IFormFile>? Images { get; set; }
+    
+    [StringLength(2000)]
+    public string? ImageUrls { get; set; } // JSON array of uploaded image URLs
 }

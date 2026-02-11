@@ -1,0 +1,16 @@
+Make,Model,Year,OverallRating,FrontCrash,SideCrash,Rollover,ADAS,BlindSpot,LaneDeparture,AutoBraking,AdaptiveCruise
+Toyota,Camry,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Honda,Accord,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Ford,F-150,2023,5,5,5,3,Yes,Yes,Yes,Yes,Yes
+Chevrolet,Tahoe,2023,5,5,5,3,Yes,Yes,Yes,Yes,Yes
+Toyota,RAV4,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Honda,Civic,2023,5,5,5,4,Yes,Yes,Yes,Yes,Optional
+Mazda,CX-5,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Hyundai,Sonata,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Ford,Explorer,2023,5,5,5,3,Yes,Yes,Yes,Yes,Yes
+Nissan,Altima,2023,5,5,5,4,Yes,Yes,Yes,Yes,Optional
+Jeep,Grand Cherokee,2023,5,5,5,3,Yes,Yes,Yes,Yes,Yes
+BMW,330i,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Tesla,Model 3,2023,5,5,5,5,Yes,Yes,Yes,Yes,Yes
+Subaru,Outback,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes
+Volvo,XC90,2023,5,5,5,4,Yes,Yes,Yes,Yes,Yes

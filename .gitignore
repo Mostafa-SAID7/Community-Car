@@ -109,3 +109,8 @@ $RECYCLE.BIN/
 
 # Mac files
 .DS_Store
+
+# Uploaded files
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+!wwwroot/uploads/datasets/.gitkeep

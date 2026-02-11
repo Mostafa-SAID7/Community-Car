@@ -1,0 +1,21 @@
+RepairType,Category,AverageCost,LaborHours,PartsPrice,Difficulty,Frequency,Vehicle
+Engine Diagnostics,Diagnostic,95,1.0,0,Easy,Common,All
+Alternator Replacement,Electrical,450,2.5,280,Medium,Occasional,Sedan
+Starter Motor,Electrical,380,2.0,250,Medium,Occasional,All
+Water Pump,Cooling,520,3.5,180,Hard,Rare,All
+Timing Belt,Engine,850,5.0,200,Hard,Scheduled,Sedan
+Transmission Repair,Transmission,2800,12.0,1500,Expert,Rare,All
+Clutch Replacement,Transmission,1200,6.0,450,Hard,Occasional,Manual
+Radiator Replacement,Cooling,680,3.0,380,Medium,Rare,All
+Fuel Pump,Fuel System,580,2.5,320,Medium,Occasional,All
+Oxygen Sensor,Emissions,220,1.0,120,Easy,Common,All
+Catalytic Converter,Emissions,1850,3.0,1400,Medium,Rare,All
+Suspension Struts,Suspension,720,4.0,380,Medium,Occasional,All
+Wheel Bearing,Suspension,380,2.5,180,Medium,Occasional,All
+Power Steering Pump,Steering,520,3.0,280,Medium,Occasional,All
+AC Compressor,Climate,950,4.0,580,Hard,Occasional,All
+Headlight Assembly,Lighting,280,1.0,180,Easy,Occasional,All
+Windshield Replacement,Glass,350,2.0,250,Medium,Occasional,All
+Door Lock Actuator,Electrical,180,1.5,80,Easy,Occasional,All
+Window Regulator,Electrical,320,2.0,180,Medium,Occasional,All
+Exhaust System,Exhaust,680,3.0,380,Medium,Occasional,All

@@ -1,0 +1,339 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SystemIndexViewModel
+@{
+    ViewData["Title"] = "System Overview - Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/pages/system.css" />
+
+<div class="container-fluid system-container py-4">
+    <!-- Header -->
+    <div class="system-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-2 fw-bold">System Overview</h1>
+                <p class="mb-0 opacity-90">Monitor and manage your application system</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#clearCacheModal">
+                        <i class="fas fa-broom me-2"></i>Clear Cache
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-primary fw-bold mb-1">Application</div>
+                            <div class="h5 mb-0 fw-bold">@Model.Overview.SystemInfo.ApplicationName</div>
+                            <small class="text-muted">v@Model.Overview.SystemInfo.Version</small>
+                        </div>
+                        <div class="icon-circle bg-primary-subtle">
+                            <i class="fas fa-server text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-success fw-bold mb-1">Uptime</div>
+                            <div class="h5 mb-0 fw-bold">@Model.Overview.SystemInfo.Uptime.Days d</div>
+                            <small class="text-muted">@Model.Overview.SystemInfo.Uptime.Hours h @Model.Overview.SystemInfo.Uptime.Minutes m</small>
+                        </div>
+                        <div class="icon-circle bg-success-subtle">
+                            <i class="fas fa-clock text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-warning fw-bold mb-1">CPU Usage</div>
+                            <div class="h5 mb-0 fw-bold">@Model.Overview.Metrics.CpuUsage.ToString("F1")%</div>
+                            <small class="text-muted">@Model.Overview.SystemInfo.ProcessorCount cores</small>
+                        </div>
+                        <div class="icon-circle bg-warning-subtle">
+                            <i class="fas fa-microchip text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="summary-card border-left-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs text-uppercase text-info fw-bold mb-1">Memory</div>
+                            <div class="h5 mb-0 fw-bold">@Model.Overview.Metrics.UsedMemoryMB MB</div>
+                            <small class="text-muted">of @Model.Overview.Metrics.TotalMemoryMB MB</small>
+                        </div>
+                        <div class="icon-circle bg-info-subtle">
+                            <i class="fas fa-memory text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="system-tabs mb-4">
+        <ul class="nav system-nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" asp-action="Index">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>System Info</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Resources">
+                    <i class="fas fa-chart-area"></i>
+                    <span>Resources</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Services">
+                    <i class="fas fa-cogs"></i>
+                    <span>Services</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Logs">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Logs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="Configuration">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Configuration</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- System Resources -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>System Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="resource-item">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold">CPU Usage</span>
+                                    <span class="text-muted">@Model.Overview.Resources.CpuUsagePercentage.ToString("F1")%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: @Model.Overview.Resources.CpuUsagePercentage%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="resource-item">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold">Memory Usage</span>
+                                    <span class="text-muted">@Model.Overview.Resources.MemoryUsagePercentage.ToString("F1")%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-info" role="progressbar" 
+                                         style="width: @Model.Overview.Resources.MemoryUsagePercentage%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="resource-item">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold">Disk Usage</span>
+                                    <span class="text-muted">@Model.Overview.Resources.DiskUsagePercentage.ToString("F1")%</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                         style="width: @Model.Overview.Resources.DiskUsagePercentage%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="resource-item">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-bold">Threads</span>
+                                    <span class="text-muted">@Model.Overview.Resources.ThreadCount active</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Status -->
+            <div class="card shadow-sm">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Services Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Version</th>
+                                    <th>Last Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var service in Model.Overview.Services)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@service.Name</strong>
+                                            @if (!string.IsNullOrEmpty(service.Description))
+                                            {
+                                                <br /><small class="text-muted">@service.Description</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle"></i> @service.Status
+                                            </span>
+                                        </td>
+                                        <td>@service.Version</td>
+                                        <td>@service.LastChecked?.ToString("HH:mm:ss")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- System Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>System Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-item mb-3">
+                        <small class="text-muted">Environment</small>
+                        <div class="fw-bold">@Model.Overview.SystemInfo.Environment</div>
+                    </div>
+                    <div class="info-item mb-3">
+                        <small class="text-muted">Framework</small>
+                        <div class="fw-bold">@Model.Overview.SystemInfo.FrameworkVersion</div>
+                    </div>
+                    <div class="info-item mb-3">
+                        <small class="text-muted">Operating System</small>
+                        <div class="fw-bold">@Model.Overview.SystemInfo.OperatingSystem</div>
+                    </div>
+                    <div class="info-item mb-3">
+                        <small class="text-muted">Machine Name</small>
+                        <div class="fw-bold">@Model.Overview.SystemInfo.MachineName</div>
+                    </div>
+                    <div class="info-item">
+                        <small class="text-muted">Started</small>
+                        <div class="fw-bold">@Model.Overview.SystemInfo.StartTime.ToString("MMM dd, yyyy HH:mm")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Info" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>View Full Info
+                        </a>
+                        <a asp-action="Resources" class="btn btn-outline-success">
+                            <i class="fas fa-chart-area me-2"></i>Resource Monitor
+                        </a>
+                        <a asp-action="Logs" class="btn btn-outline-secondary">
+                            <i class="fas fa-file-alt me-2"></i>View Logs
+                        </a>
+                        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#clearCacheModal">
+                            <i class="fas fa-broom me-2"></i>Clear Cache
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clear Cache Modal -->
+<div class="modal fade" id="clearCacheModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clear Cache</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to clear the application cache?</p>
+                <p class="text-muted mb-0">This will force garbage collection and may temporarily affect performance.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="ClearCache" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning">Clear Cache</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function refreshData() {
+            location.reload();
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+    </script>
+}

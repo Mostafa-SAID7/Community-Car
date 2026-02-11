@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <div class="chat-messages custom-scrollbar" id="chatMessages">
+            <div class="chat-messages custom-scrollbar" id="chatMessages" style="overflow-y: auto; max-height: calc(100vh - 300px);">
                 <div class="message received assistant">
                     <div class="message-bubble">
                         <div class="welcome-message">
@@ -100,7 +100,7 @@
             <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>@Localizer["Suggested Topics"]</h6>
         </div>
         <div class="card-body">
-            <div class="list-group list-group-flush">
+            <div class="list-group">
                 <button class="list-group-item list-group-item-action border-0 suggested-topic" data-prompt="How do I customize my profile?">
                     <i class="fas fa-user-circle text-primary me-2"></i>
                     @Localizer["Profile Settings"]

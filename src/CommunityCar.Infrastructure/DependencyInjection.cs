@@ -177,6 +177,7 @@ public static class DependencyInjection
 
         // Existing Services
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IReportExportService, ReportExportService>();
         services.AddScoped<IHealthService, HealthService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IKPIService, KPIService>();

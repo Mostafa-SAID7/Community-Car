@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
-<div class="list-group list-group-flush border-0">
+<div class="list-group border-0">
     <a asp-area="" asp-controller="Feed" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Feed" ? "active" : "")">
         <i class="fas fa-home fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Feed"].Value</span>
@@ -71,7 +71,7 @@
     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
     {
         <div class="admin-section-header">@Localizer["Admin"].Value</div>
-        <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Overview" ? "active" : "")">
+        <a asp-area="Dashboard" asp-controller="Dashboard" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
             <i class="fas fa-tachometer-alt fa-fw me-3"></i>
             <span class="fw-medium">@Localizer["Dashboard"].Value</span>
         </a>

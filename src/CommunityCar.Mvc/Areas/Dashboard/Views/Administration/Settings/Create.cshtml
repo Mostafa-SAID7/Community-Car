@@ -1,0 +1,163 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.CreateSystemSettingViewModel
+@using CommunityCar.Domain.Enums.Dashboard.settings
+@{
+    ViewData["Title"] = "Create System Setting";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h1 class="h2 mb-2 fw-bold">Create System Setting</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Settings</a></li>
+                <li class="breadcrumb-item active">Create</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>New Setting Details</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Key" class="form-label fw-bold">Key <span class="text-danger">*</span></label>
+                            <input asp-for="Key" class="form-control" placeholder="e.g., App.MaxUploadSize" />
+                            <span asp-validation-for="Key" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Use alphanumeric characters, dots, underscores, and hyphens only.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Value" class="form-label fw-bold">Value <span class="text-danger">*</span></label>
+                            <textarea asp-for="Value" class="form-control" rows="3" placeholder="Enter setting value"></textarea>
+                            <span asp-validation-for="Value" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Category" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+                                <select asp-for="Category" class="form-select">
+                                    <option value="">-- Select Category --</option>
+                                    @foreach (SettingCategory category in Enum.GetValues(typeof(SettingCategory)))
+                                    {
+                                        <option value="@category">@category</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DataType" class="form-label fw-bold">Data Type <span class="text-danger">*</span></label>
+                                <select asp-for="DataType" class="form-select">
+                                    <option value="">-- Select Data Type --</option>
+                                    @foreach (SettingDataType dataType in Enum.GetValues(typeof(SettingDataType)))
+                                    {
+                                        <option value="@dataType">@dataType</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="DataType" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" 
+                                      placeholder="Describe what this setting controls"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DefaultValue" class="form-label fw-bold">Default Value</label>
+                            <input asp-for="DefaultValue" class="form-control" placeholder="Optional default value" />
+                            <span asp-validation-for="DefaultValue" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                This value will be used when resetting the setting.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DisplayOrder" class="form-label fw-bold">Display Order</label>
+                            <input asp-for="DisplayOrder" type="number" class="form-control" />
+                            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Lower numbers appear first in the list.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsReadOnly" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsReadOnly" class="form-check-label">
+                                    Mark as Read-Only
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                Read-only settings cannot be edited or deleted through the UI.
+                            </small>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Setting
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm bg-light">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Help</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">Setting Key Guidelines</h6>
+                    <ul class="small">
+                        <li>Use descriptive, hierarchical names</li>
+                        <li>Example: <code>Email.SmtpServer</code></li>
+                        <li>Avoid spaces and special characters</li>
+                    </ul>
+
+                    <h6 class="fw-bold mt-3">Categories</h6>
+                    <p class="small">Group related settings together using categories for better organization.</p>
+
+                    <h6 class="fw-bold mt-3">Data Types</h6>
+                    <ul class="small">
+                        <li><strong>String:</strong> Text values</li>
+                        <li><strong>Integer:</strong> Whole numbers</li>
+                        <li><strong>Boolean:</strong> True/False</li>
+                        <li><strong>Decimal:</strong> Numbers with decimals</li>
+                        <li><strong>Json:</strong> Complex objects</li>
+                    </ul>
+
+                    <h6 class="fw-bold mt-3">Best Practices</h6>
+                    <ul class="small">
+                        <li>Always provide a description</li>
+                        <li>Set appropriate default values</li>
+                        <li>Use read-only for critical settings</li>
+                        <li>Order settings logically</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

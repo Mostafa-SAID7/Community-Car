@@ -1,0 +1,42 @@
+Service,Category,Price,Mileage,Date,Vehicle,ServiceProvider,Duration,PartsUsed,LaborCost,PartsCost,Warranty,NextServiceDue,Urgency,Notes
+Oil Change,Maintenance,45.99,5000,2026-01-15,Toyota Camry,Quick Lube Plus,30,Synthetic 5W-30,15.00,30.99,3 months,8000,Normal,Used full synthetic oil
+Tire Rotation,Maintenance,25.00,10000,2026-01-20,Honda Accord,Tire World,45,None,25.00,0.00,None,15000,Normal,All tires rotated and balanced
+Brake Pads,Repair,285.50,35000,2026-01-25,Ford F-150,Auto Care Center,120,Ceramic Pads,125.00,160.50,12 months,50000,High,Front brake pads replaced
+Air Filter,Maintenance,32.99,15000,2026-02-01,Toyota Camry,Quick Lube Plus,15,OEM Filter,12.00,20.99,6 months,30000,Low,Engine air filter replacement
+Battery Replacement,Repair,159.99,48000,2026-02-05,Honda Accord,Battery Depot,45,Interstate 65,40.00,119.99,36 months,N/A,High,Old battery failed load test
+Oil Change,Maintenance,52.99,10000,2026-02-08,Ford F-150,Dealer Service,45,Full Synthetic,20.00,32.99,3 months,15000,Normal,Includes multi-point inspection
+Transmission Fluid,Maintenance,89.99,30000,2026-02-10,Toyota Camry,Transmission Specialists,90,ATF Type IV,45.00,44.99,12 months,60000,Normal,Fluid and filter changed
+Brake Inspection,Maintenance,0.00,40000,2026-02-11,Honda Accord,Auto Care Center,30,None,0.00,0.00,None,45000,Low,Free inspection - no issues found
+Tire Replacement,Repair,425.00,55000,2026-02-12,Ford F-150,Tire World,120,Michelin LTX,80.00,345.00,50000 miles,N/A,High,All four tires replaced
+Coolant Flush,Maintenance,79.99,60000,2026-02-15,Toyota Camry,Dealer Service,60,OEM Coolant,35.00,44.99,24 months,90000,Normal,Complete cooling system flush
+Spark Plugs,Maintenance,125.00,75000,2026-02-18,Honda Accord,Auto Care Center,90,Iridium Plugs,55.00,70.00,100000 miles,175000,Normal,All 4 plugs replaced
+Oil Change,Maintenance,48.99,15000,2026-02-20,Toyota Camry,Quick Lube Plus,30,Synthetic Blend,15.00,33.99,3 months,20000,Normal,Synthetic blend oil used
+Alignment,Maintenance,95.00,20000,2026-02-22,Ford F-150,Tire World,60,None,95.00,0.00,6 months,N/A,Medium,4-wheel alignment performed
+Wiper Blades,Maintenance,24.99,12000,2026-02-25,Honda Accord,Auto Parts Store,10,Bosch Icon,5.00,19.99,12 months,N/A,Low,Front wiper blades only
+Cabin Air Filter,Maintenance,28.99,18000,2026-02-28,Toyota Camry,Quick Lube Plus,15,HEPA Filter,10.00,18.99,12 months,30000,Low,Improved air quality
+Timing Belt,Repair,850.00,90000,2026-03-01,Honda Accord,Dealer Service,360,OEM Belt Kit,350.00,500.00,60000 miles,150000,Critical,Includes water pump replacement
+Fuel Filter,Maintenance,45.00,25000,2026-03-03,Ford F-150,Auto Care Center,45,OEM Filter,20.00,25.00,30000 miles,55000,Normal,Fuel system maintenance
+Serpentine Belt,Maintenance,85.00,45000,2026-03-05,Toyota Camry,Quick Lube Plus,60,Gates Belt,35.00,50.00,50000 miles,95000,Medium,Belt showing wear
+Wheel Bearing,Repair,320.00,65000,2026-03-07,Honda Accord,Auto Care Center,180,Timken Bearing,150.00,170.00,24 months,N/A,High,Front passenger bearing replaced
+Exhaust Repair,Repair,275.00,70000,2026-03-10,Ford F-150,Muffler Shop,120,Muffler,100.00,175.00,12 months,N/A,Medium,Muffler replacement
+Power Steering Flush,Maintenance,69.99,50000,2026-03-12,Toyota Camry,Dealer Service,45,ATF Fluid,30.00,39.99,30000 miles,80000,Normal,Complete system flush
+Headlight Bulbs,Maintenance,35.00,22000,2026-03-15,Honda Accord,Auto Parts Store,20,LED Bulbs,10.00,25.00,24 months,N/A,Low,Both headlights replaced
+Differential Service,Maintenance,125.00,40000,2026-03-18,Ford F-150,Dealer Service,75,Gear Oil,50.00,75.00,40000 miles,80000,Normal,Rear differential fluid change
+AC Recharge,Maintenance,89.99,35000,2026-03-20,Toyota Camry,AC Specialists,60,R-134a Refrigerant,40.00,49.99,12 months,N/A,Medium,System recharged and tested
+Shock Absorbers,Repair,450.00,80000,2026-03-22,Honda Accord,Auto Care Center,240,Monroe Shocks,180.00,270.00,50000 miles,130000,High,All four shocks replaced
+Engine Diagnostic,Diagnostic,95.00,28000,2026-03-25,Ford F-150,Dealer Service,60,None,95.00,0.00,None,N/A,High,Check engine light diagnosis
+Radiator Hose,Repair,125.00,55000,2026-03-27,Toyota Camry,Auto Care Center,90,Upper Hose,45.00,80.00,24 months,N/A,High,Upper radiator hose replaced
+Fuel Injector Cleaning,Maintenance,150.00,60000,2026-03-29,Honda Accord,Fuel System Specialists,120,Cleaning Solution,80.00,70.00,30000 miles,90000,Normal,Complete fuel system cleaning
+Windshield Replacement,Repair,350.00,32000,2026-04-01,Ford F-150,Glass Shop,180,OEM Windshield,100.00,250.00,Lifetime,N/A,High,Rock chip caused crack
+Throttle Body Cleaning,Maintenance,75.00,42000,2026-04-03,Toyota Camry,Auto Care Center,60,Cleaner,40.00,35.00,20000 miles,62000,Normal,Improved idle quality
+CV Joint Replacement,Repair,380.00,72000,2026-04-05,Honda Accord,Transmission Specialists,210,CV Axle,150.00,230.00,24 months,N/A,High,Front driver side CV joint
+Catalytic Converter,Repair,1250.00,95000,2026-04-08,Ford F-150,Exhaust Specialists,300,OEM Converter,350.00,900.00,50000 miles,N/A,Critical,Failed emissions test
+PCV Valve,Maintenance,35.00,48000,2026-04-10,Toyota Camry,Quick Lube Plus,30,OEM Valve,15.00,20.00,30000 miles,78000,Low,Routine maintenance
+Alternator Replacement,Repair,425.00,85000,2026-04-12,Honda Accord,Auto Care Center,150,Remanufactured,175.00,250.00,24 months,N/A,Critical,Battery not charging
+Starter Motor,Repair,350.00,78000,2026-04-15,Ford F-150,Auto Care Center,120,Remanufactured,120.00,230.00,24 months,N/A,Critical,Engine wouldn't start
+Oxygen Sensor,Repair,185.00,68000,2026-04-17,Toyota Camry,Dealer Service,75,OEM Sensor,60.00,125.00,50000 miles,N/A,High,Bank 1 sensor replaced
+Wheel Alignment,Maintenance,85.00,26000,2026-04-20,Honda Accord,Tire World,60,None,85.00,0.00,6 months,N/A,Normal,2-wheel alignment
+Door Lock Actuator,Repair,225.00,52000,2026-04-22,Ford F-150,Dealer Service,90,OEM Actuator,90.00,135.00,12 months,N/A,Medium,Driver door lock repair
+Mass Airflow Sensor,Repair,275.00,62000,2026-04-25,Toyota Camry,Auto Care Center,60,OEM Sensor,75.00,200.00,24 months,N/A,High,Poor fuel economy issue
+Thermostat Replacement,Repair,165.00,58000,2026-04-27,Honda Accord,Auto Care Center,105,OEM Thermostat,80.00,85.00,24 months,N/A,High,Engine overheating
+Brake Fluid Flush,Maintenance,79.99,35000,2026-04-29,Ford F-150,Dealer Service,45,DOT 3 Fluid,35.00,44.99,24 months,60000,Normal,Complete brake system flush

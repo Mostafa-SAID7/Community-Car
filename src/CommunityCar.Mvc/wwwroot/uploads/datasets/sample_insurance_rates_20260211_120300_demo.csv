@@ -1,0 +1,16 @@
+Vehicle,Make,Model,Year,AnnualPremium,MonthlyPremium,Coverage,Deductible,DriverAge,State,SafetyRating
+Sedan,Toyota,Camry,2022,1450,121,Full,500,35,CA,5
+Sedan,Honda,Accord,2021,1380,115,Full,500,42,TX,5
+Truck,Ford,F-150,2023,1850,154,Full,1000,28,FL,4
+SUV,Toyota,RAV4,2022,1520,127,Full,500,38,NY,5
+Sedan,Tesla,Model 3,2023,2100,175,Full,1000,31,CA,5
+SUV,Chevrolet,Tahoe,2023,1980,165,Full,1000,45,TX,4
+Sedan,Honda,Civic,2021,1250,104,Full,500,25,FL,5
+Truck,Ram,1500,2023,1920,160,Full,1000,33,TX,4
+SUV,Mazda,CX-5,2023,1420,118,Full,500,40,CA,5
+Sedan,Hyundai,Sonata,2022,1350,113,Full,500,36,NY,4
+SUV,Ford,Explorer,2023,1680,140,Full,1000,44,FL,4
+Sedan,Nissan,Altima,2020,1280,107,Full,500,29,CA,4
+Truck,Toyota,Tundra,2023,1890,158,Full,1000,37,TX,4
+SUV,Jeep,Grand Cherokee,2022,1750,146,Full,1000,41,NY,4
+Sedan,BMW,330i,2023,2250,188,Full,1000,32,CA,5

@@ -207,25 +207,40 @@
 /* ===== SCROLLBAR ===== */
 .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: var(--chat-border) transparent;
+    scrollbar-color: rgba(var(--primary-rgb), 0.3) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--chat-border);
-    border-radius: 3px;
+    background-color: rgba(var(--primary-rgb), 0.3);
+    border-radius: 4px;
+    transition: background-color 0.2s;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: var(--chat-muted);
+    background-color: rgba(var(--primary-rgb), 0.5);
+}
+
+/* Dark mode scrollbar */
+[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* ===== TYPING INDICATOR ===== */

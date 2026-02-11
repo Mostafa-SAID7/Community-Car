@@ -7,46 +7,6 @@
     var searchTerm = ViewBag.SearchTerm as string;
 }
 
-@section Styles {
-    <style>
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            backdrop-filter: blur(2px);
-            border-radius: var(--radius-xl);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .loading-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .question-list-wrapper {
-            position: relative;
-            min-height: 200px;
-        }
-        
-        /* Fade transition for list content */
-        #question-list-container {
-            transition: opacity 0.2s ease;
-        }
-        #question-list-container.fading {
-            opacity: 0.5;
-        }
-    </style>
-}
-
 
 @{
     ViewData["HeaderTitle"] = Localizer["Questions & Answers"];
@@ -108,7 +68,7 @@
                     <i class="fas fa-search me-1"></i>@Localizer["Search"]
                 </label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
+                    <span class="input-group-text  border-end-0">
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" name="searchTerm" id="searchInput" class="form-control border-start-0 ps-0" 

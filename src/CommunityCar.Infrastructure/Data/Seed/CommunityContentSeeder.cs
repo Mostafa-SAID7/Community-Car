@@ -45,14 +45,15 @@ public static class PostSeeder
         post1.IncrementViews(); post1.IncrementLikes();
         posts.Add(post1);
 
-        // Post 2: Car Photo
+        // Post 2: Car Photo (placeholder - image can be uploaded later)
         var post2 = new Post(
             "My new project car!",
             "Just picked up this beauty. It needs some work but I'm excited to get started.",
             PostType.Image,
             users[1].Id
         );
-        post2.SetMedia("/uploads/posts/project-car.jpg", null);
+        // Note: Image path set to null - users can upload actual images through the UI
+        post2.SetMedia(null, null);
         post2.Publish();
         posts.Add(post2);
 

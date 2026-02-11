@@ -11,29 +11,7 @@
     ViewData["HeaderIcon"] = "fas fa-edit";
 }
 
-@section Styles {
-    <style>
-        .guide-form-card {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .difficulty-option {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid #edf2f7;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .difficulty-option:hover {
-            border-color: #cbd5e0;
-        }
-        .difficulty-option.active[data-val="Easy"] { border-color: #48bb78; background: #f0fff4; color: #48bb78; }
-        .difficulty-option.active[data-val="Intermediate"] { border-color: #ed8936; background: #fffaf0; color: #ed8936; }
-        .difficulty-option.active[data-val="Advanced"] { border-color: #f56565; background: #fff5f5; color: #f56565; }
-    </style>
-}
+
 
 <partial name="_InnerPageHeader" />
 

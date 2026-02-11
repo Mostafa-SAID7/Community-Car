@@ -180,7 +180,7 @@
                         <div class="card-body">
                             @if (Model.RecentQuestions.Any())
                             {
-                                <div class="list-group list-group-flush">
+                                <div class="list-group">
                                     @foreach (var question in Model.RecentQuestions)
                                     {
                                         <a href="/Questions/Details/@question.Id" class="profile-list-item list-group-item list-group-item-action">

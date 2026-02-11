@@ -1,0 +1,147 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.EditSystemSettingViewModel
+@using CommunityCar.Domain.Enums.Dashboard.settings
+@{
+    ViewData["Title"] = $"Edit {Model.Key}";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h1 class="h2 mb-2 fw-bold">Edit System Setting</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Settings</a></li>
+                <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.Key</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Setting: @Model.Key</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Key" class="form-label fw-bold">Key</label>
+                            <input asp-for="Key" class="form-control" readonly disabled />
+                            <small class="form-text text-muted">
+                                The key cannot be changed after creation.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Value" class="form-label fw-bold">Value <span class="text-danger">*</span></label>
+                            <textarea asp-for="Value" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Value" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Category" class="form-label fw-bold">Category</label>
+                                <select asp-for="Category" class="form-select" disabled>
+                                    @foreach (SettingCategory category in Enum.GetValues(typeof(SettingCategory)))
+                                    {
+                                        <option value="@category">@category</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">
+                                    Category cannot be changed.
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DataType" class="form-label fw-bold">Data Type</label>
+                                <select asp-for="DataType" class="form-select" disabled>
+                                    @foreach (SettingDataType dataType in Enum.GetValues(typeof(SettingDataType)))
+                                    {
+                                        <option value="@dataType">@dataType</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">
+                                    Data type cannot be changed.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" 
+                                      placeholder="Describe what this setting controls"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DisplayOrder" class="form-label fw-bold">Display Order</label>
+                            <input asp-for="DisplayOrder" type="number" class="form-control" />
+                            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Lower numbers appear first in the list.
+                            </small>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm bg-light">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Edit Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-lock me-2"></i>
+                        <strong>Note:</strong> Key, Category, and Data Type cannot be modified after creation.
+                    </div>
+
+                    <h6 class="fw-bold">What You Can Edit</h6>
+                    <ul class="small">
+                        <li>Setting value</li>
+                        <li>Description</li>
+                        <li>Display order</li>
+                    </ul>
+
+                    <h6 class="fw-bold mt-3">Value Guidelines</h6>
+                    <p class="small">
+                        Ensure the value matches the data type:
+                    </p>
+                    <ul class="small">
+                        <li><strong>String:</strong> Any text</li>
+                        <li><strong>Integer:</strong> Whole numbers only</li>
+                        <li><strong>Boolean:</strong> true or false</li>
+                        <li><strong>Decimal:</strong> Numbers with decimals</li>
+                        <li><strong>Json:</strong> Valid JSON format</li>
+                    </ul>
+
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> Changing system settings may affect application behavior. Test changes carefully.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

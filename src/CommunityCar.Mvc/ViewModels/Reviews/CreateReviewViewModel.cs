@@ -1,23 +1,22 @@
 using CommunityCar.Domain.Enums.Community.reviews;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommunityCar.Mvc.ViewModels.Reviews;
 
 public class CreateReviewViewModel
 {
-    [Required]
-    public Guid EntityId { get; set; }
+    // Make EntityId and EntityType optional for standalone reviews
+    public Guid? EntityId { get; set; }
 
-    [Required]
     [StringLength(100)]
-    public string EntityType { get; set; } = string.Empty;
+    public string? EntityType { get; set; }
 
     [Required]
     public ReviewType Type { get; set; }
 
     [Required(ErrorMessage = "Rating is required")]
-    [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
-    public decimal Rating { get; set; }
+    public decimal Rating { get; set; } = 2.5m; // Default to 2.5 stars
 
     [Required(ErrorMessage = "Title is required")]
     [StringLength(200, ErrorMessage = "Title cannot exceed 200 characters")]
@@ -38,4 +37,14 @@ public class CreateReviewViewModel
     public bool IsRecommended { get; set; } = true;
 
     public Guid? GroupId { get; set; }
+    
+    // Add subject field for standalone reviews
+    [StringLength(200)]
+    public string? Subject { get; set; }
+    
+    // Image upload support
+    public List<IFormFile>? Images { get; set; }
+    
+    [StringLength(2000)]
+    public string? ImageUrls { get; set; } // JSON array of uploaded image URLs
 }

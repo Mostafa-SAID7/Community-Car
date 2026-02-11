@@ -8,7 +8,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.analytics;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("{culture}/Dashboard/Analytics/Content")]
+[Route("{culture}/Dashboard/Analytics/Reports/Content")]
 public class ContentAnalyticsController : Controller
 {
     private readonly IQuestionService _questionService;

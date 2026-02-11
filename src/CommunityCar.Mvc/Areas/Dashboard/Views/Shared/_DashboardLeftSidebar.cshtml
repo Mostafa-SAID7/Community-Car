@@ -1,66 +1,54 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
-<div class="list-group list-group-flush border-0">
-    <div class="px-3 py-2 text-muted text-uppercase fw-bold small">Dashboards</div>
+<div class="list-group border-0">
+    <!-- Overview Section -->
+    <div class="px-3 py-2 text-muted text-uppercase fw-bold small">Overview</div>
     
-    <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Overview" ? "active" : "")">
+    <a asp-area="Dashboard" asp-controller="Dashboard" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
         <i class="fas fa-gauge-high fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Overview"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="KPIs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "KPIs" ? "active" : "")">
-        <i class="fas fa-chart-line fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["KPIs"]</span>
-    </a>
-    <a asp-area="Dashboard" asp-controller="Trends" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Trends" ? "active" : "")">
-        <i class="fas fa-arrow-trend-up fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Trends"]</span>
-    </a>
 
-    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">Insights</div>
-    <a asp-area="Dashboard" asp-controller="UserAnalytics" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserAnalytics" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentAnalytics") ? "active" : "")">
-        <i class="fas fa-chart-simple fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Analytics"]</span>
-    </a>
+    <!-- Analytics Section -->
+    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">Analytics</div>
     <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserReports" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentReports") ? "active" : "")">
         <i class="fas fa-file-chart-pie fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Reports"]</span>
     </a>
     <a asp-area="Dashboard" asp-controller="UserActivity" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserActivity" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity") ? "active" : "")">
         <i class="fas fa-clock-rotate-left fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Activity"]</span>
+        <span class="fw-medium">@Localizer["User Activity"]</span>
     </a>
 
-    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">Management</div>
-    <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
-        <i class="fas fa-sliders fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Management"]</span>
-    </a>
-    <a asp-area="Dashboard" asp-controller="Widgets" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Widgets" ? "active" : "")">
-        <i class="fas fa-shapes fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Widgets"]</span>
-    </a>
-    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
-        <i class="fas fa-clipboard-check fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Audit Logs"]</span>
-    </a>
-
-    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">System</div>
+    <!-- Monitoring Section -->
+    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">Monitoring</div>
     <a asp-area="Dashboard" asp-controller="Health" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Health" ? "active" : "")">
         <i class="fas fa-heart-pulse fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Health"]</span>
+    </a>
+    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
+        <i class="fas fa-clipboard-check fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Audit"]</span>
     </a>
     <a asp-area="Dashboard" asp-controller="System" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "System" ? "active" : "")">
         <i class="fas fa-microchip fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["System"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="Localization" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
-        <i class="fas fa-language fa-fw me-3"></i>
-        <span class="fw-medium">@Localizer["Localization"]</span>
+
+    <!-- Administration Section -->
+    <div class="mt-3 px-3 py-2 text-muted text-uppercase fw-bold small">Administration</div>
+    <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
+        <i class="fas fa-sliders fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Management"]</span>
     </a>
     <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Security" ? "active" : "")">
         <i class="fas fa-shield-halved fa-fw me-3"></i>
         <span class="fw-medium">@Localizer["Security"]</span>
+    </a>
+    <a asp-area="Dashboard" asp-controller="Localization" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
+        <i class="fas fa-language fa-fw me-3"></i>
+        <span class="fw-medium">@Localizer["Localization"]</span>
     </a>
     <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
         <i class="fas fa-gear fa-fw me-3"></i>
@@ -73,4 +61,3 @@
         <span class="fw-medium">@Localizer["Back to Main Site"]</span>
     </a>
 </div>
-

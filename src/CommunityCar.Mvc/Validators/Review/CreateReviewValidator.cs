@@ -8,14 +8,10 @@ public class CreateReviewValidator : AbstractValidator<CreateReviewViewModel>
 {
     public CreateReviewValidator()
     {
-        RuleFor(x => x.EntityId)
-            .NotEmpty()
-            .WithMessage("Entity ID is required");
-
+        // EntityId and EntityType are now optional for standalone reviews
         RuleFor(x => x.EntityType)
-            .NotEmpty()
-            .WithMessage("Entity type is required")
             .MaximumLength(100)
+            .When(x => !string.IsNullOrEmpty(x.EntityType))
             .WithMessage("Entity type cannot exceed 100 characters");
 
         RuleFor(x => x.Type)
@@ -24,7 +20,7 @@ public class CreateReviewValidator : AbstractValidator<CreateReviewViewModel>
 
         RuleFor(x => x.Rating)
             .Must(BeValidRating)
-            .WithMessage($"Rating must be between {Rating.Min} and {Rating.Max} in increments of {Rating.Step}");
+            .WithMessage($"Rating must be between 1 and {Rating.Max} in increments of {Rating.Step}");
 
         RuleFor(x => x.Title)
             .NotEmpty()
@@ -51,10 +47,21 @@ public class CreateReviewValidator : AbstractValidator<CreateReviewViewModel>
             .MaximumLength(1000)
             .When(x => !string.IsNullOrEmpty(x.Cons))
             .WithMessage("Cons cannot exceed 1000 characters");
+        
+        // Image validation
+        RuleFor(x => x.Images)
+            .Must(images => images == null || images.Count <= 5)
+            .WithMessage("You can upload maximum 5 images")
+            .Must(images => images == null || images.All(img => img.Length <= 5 * 1024 * 1024))
+            .WithMessage("Each image must be less than 5MB");
     }
 
     private bool BeValidRating(decimal rating)
     {
+        // Rating must be between 1 and 5
+        if (rating < 1 || rating > 5)
+            return false;
+            
         try
         {
             Rating.Create(rating);

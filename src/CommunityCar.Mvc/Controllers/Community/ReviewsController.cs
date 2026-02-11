@@ -137,7 +137,7 @@ public class ReviewsController : Controller
     // GET: Reviews/Create
     [Authorize]
     [HttpGet("Create")]
-    public IActionResult Create(Guid entityId, string entityType)
+    public IActionResult Create(Guid? entityId, string? entityType)
     {
         var model = new CreateReviewViewModel
         {
@@ -153,7 +153,8 @@ public class ReviewsController : Controller
     [Authorize]
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
-    [RateLimit("CreateReview", maxRequests: 3, timeWindowSeconds: 300)] // Max 3 reviews per 5 minutes
+    // Temporarily increased for development/testing - reduce in production
+    [RateLimit("CreateReview", maxRequests: 100, timeWindowSeconds: 300)] // Max 100 reviews per 5 minutes (for testing)
     public async Task<IActionResult> Create(CreateReviewViewModel model)
     {
         try
@@ -175,25 +176,32 @@ public class ReviewsController : Controller
 
             var userId = GetCurrentUserId() ?? throw new UnauthorizedAccessException();
 
-            // Check for duplicate review (one review per entity per user)
-            var existingReview = await _reviewService.GetUserReviewForEntityAsync(userId, model.EntityId, model.EntityType);
-            if (existingReview != null)
-            {
-                var errorMessage = _localizer["YouHaveAlreadyReviewedThisItem"].Value;
-                
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = errorMessage });
-                }
+            // For standalone reviews (no entity), use a generated GUID
+            var targetEntityId = model.EntityId ?? Guid.NewGuid();
+            var targetEntityType = model.EntityType ?? "General";
 
-                ModelState.AddModelError("", errorMessage);
-                ViewBag.Types = Enum.GetValues<ReviewType>();
-                return View(model);
+            // Check for duplicate review only if reviewing a specific entity
+            if (model.EntityId.HasValue && !string.IsNullOrEmpty(model.EntityType))
+            {
+                var existingReview = await _reviewService.GetUserReviewForEntityAsync(userId, targetEntityId, targetEntityType);
+                if (existingReview != null)
+                {
+                    var errorMessage = _localizer["YouHaveAlreadyReviewedThisItem"].Value;
+                    
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new { success = false, message = errorMessage });
+                    }
+
+                    ModelState.AddModelError("", errorMessage);
+                    ViewBag.Types = Enum.GetValues<ReviewType>();
+                    return View(model);
+                }
             }
 
             var review = await _reviewService.CreateReviewAsync(
-                model.EntityId,
-                model.EntityType,
+                targetEntityId,
+                targetEntityType,
                 model.Type,
                 userId,
                 model.Rating,
@@ -206,7 +214,7 @@ public class ReviewsController : Controller
                 model.GroupId);
 
             _logger.LogInformation("User {UserId} created review {ReviewId} for {EntityType} {EntityId}",
-                userId, review.Id, model.EntityType, model.EntityId);
+                userId, review.Id, targetEntityType, targetEntityId);
 
             var successMessage = _localizer["ReviewSubmittedForApproval"].Value;
 

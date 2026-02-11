@@ -26,7 +26,8 @@ const PostHubConnection = (function() {
             return;
         }
 
-        const hubUrl = CultureHelper.addCultureToUrl('/postHub');
+        // SignalR hubs don't use culture-prefixed URLs
+        const hubUrl = '/postHub';
         
         connection = new signalR.HubConnectionBuilder()
             .withUrl(hubUrl)

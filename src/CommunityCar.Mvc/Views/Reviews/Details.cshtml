@@ -10,74 +10,7 @@
 }
 @using CommunityCar.Domain.Enums.Community.friends
 
-@section Styles {
-    <style>
-        .rating-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 24px;
-        }
-        .rating-box {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-        .star-rating {
-            color: #f6ad55;
-            font-size: 1.25rem;
-        }
-        .pro-con-card {
-            border: none;
-            border-radius: 16px;
-        }
-        .pro-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        .pro-list li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 0.5rem;
-        }
-        .pro-list li:before {
-            content: '\f00c';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            left: 0;
-            color: #48bb78;
-        }
-        .con-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        .con-list li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 0.5rem;
-        }
-        .con-list li:before {
-            content: '\f00d';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            left: 0;
-            color: #f56565;
-        }
-        .rating-bar {
-            height: 8px;
-            background: #edf2f7;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .rating-bar-fill {
-            height: 100%;
-            background: #667eea;
-        }
-    </style>
-}
+
 
 @{
     ViewData["HeaderTitle"] = review.Title;
@@ -90,15 +23,42 @@
 
 <partial name="_InnerPageHeader" />
 
-<div class="container my-5">
+<div class=" my-5">
     <div class="row">
-        <div class="col-lg-8">
+        <div class="">
             <!-- Main Review Content -->
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="rating-hero p-4 p-md-5 mb-0 rounded-top-4">
                     <div class="row align-items-center">
                         <div class="col-md-7">
-                            <span class="badge bg-white text-primary mb-2 px-3 rounded-pill">@review.EntityType Review</span>
+                            <div class="d-flex gap-2 mb-2 flex-wrap">
+                                <span class="badge  text-primary px-3 rounded-pill">@review.EntityType Review</span>
+                                @* Status Badge *@
+                                @if (review.Status == ReviewStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark px-3 rounded-pill">
+                                        <i class="fas fa-clock me-1"></i>Pending Approval
+                                    </span>
+                                }
+                                else if (review.Status == ReviewStatus.Approved)
+                                {
+                                    <span class="badge bg-success px-3 rounded-pill">
+                                        <i class="fas fa-check-circle me-1"></i>Approved
+                                    </span>
+                                }
+                                else if (review.Status == ReviewStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger px-3 rounded-pill">
+                                        <i class="fas fa-times-circle me-1"></i>Rejected
+                                    </span>
+                                }
+                                else if (review.Status == ReviewStatus.Flagged)
+                                {
+                                    <span class="badge bg-danger px-3 rounded-pill">
+                                        <i class="fas fa-flag me-1"></i>Flagged
+                                    </span>
+                                }
+                            </div>
                             <h2 class="fw-bold mb-3">@review.Title</h2>
                             <div class="d-flex align-items-center mb-0">
                                 <div class="star-rating me-2">
@@ -231,6 +191,32 @@
                     <div class="review-content fs-5 lh-lg mb-5" style="color: #4a5568;">
                         @Html.Raw(review.Content)
                     </div>
+
+                    @* Display Review Images *@
+                    @if (!string.IsNullOrEmpty(review.ImageUrls))
+                    {
+                        try
+                        {
+                            var imageUrls = System.Text.Json.JsonSerializer.Deserialize<List<string>>(review.ImageUrls);
+                            if (imageUrls != null && imageUrls.Any())
+                            {
+                                <div class="review-images mb-5">
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-images me-2"></i>Photos</h6>
+                                    <div class="row g-3">
+                                        @foreach (var imageUrl in imageUrls)
+                                        {
+                                            <div class="col-md-4 col-6">
+                                                <a href="@imageUrl" target="_blank" class="d-block">
+                                                    <img src="@imageUrl" class="img-fluid rounded shadow-sm" alt="Review photo" style="object-fit: cover; height: 200px; width: 100%;" />
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        catch { /* Invalid JSON, skip images */ }
+                    }
 
                     <div class="d-flex align-items-center pt-4 border-top">
                         <button class="btn @(review.CurrentUserReaction == true ? "btn-primary" : "btn-outline-primary") rounded-pill px-4 me-3" onclick="toggleHelpful('@review.Id', true)">

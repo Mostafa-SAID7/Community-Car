@@ -27,22 +27,20 @@
         </ol>
     </nav>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="">
+        <div class="">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    @if (string.IsNullOrEmpty(Model.EntityType) || Model.EntityId == Guid.Empty)
-                    {
-                        <div class="alert alert-info mb-4">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Note:</strong> To write a review, please navigate to the specific item (car, guide, event, etc.) and click the "Write Review" button from there. This will automatically fill in the required information.
-                        </div>
-                    }
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Share Your Experience</strong>
+                        <p class="mb-0 mt-2">Write a review to share your thoughts and experiences with the community. Your feedback helps others make informed decisions!</p>
+                    </div>
                     
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Create" method="post" id="reviewForm" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <!-- Hidden fields for EntityId and EntityType (automatically filled from item page) -->
+                        <!-- Hidden fields for EntityId and EntityType (optional, will be auto-generated if not provided) -->
                         <input asp-for="EntityId" type="hidden" />
                         <input asp-for="EntityType" type="hidden" />
 
@@ -70,8 +68,9 @@
                                 <i class="fas fa-star" data-rating="4"></i>
                                 <i class="fas fa-star" data-rating="5"></i>
                             </div>
-                            <input asp-for="Rating" type="hidden" id="ratingValue" />
+                            <input asp-for="Rating" type="hidden" id="ratingValue" value="2.5" />
                             <span asp-validation-for="Rating" class="text-danger d-block"></span>
+                            <small class="form-text text-muted">Default: 2.5 stars (you can change it by clicking)</small>
                         </div>
 
                         <div class="mb-4">
@@ -125,6 +124,14 @@
                             </div>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-images me-2"></i>Add Photos (Optional)
+                            </label>
+                            <input type="file" name="Images" class="form-control" accept="image/*" multiple />
+                            <small class="form-text text-muted">You can upload up to 5 images (max 5MB each)</small>
+                        </div>
+
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="fas fa-times me-2"></i>Cancel
@@ -134,6 +141,17 @@
                             </button>
                         </div>
                     </form>
+
+                    <!-- Tips Section -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="mb-2"><i class="fas fa-lightbulb text-warning me-2"></i>Tips for Writing a Great Review</h6>
+                        <ul class="small mb-0">
+                            <li>Be specific about your experience</li>
+                            <li>Include both positive and negative aspects</li>
+                            <li>Keep it relevant and helpful for others</li>
+                            <li>Be honest and respectful</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,11 +165,10 @@
             const stars = $('#starRating i');
             const ratingInput = $('#ratingValue');
             
-            // Initialize rating if value exists
-            let currentRating = parseInt(ratingInput.val()) || 0;
-            if (currentRating > 0) {
-                updateStars(currentRating);
-            }
+            // Set default rating to 2.5 (3 stars visually)
+            let currentRating = 2.5;
+            ratingInput.val(currentRating);
+            updateStars(Math.ceil(currentRating)); // Show 3 stars for 2.5 rating
             
             // Click handler
             stars.on('click', function() {
@@ -175,7 +192,7 @@
             
             // Reset to current rating on mouse leave
             $('#starRating').on('mouseleave', function() {
-                updateStars(currentRating);
+                updateStars(Math.ceil(currentRating));
             });
             
             function updateStars(rating) {

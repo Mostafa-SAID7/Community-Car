@@ -10,7 +10,7 @@ namespace CommunityCar.Web.Areas.Dashboard.Controllers.analytics;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("{culture}/Dashboard/UserAnalytics")]
+[Route("{culture}/Dashboard/Analytics/UserActivity")]
 public class UserAnalyticsController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;

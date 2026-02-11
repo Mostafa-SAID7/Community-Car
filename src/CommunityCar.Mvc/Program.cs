@@ -115,6 +115,8 @@ try
     app.UseMiddleware<ExceptionHandlerMiddleware>();
 
     app.UseHttpsRedirection();
+    
+    // Serve static files from wwwroot directory (includes /uploads, /css, /js, etc.)
     app.UseStaticFiles();
 
     app.UseMiddleware<CultureRedirectMiddleware>();
@@ -166,6 +168,7 @@ try
 
     // SignalR Hub Endpoints - Each hub has its own endpoint for specific functionality
     // All hubs inherit from BaseHub<THub> for consistent connection management
+    // NOTE: SignalR hubs do NOT use culture-prefixed URLs
     
     // Generic Hub - Backward compatibility and general notifications
     app.MapHub<CommunityCar.Infrastructure.Hubs.GenericHub>("/hub");
@@ -179,12 +182,13 @@ try
     app.MapHub<CommunityCar.Infrastructure.Hubs.PostHub>("/hubs/post");
     app.MapHub<CommunityCar.Infrastructure.Hubs.CommunityHub>("/hubs/community");
     
-    // Legacy endpoints for backward compatibility (redirect to specific hubs)
+    // Legacy endpoints for backward compatibility
     app.MapHub<CommunityCar.Infrastructure.Hubs.QuestionHub>("/questionHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.NotificationHub>("/notificationHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.ChatHub>("/chatHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.FriendHub>("/friendHub");
     app.MapHub<CommunityCar.Infrastructure.Hubs.PostHub>("/postHub");
+    app.MapHub<CommunityCar.Infrastructure.Hubs.CommunityHub>("/communityHub");
 
     app.Run();
 }

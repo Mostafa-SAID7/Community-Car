@@ -1,0 +1,222 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.SettingsDetailsViewModel
+@{
+    ViewData["Title"] = $"{Model.Setting.Key} - System Settings";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-2 fw-bold">@Model.Setting.Key</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Settings</a></li>
+                    <li class="breadcrumb-item active">@Model.Setting.Key</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            @if (!Model.Setting.IsReadOnly)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Setting.Id" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Edit Setting
+                </a>
+            }
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Setting Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Key:</div>
+                        <div class="col-md-8"><code>@Model.Setting.Key</code></div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Value:</div>
+                        <div class="col-md-8">
+                            @if (Model.Setting.IsEncrypted)
+                            {
+                                <code class="text-muted">********</code>
+                                <small class="text-muted">(Encrypted)</small>
+                            }
+                            else
+                            {
+                                <code>@Model.Setting.Value</code>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Setting.Description))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Description:</div>
+                            <div class="col-md-8">@Model.Setting.Description</div>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Category:</div>
+                        <div class="col-md-8">
+                            <span class="badge bg-primary">@Model.Setting.CategoryText</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Data Type:</div>
+                        <div class="col-md-8">
+                            <span class="badge bg-info">@Model.Setting.DataTypeText</span>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Setting.DefaultValue))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Default Value:</div>
+                            <div class="col-md-8"><code>@Model.Setting.DefaultValue</code></div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Setting.ValidationRegex))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Validation Pattern:</div>
+                            <div class="col-md-8"><code>@Model.Setting.ValidationRegex</code></div>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Display Order:</div>
+                        <div class="col-md-8">@Model.Setting.DisplayOrder</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Status:</div>
+                        <div class="col-md-8">
+                            @if (Model.Setting.IsReadOnly)
+                            {
+                                <span class="badge bg-warning"><i class="fas fa-lock"></i> Read-Only</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="fas fa-edit"></i> Editable</span>
+                            }
+                            @if (Model.Setting.IsEncrypted)
+                            {
+                                <span class="badge bg-secondary"><i class="fas fa-shield-alt"></i> Encrypted</span>
+                            }
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Created:</div>
+                        <div class="col-md-8">
+                            @Model.Setting.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Last Updated:</div>
+                        <div class="col-md-8">
+                            @Model.Setting.UpdatedAt.ToString("MMM dd, yyyy HH:mm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            @if (!Model.Setting.IsReadOnly)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header ">
+                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 flex-wrap">
+                            @if (!string.IsNullOrEmpty(Model.Setting.DefaultValue))
+                            {
+                                <form asp-action="ResetToDefault" asp-route-id="@Model.Setting.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-warning" 
+                                            onclick="return confirm('Are you sure you want to reset this setting to its default value?')">
+                                        <i class="fas fa-undo me-2"></i>Reset to Default
+                                    </button>
+                                </form>
+                            }
+                            <form asp-action="Delete" asp-route-id="@Model.Setting.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('Are you sure you want to delete this setting? This action cannot be undone.')">
+                                    <i class="fas fa-trash me-2"></i>Delete Setting
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Related Settings -->
+            @if (Model.RelatedSettings.Any())
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header ">
+                        <h5 class="mb-0"><i class="fas fa-link me-2"></i>Related Settings</h5>
+                    </div>
+                    <div class="list-group">
+                        @foreach (var related in Model.RelatedSettings)
+                        {
+                            <a asp-action="Details" asp-route-id="@related.Id" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@related.Key</strong>
+                                        @if (!string.IsNullOrEmpty(related.Description))
+                                        {
+                                            <br /><small class="text-muted">@related.Description</small>
+                                        }
+                                    </div>
+                                    <i class="fas fa-chevron-right text-muted"></i>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Quick Info -->
+            <div class="card shadow-sm">
+                <div class="card-header ">
+                    <h5 class="mb-0"><i class="fas fa-info me-2"></i>Quick Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="fas fa-folder text-primary me-2"></i>
+                        <strong>Category:</strong> @Model.Setting.CategoryText
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-database text-info me-2"></i>
+                        <strong>Type:</strong> @Model.Setting.DataTypeText
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-sort text-secondary me-2"></i>
+                        <strong>Order:</strong> @Model.Setting.DisplayOrder
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -548,13 +548,8 @@ body[data-page="profile"] {
     }
 
     .profile-tabs {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-
-    .profile-tabs::-webkit-scrollbar {
-        display: none;
+        overflow-x: visible;
+        flex-wrap: wrap;
     }
 
     .profile-tab {

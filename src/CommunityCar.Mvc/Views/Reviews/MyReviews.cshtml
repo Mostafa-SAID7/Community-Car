@@ -37,17 +37,42 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="d-flex align-items-start mb-2">
-                                        <div class="star-rating me-3">
+                                    <div class="d-flex align-items-start mb-2 flex-wrap gap-2">
+                                        <div class="star-rating me-2">
                                             @for (int i = 1; i <= 5; i++)
                                             {
                                                 <i class="fas fa-star @(i <= review.Rating ? "" : "text-muted")"></i>
                                             }
                                         </div>
                                         <span class="badge bg-primary">@review.TypeName</span>
+                                        @* Status Badge *@
+                                        @if (review.Status == CommunityCar.Domain.Enums.Community.reviews.ReviewStatus.Pending)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        }
+                                        else if (review.Status == CommunityCar.Domain.Enums.Community.reviews.ReviewStatus.Approved)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Approved
+                                            </span>
+                                        }
+                                        else if (review.Status == CommunityCar.Domain.Enums.Community.reviews.ReviewStatus.Rejected)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Rejected
+                                            </span>
+                                        }
+                                        else if (review.Status == CommunityCar.Domain.Enums.Community.reviews.ReviewStatus.Flagged)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-flag me-1"></i>Flagged
+                                            </span>
+                                        }
                                         @if (review.IsVerifiedPurchase)
                                         {
-                                            <span class="badge bg-success ms-2">
+                                            <span class="badge bg-success">
                                                 <i class="fas fa-check-circle me-1"></i>Verified
                                             </span>
                                         }

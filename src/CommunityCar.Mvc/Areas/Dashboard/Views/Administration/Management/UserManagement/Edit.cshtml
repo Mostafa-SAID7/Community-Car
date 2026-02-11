@@ -1,0 +1,62 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.management.EditUserViewModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header  border-bottom-0 pt-4 pb-0">
+                    <h5 class="mb-0 fw-bold">Edit User</h5>
+                    <p class="text-muted small">Update user details and roles.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Email</label>
+                            <input type="text" class="form-control bg-light" value="@Model.Email" disabled />
+                            <small class="text-muted">Email cannot be changed directly.</small>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label small text-uppercase text-muted fw-bold">First Name</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label small text-uppercase text-muted fw-bold">Last Name</label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small text-uppercase text-muted fw-bold mb-2">Roles</label>
+                            <div class="card bg-light border-0 p-3">
+                                @foreach (var role in Model.AllRoles)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role" 
+                                               id="role_@role" @(Model.CurrentRoles.Contains(role) ? "checked" : "")>
+                                        <label class="form-check-label" for="role_@role">
+                                            @role
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-light text-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

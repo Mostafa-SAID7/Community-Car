@@ -1,0 +1,469 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.ContentManagementViewModel
+@{
+    ViewData["Title"] = "Content Management";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-alt me-2"></i>Content Management</h2>
+    </div>
+
+    @if (Model.ContentType == "all")
+    {
+        <!-- Overview Dashboard -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Questions</h6>
+                                <h3 class="mb-0">@Model.QuestionsCount</h3>
+                            </div>
+                            <div class="text-primary">
+                                <i class="fas fa-question-circle fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="questions" class="btn btn-sm btn-outline-primary mt-3 w-100">
+                            Manage Questions
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Posts</h6>
+                                <h3 class="mb-0">@Model.PostsCount</h3>
+                            </div>
+                            <div class="text-success">
+                                <i class="fas fa-edit fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="posts" class="btn btn-sm btn-outline-success mt-3 w-100">
+                            Manage Posts
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Events</h6>
+                                <h3 class="mb-0">@Model.EventsCount</h3>
+                            </div>
+                            <div class="text-info">
+                                <i class="fas fa-calendar fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="events" class="btn btn-sm btn-outline-info mt-3 w-100">
+                            Manage Events
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">News</h6>
+                                <h3 class="mb-0">@Model.NewsCount</h3>
+                            </div>
+                            <div class="text-warning">
+                                <i class="fas fa-newspaper fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="news" class="btn btn-sm btn-outline-warning mt-3 w-100">
+                            Manage News
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-secondary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Guides</h6>
+                                <h3 class="mb-0">@Model.GuidesCount</h3>
+                            </div>
+                            <div class="text-secondary">
+                                <i class="fas fa-book fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="guides" class="btn btn-sm btn-outline-secondary mt-3 w-100">
+                            Manage Guides
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Reviews</h6>
+                                <h3 class="mb-0">@Model.ReviewsCount</h3>
+                            </div>
+                            <div class="text-danger">
+                                <i class="fas fa-star fa-3x"></i>
+                            </div>
+                        </div>
+                        <a asp-action="Index" asp-route-contentType="reviews" class="btn btn-sm btn-outline-danger mt-3 w-100">
+                            Manage Reviews
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Content Type Specific View -->
+        <div class="card">
+            <div class="card-header ">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        @switch (Model.ContentType.ToLower())
+                        {
+                            case "questions":
+                                <i class="fas fa-question-circle me-2"></i><text>Questions</text>
+                                break;
+                            case "posts":
+                                <i class="fas fa-edit me-2"></i><text>Posts</text>
+                                break;
+                            case "events":
+                                <i class="fas fa-calendar me-2"></i><text>Events</text>
+                                break;
+                            case "news":
+                                <i class="fas fa-newspaper me-2"></i><text>News</text>
+                                break;
+                            case "guides":
+                                <i class="fas fa-book me-2"></i><text>Guides</text>
+                                break;
+                            case "reviews":
+                                <i class="fas fa-star me-2"></i><text>Reviews</text>
+                                break;
+                        }
+                    </h5>
+                    <a asp-action="Index" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Overview
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.ContentType == "questions" && Model.Questions.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Status</th>
+                                    <th>Views</th>
+                                    <th>Answers</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var question in Model.Questions)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/Questions/Details/@question.Slug" target="_blank">
+                                                @question.Title
+                                            </a>
+                                        </td>
+                                        <td>@question.AuthorName</td>
+                                        <td>
+                                            @if (question.IsResolved)
+                                            {
+                                                <span class="badge bg-success">Resolved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Open</span>
+                                            }
+                                        </td>
+                                        <td>@question.ViewCount</td>
+                                        <td>@question.AnswerCount</td>
+                                        <td>@question.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeleteQuestion" asp-route-id="@question.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this question?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.ContentType == "posts" && Model.Posts.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Views</th>
+                                    <th>Likes</th>
+                                    <th>Comments</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var post in Model.Posts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/Post/Details/@post.Slug" target="_blank">
+                                                @post.Title
+                                            </a>
+                                        </td>
+                                        <td>@post.AuthorName</td>
+                                        <td>@post.ViewCount</td>
+                                        <td>@post.LikeCount</td>
+                                        <td>@post.CommentCount</td>
+                                        <td>@post.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeletePost" asp-route-id="@post.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.ContentType == "events" && Model.Events.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Organizer</th>
+                                    <th>Start Date</th>
+                                    <th>Location</th>
+                                    <th>Attendees</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var evt in Model.Events)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/Events/Details/@evt.Slug" target="_blank">
+                                                @evt.Title
+                                            </a>
+                                        </td>
+                                        <td>@evt.OrganizerName</td>
+                                        <td>@evt.StartDate.ToString("MMM dd, yyyy")</td>
+                                        <td>@evt.Location</td>
+                                        <td>@evt.AttendeeCount</td>
+                                        <td>@evt.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeleteEvent" asp-route-id="@evt.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this event?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.ContentType == "news" && Model.News.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Views</th>
+                                    <th>Comments</th>
+                                    <th>Published</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var news in Model.News)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/News/Details/@news.Slug" target="_blank">
+                                                @news.Title
+                                            </a>
+                                        </td>
+                                        <td>@news.AuthorName</td>
+                                        <td>@news.ViewCount</td>
+                                        <td>@news.CommentCount</td>
+                                        <td>@news.PublishedAt?.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeleteNews" asp-route-id="@news.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this news article?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.ContentType == "guides" && Model.Guides.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Steps</th>
+                                    <th>Views</th>
+                                    <th>Likes</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var guide in Model.Guides)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/Guides/Details/@guide.Slug" target="_blank">
+                                                @guide.Title
+                                            </a>
+                                        </td>
+                                        <td>@guide.AuthorName</td>
+                                        <td>@guide.StepCount</td>
+                                        <td>@guide.ViewCount</td>
+                                        <td>@guide.LikeCount</td>
+                                        <td>@guide.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeleteGuide" asp-route-id="@guide.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this guide?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (Model.ContentType == "reviews" && Model.Reviews.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Rating</th>
+                                    <th>Helpful</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var review in Model.Reviews)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="/Reviews/Details/@review.Slug" target="_blank">
+                                                @review.Title
+                                            </a>
+                                        </td>
+                                        <td>@review.AuthorName</td>
+                                        <td>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="fas fa-star @(i <= review.Rating ? "text-warning" : "text-muted")"></i>
+                                            }
+                                        </td>
+                                        <td>@review.HelpfulCount</td>
+                                        <td>@review.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <form asp-action="DeleteReview" asp-route-id="@review.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this review?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No content found</p>
+                    </div>
+                }
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-contentType="@Model.ContentType" asp-route-page="@(Model.CurrentPage - 1)">
+                                    Previous
+                                </a>
+                            </li>
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-contentType="@Model.ContentType" asp-route-page="@i">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-contentType="@Model.ContentType" asp-route-page="@(Model.CurrentPage + 1)">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            </div>
+        </div>
+    }
+</div>

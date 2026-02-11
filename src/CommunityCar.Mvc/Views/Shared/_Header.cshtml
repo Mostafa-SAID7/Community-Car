@@ -62,7 +62,7 @@
             <!-- Admin Dashboard Link -->
             @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
             {
-                <a asp-area="Dashboard" asp-controller="Overview" asp-action="Index" class="btn btn-link text-danger p-1 d-flex align-items-center justify-content-center" title="@Localizer["Admin Dashboard"].Value">
+                <a asp-area="Dashboard" asp-controller="Dashboard" asp-action="Index" class="btn btn-link text-danger p-1 d-flex align-items-center justify-content-center" title="@Localizer["Admin Dashboard"].Value">
                     <i class="fas fa-gauge-high fa-lg"></i>
                 </a>
             }
@@ -165,7 +165,7 @@
                     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                     {
                         <li>
-                            <a class="dropdown-item text-danger" asp-area="Dashboard" asp-controller="Overview" asp-action="Index">
+                            <a class="dropdown-item text-danger" asp-area="Dashboard" asp-controller="Dashboard" asp-action="Index">
                                 <i class="fas fa-tachometer-alt me-2"></i>@Localizer["Admin Dashboard"].Value
                             </a>
                         </li>

@@ -1,0 +1,16 @@
+Vehicle,Make,Model,Year,CityMPG,HighwayMPG,CombinedMPG,FuelType,EngineSize,Transmission
+Sedan,Toyota,Camry,2023,28,39,32,Hybrid,2.5L,CVT
+Sedan,Honda,Accord,2023,30,38,33,Gasoline,1.5L,CVT
+Truck,Ford,F-150,2023,20,24,22,Gasoline,3.5L,Automatic
+SUV,Toyota,RAV4,2023,27,35,30,Hybrid,2.5L,CVT
+Sedan,Tesla,Model 3,2023,133,126,130,Electric,N/A,Single-Speed
+SUV,Chevrolet,Tahoe,2023,15,20,17,Gasoline,5.3L,Automatic
+Sedan,Honda,Civic,2023,33,42,36,Gasoline,2.0L,CVT
+Truck,Ram,1500,2023,17,23,19,Gasoline,5.7L,Automatic
+SUV,Mazda,CX-5,2023,25,31,27,Gasoline,2.5L,Automatic
+Sedan,Hyundai,Sonata,2023,27,37,31,Hybrid,2.5L,Automatic
+SUV,Ford,Explorer,2023,21,28,24,Gasoline,2.3L,Automatic
+Sedan,Nissan,Altima,2023,28,39,32,Gasoline,2.5L,CVT
+Truck,Toyota,Tundra,2023,18,24,20,Hybrid,3.5L,Automatic
+SUV,Jeep,Grand Cherokee,2023,19,26,22,Gasoline,3.6L,Automatic
+Sedan,BMW,330i,2023,26,36,30,Gasoline,2.0L,Automatic

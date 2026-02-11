@@ -1,0 +1,21 @@
+Make,Model,Year,Price,Mileage,Condition,FuelType,Transmission,BodyType,Color,Doors,Seats,MPGCity,MPGHighway,Engine,HorsePower,DriveTrain,VIN,Seller,Location,DaysOnMarket,PriceHistory,Features,SafetyRating,Accidents,Owners,Title,WarrantyMonths
+Toyota,Camry,2022,24500,15000,Excellent,Hybrid,Automatic,Sedan,Silver,4,5,51,53,2.5L I4 Hybrid,208,FWD,1HGBH41JXMN109186,CarMax,Los Angeles CA,15,25000,Leather Seats|Sunroof|Navigation|Backup Camera,5,0,1,Clean,36
+Honda,Accord,2021,22800,28000,Good,Gasoline,Automatic,Sedan,White,4,5,30,38,1.5L Turbo I4,192,FWD,1HGCV1F16LA012345,Private Seller,Houston TX,45,23500,Bluetooth|Cruise Control|Alloy Wheels,5,0,1,Clean,12
+Ford,F-150,2023,38900,8500,Excellent,Gasoline,Automatic,Truck,Blue,4,6,20,24,3.5L V6,400,4WD,1FTFW1E85NFA12345,Ford Dealer,Dallas TX,8,40000,Tow Package|Bed Liner|4WD|Backup Camera,4,0,1,Clean,48
+Chevrolet,Malibu,2020,18500,42000,Good,Gasoline,Automatic,Sedan,Black,4,5,29,36,1.5L Turbo I4,160,FWD,1G1ZD5ST5LF123456,Enterprise,Phoenix AZ,60,19500,Apple CarPlay|Lane Assist|Blind Spot,4,1,2,Clean,6
+Toyota,Corolla,2022,21200,12000,Excellent,Gasoline,Automatic,Sedan,Red,4,5,31,40,1.8L I4,139,FWD,2T1BURHE5NC123456,Toyota Dealer,San Diego CA,12,22000,Adaptive Cruise|Safety Sense|LED Lights,5,0,1,Clean,36
+Honda,Civic,2021,20500,22000,Good,Gasoline,CVT,Sedan,Gray,4,5,32,42,2.0L I4,158,FWD,19XFC2F59ME123456,Carvana,Miami FL,30,21500,Honda Sensing|Sunroof|Heated Seats,5,0,1,Clean,18
+Ford,Escape,2023,29800,5000,Excellent,Hybrid,Automatic,SUV,White,4,5,44,37,2.5L I4 Hybrid,200,AWD,1FMCU9J92NUA12345,Ford Dealer,Seattle WA,5,31000,AWD|Panoramic Roof|Wireless Charging,5,0,1,Clean,48
+Nissan,Altima,2020,19200,38000,Fair,Gasoline,CVT,Sedan,Silver,4,5,28,39,2.5L I4,188,FWD,1N4BL4BV8LC123456,Hertz,Orlando FL,90,20000,ProPilot Assist|Remote Start,4,2,3,Clean,0
+Toyota,RAV4,2022,32500,18000,Excellent,Hybrid,Automatic,SUV,Blue,4,5,41,38,2.5L I4 Hybrid,219,AWD,2T3P1RFV8NC123456,Toyota Dealer,Denver CO,10,33500,AWD|Safety Sense 2.0|Power Liftgate,5,0,1,Clean,36
+Honda,CR-V,2021,28900,25000,Good,Gasoline,CVT,SUV,Black,4,5,28,34,1.5L Turbo I4,190,AWD,2HKRW2H89MH123456,Honda Dealer,Chicago IL,25,29500,AWD|Honda Sensing|Heated Seats,5,0,1,Clean,24
+Ford,Mustang,2023,42500,3000,Excellent,Gasoline,Automatic,Coupe,Red,2,4,21,32,5.0L V8,450,RWD,1FA6P8CF5N5123456,Ford Dealer,Detroit MI,3,44000,Performance Package|Premium Audio|Navigation,4,0,1,Clean,48
+Chevrolet,Silverado,2022,45800,12000,Excellent,Gasoline,Automatic,Truck,White,4,6,16,20,5.3L V8,355,4WD,1GCUDEED5NZ123456,Chevy Dealer,Atlanta GA,18,47000,4WD|Tow Package|Leather|Heated Seats,4,0,1,Clean,36
+Toyota,Highlander,2021,38200,32000,Good,Gasoline,Automatic,SUV,Gray,4,8,21,29,3.5L V6,295,AWD,5TDJZRFH8MS123456,CarMax,Portland OR,35,39500,AWD|3rd Row|Safety Sense|Sunroof,5,0,2,Clean,12
+Honda,Pilot,2020,31500,45000,Good,Gasoline,Automatic,SUV,Blue,4,8,19,27,3.5L V6,280,AWD,5FNYF6H59LB123456,Private Seller,Boston MA,50,32500,AWD|3rd Row|Honda Sensing|Leather,5,1,2,Clean,0
+Ford,Explorer,2023,48900,7500,Excellent,Gasoline,Automatic,SUV,Black,4,7,21,28,3.0L Turbo V6,400,4WD,1FM5K8GC5NGA12345,Ford Dealer,New York NY,7,50000,4WD|ST Package|Panoramic Roof|Premium Audio,5,0,1,Clean,48
+Mazda,CX-5,2022,28500,16000,Excellent,Gasoline,Automatic,SUV,Red,4,5,25,31,2.5L Turbo I4,250,AWD,JM3KFBDM5N0123456,Mazda Dealer,Austin TX,20,29500,AWD|Turbo|Bose Audio|Leather,5,0,1,Clean,30
+Hyundai,Elantra,2023,22900,8000,Excellent,Gasoline,CVT,Sedan,White,4,5,33,43,2.0L I4,147,FWD,5NPD84LF5PH123456,Hyundai Dealer,Las Vegas NV,14,24000,SmartSense|Wireless Charging|Digital Key,5,0,1,Clean,60
+Kia,Sportage,2022,29800,19000,Excellent,Gasoline,Automatic,SUV,Gray,4,5,23,30,2.5L I4,187,AWD,KNDPMCAC5N7123456,Kia Dealer,San Antonio TX,22,31000,AWD|Panoramic Sunroof|Harman Kardon,5,0,1,Clean,60
+Subaru,Outback,2021,30500,27000,Good,Gasoline,CVT,Wagon,Green,4,5,26,33,2.5L H4,182,AWD,4S4BTAFC5M3123456,Subaru Dealer,Minneapolis MN,28,31500,AWD|EyeSight|Roof Rails|Heated Seats,5,0,1,Clean,24
+Volkswagen,Tiguan,2022,31200,14000,Excellent,Gasoline,Automatic,SUV,White,4,7,22,29,2.0L Turbo I4,184,AWD,3VV2B7AX8NM123456,VW Dealer,Philadelphia PA,16,32500,AWD|3rd Row|Digital Cockpit|Panoramic Roof,5,0,1,Clean,48
