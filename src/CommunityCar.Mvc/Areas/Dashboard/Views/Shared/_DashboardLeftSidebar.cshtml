@@ -12,45 +12,45 @@
 
     <!-- Analytics Section -->
     <div class="dashboard-sidebar-section-title">@Localizer["Dashboard.Analytics"]</div>
-    <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserReports" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentReports") ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Users" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserReports" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentReports") ? "active" : "")">
         <i class="fas fa-file-chart-pie"></i>
         <span>@Localizer["Dashboard.Reports"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="UserActivity" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserActivity" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity") ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserActivity" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity") ? "active" : "")">
         <i class="fas fa-clock-rotate-left"></i>
         <span>@Localizer["Dashboard.UserActivity"]</span>
     </a>
 
     <!-- Monitoring Section -->
     <div class="dashboard-sidebar-section-title">@Localizer["Dashboard.Monitoring"]</div>
-    <a asp-area="Dashboard" asp-controller="Health" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Health" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Health" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Health" ? "active" : "")">
         <i class="fas fa-heart-pulse"></i>
         <span>@Localizer["Dashboard.Health"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Audit" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
         <i class="fas fa-clipboard-check"></i>
         <span>@Localizer["Dashboard.Audit"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="System" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "System" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "System" ? "active" : "")">
         <i class="fas fa-microchip"></i>
         <span>@Localizer["Dashboard.System"]</span>
     </a>
 
     <!-- Administration Section -->
     <div class="dashboard-sidebar-section-title">@Localizer["Dashboard.Administration"]</div>
-    <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Management/Users" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement") ? "active" : "")">
         <i class="fas fa-sliders"></i>
         <span>@Localizer["Dashboard.Management"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Security" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Security" ? "active" : "")">
         <i class="fas fa-shield-halved"></i>
         <span>@Localizer["Dashboard.Security"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="Localization" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Localization" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
         <i class="fas fa-language"></i>
         <span>@Localizer["Localization"]</span>
     </a>
-    <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
         <i class="fas fa-gear"></i>
         <span>@Localizer["Dashboard.Settings"]</span>
     </a>
