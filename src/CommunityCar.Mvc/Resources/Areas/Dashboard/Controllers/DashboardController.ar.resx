@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Dashboard Main -->
+  <data name="Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Dashboard Overview" xml:space="preserve">
+    <value>نظرة عامة على لوحة التحكم</value>
+  </data>
+  <data name="Welcome back! Here's what's happening." xml:space="preserve">
+    <value>مرحباً بعودتك! إليك ما يحدث.</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>تصدير</value>
+  </data>
+  
+  <!-- Navigation -->
+  <data name="Overview" xml:space="preserve">
+    <value>نظرة عامة</value>
+  </data>
+  <data name="KPIs" xml:space="preserve">
+    <value>مؤشرات الأداء</value>
+  </data>
+  <data name="Trends" xml:space="preserve">
+    <value>الاتجاهات</value>
+  </data>
+  <data name="Widgets" xml:space="preserve">
+    <value>الأدوات</value>
+  </data>
+  
+  <!-- Statistics -->
+  <data name="Total Users" xml:space="preserve">
+    <value>إجمالي المستخدمين</value>
+  </data>
+  <data name="Friendships" xml:space="preserve">
+    <value>الصداقات</value>
+  </data>
+  <data name="Active Events" xml:space="preserve">
+    <value>الفعاليات النشطة</value>
+  </data>
+  <data name="System Health" xml:space="preserve">
+    <value>صحة النظام</value>
+  </data>
+  <data name="from last month" xml:space="preserve">
+    <value>من الشهر الماضي</value>
+  </data>
+  <data name="This month" xml:space="preserve">
+    <value>هذا الشهر</value>
+  </data>
+  <data name="All systems operational" xml:space="preserve">
+    <value>جميع الأنظمة تعمل</value>
+  </data>
+  
+  <!-- Content Types -->
+  <data name="Total Posts" xml:space="preserve">
+    <value>إجمالي المنشورات</value>
+  </data>
+  <data name="Questions" xml:space="preserve">
+    <value>الأسئلة</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>المجموعات</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>المراجعات</value>
+  </data>
+  <data name="Guides" xml:space="preserve">
+    <value>الأدلة</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>الأخبار</value>
+  </data>
+  
+  <!-- Charts -->
+  <data name="Content Distribution" xml:space="preserve">
+    <value>توزيع المحتوى</value>
+  </data>
+  <data name="User Growth" xml:space="preserve">
+    <value>نمو المستخدمين</value>
+  </data>
+  <data name="Recent Activity" xml:space="preserve">
+    <value>النشاط الأخير</value>
+  </data>
+  <data name="View All" xml:space="preserve">
+    <value>عرض الكل</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>الوقت</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>الإجراء</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Dashboard.NoRecentActivity" xml:space="preserve">
+    <value>لا يوجد نشاط حديث</value>
+  </data>
+  
+  <!-- System Status -->
+  <data name="System Status" xml:space="preserve">
+    <value>حالة النظام</value>
+  </data>
+  <data name="Database" xml:space="preserve">
+    <value>قاعدة البيانات</value>
+  </data>
+  <data name="Online" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="API Services" xml:space="preserve">
+    <value>خدمات API</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>قيد التشغيل</value>
+  </data>
+  <data name="Cache" xml:space="preserve">
+    <value>ذاكرة التخزين المؤقت</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  
+  <!-- Date & Time -->
+  <data name="Dashboard.DateTime" xml:space="preserve">
+    <value>التاريخ والوقت</value>
+  </data>
+  <data name="Dashboard.AddTask" xml:space="preserve">
+    <value>إضافة مهمة</value>
+  </data>
+  <data name="Dashboard.Calendar" xml:space="preserve">
+    <value>التقويم</value>
+  </data>
+  <data name="Dashboard.AddTarget" xml:space="preserve">
+    <value>إضافة هدف</value>
+  </data>
+  
+  <!-- Quick Actions -->
+  <data name="Quick Actions" xml:space="preserve">
+    <value>إجراءات سريعة</value>
+  </data>
+  <data name="Manage Users" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="Manage Content" xml:space="preserve">
+    <value>إدارة المحتوى</value>
+  </data>
+  <data name="View Reports" xml:space="preserve">
+    <value>عرض التقارير</value>
+  </data>
+  <data name="Security Alerts" xml:space="preserve">
+    <value>تنبيهات الأمان</value>
+  </data>
+  <data name="System Settings" xml:space="preserve">
+    <value>إعدادات النظام</value>
+  </data>
+  
+  <!-- Modal - Add Task -->
+  <data name="Task Title" xml:space="preserve">
+    <value>عنوان المهمة</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>الوصف</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>الأولوية</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>منخفض</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>متوسط</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>عالي</value>
+  </data>
+  <data name="Due Date" xml:space="preserve">
+    <value>تاريخ الاستحقاق</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Save Task" xml:space="preserve">
+    <value>حفظ المهمة</value>
+  </data>
+  <data name="Please enter a task title" xml:space="preserve">
+    <value>الرجاء إدخال عنوان المهمة</value>
+  </data>
+  <data name="Task saved successfully!" xml:space="preserve">
+    <value>تم حفظ المهمة بنجاح!</value>
+  </data>
+  
+  <!-- Modal - Add Target -->
+  <data name="Target Name" xml:space="preserve">
+    <value>اسم الهدف</value>
+  </data>
+  <data name="Metric" xml:space="preserve">
+    <value>المقياس</value>
+  </data>
+  <data name="Engagement Rate" xml:space="preserve">
+    <value>معدل التفاعل</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>الإيرادات</value>
+  </data>
+  <data name="Target Value" xml:space="preserve">
+    <value>القيمة المستهدفة</value>
+  </data>
+  <data name="Deadline" xml:space="preserve">
+    <value>الموعد النهائي</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="Save Target" xml:space="preserve">
+    <value>حفظ الهدف</value>
+  </data>
+  <data name="Please enter target name and value" xml:space="preserve">
+    <value>الرجاء إدخال اسم الهدف والقيمة</value>
+  </data>
+  <data name="Target saved successfully!" xml:space="preserve">
+    <value>تم حفظ الهدف بنجاح!</value>
+  </data>
+  
+  <!-- Sidebar Navigation -->
+  <data name="Dashboard.Overview" xml:space="preserve">
+    <value>نظرة عامة</value>
+  </data>
+  <data name="Dashboard.Analytics" xml:space="preserve">
+    <value>التحليلات</value>
+  </data>
+  <data name="Dashboard.Reports" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="Dashboard.UserActivity" xml:space="preserve">
+    <value>نشاط المستخدم</value>
+  </data>
+  <data name="Dashboard.Monitoring" xml:space="preserve">
+    <value>المراقبة</value>
+  </data>
+  <data name="Dashboard.Health" xml:space="preserve">
+    <value>الصحة</value>
+  </data>
+  <data name="Dashboard.Audit" xml:space="preserve">
+    <value>التدقيق</value>
+  </data>
+  <data name="Dashboard.System" xml:space="preserve">
+    <value>النظام</value>
+  </data>
+  <data name="Dashboard.Administration" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Dashboard.Management" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Dashboard.Security" xml:space="preserve">
+    <value>الأمان</value>
+  </data>
+  <data name="Localization" xml:space="preserve">
+    <value>الترجمة</value>
+  </data>
+  <data name="Dashboard.Settings" xml:space="preserve">
+    <value>الإعدادات</value>
+  </data>
+  <data name="Dashboard.Navigation" xml:space="preserve">
+    <value>التنقل</value>
+  </data>
+  <data name="Dashboard.BackToMainSite" xml:space="preserve">
+    <value>العودة إلى الموقع الرئيسي</value>
+  </data>
+  
+  <!-- Location -->
+  <data name="Dashboard.UsersByLocation" xml:space="preserve">
+    <value>المستخدمون حسب الموقع</value>
+  </data>
+  <data name="Top Locations" xml:space="preserve">
+    <value>أهم المواقع</value>
+  </data>
+</root>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Dashboard Main -->
+  <data name="Dashboard" xml:space="preserve">
+    <value>Panel de control</value>
+  </data>
+  <data name="Dashboard Overview" xml:space="preserve">
+    <value>Resumen del panel de control</value>
+  </data>
+  <data name="Welcome back! Here's what's happening." xml:space="preserve">
+    <value>¡Bienvenido de nuevo! Esto es lo que está pasando.</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportar</value>
+  </data>
+  
+  <!-- Navigation -->
+  <data name="Overview" xml:space="preserve">
+    <value>Resumen</value>
+  </data>
+  <data name="KPIs" xml:space="preserve">
+    <value>KPIs</value>
+  </data>
+  <data name="Trends" xml:space="preserve">
+    <value>Tendencias</value>
+  </data>
+  <data name="Widgets" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+  
+  <!-- Statistics -->
+  <data name="Total Users" xml:space="preserve">
+    <value>Total de usuarios</value>
+  </data>
+  <data name="Friendships" xml:space="preserve">
+    <value>Amistades</value>
+  </data>
+  <data name="Active Events" xml:space="preserve">
+    <value>Eventos activos</value>
+  </data>
+  <data name="System Health" xml:space="preserve">
+    <value>Salud del sistema</value>
+  </data>
+  <data name="from last month" xml:space="preserve">
+    <value>del mes pasado</value>
+  </data>
+  <data name="This month" xml:space="preserve">
+    <value>Este mes</value>
+  </data>
+  <data name="All systems operational" xml:space="preserve">
+    <value>Todos los sistemas operativos</value>
+  </data>
+  
+  <!-- Content Types -->
+  <data name="Total Posts" xml:space="preserve">
+    <value>Total de publicaciones</value>
+  </data>
+  <data name="Questions" xml:space="preserve">
+    <value>Preguntas</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>Grupos</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>Reseñas</value>
+  </data>
+  <data name="Guides" xml:space="preserve">
+    <value>Guías</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>Noticias</value>
+  </data>
+  
+  <!-- Charts -->
+  <data name="Content Distribution" xml:space="preserve">
+    <value>Distribución de contenido</value>
+  </data>
+  <data name="User Growth" xml:space="preserve">
+    <value>Crecimiento de usuarios</value>
+  </data>
+  <data name="Recent Activity" xml:space="preserve">
+    <value>Actividad reciente</value>
+  </data>
+  <data name="View All" xml:space="preserve">
+    <value>Ver todo</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Hora</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Acción</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Dashboard.NoRecentActivity" xml:space="preserve">
+    <value>Sin actividad reciente</value>
+  </data>
+  
+  <!-- System Status -->
+  <data name="System Status" xml:space="preserve">
+    <value>Estado del sistema</value>
+  </data>
+  <data name="Database" xml:space="preserve">
+    <value>Base de datos</value>
+  </data>
+  <data name="Online" xml:space="preserve">
+    <value>En línea</value>
+  </data>
+  <data name="API Services" xml:space="preserve">
+    <value>Servicios API</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>En ejecución</value>
+  </data>
+  <data name="Cache" xml:space="preserve">
+    <value>Caché</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  
+  <!-- Date & Time -->
+  <data name="Dashboard.DateTime" xml:space="preserve">
+    <value>Fecha y hora</value>
+  </data>
+  <data name="Dashboard.AddTask" xml:space="preserve">
+    <value>Agregar tarea</value>
+  </data>
+  <data name="Dashboard.Calendar" xml:space="preserve">
+    <value>Calendario</value>
+  </data>
+  <data name="Dashboard.AddTarget" xml:space="preserve">
+    <value>Agregar objetivo</value>
+  </data>
+  
+  <!-- Quick Actions -->
+  <data name="Quick Actions" xml:space="preserve">
+    <value>Acciones rápidas</value>
+  </data>
+  <data name="Manage Users" xml:space="preserve">
+    <value>Gestionar usuarios</value>
+  </data>
+  <data name="Manage Content" xml:space="preserve">
+    <value>Gestionar contenido</value>
+  </data>
+  <data name="View Reports" xml:space="preserve">
+    <value>Ver informes</value>
+  </data>
+  <data name="Security Alerts" xml:space="preserve">
+    <value>Alertas de seguridad</value>
+  </data>
+  <data name="System Settings" xml:space="preserve">
+    <value>Configuración del sistema</value>
+  </data>
+  
+  <!-- Modal - Add Task -->
+  <data name="Task Title" xml:space="preserve">
+    <value>Título de la tarea</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripción</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Prioridad</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>Baja</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>Alta</value>
+  </data>
+  <data name="Due Date" xml:space="preserve">
+    <value>Fecha de vencimiento</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Save Task" xml:space="preserve">
+    <value>Guardar tarea</value>
+  </data>
+  <data name="Please enter a task title" xml:space="preserve">
+    <value>Por favor ingrese un título de tarea</value>
+  </data>
+  <data name="Task saved successfully!" xml:space="preserve">
+    <value>¡Tarea guardada exitosamente!</value>
+  </data>
+  
+  <!-- Modal - Add Target -->
+  <data name="Target Name" xml:space="preserve">
+    <value>Nombre del objetivo</value>
+  </data>
+  <data name="Metric" xml:space="preserve">
+    <value>Métrica</value>
+  </data>
+  <data name="Engagement Rate" xml:space="preserve">
+    <value>Tasa de participación</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>Ingresos</value>
+  </data>
+  <data name="Target Value" xml:space="preserve">
+    <value>Valor objetivo</value>
+  </data>
+  <data name="Deadline" xml:space="preserve">
+    <value>Fecha límite</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notas</value>
+  </data>
+  <data name="Save Target" xml:space="preserve">
+    <value>Guardar objetivo</value>
+  </data>
+  <data name="Please enter target name and value" xml:space="preserve">
+    <value>Por favor ingrese el nombre y valor del objetivo</value>
+  </data>
+  <data name="Target saved successfully!" xml:space="preserve">
+    <value>¡Objetivo guardado exitosamente!</value>
+  </data>
+  
+  <!-- Sidebar Navigation -->
+  <data name="Dashboard.Overview" xml:space="preserve">
+    <value>Resumen</value>
+  </data>
+  <data name="Dashboard.Analytics" xml:space="preserve">
+    <value>Analíticas</value>
+  </data>
+  <data name="Dashboard.Reports" xml:space="preserve">
+    <value>Informes</value>
+  </data>
+  <data name="Dashboard.UserActivity" xml:space="preserve">
+    <value>Actividad del usuario</value>
+  </data>
+  <data name="Dashboard.Monitoring" xml:space="preserve">
+    <value>Monitoreo</value>
+  </data>
+  <data name="Dashboard.Health" xml:space="preserve">
+    <value>Salud</value>
+  </data>
+  <data name="Dashboard.Audit" xml:space="preserve">
+    <value>Auditoría</value>
+  </data>
+  <data name="Dashboard.System" xml:space="preserve">
+    <value>Sistema</value>
+  </data>
+  <data name="Dashboard.Administration" xml:space="preserve">
+    <value>Administración</value>
+  </data>
+  <data name="Dashboard.Management" xml:space="preserve">
+    <value>Gestión</value>
+  </data>
+  <data name="Dashboard.Security" xml:space="preserve">
+    <value>Seguridad</value>
+  </data>
+  <data name="Localization" xml:space="preserve">
+    <value>Localización</value>
+  </data>
+  <data name="Dashboard.Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Dashboard.Navigation" xml:space="preserve">
+    <value>Navegación</value>
+  </data>
+  <data name="Dashboard.BackToMainSite" xml:space="preserve">
+    <value>Volver al sitio principal</value>
+  </data>
+  
+  <!-- Location -->
+  <data name="Dashboard.UsersByLocation" xml:space="preserve">
+    <value>Usuarios por ubicación</value>
+  </data>
+  <data name="Top Locations" xml:space="preserve">
+    <value>Ubicaciones principales</value>
+  </data>
+</root>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Page Title -->
+  <data name="KPIs" xml:space="preserve">
+    <value>KPIs</value>
+  </data>
+  <data name="Key Performance Indicators" xml:space="preserve">
+    <value>Key Performance Indicators</value>
+  </data>
+  <data name="Monitor critical metrics and performance indicators" xml:space="preserve">
+    <value>Monitor critical metrics and performance indicators</value>
+  </data>
+  
+  <!-- KPI Cards -->
+  <data name="Total Users" xml:space="preserve">
+    <value>Total Users</value>
+  </data>
+  <data name="growth" xml:space="preserve">
+    <value>growth</value>
+  </data>
+  <data name="Engagement Rate" xml:space="preserve">
+    <value>Engagement Rate</value>
+  </data>
+  <data name="Active users today" xml:space="preserve">
+    <value>Active users today</value>
+  </data>
+  <data name="Total Content" xml:space="preserve">
+    <value>Total Content</value>
+  </data>
+  <data name="All types" xml:space="preserve">
+    <value>All types</value>
+  </data>
+  <data name="Active Today" xml:space="preserve">
+    <value>Active Today</value>
+  </data>
+  <data name="Online now" xml:space="preserve">
+    <value>Online now</value>
+  </data>
+  
+  <!-- Charts -->
+  <data name="Content Distribution" xml:space="preserve">
+    <value>Content Distribution</value>
+  </data>
+  <data name="Engagement Metrics" xml:space="preserve">
+    <value>Engagement Metrics</value>
+  </data>
+  <data name="User Growth (6 Months)" xml:space="preserve">
+    <value>User Growth (6 Months)</value>
+  </data>
+  <data name="Quick Stats" xml:space="preserve">
+    <value>Quick Stats</value>
+  </data>
+  <data name="Content Items" xml:space="preserve">
+    <value>Content Items</value>
+  </data>
+  <data name="Engagement" xml:space="preserve">
+    <value>Engagement</value>
+  </data>
+  <data name="New Users" xml:space="preserve">
+    <value>New Users</value>
+  </data>
+  
+  <!-- Quick Stats -->
+  <data name="New Users (Week)" xml:space="preserve">
+    <value>New Users (Week)</value>
+  </data>
+  <data name="New Users (Month)" xml:space="preserve">
+    <value>New Users (Month)</value>
+  </data>
+  <data name="Total Groups" xml:space="preserve">
+    <value>Total Groups</value>
+  </data>
+  <data name="Total Reviews" xml:space="preserve">
+    <value>Total Reviews</value>
+  </data>
+</root>
