@@ -1,8 +1,0 @@
-/* Responsive: Mobile */
-body {
-    font-size: 14px;
-}
-
-.container {
-    padding: 0 var(--spacing-sm);
-}

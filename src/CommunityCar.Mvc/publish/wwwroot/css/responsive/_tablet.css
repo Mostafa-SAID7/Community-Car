@@ -1,6 +1,0 @@
-/* Responsive: Tablet */
-@media (min-width: 577px) {
-    .container {
-        max-width: 720px;
-    }
-}

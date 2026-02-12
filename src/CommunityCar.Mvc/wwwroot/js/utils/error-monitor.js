@@ -383,7 +383,7 @@ window.errorMonitor = new ErrorMonitor({
     enableAjaxCapture: true,
     enableClickCapture: true,
     enableErrorCapture: true,
-    logToServer: false, // Set to true when server endpoint is ready
+    logToServer: false, // Disabled - pure MVC project without API endpoints
     logToConsole: true
 });
 
