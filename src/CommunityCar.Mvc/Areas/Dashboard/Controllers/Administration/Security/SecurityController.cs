@@ -90,13 +90,13 @@ public class SecurityController : Controller
                 return PartialView("_AlertList", viewModel);
             }
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading security alerts");
             TempData["Error"] = "Failed to load security alerts. Please try again.";
-            return View(new SecurityIndexViewModel());
+            return View("~/Areas/Dashboard/Views/Administration/Security/Index.cshtml", new SecurityIndexViewModel());
         }
     }
 
@@ -126,7 +126,7 @@ public class SecurityController : Controller
                 RelatedAlerts = relatedAlerts.Items.Where(a => a.Id != id).ToList()
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Details.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -139,7 +139,7 @@ public class SecurityController : Controller
     [HttpGet("Create")]
     public IActionResult Create()
     {
-        return View(new CreateSecurityAlertViewModel());
+        return View("~/Areas/Dashboard/Views/Administration/Security/Create.cshtml", new CreateSecurityAlertViewModel());
     }
 
     [HttpPost("Create")]
@@ -148,7 +148,7 @@ public class SecurityController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Create.cshtml", model);
         }
 
         try
@@ -175,7 +175,7 @@ public class SecurityController : Controller
         {
             _logger.LogError(ex, "Error creating security alert");
             ModelState.AddModelError("", ex.Message);
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Create.cshtml", model);
         }
     }
 
@@ -201,7 +201,7 @@ public class SecurityController : Controller
                 Description = alert.Description
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Edit.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -220,7 +220,7 @@ public class SecurityController : Controller
 
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Edit.cshtml", model);
         }
 
         try
@@ -243,7 +243,7 @@ public class SecurityController : Controller
         {
             _logger.LogError(ex, "Error updating security alert {Id}", id);
             ModelState.AddModelError("", ex.Message);
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Edit.cshtml", model);
         }
     }
 
@@ -275,7 +275,7 @@ public class SecurityController : Controller
                 DetectedAt = alert.DetectedAt
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Resolve.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -294,7 +294,7 @@ public class SecurityController : Controller
 
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Resolve.cshtml", model);
         }
 
         try
@@ -311,7 +311,7 @@ public class SecurityController : Controller
         {
             _logger.LogError(ex, "Error resolving security alert {Id}", id);
             ModelState.AddModelError("", ex.Message);
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Resolve.cshtml", model);
         }
     }
 
@@ -367,7 +367,7 @@ public class SecurityController : Controller
                 Trends = trends
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Security/Statistics.cshtml", viewModel);
         }
         catch (Exception ex)
         {
