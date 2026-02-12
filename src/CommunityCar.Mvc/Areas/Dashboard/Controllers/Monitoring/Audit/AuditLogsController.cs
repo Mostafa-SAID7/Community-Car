@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.AuditLogs;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Monitoring.Audit;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]

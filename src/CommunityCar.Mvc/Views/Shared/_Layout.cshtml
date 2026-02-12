@@ -117,14 +117,6 @@
         }
     </main>
     
-    @{
-        var hideFooter = ViewData["HideFooter"] as bool? ?? false;
-    }
-    @if (!hideFooter)
-    {
-        <partial name="_Footer" />
-    }
-
     <!-- Sidebar Backdrop -->
     <div class="sidebar-backdrop"></div>
 

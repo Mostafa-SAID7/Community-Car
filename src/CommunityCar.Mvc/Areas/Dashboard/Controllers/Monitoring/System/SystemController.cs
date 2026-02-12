@@ -4,10 +4,10 @@ using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Monitoring.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.system;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Monitoring.System;
 
 [Area("Dashboard")]
-[Route("{culture}/Dashboard/Monitoring/System")]
+[Route("{culture}/Dashboard/Monitoring/[controller]")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class SystemController : Controller
 {

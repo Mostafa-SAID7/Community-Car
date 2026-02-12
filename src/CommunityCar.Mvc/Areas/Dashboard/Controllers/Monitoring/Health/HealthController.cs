@@ -4,10 +4,10 @@ using CommunityCar.Domain.Interfaces.Dashboard.Monitoring.Health;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Monitoring.Health;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.health;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Monitoring.Health;
 
 [Area("Dashboard")]
-[Route("{culture}/Dashboard/Monitoring/Health")]
+[Route("{culture}/Dashboard/Monitoring/[controller]")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class HealthController : Controller
 {

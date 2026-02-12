@@ -38,6 +38,8 @@ public class ContentReportsController : Controller
         _logger = logger;
     }
 
+    [HttpGet("")]
+    [HttpGet("Index")]
     public async Task<IActionResult> Index(string reportType = "summary", DateTime? startDate = null, DateTime? endDate = null)
     {
         try
@@ -153,7 +155,7 @@ public class ContentReportsController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("ExportCsv")]
     public async Task<IActionResult> ExportCsv(DateTime? startDate = null, DateTime? endDate = null)
     {
         try
@@ -220,7 +222,7 @@ public class ContentReportsController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("ExportJson")]
     public async Task<IActionResult> ExportJson(DateTime? startDate = null, DateTime? endDate = null)
     {
         try
