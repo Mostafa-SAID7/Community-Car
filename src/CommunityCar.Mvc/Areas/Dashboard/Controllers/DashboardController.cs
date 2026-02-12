@@ -38,7 +38,7 @@ public class DashboardController : Controller
         var engagementMetrics = await _dashboardService.GetEngagementMetricsAsync();
         var usersByLocation = await _dashboardService.GetUsersByLocationAsync();
         var activeUsersByLocation = await _dashboardService.GetActiveUsersByLocationAsync();
-        var recentActivity = await _dashboardService.GetRecentActivityAsync(10);
+        var recentActivity = await _dashboardService.GetRecentActivityAsync(5);
         
         var summaryViewModel = new DashboardSummaryViewModel
         {

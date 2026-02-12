@@ -617,3 +617,140 @@
     </script>
 }
 
+
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">
+                    <i class="fas fa-plus me-2"></i>@Localizer["Dashboard.AddTask"]
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaskForm">
+                    <div class="mb-3">
+                        <label for="taskTitle" class="form-label">@Localizer["Task Title"]</label>
+                        <input type="text" class="form-control" id="taskTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">@Localizer["Description"]</label>
+                        <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskPriority" class="form-label">@Localizer["Priority"]</label>
+                        <select class="form-select" id="taskPriority">
+                            <option value="low">@Localizer["Low"]</option>
+                            <option value="medium" selected>@Localizer["Medium"]</option>
+                            <option value="high">@Localizer["High"]</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDueDate" class="form-label">@Localizer["Due Date"]</label>
+                        <input type="date" class="form-control" id="taskDueDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary" onclick="saveTask()">
+                    <i class="fas fa-save me-2"></i>@Localizer["Save Task"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Target Modal -->
+<div class="modal fade" id="addTargetModal" tabindex="-1" aria-labelledby="addTargetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTargetModalLabel">
+                    <i class="fas fa-bullseye me-2"></i>@Localizer["Dashboard.AddTarget"]
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTargetForm">
+                    <div class="mb-3">
+                        <label for="targetName" class="form-label">@Localizer["Target Name"]</label>
+                        <input type="text" class="form-control" id="targetName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetMetric" class="form-label">@Localizer["Metric"]</label>
+                        <select class="form-select" id="targetMetric">
+                            <option value="users">@Localizer["Total Users"]</option>
+                            <option value="posts">@Localizer["Total Posts"]</option>
+                            <option value="engagement">@Localizer["Engagement Rate"]</option>
+                            <option value="revenue">@Localizer["Revenue"]</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetValue" class="form-label">@Localizer["Target Value"]</label>
+                        <input type="number" class="form-control" id="targetValue" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetDeadline" class="form-label">@Localizer["Deadline"]</label>
+                        <input type="date" class="form-control" id="targetDeadline">
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetNotes" class="form-label">@Localizer["Notes"]</label>
+                        <textarea class="form-control" id="targetNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-success" onclick="saveTarget()">
+                    <i class="fas fa-save me-2"></i>@Localizer["Save Target"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveTask() {
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    const priority = document.getElementById('taskPriority').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+    
+    if (!title) {
+        alert('@Localizer["Please enter a task title"]');
+        return;
+    }
+    
+    // TODO: Implement actual save functionality
+    console.log('Saving task:', { title, description, priority, dueDate });
+    alert('@Localizer["Task saved successfully!"]');
+    
+    // Close modal and reset form
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
+    modal.hide();
+    document.getElementById('addTaskForm').reset();
+}
+
+function saveTarget() {
+    const name = document.getElementById('targetName').value;
+    const metric = document.getElementById('targetMetric').value;
+    const value = document.getElementById('targetValue').value;
+    const deadline = document.getElementById('targetDeadline').value;
+    const notes = document.getElementById('targetNotes').value;
+    
+    if (!name || !value) {
+        alert('@Localizer["Please enter target name and value"]');
+        return;
+    }
+    
+    // TODO: Implement actual save functionality
+    console.log('Saving target:', { name, metric, value, deadline, notes });
+    alert('@Localizer["Target saved successfully!"]');
+    
+    // Close modal and reset form
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addTargetModal'));
+    modal.hide();
+    document.getElementById('addTargetForm').reset();
+}
+</script>
