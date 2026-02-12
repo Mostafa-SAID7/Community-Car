@@ -59,7 +59,7 @@ public class UserManagementController : Controller
             });
         }
 
-        return View(userViewModels);
+        return View("~/Areas/Dashboard/Views/Administration/Management/Users/Index.cshtml", userViewModels);
     }
 
     [HttpGet("Create")]
@@ -69,7 +69,7 @@ public class UserManagementController : Controller
         {
             AllRoles = _roleManager.Roles.Select(r => r.Name!).ToList()
         };
-        return View(model);
+        return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Create.cshtml", model);
     }
 
     [HttpPost("Create")]
@@ -79,7 +79,7 @@ public class UserManagementController : Controller
         if (!ModelState.IsValid)
         {
             model.AllRoles = _roleManager.Roles.Select(r => r.Name!).ToList();
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Create.cshtml", model);
         }
 
         // Check if user exists (including soft-deleted) to prevent Duplicate Key Exception
@@ -100,7 +100,7 @@ public class UserManagementController : Controller
                 ModelState.AddModelError(string.Empty, $"User with email '{model.Email}' already exists.");
             }
             model.AllRoles = _roleManager.Roles.Select(r => r.Name!).ToList();
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Create.cshtml", model);
         }
 
         var user = new ApplicationUser
@@ -130,7 +130,7 @@ public class UserManagementController : Controller
         }
 
         model.AllRoles = _roleManager.Roles.Select(r => r.Name!).ToList();
-        return View(model);
+        return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Create.cshtml", model);
     }
     
     [HttpPost("Delete/{id}")]
@@ -173,7 +173,7 @@ public class UserManagementController : Controller
             AllRoles = allRoles
         };
 
-        return View(model);
+        return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Edit.cshtml", model);
     }
 
     [HttpPost("Edit/{id}")]
@@ -183,7 +183,7 @@ public class UserManagementController : Controller
         if (!ModelState.IsValid)
         {
             model.AllRoles = _roleManager.Roles.Select(r => r.Name!).ToList();
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Management/UserManagement/Edit.cshtml", model);
         }
 
         var user = await _userManager.FindByIdAsync(model.Id.ToString());

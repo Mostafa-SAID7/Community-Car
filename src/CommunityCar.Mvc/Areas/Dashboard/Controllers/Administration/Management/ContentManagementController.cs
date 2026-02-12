@@ -115,13 +115,13 @@ public class ContentManagementController : Controller
                     break;
             }
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Management/ContentManagement/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading content management");
             TempData["Error"] = "Failed to load content. Please try again.";
-            return View(new ContentManagementViewModel());
+            return View("~/Areas/Dashboard/Views/Administration/Management/ContentManagement/Index.cshtml", new ContentManagementViewModel());
         }
     }
 
