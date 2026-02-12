@@ -22,7 +22,8 @@ public class UserManagementController : Controller
         _roleManager = roleManager;
     }
 
-    [HttpGet]
+    [HttpGet("")]
+    [HttpGet("Index")]
     public async Task<IActionResult> Index(string? searchTerm)
     {
         var usersQuery = _userManager.Users.AsQueryable();
@@ -61,7 +62,7 @@ public class UserManagementController : Controller
         return View(userViewModels);
     }
 
-    [HttpGet]
+    [HttpGet("Create")]
     public IActionResult Create()
     {
         var model = new CreateUserViewModel
@@ -71,7 +72,7 @@ public class UserManagementController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("Create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateUserViewModel model)
     {
@@ -132,7 +133,7 @@ public class UserManagementController : Controller
         return View(model);
     }
     
-    [HttpPost]
+    [HttpPost("Delete/{id}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -153,7 +154,7 @@ public class UserManagementController : Controller
         return RedirectToAction(nameof(Index)); // Or show error
     }
 
-    [HttpGet]
+    [HttpGet("Edit/{id}")]
     public async Task<IActionResult> Edit(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -175,7 +176,7 @@ public class UserManagementController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("Edit/{id}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditUserViewModel model)
     {
@@ -205,6 +206,7 @@ public class UserManagementController : Controller
         return RedirectToAction(nameof(Index));
     }
     
+    [HttpGet("Settings")]
     public IActionResult Settings() => View();
 }
 

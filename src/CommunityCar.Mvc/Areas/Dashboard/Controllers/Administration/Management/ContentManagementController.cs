@@ -38,6 +38,8 @@ public class ContentManagementController : Controller
         _logger = logger;
     }
 
+    [HttpGet("")]
+    [HttpGet("Index")]
     public async Task<IActionResult> Index(string contentType = "all", int page = 1, int pageSize = 20)
     {
         try
@@ -123,7 +125,8 @@ public class ContentManagementController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPost("DeleteQuestion/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteQuestion(Guid id)
     {
         try
@@ -140,7 +143,8 @@ public class ContentManagementController : Controller
         return RedirectToAction(nameof(Index), new { contentType = "questions" });
     }
 
-    [HttpPost]
+    [HttpPost("DeletePost/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeletePost(Guid id)
     {
         try
@@ -157,7 +161,8 @@ public class ContentManagementController : Controller
         return RedirectToAction(nameof(Index), new { contentType = "posts" });
     }
 
-    [HttpPost]
+    [HttpPost("DeleteEvent/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteEvent(Guid id)
     {
         try
@@ -174,7 +179,8 @@ public class ContentManagementController : Controller
         return RedirectToAction(nameof(Index), new { contentType = "events" });
     }
 
-    [HttpPost]
+    [HttpPost("DeleteNews/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteNews(Guid id)
     {
         try
@@ -191,7 +197,8 @@ public class ContentManagementController : Controller
         return RedirectToAction(nameof(Index), new { contentType = "news" });
     }
 
-    [HttpPost]
+    [HttpPost("DeleteGuide/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteGuide(Guid id)
     {
         try
@@ -208,7 +215,8 @@ public class ContentManagementController : Controller
         return RedirectToAction(nameof(Index), new { contentType = "guides" });
     }
 
-    [HttpPost]
+    [HttpPost("DeleteReview/{id}")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteReview(Guid id)
     {
         try
