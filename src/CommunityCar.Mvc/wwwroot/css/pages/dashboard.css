@@ -1359,7 +1359,7 @@ canvas {
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    table-layout: auto;
 }
 
 .dashboard-table thead th {
