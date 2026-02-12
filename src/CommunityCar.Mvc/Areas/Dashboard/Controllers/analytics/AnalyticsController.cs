@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.Analytics;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Analytics;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]

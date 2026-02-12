@@ -87,13 +87,13 @@ public class LocalizationController : Controller
                 return PartialView("_ResourceList", viewModel);
             }
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading localization resources");
             TempData["Error"] = _localizer["FailedToLoadResources"].Value;
-            return View(new LocalizationIndexViewModel());
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Index.cshtml", new LocalizationIndexViewModel());
         }
     }
 
@@ -123,7 +123,7 @@ public class LocalizationController : Controller
                 RelatedTranslations = relatedTranslations.Items.Where(r => r.Id != id).ToList()
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Details.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -142,7 +142,7 @@ public class LocalizationController : Controller
         ViewBag.AvailableCultures = cultures;
         ViewBag.AvailableCategories = categories;
 
-        return View(new CreateLocalizationViewModel());
+        return View("~/Areas/Dashboard/Views/Administration/Localization/Create.cshtml", new CreateLocalizationViewModel());
     }
 
     [HttpPost("Create")]
@@ -155,7 +155,7 @@ public class LocalizationController : Controller
             var categories = await _localizationService.GetAvailableCategoriesAsync();
             ViewBag.AvailableCultures = cultures;
             ViewBag.AvailableCategories = categories;
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Create.cshtml", model);
         }
 
         try
@@ -218,7 +218,7 @@ public class LocalizationController : Controller
                 IsActive = resource.IsActive
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Edit.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -239,7 +239,7 @@ public class LocalizationController : Controller
         {
             var categories = await _localizationService.GetAvailableCategoriesAsync();
             ViewBag.AvailableCategories = categories;
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Edit.cshtml", model);
         }
 
         try
@@ -308,7 +308,7 @@ public class LocalizationController : Controller
         {
             var cultures = await _localizationService.GetAvailableCulturesAsync();
             ViewBag.AvailableCultures = cultures;
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/BulkImport.cshtml", model);
         }
 
         try
@@ -352,7 +352,7 @@ public class LocalizationController : Controller
             var cultures = await _localizationService.GetAvailableCulturesAsync();
             ViewBag.AvailableCultures = cultures;
 
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/BulkImport.cshtml", model);
         }
     }
 
@@ -368,7 +368,7 @@ public class LocalizationController : Controller
             AvailableCategories = categories
         };
 
-        return View(viewModel);
+        return View("~/Areas/Dashboard/Views/Administration/Localization/Export.cshtml", viewModel);
     }
 
     [HttpPost("Export")]
@@ -381,7 +381,7 @@ public class LocalizationController : Controller
             var categories = await _localizationService.GetAvailableCategoriesAsync();
             model.AvailableCultures = cultures;
             model.AvailableCategories = categories;
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Export.cshtml", model);
         }
 
         try
@@ -423,7 +423,7 @@ public class LocalizationController : Controller
             model.AvailableCultures = cultures;
             model.AvailableCategories = categories;
 
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Export.cshtml", model);
         }
     }
 
@@ -437,7 +437,7 @@ public class LocalizationController : Controller
             AvailableCultures = cultures
         };
 
-        return View(viewModel);
+        return View("~/Areas/Dashboard/Views/Administration/Localization/Sync.cshtml", viewModel);
     }
 
     [HttpPost("Sync")]
@@ -448,7 +448,7 @@ public class LocalizationController : Controller
         {
             var cultures = await _localizationService.GetAvailableCulturesAsync();
             model.AvailableCultures = cultures;
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Sync.cshtml", model);
         }
 
         try
@@ -469,45 +469,11 @@ public class LocalizationController : Controller
             var cultures = await _localizationService.GetAvailableCulturesAsync();
             model.AvailableCultures = cultures;
 
-            return View(model);
+            return View("~/Areas/Dashboard/Views/Administration/Localization/Sync.cshtml", model);
         }
     }
 
-    [HttpPost("SyncToFiles")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SyncToFiles()
-    {
-        try
-        {
-            await _localizationService.SyncToJsonFilesAsync();
-            TempData["Success"] = _localizer["SyncToFilesSuccess"].Value;
-            return RedirectToAction(nameof(Index));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error syncing translations to files");
-            TempData["Error"] = _localizer["SyncToFilesFailed"].Value;
-            return RedirectToAction(nameof(Index));
-        }
-    }
 
-    [HttpPost("SyncFromFiles")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SyncFromFiles()
-    {
-        try
-        {
-            var imported = await _localizationService.SyncFromJsonFilesAsync();
-            TempData["Success"] = string.Format("Successfully imported {0} translations from JSON files.", imported);
-            return RedirectToAction(nameof(Index));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error syncing translations from files");
-            TempData["Error"] = "Failed to sync translations from JSON files.";
-            return RedirectToAction(nameof(Index));
-        }
-    }
 
     [HttpPost("SyncFromResx")]
     [ValidateAntiForgeryToken]

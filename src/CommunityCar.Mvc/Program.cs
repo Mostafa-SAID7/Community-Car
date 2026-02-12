@@ -1,5 +1,7 @@
 using CommunityCar.Infrastructure.Data.Seed;
 using CommunityCar.Infrastructure.Mappings.Community.Friends;
+using CommunityCar.Mvc.Filters;
+using CommunityCar.Mvc.Middleware;
 
 try
 {

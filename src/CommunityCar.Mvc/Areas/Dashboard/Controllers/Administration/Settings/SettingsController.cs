@@ -84,13 +84,13 @@ public class SettingsController : Controller
                 return PartialView("_SettingsList", viewModel);
             }
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Administration/Settings/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading system settings");
             TempData["Error"] = "Failed to load system settings. Please try again.";
-            return View(new SettingsIndexViewModel());
+            return View("~/Areas/Dashboard/Views/Administration/Settings/Index.cshtml", new SettingsIndexViewModel());
         }
     }
 

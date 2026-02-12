@@ -1,3 +1,5 @@
+using System.Text;
+using global::System.Text;
 using System.Text.Json;
 using CommunityCar.Domain.DTOs.Dashboard.Monitoring.Audit;
 using CommunityCar.Domain.Interfaces.Dashboard.Monitoring.Audit;
@@ -84,13 +86,13 @@ public class AuditLogsController : Controller
                 }
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/Audit/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading audit logs");
             TempData["Error"] = _localizer["FailedToLoadLogs"].Value;
-            return View(new AuditLogIndexViewModel());
+            return View("~/Areas/Dashboard/Views/Monitoring/Audit/Index.cshtml", new AuditLogIndexViewModel());
         }
     }
 
@@ -142,7 +144,7 @@ public class AuditLogsController : Controller
                 viewModel.AffectedColumnsList = auditLog.AffectedColumns.Split(',').Select(c => c.Trim()).ToList();
             }
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/Audit/Details.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -178,7 +180,7 @@ public class AuditLogsController : Controller
             var csv = GenerateCsv(result.Items);
             var fileName = $"AuditLogs_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
 
-            return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", fileName);
+            return File(global::System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", fileName);
         }
         catch (Exception ex)
         {
@@ -205,7 +207,7 @@ public class AuditLogsController : Controller
 
     private string GenerateCsv(List<AuditLogDto> logs)
     {
-        var csv = new System.Text.StringBuilder();
+        var csv = new global::System.Text.StringBuilder();
         csv.AppendLine("Id,UserName,EntityName,EntityId,Action,Description,CreatedAt");
 
         foreach (var log in logs)

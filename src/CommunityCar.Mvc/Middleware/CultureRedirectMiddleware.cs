@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Linq;
 
-namespace CommunityCar.Web.Middleware;
+namespace CommunityCar.Mvc.Middleware;
 
 public class CultureRedirectMiddleware
 {

@@ -37,13 +37,13 @@ public class SystemController : Controller
                 AssemblyInfo = assemblyInfo
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading system overview");
             TempData["Error"] = "Failed to load system information. Please try again.";
-            return View(new SystemIndexViewModel());
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Index.cshtml", new SystemIndexViewModel());
         }
     }
 
@@ -63,7 +63,7 @@ public class SystemController : Controller
                 AssemblyInfo = assemblyInfo
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Info.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -88,7 +88,7 @@ public class SystemController : Controller
                 MetricHistory = new List<SystemMetric>()
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Resources.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -111,7 +111,7 @@ public class SystemController : Controller
                 LastChecked = DateTime.UtcNow
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Services.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -135,7 +135,7 @@ public class SystemController : Controller
                 TotalCount = logs.Count
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Logs.cshtml", viewModel);
         }
         catch (Exception ex)
         {
@@ -158,7 +158,7 @@ public class SystemController : Controller
                 ShowSensitiveData = false
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/System/Configuration.cshtml", viewModel);
         }
         catch (Exception ex)
         {

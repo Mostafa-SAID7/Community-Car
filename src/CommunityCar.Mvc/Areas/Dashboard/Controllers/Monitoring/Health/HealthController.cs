@@ -31,7 +31,7 @@ public class HealthController : Controller
                 SystemHealth = systemHealth
             };
 
-            return View(viewModel);
+            return View("~/Areas/Dashboard/Views/Monitoring/Health/Index.cshtml", viewModel);
         }
         catch (Exception ex)
         {

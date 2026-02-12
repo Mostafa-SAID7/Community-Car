@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 using CommunityCar.Domain.Exceptions;
 
-namespace CommunityCar.Web.Middleware;
+namespace CommunityCar.Mvc.Middleware;
 
 public class ExceptionHandlerMiddleware
 {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text;
 
-namespace CommunityCar.Web.Middleware;
+namespace CommunityCar.Mvc.Middleware;
 
 public class LoggingMiddleware
 {

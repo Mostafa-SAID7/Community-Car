@@ -3,8 +3,8 @@ using System.Xml.Linq;
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.DTOs.Dashboard.Administration.Localization;
 using CommunityCar.Domain.Entities.Dashboard.Localization;
+using CommunityCar.Domain.Interfaces.Common;
 using CommunityCar.Domain.Interfaces.Dashboard.Administration.Localization;
-using CommunityCar.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,23 +13,24 @@ namespace CommunityCar.Infrastructure.Services.Dashboard.Administration.Localiza
 
 public class LocalizationService : ILocalizationService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<LocalizationService> _logger;
     private readonly string _resourcesPath;
+    private IRepository<LocalizationResource> Repository => _unitOfWork.Repository<LocalizationResource>();
 
     public LocalizationService(
-        ApplicationDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<LocalizationService> logger,
         IWebHostEnvironment environment)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger;
         _resourcesPath = Path.Combine(environment.ContentRootPath, "Resources", "Localization");
     }
 
     public async Task<PagedResult<LocalizationResourceDto>> GetResourcesAsync(LocalizationFilterDto filter)
     {
-        var query = _context.Set<LocalizationResource>().AsQueryable();
+        var query = Repository.GetQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.Key))
             query = query.Where(r => r.Key.Contains(filter.Key));
@@ -79,8 +80,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<LocalizationResourceDto?> GetResourceByIdAsync(Guid id)
     {
-        var resource = await _context.Set<LocalizationResource>()
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var resource = await Repository.GetByIdAsync(id);
 
         if (resource == null) return null;
 
@@ -101,8 +101,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<LocalizationResourceDto?> GetResourceByKeyAsync(string key, string cultureCode)
     {
-        var resource = await _context.Set<LocalizationResource>()
-            .FirstOrDefaultAsync(r => r.Key == key && r.CultureCode == cultureCode);
+        var resource = await Repository.FirstOrDefaultAsync(r => r.Key == key && r.CultureCode == cultureCode);
 
         if (resource == null) return null;
 
@@ -123,8 +122,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<LocalizationResourceDto> CreateResourceAsync(CreateLocalizationResourceDto dto)
     {
-        var exists = await _context.Set<LocalizationResource>()
-            .AnyAsync(r => r.Key == dto.Key && r.CultureCode == dto.CultureCode);
+        var exists = await Repository.CountAsync(r => r.Key == dto.Key && r.CultureCode == dto.CultureCode) > 0;
 
         if (exists)
             throw new InvalidOperationException($"Resource with key '{dto.Key}' already exists for culture '{dto.CultureCode}'");
@@ -140,8 +138,8 @@ public class LocalizationService : ILocalizationService
             CreatedAt = DateTimeOffset.UtcNow
         };
 
-        _context.Set<LocalizationResource>().Add(resource);
-        await _context.SaveChangesAsync();
+        await Repository.AddAsync(resource);
+        await _unitOfWork.SaveChangesAsync();
 
         return new LocalizationResourceDto
         {
@@ -158,8 +156,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<LocalizationResourceDto> UpdateResourceAsync(UpdateLocalizationResourceDto dto)
     {
-        var resource = await _context.Set<LocalizationResource>()
-            .FirstOrDefaultAsync(r => r.Id == dto.Id);
+        var resource = await Repository.GetByIdAsync(dto.Id);
 
         if (resource == null)
             throw new InvalidOperationException("Resource not found");
@@ -169,7 +166,8 @@ public class LocalizationService : ILocalizationService
         resource.IsActive = dto.IsActive;
         resource.LastModifiedAt = DateTimeOffset.UtcNow;
 
-        await _context.SaveChangesAsync();
+        Repository.Update(resource);
+        await _unitOfWork.SaveChangesAsync();
 
         return new LocalizationResourceDto
         {
@@ -188,19 +186,18 @@ public class LocalizationService : ILocalizationService
 
     public async Task DeleteResourceAsync(Guid id)
     {
-        var resource = await _context.Set<LocalizationResource>()
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var resource = await Repository.GetByIdAsync(id);
 
         if (resource == null)
             throw new InvalidOperationException("Resource not found");
 
-        _context.Set<LocalizationResource>().Remove(resource);
-        await _context.SaveChangesAsync();
+        Repository.Delete(resource);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<List<string>> GetDistinctCategoriesAsync()
     {
-        return await _context.Set<LocalizationResource>()
+        return await Repository.GetQueryable()
             .Select(r => r.Category)
             .Distinct()
             .OrderBy(c => c)
@@ -209,7 +206,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<List<string>> GetDistinctCulturesAsync()
     {
-        return await _context.Set<LocalizationResource>()
+        return await Repository.GetQueryable()
             .Select(r => r.CultureCode)
             .Distinct()
             .OrderBy(c => c)
@@ -218,23 +215,22 @@ public class LocalizationService : ILocalizationService
 
     public async Task<LocalizationStatisticsDto> GetStatisticsAsync()
     {
-        var resources = await _context.Set<LocalizationResource>()
-            .Where(r => r.IsActive)
-            .ToListAsync();
+        var resources = await Repository.WhereAsync(r => r.IsActive);
+        var resourcesList = resources.ToList();
 
-        var distinctKeys = resources.Select(r => r.Key).Distinct().Count();
-        var cultures = resources.Select(r => r.CultureCode).Distinct().ToList();
+        var distinctKeys = resourcesList.Select(r => r.Key).Distinct().Count();
+        var cultures = resourcesList.Select(r => r.CultureCode).Distinct().ToList();
 
-        var translationsByCulture = resources
+        var translationsByCulture = resourcesList
             .GroupBy(r => r.CultureCode)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        var translationsByCategory = resources
+        var translationsByCategory = resourcesList
             .GroupBy(r => r.Category)
             .ToDictionary(g => g.Key, g => g.Count());
 
         var expectedTranslations = distinctKeys * cultures.Count;
-        var actualTranslations = resources.Count;
+        var actualTranslations = resourcesList.Count;
         var missingTranslations = expectedTranslations - actualTranslations;
         var completionPercentage = expectedTranslations > 0
             ? (double)actualTranslations / expectedTranslations * 100
@@ -253,9 +249,8 @@ public class LocalizationService : ILocalizationService
 
     public async Task<Dictionary<string, string>> GetAllResourcesForCultureAsync(string cultureCode)
     {
-        return await _context.Set<LocalizationResource>()
-            .Where(r => r.CultureCode == cultureCode && r.IsActive)
-            .ToDictionaryAsync(r => r.Key, r => r.Value);
+        var resources = await Repository.WhereAsync(r => r.CultureCode == cultureCode && r.IsActive);
+        return resources.ToDictionary(r => r.Key, r => r.Value);
     }
 
     public async Task<int> BulkImportAsync(BulkImportDto dto)
@@ -264,8 +259,7 @@ public class LocalizationService : ILocalizationService
 
         foreach (var translation in dto.Translations)
         {
-            var existing = await _context.Set<LocalizationResource>()
-                .FirstOrDefaultAsync(r => r.Key == translation.Key && r.CultureCode == dto.CultureCode);
+            var existing = await Repository.FirstOrDefaultAsync(r => r.Key == translation.Key && r.CultureCode == dto.CultureCode);
 
             if (existing != null)
             {
@@ -273,6 +267,7 @@ public class LocalizationService : ILocalizationService
                 {
                     existing.Value = translation.Value;
                     existing.LastModifiedAt = DateTimeOffset.UtcNow;
+                    Repository.Update(existing);
                     imported++;
                 }
             }
@@ -288,22 +283,21 @@ public class LocalizationService : ILocalizationService
                     CreatedAt = DateTimeOffset.UtcNow
                 };
 
-                _context.Set<LocalizationResource>().Add(resource);
+                await Repository.AddAsync(resource);
                 imported++;
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return imported;
     }
 
     public async Task<Dictionary<string, Dictionary<string, string>>> ExportAllAsync()
     {
-        var resources = await _context.Set<LocalizationResource>()
-            .Where(r => r.IsActive)
-            .ToListAsync();
+        var resources = await Repository.WhereAsync(r => r.IsActive);
+        var resourcesList = resources.ToList();
 
-        return resources
+        return resourcesList
             .GroupBy(r => r.CultureCode)
             .ToDictionary(
                 g => g.Key,
@@ -313,19 +307,19 @@ public class LocalizationService : ILocalizationService
 
     public async Task<List<LocalizationResourceDto>> GetMissingTranslationsAsync(string sourceCulture, string targetCulture)
     {
-        var sourceKeys = await _context.Set<LocalizationResource>()
+        var sourceKeys = await Repository.GetQueryable()
             .Where(r => r.CultureCode == sourceCulture)
             .Select(r => r.Key)
             .ToListAsync();
 
-        var targetKeys = await _context.Set<LocalizationResource>()
+        var targetKeys = await Repository.GetQueryable()
             .Where(r => r.CultureCode == targetCulture)
             .Select(r => r.Key)
             .ToListAsync();
 
         var missingKeys = sourceKeys.Except(targetKeys).ToList();
 
-        var missingResources = await _context.Set<LocalizationResource>()
+        var missingResources = await Repository.GetQueryable()
             .Where(r => r.CultureCode == sourceCulture && missingKeys.Contains(r.Key))
             .Select(r => new LocalizationResourceDto
             {
@@ -343,93 +337,6 @@ public class LocalizationService : ILocalizationService
         return missingResources;
     }
 
-    public async Task SyncToJsonFilesAsync()
-    {
-        var cultures = await GetDistinctCulturesAsync();
-
-        if (!Directory.Exists(_resourcesPath))
-            Directory.CreateDirectory(_resourcesPath);
-
-        foreach (var culture in cultures)
-        {
-            var resources = await GetAllResourcesForCultureAsync(culture);
-            var filePath = Path.Combine(_resourcesPath, $"{culture}.json");
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-
-            var json = JsonSerializer.Serialize(resources, options);
-            await File.WriteAllTextAsync(filePath, json);
-
-            _logger.LogInformation("Synced {Count} resources to {FilePath}", resources.Count, filePath);
-        }
-    }
-
-    public async Task<int> SyncFromJsonFilesAsync()
-    {
-        if (!Directory.Exists(_resourcesPath))
-        {
-            _logger.LogWarning("Resources path does not exist: {Path}", _resourcesPath);
-            return 0;
-        }
-
-        var jsonFiles = Directory.GetFiles(_resourcesPath, "*.json");
-        var totalImported = 0;
-
-        foreach (var filePath in jsonFiles)
-        {
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
-            var cultureCode = fileName;
-
-            try
-            {
-                var jsonContent = await File.ReadAllTextAsync(filePath);
-                var translations = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
-
-                if (translations == null || !translations.Any())
-                    continue;
-
-                foreach (var kvp in translations)
-                {
-                    var existing = await _context.Set<LocalizationResource>()
-                        .FirstOrDefaultAsync(r => r.Key == kvp.Key && r.CultureCode == cultureCode);
-
-                    if (existing == null)
-                    {
-                        var resource = new LocalizationResource
-                        {
-                            Key = kvp.Key,
-                            Category = "General",
-                            CultureCode = cultureCode,
-                            Value = kvp.Value,
-                            IsActive = true,
-                            CreatedAt = DateTimeOffset.UtcNow
-                        };
-
-                        _context.Set<LocalizationResource>().Add(resource);
-                        totalImported++;
-                    }
-                }
-
-                _logger.LogInformation("Imported {Count} resources from {FilePath}", translations.Count, filePath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error importing from file {FilePath}", filePath);
-            }
-        }
-
-        if (totalImported > 0)
-        {
-            await _context.SaveChangesAsync();
-        }
-
-        return totalImported;
-    }
-
     public async Task<List<string>> GetAvailableCulturesAsync()
     {
         return await GetDistinctCulturesAsync();
@@ -442,7 +349,7 @@ public class LocalizationService : ILocalizationService
 
     public async Task<Dictionary<string, string>> ExportResourcesAsync(string? culture, string? category)
     {
-        var query = _context.Set<LocalizationResource>().AsQueryable();
+        var query = Repository.GetQueryable();
 
         if (!string.IsNullOrEmpty(culture))
             query = query.Where(r => r.CultureCode == culture);
@@ -450,7 +357,8 @@ public class LocalizationService : ILocalizationService
         if (!string.IsNullOrEmpty(category))
             query = query.Where(r => r.Category == category);
 
-        return await query.ToDictionaryAsync(r => r.Key, r => r.Value);
+        var resources = await query.ToListAsync();
+        return resources.ToDictionary(r => r.Key, r => r.Value);
     }
 
     public async Task<int> SyncMissingKeysAsync(string sourceCulture, string targetCulture, bool overwriteExisting)
@@ -471,17 +379,19 @@ public class LocalizationService : ILocalizationService
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            _context.Set<LocalizationResource>().Add(resource);
+            await Repository.AddAsync(resource);
             synced++;
         }
 
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return synced;
     }
 
     public async Task RefreshCacheAsync()
     {
-        await SyncToJsonFilesAsync();
+        // Cache refresh logic - currently no caching implemented
+        // This method is kept for future caching implementation
+        await Task.CompletedTask;
     }
 
     public async Task<Dictionary<string, string>> GetCachedResourcesAsync(string cultureCode)
@@ -536,8 +446,7 @@ public class LocalizationService : ILocalizationService
                 {
                     var key = $"{category}.{kvp.Key}";
                     
-                    var existing = await _context.Set<LocalizationResource>()
-                        .FirstOrDefaultAsync(r => r.Key == key && r.CultureCode == cultureCode);
+                    var existing = await Repository.FirstOrDefaultAsync(r => r.Key == key && r.CultureCode == cultureCode);
 
                     if (existing == null)
                     {
@@ -551,7 +460,7 @@ public class LocalizationService : ILocalizationService
                             CreatedAt = DateTimeOffset.UtcNow
                         };
 
-                        _context.Set<LocalizationResource>().Add(resource);
+                        await Repository.AddAsync(resource);
                         totalImported++;
                     }
                 }
@@ -566,7 +475,7 @@ public class LocalizationService : ILocalizationService
 
         if (totalImported > 0)
         {
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         return totalImported;
@@ -582,12 +491,11 @@ public class LocalizationService : ILocalizationService
             Directory.CreateDirectory(resourcesBasePath);
         }
 
-        var resources = await _context.Set<LocalizationResource>()
-            .Where(r => r.IsActive)
-            .ToListAsync();
+        var resources = await Repository.WhereAsync(r => r.IsActive);
+        var resourcesList = resources.ToList();
 
         // Group by category and culture
-        var grouped = resources
+        var grouped = resourcesList
             .GroupBy(r => new { r.Category, r.CultureCode })
             .ToList();
 
@@ -703,5 +611,5 @@ public class LocalizationService : ILocalizationService
 
         doc.Save(filePath);
     }
-
 }
+

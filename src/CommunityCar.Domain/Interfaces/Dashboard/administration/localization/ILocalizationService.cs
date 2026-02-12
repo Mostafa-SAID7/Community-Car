@@ -18,8 +18,6 @@ public interface ILocalizationService
     Task<int> BulkImportAsync(BulkImportDto dto);
     Task<Dictionary<string, Dictionary<string, string>>> ExportAllAsync();
     Task<List<LocalizationResourceDto>> GetMissingTranslationsAsync(string sourceCulture, string targetCulture);
-    Task SyncToJsonFilesAsync();
-    Task<int> SyncFromJsonFilesAsync();
     Task<int> SyncFromResxFilesAsync();
     Task<int> SyncToResxFilesAsync();
     Task<List<string>> GetAvailableCulturesAsync();

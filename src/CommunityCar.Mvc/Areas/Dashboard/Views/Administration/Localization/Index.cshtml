@@ -22,14 +22,6 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" asp-action="BulkImport">Bulk Import (JSON/CSV)</a></li>
                             <li>
-                                <form asp-action="SyncFromFiles" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-filetype-json me-1"></i> Sync From JSON Files
-                                    </button>
-                                </form>
-                            </li>
-                            <li>
                                 <form asp-action="SyncFromResx" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="dropdown-item">
@@ -45,14 +37,6 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" asp-action="Export">Export (JSON/CSV)</a></li>
-                            <li>
-                                <form asp-action="SyncToFiles" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-filetype-json me-1"></i> Sync To JSON Files
-                                    </button>
-                                </form>
-                            </li>
                             <li>
                                 <form asp-action="SyncToResx" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
