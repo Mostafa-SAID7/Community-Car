@@ -2,6 +2,7 @@ using CommunityCar.Domain.Interfaces.Dashboard;
 using CommunityCar.Domain.Models;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Interfaces.Common;
+using CommunityCar.Domain.DTOs.Dashboard;
 using CommunityCar.Infrastructure.Repos.Common;
 using CommunityCar.Infrastructure.Uow.Common;
 using Microsoft.EntityFrameworkCore;
@@ -121,6 +122,69 @@ public class DashboardService : IDashboardService
         return result;
     }
 
+    public async Task<IEnumerable<KPIValue>> GetActivityByPeriodAsync(string period)
+    {
+        var users = await _userRepository.GetAllAsync();
+        var result = new List<KPIValue>();
+
+        switch (period.ToLower())
+        {
+            case "week":
+                var weekAgo = DateTime.UtcNow.AddDays(-7);
+                var dailyRegistrations = users
+                    .Where(u => u.CreatedAt >= weekAgo)
+                    .GroupBy(u => u.CreatedAt.Date)
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                for (int i = 6; i >= 0; i--)
+                {
+                    var date = DateTime.UtcNow.AddDays(-i).Date;
+                    var dayName = date.ToString("ddd");
+                    var count = dailyRegistrations.ContainsKey(date) ? dailyRegistrations[date] : 0;
+                    result.Add(new KPIValue(dayName, count));
+                }
+                break;
+
+            case "month":
+                var monthAgo = DateTime.UtcNow.AddDays(-30);
+                var weeklyRegistrations = users
+                    .Where(u => u.CreatedAt >= monthAgo)
+                    .GroupBy(u => new { Week = (u.CreatedAt.Date - monthAgo.Date).Days / 7 })
+                    .ToDictionary(g => g.Key.Week, g => g.Count());
+
+                for (int i = 0; i < 5; i++)
+                {
+                    var weekLabel = $"Week {i + 1}";
+                    var count = weeklyRegistrations.ContainsKey(i) ? weeklyRegistrations[i] : 0;
+                    result.Add(new KPIValue(weekLabel, count));
+                }
+                break;
+
+            case "year":
+                var yearAgo = DateTime.UtcNow.AddMonths(-12);
+                var monthlyRegistrations = users
+                    .Where(u => u.CreatedAt >= yearAgo)
+                    .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
+                    .ToDictionary(g => new DateTime(g.Key.Year, g.Key.Month, 1), g => g.Count());
+
+                for (int i = 11; i >= 0; i--)
+                {
+                    var date = DateTime.UtcNow.AddMonths(-i);
+                    var monthKey = new DateTime(date.Year, date.Month, 1);
+                    var monthName = date.ToString("MMM");
+                    var count = monthlyRegistrations.ContainsKey(monthKey) ? monthlyRegistrations[monthKey] : 0;
+                    result.Add(new KPIValue(monthName, count));
+                }
+                break;
+
+            default:
+                return await GetWeeklyActivityAsync();
+        }
+
+        return result;
+    }
+
+
     public async Task<IEnumerable<KPIValue>> GetContentDistributionAsync()
     {
         var totalPosts = await _postRepository.CountAsync();
@@ -207,19 +271,92 @@ public class DashboardService : IDashboardService
         
         return locationGroups;
     }
-}
 
-    public async Task<Dictionary<string, int>> GetUsersByLocationAsync()
+    public async Task<IEnumerable<RecentActivityDto>> GetRecentActivityAsync(int count = 10)
     {
+        var activities = new List<RecentActivityDto>();
+        var now = DateTime.UtcNow;
+
+        // Get recent user registrations
+        var recentUsers = await _userRepository.GetAllAsync();
+        var userRegistrations = recentUsers
+            .Where(u => u.CreatedAt >= now.AddDays(-7))
+            .OrderByDescending(u => u.CreatedAt)
+            .Take(count / 2)
+            .Select(u => new RecentActivityDto(
+                u.CreatedAt.DateTime,
+                u.UserName ?? "Unknown User",
+                "Registered new account",
+                "Success",
+                "Registration"
+            ));
+        activities.AddRange(userRegistrations);
+
+        // Get recent posts
+        var recentPosts = await _postRepository.GetAllAsync();
+        var postActivities = recentPosts
+            .Where(p => p.CreatedAt >= now.AddDays(-7))
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(count / 4)
+            .Select(p => new RecentActivityDto(
+                p.CreatedAt.DateTime,
+                p.AuthorId.ToString(),
+                $"Created post: {(p.Title?.Length > 30 ? p.Title.Substring(0, 30) + "..." : p.Title)}",
+                "Success",
+                "Post"
+            ));
+        activities.AddRange(postActivities);
+
+        // Get recent questions
+        var recentQuestions = await _questionRepository.GetAllAsync();
+        var questionActivities = recentQuestions
+            .Where(q => q.CreatedAt >= now.AddDays(-7))
+            .OrderByDescending(q => q.CreatedAt)
+            .Take(count / 4)
+            .Select(q => new RecentActivityDto(
+                q.CreatedAt.DateTime,
+                q.AuthorId.ToString(),
+                $"Asked question: {(q.Title?.Length > 30 ? q.Title.Substring(0, 30) + "..." : q.Title)}",
+                "Success",
+                "Question"
+            ));
+        activities.AddRange(questionActivities);
+
+        // Get recent reviews
+        var recentReviews = await _reviewRepository.GetAllAsync();
+        var reviewActivities = recentReviews
+            .Where(r => r.CreatedAt >= now.AddDays(-7))
+            .OrderByDescending(r => r.CreatedAt)
+            .Take(count / 4)
+            .Select(r => new RecentActivityDto(
+                r.CreatedAt.DateTime,
+                r.ReviewerId.ToString(),
+                $"Posted review with {r.Rating} stars",
+                "Success",
+                "Review"
+            ));
+        activities.AddRange(reviewActivities);
+
+        // Sort all activities by timestamp and take the most recent
+        return activities
+            .OrderByDescending(a => a.Timestamp)
+            .Take(count)
+            .ToList();
+    }
+
+    public async Task<Dictionary<string, int>> GetActiveUsersByLocationAsync()
+    {
+        var today = DateTime.UtcNow.Date;
         var users = await _userRepository.GetAllAsync();
         
-        // Group users by location and count them
-        var usersByLocation = users
-            .Where(u => !string.IsNullOrWhiteSpace(u.Location))
+        var activeLocationGroups = users
+            .Where(u => !string.IsNullOrWhiteSpace(u.Location) && u.LastLoginAt.HasValue && u.LastLoginAt.Value >= today)
             .GroupBy(u => u.Location!.Trim())
             .Select(g => new { Location = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
+            .Take(20)
             .ToDictionary(x => x.Location, x => x.Count);
         
-        return usersByLocation;
+        return activeLocationGroups;
     }
+}

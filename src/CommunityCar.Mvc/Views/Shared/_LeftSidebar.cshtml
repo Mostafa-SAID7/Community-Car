@@ -71,7 +71,7 @@
     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
     {
         <div class="admin-section-header">@Localizer["Admin"].Value</div>
-        <a asp-area="Dashboard" asp-controller="Dashboard" asp-action="Index" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+        <a href="/@System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName/Dashboard" class="list-group-item list-group-item-action border-0 d-flex align-items-center bg-transparent px-3 py-2 mb-1 rounded @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
             <i class="fas fa-tachometer-alt fa-fw me-3"></i>
             <span class="fw-medium">@Localizer["Dashboard"].Value</span>
         </a>

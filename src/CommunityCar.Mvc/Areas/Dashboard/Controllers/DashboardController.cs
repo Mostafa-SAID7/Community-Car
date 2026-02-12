@@ -37,7 +37,8 @@ public class DashboardController : Controller
         var topContentTypes = await _dashboardService.GetTopContentTypesAsync();
         var engagementMetrics = await _dashboardService.GetEngagementMetricsAsync();
         var usersByLocation = await _dashboardService.GetUsersByLocationAsync();
-        var usersByLocation = await _dashboardService.GetUsersByLocationAsync();
+        var activeUsersByLocation = await _dashboardService.GetActiveUsersByLocationAsync();
+        var recentActivity = await _dashboardService.GetRecentActivityAsync(10);
         
         var summaryViewModel = new DashboardSummaryViewModel
         {
@@ -77,6 +78,10 @@ public class DashboardController : Controller
         
         // Users by Location Data (Geo Chart)
         ViewBag.LocationData = usersByLocation;
+        ViewBag.ActiveLocationData = activeUsersByLocation;
+        
+        // Recent Activity Data
+        ViewBag.RecentActivity = recentActivity;
         
         return View(summaryViewModel);
     }
@@ -157,6 +162,26 @@ public class DashboardController : Controller
                     engagementRate = summary.EngagementRate,
                     engagementMetrics
                 }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+    
+    [HttpGet("GetActivityData")]
+    public async Task<IActionResult> GetActivityData(string period = "week")
+    {
+        try
+        {
+            var activityData = await _dashboardService.GetActivityByPeriodAsync(period);
+            
+            return Json(new
+            {
+                success = true,
+                data = activityData.Select(a => a.Value).ToList(),
+                labels = activityData.Select(a => a.Label).ToList()
             });
         }
         catch (Exception ex)

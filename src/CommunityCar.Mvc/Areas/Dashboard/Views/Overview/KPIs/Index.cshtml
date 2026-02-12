@@ -1,8 +1,290 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Overview.KPIsViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "KPIs";
+    ViewData["Title"] = Localizer["KPIs"];
 }
 
-<div class="container-fluid py-4">
-    <h1>Key Performance Indicators</h1>
-    <p>Dashboard KPIs monitoring page.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/dashboard.css" />
+}
+
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="dashboard-page-header">
+        <div class="dashboard-header-content">
+            <div class="dashboard-header-text">
+                <h1 class="dashboard-title">@Localizer["Key Performance Indicators"]</h1>
+                <p class="dashboard-subtitle">@Localizer["Monitor critical metrics and performance indicators"]</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>@Localizer["Refresh"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard" class="dashboard-tab">
+                <i class="fas fa-chart-line"></i>
+                <span>@Localizer["Overview"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/KPIs" class="dashboard-tab active">
+                <i class="fas fa-chart-bar"></i>
+                <span>@Localizer["KPIs"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Trends" class="dashboard-tab">
+                <i class="fas fa-chart-area"></i>
+                <span>@Localizer["Trends"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Widgets" class="dashboard-tab">
+                <i class="fas fa-th"></i>
+                <span>@Localizer["Widgets"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards Grid -->
+    <div class="dashboard-stats-grid">
+        <div class="dashboard-stat-card dashboard-stat-card-primary">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-primary">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Total Users"]</div>
+                    <div class="dashboard-stat-value">@Model.Summary.TotalUsers.ToString("N0")</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-positive">
+                        <i class="fas fa-arrow-up"></i>@Model.Summary.UserGrowthPercentage.ToString("F1")% @Localizer["growth"]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card dashboard-stat-card-success">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-success">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Engagement Rate"]</div>
+                    <div class="dashboard-stat-value">@Model.Summary.EngagementRate.ToString("F1")%</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-info">
+                        <i class="fas fa-info-circle"></i>@Localizer["Active users today"]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card dashboard-stat-card-warning">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-warning">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Total Content"]</div>
+                    <div class="dashboard-stat-value">@((Model.Summary.TotalPosts + Model.Summary.TotalQuestions + Model.Summary.TotalGuides).ToString("N0"))</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-info">
+                        <i class="fas fa-layer-group"></i>@Localizer["All types"]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card dashboard-stat-card-info">
+            <div class="dashboard-stat-content">
+                <div class="dashboard-stat-icon dashboard-stat-icon-info">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="dashboard-stat-info">
+                    <div class="dashboard-stat-label">@Localizer["Active Today"]</div>
+                    <div class="dashboard-stat-value">@Model.Summary.ActiveUsersToday.ToString("N0")</div>
+                    <div class="dashboard-stat-change dashboard-stat-change-positive">
+                        <i class="fas fa-check-circle"></i>@Localizer["Online now"]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="dashboard-content-grid">
+        <div class="dashboard-content-main">
+            <!-- Content Distribution -->
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="contentChart" height="80"></canvas>
+                </div>
+            </div>
+
+            <!-- Engagement Metrics -->
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Engagement Metrics"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="engagementChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content-sidebar">
+            <!-- User Growth -->
+            <div class="dashboard-card dashboard-card-info">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["User Growth (6 Months)"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="growthChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Quick Stats"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["New Users (Week)"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Model.Summary.NewUsersThisWeek</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["New Users (Month)"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Model.Summary.NewUsersThisMonth</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["Total Groups"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-info">@Model.Summary.TotalGroups</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["Total Reviews"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-warning">@Model.Summary.TotalReviews</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Content Distribution Chart
+        const contentCtx = document.getElementById('contentChart');
+        const contentData = @Html.Raw(Json.Serialize(Model.ContentDistribution.Select(c => c.Value)));
+        const contentLabels = @Html.Raw(Json.Serialize(Model.ContentDistribution.Select(c => c.Label)));
+
+        new Chart(contentCtx, {
+            type: 'bar',
+            data: {
+                labels: contentLabels,
+                datasets: [{
+                    label: '@Localizer["Content Items"]',
+                    data: contentData,
+                    backgroundColor: [
+                        'rgba(251, 44, 54, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // Engagement Metrics Chart
+        const engagementCtx = document.getElementById('engagementChart');
+        const engagementData = @Html.Raw(Json.Serialize(Model.EngagementMetrics.Select(e => e.Value)));
+        const engagementLabels = @Html.Raw(Json.Serialize(Model.EngagementMetrics.Select(e => e.Label)));
+
+        new Chart(engagementCtx, {
+            type: 'bar',
+            data: {
+                labels: engagementLabels,
+                datasets: [{
+                    label: '@Localizer["Engagement"]',
+                    data: engagementData,
+                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                    borderColor: 'rgb(34, 197, 94)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // User Growth Chart
+        const growthCtx = document.getElementById('growthChart');
+        const growthData = @Html.Raw(Json.Serialize(Model.UserGrowth.Select(u => u.Value)));
+        const growthLabels = @Html.Raw(Json.Serialize(Model.UserGrowth.Select(u => u.Label)));
+
+        new Chart(growthCtx, {
+            type: 'line',
+            data: {
+                labels: growthLabels,
+                datasets: [{
+                    label: '@Localizer["New Users"]',
+                    data: growthData,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+    </script>
+}

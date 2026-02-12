@@ -41,28 +41,26 @@
     <!-- Custom Dashboard CSS -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="dashboard-page">
     <!-- Reuse Main Header for consistency, or create _DashboardHeader if needed -->
     <partial name="_Header" />
     
-    <main role="main" class="container-fluid my-4">
-        <div class="row g-4">
+    <main role="main" class="dashboard-layout">
+        <div class="dashboard-layout-wrapper">
             <!-- Dashboard Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar-left">
-                <div class="sidebar-sticky">
+            <aside class="dashboard-layout-sidebar">
+                <div class="dashboard-layout-sidebar-sticky">
                     <partial name="_DashboardLeftSidebar" />
                 </div>
-            </div>
+            </aside>
 
             <!-- Dashboard Content -->
-            <div class="col-md-9 col-lg-10">
+            <div class="dashboard-layout-content">
                 @RenderBody()
             </div>
         </div>
     </main>
     
-    <partial name="_Footer" />
-
     <div class="sidebar-backdrop"></div>
 
     <!-- Libraries JS -->

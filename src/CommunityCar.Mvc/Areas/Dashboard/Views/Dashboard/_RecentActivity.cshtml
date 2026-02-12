@@ -1,0 +1,86 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!-- Recent Activity -->
+<div class="dashboard-card dashboard-card-warning">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Recent Activity"]</h5>
+        <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="dashboard-btn dashboard-btn-sm dashboard-btn-danger">
+            @Localizer["View All"]
+        </a>
+    </div>
+    <div class="dashboard-card-body">
+        <div class="dashboard-table-wrapper">
+            <table class="dashboard-table dashboard-table-activity">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Time"]</th>
+                        <th>@Localizer["User"]</th>
+                        <th>@Localizer["Action"]</th>
+                        <th>@Localizer["Status"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var recentActivity = ViewBag.RecentActivity as IEnumerable<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto>();
+                    }
+                    @if (recentActivity.Any())
+                    {
+                        @foreach (var activity in recentActivity)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="dashboard-table-time">@activity.Timestamp.ToString("HH:mm")</span>
+                                    <span class="dashboard-table-date">@activity.Timestamp.ToString("MMM dd")</span>
+                                </td>
+                                <td>
+                                    <div class="dashboard-table-user">
+                                        <i class="fas fa-user-circle dashboard-table-user-icon"></i>
+                                        <span>@activity.UserName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dashboard-table-action">
+                                        @if (activity.ActivityType == "Registration")
+                                        {
+                                            <i class="fas fa-user-plus dashboard-table-action-icon dashboard-table-action-icon-primary"></i>
+                                        }
+                                        else if (activity.ActivityType == "Post")
+                                        {
+                                            <i class="fas fa-file-alt dashboard-table-action-icon dashboard-table-action-icon-info"></i>
+                                        }
+                                        else if (activity.ActivityType == "Question")
+                                        {
+                                            <i class="fas fa-question-circle dashboard-table-action-icon dashboard-table-action-icon-warning"></i>
+                                        }
+                                        else if (activity.ActivityType == "Review")
+                                        {
+                                            <i class="fas fa-star dashboard-table-action-icon dashboard-table-action-icon-success"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-info-circle dashboard-table-action-icon dashboard-table-action-icon-secondary"></i>
+                                        }
+                                        <span>@activity.Action</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="dashboard-badge dashboard-badge-@(activity.Status.ToLower())">@activity.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="dashboard-table-empty">
+                                <i class="fas fa-inbox"></i>
+                                <span>@Localizer["Dashboard.NoRecentActivity"]</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

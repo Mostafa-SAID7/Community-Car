@@ -1,0 +1,112 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Dashboard.DashboardSummaryViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!-- Content Distribution Chart -->
+<div class="dashboard-card bg-red">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <canvas id="contentChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="dashboard-card dashboard-card-info">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["System Status"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <div class="dashboard-status-item">
+            <div class="dashboard-status-header">
+                <span class="dashboard-status-label">@Localizer["Database"]</span>
+                <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Online"]</span>
+            </div>
+            <div class="dashboard-progress">
+                <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
+            </div>
+        </div>
+        <div class="dashboard-status-item">
+            <div class="dashboard-status-header">
+                <span class="dashboard-status-label">@Localizer["API Services"]</span>
+                <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Running"]</span>
+            </div>
+            <div class="dashboard-progress">
+                <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
+            </div>
+        </div>
+        <div class="dashboard-status-item">
+            <div class="dashboard-status-header">
+                <span class="dashboard-status-label">@Localizer["Cache"]</span>
+                <span class="dashboard-status-value dashboard-status-value-success">@Localizer["Active"]</span>
+            </div>
+            <div class="dashboard-progress">
+                <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Date & Time Card -->
+<div class="dashboard-card dashboard-card-primary">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Dashboard.DateTime"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <div class="dashboard-datetime-display">
+            <div class="dashboard-datetime-day" id="currentDay">@DateTime.Now.ToString("dddd")</div>
+            <div class="dashboard-datetime-date" id="currentDate">@DateTime.Now.ToString("MMMM dd, yyyy")</div>
+            <div class="dashboard-datetime-time" id="currentTime">@DateTime.Now.ToString("hh:mm:ss tt")</div>
+        </div>
+        <button type="button" class="dashboard-btn dashboard-btn-primary dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTaskFeature"]')">
+            <i class="fas fa-plus"></i>
+            <span>@Localizer["Dashboard.AddTask"]</span>
+        </button>
+    </div>
+</div>
+
+<!-- Calendar Card -->
+<div class="dashboard-card dashboard-card-success">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Dashboard.Calendar"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <div class="dashboard-calendar" id="dashboardCalendar"></div>
+        <button type="button" class="dashboard-btn dashboard-btn-success dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTargetFeature"]')">
+            <i class="fas fa-bullseye"></i>
+            <span>@Localizer["Dashboard.AddTarget"]</span>
+        </button>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="dashboard-card bg-red">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Quick Actions"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <div class="dashboard-actions-list">
+            <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-danger">
+                <i class="fas fa-users"></i>
+                <span>@Localizer["Manage Users"]</span>
+            </a>
+            <a asp-area="Dashboard" asp-controller="ContentManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-success">
+                <i class="fas fa-layer-group"></i>
+                <span>@Localizer["Manage Content"]</span>
+            </a>
+            <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="dashboard-action-item dashboard-action-item-info">
+                <i class="fas fa-chart-bar"></i>
+                <span>@Localizer["View Reports"]</span>
+            </a>
+            <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="dashboard-action-item dashboard-action-item-warning">
+                <i class="fas fa-shield-halved"></i>
+                <span>@Localizer["Security Alerts"]</span>
+            </a>
+            <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="dashboard-action-item dashboard-action-item-secondary">
+                <i class="fas fa-cog"></i>
+                <span>@Localizer["System Settings"]</span>
+            </a>
+        </div>
+    </div>
+</div>

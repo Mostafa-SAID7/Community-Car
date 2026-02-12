@@ -19,20 +19,20 @@
                     <i class="fas fa-sync-alt"></i>
                     <span>@Localizer["Refresh"]</span>
                 </button>
-                <div class="dashboard-dropdown">
-                    <button type="button" class="dashboard-btn dashboard-btn-primary" data-bs-toggle="dropdown">
+                <div class="dashboard-dropdown dropdown">
+                    <button type="button" class="dashboard-btn bg-red" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-download"></i>
                         <span>@Localizer["Export"]</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <ul class="dashboard-dropdown-menu">
-                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "csv" })">
+                    <ul class="dashboard-dropdown-menu dropdown-menu">
+                        <li><a class="dashboard-dropdown-item dropdown-item" href="/@ViewContext.RouteData.Values["culture"]/Dashboard/ExportReport?format=csv">
                             <i class="fas fa-file-csv"></i>CSV
                         </a></li>
-                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "json" })">
+                        <li><a class="dashboard-dropdown-item dropdown-item" href="/@ViewContext.RouteData.Values["culture"]/Dashboard/ExportReport?format=json">
                             <i class="fas fa-file-code"></i>JSON
                         </a></li>
-                        <li><a class="dashboard-dropdown-item" href="@Url.Action("ExportReport", new { format = "pdf" })">
+                        <li><a class="dashboard-dropdown-item dropdown-item" href="/@ViewContext.RouteData.Values["culture"]/Dashboard/ExportReport?format=pdf">
                             <i class="fas fa-file-pdf"></i>PDF
                         </a></li>
                     </ul>
@@ -44,22 +44,22 @@
     <!-- Dashboard Navigation Tabs -->
     <div class="dashboard-nav-tabs">
         <div class="dashboard-tabs-container">
-            <a href="@Url.Action("Index", "Dashboard", new { area = "Dashboard" })" 
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
                 <i class="fas fa-chart-line"></i>
                 <span>@Localizer["Overview"]</span>
             </a>
-            <a href="@Url.Action("Index", "KPIs", new { area = "Dashboard" })" 
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/KPIs" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "KPIs" ? "active" : "")">
                 <i class="fas fa-chart-bar"></i>
                 <span>@Localizer["KPIs"]</span>
             </a>
-            <a href="@Url.Action("Index", "Trends", new { area = "Dashboard" })" 
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Trends" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Trends" ? "active" : "")">
                 <i class="fas fa-chart-area"></i>
                 <span>@Localizer["Trends"]</span>
             </a>
-            <a href="@Url.Action("Index", "Widgets", new { area = "Dashboard" })" 
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Widgets" 
                class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Widgets" ? "active" : "")">
                 <i class="fas fa-th"></i>
                 <span>@Localizer["Widgets"]</span>
@@ -162,13 +162,13 @@
         <!-- Left Column: Charts and Activity -->
         <div class="dashboard-content-main">
             <!-- Weekly Activity Chart -->
-            <div class="dashboard-card dashboard-card-primary">
+            <div class="dashboard-card bg-red">
                 <div class="dashboard-card-header">
                     <h5 class="dashboard-card-title">@Localizer["Weekly Activity"]</h5>
                     <div class="dashboard-btn-group">
-                        <button type="button" class="dashboard-btn-group-item active">@Localizer["Week"]</button>
-                        <button type="button" class="dashboard-btn-group-item">@Localizer["Month"]</button>
-                        <button type="button" class="dashboard-btn-group-item">@Localizer["Year"]</button>
+                        <button type="button" class="dashboard-btn-group-item active" data-period="week">@Localizer["Week"]</button>
+                        <button type="button" class="dashboard-btn-group-item" data-period="month">@Localizer["Month"]</button>
+                        <button type="button" class="dashboard-btn-group-item" data-period="year">@Localizer["Year"]</button>
                     </div>
                 </div>
                 <div class="dashboard-card-body">
@@ -177,7 +177,7 @@
             </div>
 
             <!-- User Growth Trend Chart -->
-            <div class="dashboard-card dashboard-card-success">
+            <div class="dashboard-card bg-red">
                 <div class="dashboard-card-header">
                     <h5 class="dashboard-card-title">@Localizer["User Growth Trend"]</h5>
                 </div>
@@ -190,13 +190,13 @@
             <div class="dashboard-card dashboard-card-warning">
                 <div class="dashboard-card-header">
                     <h5 class="dashboard-card-title">@Localizer["Recent Activity"]</h5>
-                    <a asp-area="Dashboard" asp-controller="AuditLogs" asp-action="Index" class="dashboard-btn dashboard-btn-sm dashboard-btn-danger">
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Audit" class="dashboard-btn dashboard-btn-sm dashboard-btn-danger">
                         @Localizer["View All"]
                     </a>
                 </div>
                 <div class="dashboard-card-body">
-                    <div class="dashboard-table-wrapper">
-                        <table class="dashboard-table">
+                    <div class="dashboard-table">
+                        <table class="dashboard-table dashboard-table-activity">
                             <thead>
                                 <tr>
                                     <th>@Localizer["Time"]</th>
@@ -206,50 +206,85 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-5).ToString("HH:mm")</span></td>
-                                    <td>Admin User</td>
-                                    <td>Updated system settings</td>
-                                    <td><span class="dashboard-badge dashboard-badge-success">Success</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-15).ToString("HH:mm")</span></td>
-                                    <td>System</td>
-                                    <td>Database backup completed</td>
-                                    <td><span class="dashboard-badge dashboard-badge-info">Info</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="dashboard-table-time">@DateTime.Now.AddMinutes(-30).ToString("HH:mm")</span></td>
-                                    <td>Admin User</td>
-                                    <td>Created new user account</td>
-                                    <td><span class="dashboard-badge dashboard-badge-success">Success</span></td>
-                                </tr>
+                                @{
+                                    var recentActivity = ViewBag.RecentActivity as IEnumerable<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto>();
+                                }
+                                @if (recentActivity.Any())
+                                {
+                                    @foreach (var activity in recentActivity)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="dashboard-table-time">@activity.Timestamp.ToString("HH:mm")</span>
+                                                <span class="dashboard-table-date">@activity.Timestamp.ToString("MMM dd")</span>
+                                            </td>
+                                            <td>
+                                                <div class="dashboard-table-user">
+                                                    <i class="fas fa-user-circle dashboard-table-user-icon"></i>
+                                                    <span>@activity.UserName</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="dashboard-table-action">
+                                                    @if (activity.ActivityType == "Registration")
+                                                    {
+                                                        <i class="fas fa-user-plus dashboard-table-action-icon dashboard-table-action-icon-primary"></i>
+                                                    }
+                                                    else if (activity.ActivityType == "Post")
+                                                    {
+                                                        <i class="fas fa-file-alt dashboard-table-action-icon dashboard-table-action-icon-info"></i>
+                                                    }
+                                                    else if (activity.ActivityType == "Question")
+                                                    {
+                                                        <i class="fas fa-question-circle dashboard-table-action-icon dashboard-table-action-icon-warning"></i>
+                                                    }
+                                                    else if (activity.ActivityType == "Review")
+                                                    {
+                                                        <i class="fas fa-star dashboard-table-action-icon dashboard-table-action-icon-success"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-info-circle dashboard-table-action-icon dashboard-table-action-icon-secondary"></i>
+                                                    }
+                                                    <span>@activity.Action</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="dashboard-badge dashboard-badge-@(activity.Status.ToLower())">@activity.Status</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="dashboard-table-empty">
+                                            <i class="fas fa-inbox"></i>
+                                            <span>@Localizer["Dashboard.NoRecentActivity"]</span>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Widgets -->
-        <div class="dashboard-content-sidebar">
-            <!-- Content Distribution Chart -->
-            <div class="dashboard-card dashboard-card-primary">
-                <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
-                </div>
-                <div class="dashboard-card-body">
-                    <canvas id="contentChart" height="200"></canvas>
                 </div>
             </div>
 
             <!-- Users by Location (Geo Chart) -->
             <div class="dashboard-card dashboard-card-warning">
                 <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">@Localizer["Users by Location"]</h5>
+                    <h5 class="dashboard-card-title">@Localizer["Dashboard.UsersByLocation"]</h5>
                 </div>
                 <div class="dashboard-card-body">
                     <div id="geoChart" style="width: 100%; height: 300px;"></div>
+                    
+                    <!-- Active Users Indicator -->
+                    <div class="dashboard-active-users-indicator">
+                        <span class="dashboard-active-users-text">
+                            @Model.ActiveUsersToday.ToString("N0") @Localizer["Active Users Today"]
+                        </span>
+                    </div>
+                    
                     <div class="dashboard-progress-wrapper">
                         <div class="dashboard-progress-header">
                             <span class="dashboard-progress-label">@Localizer["Engagement Rate"]</span>
@@ -259,6 +294,19 @@
                             <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: @Model.EngagementRate%"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Widgets -->
+        <div class="dashboard-content-sidebar">
+            <!-- Content Distribution Chart -->
+            <div class="dashboard-card bg-red">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="contentChart" height="200"></canvas>
                 </div>
             </div>
 
@@ -298,30 +346,62 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Date & Time Card -->
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Dashboard.DateTime"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-datetime-display">
+                        <div class="dashboard-datetime-day" id="currentDay">@DateTime.Now.ToString("dddd")</div>
+                        <div class="dashboard-datetime-date" id="currentDate">@DateTime.Now.ToString("MMMM dd, yyyy")</div>
+                        <div class="dashboard-datetime-time" id="currentTime">@DateTime.Now.ToString("hh:mm:ss tt")</div>
+                    </div>
+                    <button type="button" class="dashboard-btn bg-red dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTaskFeature"]')">
+                        <i class="fas fa-plus"></i>
+                        <span>@Localizer["Dashboard.AddTask"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar Card -->
             <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Dashboard.Calendar"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-calendar" id="dashboardCalendar"></div>
+                    <button type="button" class="dashboard-btn dashboard-btn-success dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTargetFeature"]')">
+                        <i class="fas fa-bullseye"></i>
+                        <span>@Localizer["Dashboard.AddTarget"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card bg-red">
                 <div class="dashboard-card-header">
                     <h5 class="dashboard-card-title">@Localizer["Quick Actions"]</h5>
                 </div>
                 <div class="dashboard-card-body">
                     <div class="dashboard-actions-list">
-                        <a asp-area="Dashboard" asp-controller="UserManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-danger">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Management/Users" class="dashboard-action-item dashboard-action-item-danger">
                             <i class="fas fa-users"></i>
                             <span>@Localizer["Manage Users"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="ContentManagement" asp-action="Index" class="dashboard-action-item dashboard-action-item-success">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Management/Content" class="dashboard-action-item dashboard-action-item-success">
                             <i class="fas fa-layer-group"></i>
                             <span>@Localizer["Manage Content"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="UserReports" asp-action="Index" class="dashboard-action-item dashboard-action-item-info">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Users" class="dashboard-action-item dashboard-action-item-info">
                             <i class="fas fa-chart-bar"></i>
                             <span>@Localizer["View Reports"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="Security" asp-action="Index" class="dashboard-action-item dashboard-action-item-warning">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security" class="dashboard-action-item dashboard-action-item-warning">
                             <i class="fas fa-shield-halved"></i>
                             <span>@Localizer["Security Alerts"]</span>
                         </a>
-                        <a asp-area="Dashboard" asp-controller="Settings" asp-action="Index" class="dashboard-action-item dashboard-action-item-secondary">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings" class="dashboard-action-item dashboard-action-item-secondary">
                             <i class="fas fa-cog"></i>
                             <span>@Localizer["System Settings"]</span>
                         </a>
@@ -332,14 +412,16 @@
     </div>
 </div>
 
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="~/js/pages/dashboard.js"></script>
     <script>
         // Load Google Charts
         google.charts.load('current', {
             'packages': ['geochart'],
-            'mapsApiKey': 'YOUR_API_KEY' // Optional: Add your Google Maps API key for better performance
+            'mapsApiKey': 'YOUR_API_KEY'
         });
         google.charts.setOnLoadCallback(drawGeoChart);
 
@@ -348,7 +430,7 @@
         const activityData = @Html.Raw(Json.Serialize(ViewBag.ActivityData ?? new List<int>()));
         const activityLabels = @Html.Raw(Json.Serialize(ViewBag.ActivityLabels ?? new List<string>()));
 
-        new Chart(activityCtx, {
+        let activityChart = new Chart(activityCtx, {
             type: 'line',
             data: {
                 labels: activityLabels,
@@ -356,7 +438,7 @@
                     label: '@Localizer["User Registrations"]',
                     data: activityData,
                     borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     tension: 0.4,
                     fill: true
                 }]
@@ -368,6 +450,10 @@
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
                     }
                 },
                 scales: {
@@ -381,45 +467,10 @@
             }
         });
 
-        // User Growth Trend Chart (Area)
-        const growthCtx = document.getElementById('growthChart');
-        const growthData = @Html.Raw(Json.Serialize(ViewBag.GrowthData ?? new List<int>()));
-        const growthLabels = @Html.Raw(Json.Serialize(ViewBag.GrowthLabels ?? new List<string>()));
-
-        new Chart(growthCtx, {
-            type: 'line',
-            data: {
-                labels: growthLabels,
-                datasets: [{
-                    label: '@Localizer["Total Users"]',
-                    data: growthData,
-                    borderColor: 'rgb(34, 197, 94)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                }
-            }
-        });
+        // Store chart instance for period button functionality
+        if (typeof DashboardPage !== 'undefined') {
+            DashboardPage.setActivityChartInstance(activityChart);
+        }
 
         // Content Distribution Chart (Doughnut)
         const contentCtx = document.getElementById('contentChart');
@@ -433,14 +484,13 @@
                 datasets: [{
                     data: contentData,
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(251, 44, 54, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(34, 197, 94, 0.8)',
-                        'rgba(168, 85, 247, 0.8)'
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
                     ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -448,56 +498,122 @@
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        display: true,
                         position: 'bottom'
                     }
                 }
             }
         });
 
-        // Users by Location Geo Chart
+        // User Growth Chart (Line)
+        const growthCtx = document.getElementById('growthChart');
+        const growthData = @Html.Raw(Json.Serialize(ViewBag.GrowthData ?? new List<int>()));
+        const growthLabels = @Html.Raw(Json.Serialize(ViewBag.GrowthLabels ?? new List<string>()));
+
+        new Chart(growthCtx, {
+            type: 'line',
+            data: {
+                labels: growthLabels,
+                datasets: [{
+                    label: '@Localizer["New Users"]',
+                    data: growthData,
+                    borderColor: 'rgb(153, 102, 255)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Geo Chart
         function drawGeoChart() {
             const locationData = @Html.Raw(Json.Serialize(ViewBag.LocationData ?? new Dictionary<string, int>()));
             
-            // Convert location data to array format for Google Charts
             const dataArray = [['Country', 'Users']];
             for (const [location, count] of Object.entries(locationData)) {
                 dataArray.push([location, count]);
             }
-            
+
             const data = google.visualization.arrayToDataTable(dataArray);
 
             const options = {
-                colorAxis: {
-                    colors: ['#e3f2fd', '#2196f3', '#0d47a1']
-                },
-                backgroundColor: 'transparent',
-                datalessRegionColor: '#f5f5f5',
-                defaultColor: '#f5f5f5',
-                legend: {
-                    textStyle: {
-                        color: 'var(--color-text-primary)',
-                        fontSize: 12
-                    }
-                },
-                tooltip: {
-                    textStyle: {
-                        fontSize: 13
-                    }
-                }
+                colorAxis: {colors: ['#e0f2f1', '#00695c']},
+                backgroundColor: '#f5f5f5',
+                datalessRegionColor: '#f8bbd0',
+                defaultColor: '#f5f5f5'
             };
 
             const chart = new google.visualization.GeoChart(document.getElementById('geoChart'));
             chart.draw(data, options);
-            
-            // Redraw chart on window resize
-            window.addEventListener('resize', function() {
-                chart.draw(data, options);
-            });
         }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('currentDay').textContent = days[now.getDay()];
+            document.getElementById('currentDate').textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Simple calendar
+        function generateCalendar() {
+            const calendar = document.getElementById('dashboardCalendar');
+            if (!calendar) return;
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let html = '<div class="dashboard-calendar-header">';
+            html += '<div class="dashboard-calendar-month">' + now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) + '</div>';
+            html += '</div>';
+            html += '<div class="dashboard-calendar-grid">';
+            html += '<div class="dashboard-calendar-day-name">S</div>';
+            html += '<div class="dashboard-calendar-day-name">M</div>';
+            html += '<div class="dashboard-calendar-day-name">T</div>';
+            html += '<div class="dashboard-calendar-day-name">W</div>';
+            html += '<div class="dashboard-calendar-day-name">T</div>';
+            html += '<div class="dashboard-calendar-day-name">F</div>';
+            html += '<div class="dashboard-calendar-day-name">S</div>';
+            
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="dashboard-calendar-day dashboard-calendar-day-empty"></div>';
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = day === now.getDate();
+                html += `<div class="dashboard-calendar-day ${isToday ? 'dashboard-calendar-day-today' : ''}">${day}</div>`;
+            }
+            
+            html += '</div>';
+            calendar.innerHTML = html;
+        }
+
+        generateCalendar();
     </script>
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/dashboard.css" asp-append-version="true" />
-}

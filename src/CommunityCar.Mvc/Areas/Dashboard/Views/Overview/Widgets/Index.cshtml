@@ -1,8 +1,252 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Overview.WidgetsViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Widgets";
+    ViewData["Title"] = Localizer["Widgets"];
 }
 
-<div class="container-fluid py-4">
-    <h1>Widgets</h1>
-    <p>Dashboard widgets management page.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/dashboard.css" />
+}
+
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="dashboard-page-header">
+        <div class="dashboard-header-content">
+            <div class="dashboard-header-text">
+                <h1 class="dashboard-title">@Localizer["Dashboard Widgets"]</h1>
+                <p class="dashboard-subtitle">@Localizer["Customizable widgets and quick insights"]</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>@Localizer["Refresh"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard" class="dashboard-tab">
+                <i class="fas fa-chart-line"></i>
+                <span>@Localizer["Overview"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/KPIs" class="dashboard-tab">
+                <i class="fas fa-chart-bar"></i>
+                <span>@Localizer["KPIs"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Trends" class="dashboard-tab">
+                <i class="fas fa-chart-area"></i>
+                <span>@Localizer["Trends"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Widgets" class="dashboard-tab active">
+                <i class="fas fa-th"></i>
+                <span>@Localizer["Widgets"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Widgets Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Quick Stats Widget -->
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Users"]</h5>
+                </div>
+                <div class="dashboard-card-body text-center">
+                    <div class="display-4 fw-bold text-primary mb-2">@Model.Summary.TotalUsers.ToString("N0")</div>
+                    <p class="text-muted mb-0">@Localizer["Total registered users"]</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content"]</h5>
+                </div>
+                <div class="dashboard-card-body text-center">
+                    <div class="display-4 fw-bold text-success mb-2">@Model.Summary.TotalPosts.ToString("N0")</div>
+                    <p class="text-muted mb-0">@Localizer["Total posts created"]</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Questions"]</h5>
+                </div>
+                <div class="dashboard-card-body text-center">
+                    <div class="display-4 fw-bold text-warning mb-2">@Model.Summary.TotalQuestions.ToString("N0")</div>
+                    <p class="text-muted mb-0">@Localizer["Total questions asked"]</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card dashboard-card-info">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Active"]</h5>
+                </div>
+                <div class="dashboard-card-body text-center">
+                    <div class="display-4 fw-bold text-info mb-2">@Model.Summary.ActiveUsersToday.ToString("N0")</div>
+                    <p class="text-muted mb-0">@Localizer["Active users today"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Widgets Grid -->
+    <div class="dashboard-content-grid">
+        <div class="dashboard-content-main">
+            <!-- Recent Activity Widget -->
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Recent Activity"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-table-wrapper">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["Time"]</th>
+                                    <th>@Localizer["User"]</th>
+                                    <th>@Localizer["Action"]</th>
+                                    <th>@Localizer["Type"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.RecentActivity.Any())
+                                {
+                                    @foreach (var activity in Model.RecentActivity)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="dashboard-table-time">@activity.Timestamp.ToString("HH:mm")</span>
+                                                <span class="dashboard-table-date">@activity.Timestamp.ToString("MMM dd")</span>
+                                            </td>
+                                            <td>@activity.UserName</td>
+                                            <td>@activity.Action</td>
+                                            <td><span class="dashboard-badge dashboard-badge-@activity.ActivityType.ToLower()">@activity.ActivityType</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">@Localizer["No recent activity"]</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Distribution Widget -->
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="contentChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content-sidebar">
+            <!-- System Status Widget -->
+            <div class="dashboard-card dashboard-card-info">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["System Status"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["System Health"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Model.Summary.SystemHealth%</span>
+                        </div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: @Model.Summary.SystemHealth%"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-status-item">
+                        <div class="dashboard-status-header">
+                            <span class="dashboard-status-label">@Localizer["Engagement"]</span>
+                            <span class="dashboard-status-value dashboard-status-value-success">@Model.Summary.EngagementRate.ToString("F1")%</span>
+                        </div>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: @Model.Summary.EngagementRate%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Widget -->
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Top Locations"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    @if (Model.UsersByLocation.Any())
+                    {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var location in Model.UsersByLocation.Take(5))
+                            {
+                                <li class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="fas fa-map-marker-alt me-2"></i>@location.Key</span>
+                                    <span class="badge bg-primary">@location.Value</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mb-0">@Localizer["No location data available"]</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Content Distribution Chart
+        const contentCtx = document.getElementById('contentChart');
+        const contentData = @Html.Raw(Json.Serialize(Model.ContentDistribution.Select(c => c.Value)));
+        const contentLabels = @Html.Raw(Json.Serialize(Model.ContentDistribution.Select(c => c.Label)));
+
+        new Chart(contentCtx, {
+            type: 'pie',
+            data: {
+                labels: contentLabels,
+                datasets: [{
+                    data: contentData,
+                    backgroundColor: [
+                        'rgba(251, 44, 54, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}

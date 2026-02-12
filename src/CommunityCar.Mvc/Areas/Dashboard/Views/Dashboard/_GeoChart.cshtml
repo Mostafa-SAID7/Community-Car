@@ -1,0 +1,30 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Dashboard.DashboardSummaryViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!-- Users by Location (Geo Chart) -->
+<div class="dashboard-card dashboard-card-warning">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Dashboard.UsersByLocation"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <div id="geoChart" style="width: 100%; height: 300px;"></div>
+        
+        <!-- Active Users Indicator -->
+        <div class="dashboard-active-users-indicator">
+            <span class="dashboard-active-users-text">
+                @Model.ActiveUsersToday.ToString("N0") @Localizer["Dashboard.ActiveUsersToday"]
+            </span>
+        </div>
+        
+        <div class="dashboard-progress-wrapper">
+            <div class="dashboard-progress-header">
+                <span class="dashboard-progress-label">@Localizer["Engagement Rate"]</span>
+                <span class="dashboard-progress-value">@Model.EngagementRate.ToString("F1")%</span>
+            </div>
+            <div class="dashboard-progress">
+                <div class="dashboard-progress-bar dashboard-progress-bar-success" style="width: @Model.EngagementRate%"></div>
+            </div>
+        </div>
+    </div>
+</div>
