@@ -1,0 +1,68 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Administration"].Value;
+    var activeTab = ViewData["ActiveTab"]?.ToString() ?? "localization";
+}
+
+<div class="dashboard-container">
+    <!-- Administration Header -->
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">
+                <i class="fas fa-cog me-2"></i>
+                @Localizer["Administration"]
+            </h1>
+            <p class="dashboard-subtitle">@Localizer["Administration.Subtitle"]</p>
+        </div>
+    </div>
+
+    <!-- Administration Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration?tab=localization" 
+               class="dashboard-tab @(activeTab == "localization" ? "active" : "")">
+                <i class="fas fa-language"></i>
+                <span>@Localizer["Localization"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration?tab=management" 
+               class="dashboard-tab @(activeTab == "management" ? "active" : "")">
+                <i class="fas fa-tasks"></i>
+                <span>@Localizer["Management"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration?tab=security" 
+               class="dashboard-tab @(activeTab == "security" ? "active" : "")">
+                <i class="fas fa-shield-alt"></i>
+                <span>@Localizer["Security"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration?tab=settings" 
+               class="dashboard-tab @(activeTab == "settings" ? "active" : "")">
+                <i class="fas fa-sliders-h"></i>
+                <span>@Localizer["Settings"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Administration Content -->
+    <div class="dashboard-content">
+        @switch (activeTab)
+        {
+            case "localization":
+                <partial name="_LocalizationTab" />
+                break;
+            case "management":
+                <partial name="_ManagementTab" />
+                break;
+            case "security":
+                <partial name="_SecurityTab" />
+                break;
+            case "settings":
+                <partial name="_SettingsTab" />
+                break;
+            default:
+                <partial name="_LocalizationTab" />
+                break;
+        }
+    </div>
+</div>

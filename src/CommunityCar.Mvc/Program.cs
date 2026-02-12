@@ -44,7 +44,7 @@ try
     // FluentValidation
     builder.Services.AddFluentValidationAutoValidation();
     builder.Services.AddFluentValidationClientsideAdapters();
-    builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Web.Areas.Identity.Validators.RegisterValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<CommunityCar.Mvc.Areas.Identity.Validators.RegisterValidator>();
 
     // Localization Configuration
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -82,16 +82,8 @@ try
             {
                 logger.LogInformation("Starting database seeding...");
                 
-                // Seed base data (users, roles, categories, groups)
+                // Seed all data using consolidated seeder
                 await services.SeedDatabase();
-                
-                // Seed community content (posts, guides, news, etc.)
-                await PostSeeder.SeedAsync(context);
-                await GuideSeeder.SeedAsync(context);
-                await QuestionSeeder.SeedAsync(context);
-                await MapPointSeeder.SeedAsync(context);
-                await ChatSeeder.SeedAsync(context);
-                await NewsSeeder.SeedAsync(context);
                 
                 logger.LogInformation("Database seeding completed successfully.");
             }

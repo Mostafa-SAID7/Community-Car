@@ -1,6 +1,6 @@
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Web.ViewModels.Community;
+using CommunityCar.Mvc.ViewModels.Friends;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;

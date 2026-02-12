@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 public class ResetPasswordViewModel
 {

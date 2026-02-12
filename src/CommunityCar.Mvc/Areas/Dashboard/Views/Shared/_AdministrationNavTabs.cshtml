@@ -1,0 +1,31 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    var activeTab = ViewData["ActiveTab"]?.ToString() ?? "localization";
+}
+
+<!-- Administration Navigation Tabs -->
+<div class="dashboard-nav-tabs">
+    <div class="dashboard-tabs-container">
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Localization" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Localization" ? "active" : "")">
+            <i class="fas fa-language"></i>
+            <span>@Localizer["Localization"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Management/Users" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentManagement" ? "active" : "")">
+            <i class="fas fa-tasks"></i>
+            <span>@Localizer["Management"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Security" ? "active" : "")">
+            <i class="fas fa-shield-alt"></i>
+            <span>@Localizer["Security"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
+            <i class="fas fa-sliders-h"></i>
+            <span>@Localizer["Settings"]</span>
+        </a>
+    </div>
+</div>

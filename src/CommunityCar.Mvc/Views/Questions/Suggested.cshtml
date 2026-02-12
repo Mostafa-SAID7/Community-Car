@@ -1,0 +1,161 @@
+@model CommunityCar.Mvc.ViewModels.Qa.QuestionsListViewModel
+@{
+    ViewData["Title"] = "Suggested Questions";
+}
+
+@{
+    ViewData["HeaderTitle"] = "Suggested For You";
+    ViewData["HeaderDescription"] = "Questions based on your interests and activity";
+    ViewData["HeaderIcon"] = "fas fa-lightbulb";
+    var createUrl = Url.Action("Create");
+    var indexUrl = Url.Action("Index");
+    var actionsHtml = "<div class='d-flex gap-2 flex-wrap'>" +
+                      "<a href='" + createUrl + "' class='btn btn-light'>" +
+                      "<i class='fas fa-plus-circle me-2'></i>Ask Question" +
+                      "</a>" +
+                      "<a href='" + indexUrl + "' class='btn btn-outline-light'>" +
+                      "<i class='fas fa-arrow-left me-2'></i>All Questions" +
+                      "</a>" +
+                      "</div>";
+    ViewData["HeaderActions"] = Html.Raw(actionsHtml);
+}
+
+<partial name="_InnerPageHeader" />
+
+<div class="alert alert-info rounded-4 mb-4">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-info-circle fa-2x me-3"></i>
+        <div>
+            <h6 class="mb-1 fw-bold">Personalized Suggestions</h6>
+            <small>These questions are suggested based on your interests, tags you follow, and your previous activity.</small>
+        </div>
+    </div>
+</div>
+
+<!-- Questions List -->
+@if (!Model.Questions.Any())
+{
+    <div class="empty-state">
+        <i class="fas fa-lightbulb"></i>
+        <h3 class="mt-3 mb-2 fw-bold">No Suggestions Yet</h3>
+        <p class="text-muted mb-4 fs-5">Start asking and answering questions to get personalized suggestions!</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a asp-action="Create" class="btn btn-gradient btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>Ask a Question
+            </a>
+            <a asp-action="Index" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-search me-2"></i>Browse Questions
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var question in Model.Questions)
+        {
+            <div class="col-12">
+                <div class="card question-card">
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-auto">
+                                <div class="stats-box">
+                                    <div class="stat-item">
+                                        <span class="stat-value">@question.VoteCount</span>
+                                        <span class="stat-label">Votes</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="stat-item">
+                                        <span class="stat-value @(question.IsResolved ? "resolved" : "")">@question.AnswerCount</span>
+                                        <span class="stat-label">Answers</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="stat-item">
+                                        <span class="stat-value">@question.ViewCount</span>
+                                        <span class="stat-label">Views</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0 flex-grow-1">
+                                        <a asp-action="Details" asp-route-slug="@question.Slug" class="text-decoration-none text-dark fw-bold">
+                                            @question.Title
+                                        </a>
+                                    </h5>
+                                    @if (question.IsResolved)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>Resolved
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                            <i class="fas fa-hand-paper me-1"></i>Needs Answer
+                                        </span>
+                                    }
+                                </div>
+                                
+                                <p class="card-text text-muted mb-3">
+                                    @(question.Content.Length > 250 ? question.Content.Substring(0, 250) + "..." : question.Content)
+                                </p>
+
+                                @if (!string.IsNullOrEmpty(question.Tags))
+                                {
+                                    <div class="mb-3">
+                                        @foreach (var tag in question.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(5))
+                                        {
+                                            <a asp-action="Index" asp-route-tag="@tag.Trim()" class="tag-badge me-1 mb-1">
+                                                <i class="fas fa-tag me-1"></i>@tag.Trim()
+                                            </a>
+                                        }
+                                    </div>
+                                }
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div class="author-info d-flex align-items-center">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>
+                                        <small class="text-muted">Asked by <strong>@question.AuthorName</strong> • @question.CreatedAt.ToTimeAgo()</small>
+                                    </div>
+                                    <a asp-action="Details" asp-route-slug="@question.Slug" class="btn btn-sm btn-gradient">
+                                        <i class="fas fa-eye me-1"></i>View & Answer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Suggested questions pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Suggested" asp-route-page="@(Model.PageNumber - 1)">
+                        <i class="fas fa-chevron-left me-1"></i>Previous
+                    </a>
+                </li>
+                
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Suggested" asp-route-page="@i">
+                            @i
+                        </a>
+                    </li>
+                }
+                
+                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Suggested" asp-route-page="@(Model.PageNumber + 1)">
+                        Next<i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

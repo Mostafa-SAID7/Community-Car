@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    var activeTab = ViewData["ActiveTab"]?.ToString() ?? "health";
+}
+
+<!-- Monitoring Navigation Tabs -->
+<div class="dashboard-nav-tabs">
+    <div class="dashboard-tabs-container">
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Health" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Health" ? "active" : "")">
+            <i class="fas fa-heartbeat"></i>
+            <span>@Localizer["Health"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "System" ? "active" : "")">
+            <i class="fas fa-server"></i>
+            <span>@Localizer["System"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Audit" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLogs" ? "active" : "")">
+            <i class="fas fa-clipboard-list"></i>
+            <span>@Localizer["Audit Logs"]</span>
+        </a>
+    </div>
+</div>

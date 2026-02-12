@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.Localization;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Administration.Localization;
 
 [Area("Dashboard")]
-[Route("{culture}/Dashboard/Administration/Localization")]
+[Route("{culture}/Dashboard/Administration/[controller]")]
 [Authorize(Roles = "SuperAdmin,Admin")]
 public class LocalizationController : Controller
 {

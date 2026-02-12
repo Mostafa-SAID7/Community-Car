@@ -2,7 +2,7 @@ using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Enums.Community.friends;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Interfaces.Common;
-using CommunityCar.Web.Areas.Identity.ViewModels;
+using CommunityCar.Mvc.Areas.Identity.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

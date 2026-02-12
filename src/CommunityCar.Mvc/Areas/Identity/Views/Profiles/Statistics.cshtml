@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
-@model CommunityCar.Web.Areas.Identity.ViewModels.UserStatisticsViewModel
+@model CommunityCar.Mvc.Areas.Identity.ViewModels.UserStatisticsViewModel
 @{
     ViewData["Title"] = string.Format(Localizer["Statistics Title"].Value, Model.User.FirstName);
     ViewData["PageType"] = "profile";

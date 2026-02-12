@@ -4,7 +4,7 @@ using CommunityCar.Domain.Enums.Community.groups;
 using CommunityCar.Domain.Enums.Community.post;
 using CommunityCar.Domain.Enums.Community.reviews;
 using CommunityCar.Domain.Interfaces.Community;
-using CommunityCar.Web.ViewModels.Groups;
+using CommunityCar.Mvc.ViewModels.Groups;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -1,7 +1,7 @@
 using FluentValidation;
-using CommunityCar.Web.Areas.Identity.ViewModels;
+using CommunityCar.Mvc.Areas.Identity.ViewModels;
 
-namespace CommunityCar.Web.Areas.Identity.Validators;
+namespace CommunityCar.Mvc.Areas.Identity.Validators;
 
 public class VerifyPhoneNumberValidator : AbstractValidator<VerifyPhoneNumberViewModel>
 {

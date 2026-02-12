@@ -1,4 +1,4 @@
-namespace CommunityCar.Web.Models;
+namespace CommunityCar.Mvc.Models;
 
 public class ErrorViewModel
 {

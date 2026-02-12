@@ -7,11 +7,11 @@ using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.settings;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Administration.Settings;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("{culture}/Dashboard/Administration/Settings")]
+[Route("{culture}/Dashboard/Administration/[controller]")]
 public class SettingsController : Controller
 {
     private readonly ISystemSettingService _systemSettingService;

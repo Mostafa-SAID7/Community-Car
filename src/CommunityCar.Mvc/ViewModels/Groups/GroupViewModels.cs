@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CommunityCar.Web.ViewModels.Groups;
+namespace CommunityCar.Mvc.ViewModels.Groups;
 
 public class GroupViewModel
 {

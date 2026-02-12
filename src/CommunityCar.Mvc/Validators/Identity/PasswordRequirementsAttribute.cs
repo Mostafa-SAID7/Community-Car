@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace CommunityCar.Web.Validators.Identity;
+namespace CommunityCar.Mvc.Validators.Identity;
 
 /// <summary>
 /// Validates password meets the application's password requirements

@@ -1,7 +1,7 @@
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.DTOs.Community;
 
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 public class UserFriendsViewModel
 {

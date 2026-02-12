@@ -1,27 +1,26 @@
-@model CommunityCar.Domain.DTOs.Community.QuestionDto
+@model CommunityCar.Mvc.ViewModels.Qa.QuestionDetailsViewModel
 @{
-    ViewData["Title"] = Model.Title;
-    var answers = ViewBag.Answers as IEnumerable<CommunityCar.Domain.DTOs.Community.AnswerDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Community.AnswerDto>();
+    ViewData["Title"] = Model.Question.Title;
     var currentUserId = ViewBag.CurrentUserId as Guid?;
-    var isAuthor = currentUserId.HasValue && Model.AuthorId == currentUserId.Value;
+    var isAuthor = currentUserId.HasValue && Model.Question.AuthorId == currentUserId.Value;
 }
 
 @section Styles {
     }
 
 @{
-    ViewData["HeaderTitle"] = Model.Title;
+    ViewData["HeaderTitle"] = Model.Question.Title;
     ViewData["HeaderIcon"] = "fas fa-question-circle";
-    var resolvedBadge = Model.IsResolved ? "<span class='badge bg-success px-3 py-2'><i class='fas fa-check-circle me-1'></i> Resolved</span>" : "";
+    var resolvedBadge = Model.Question.IsResolved ? "<span class='badge bg-success px-3 py-2'><i class='fas fa-check-circle me-1'></i> Resolved</span>" : "";
     var actionsHtml = "<div class='d-flex flex-wrap gap-2 align-items-center'>" +
                       "<span class='stats-badge'>" +
-                      "<i class='fas fa-eye me-1'></i> " + Model.ViewCount + " views" +
+                      "<i class='fas fa-eye me-1'></i> " + Model.Question.ViewCount + " views" +
                       "</span>" +
                       "<span class='stats-badge'>" +
-                      "<i class='fas fa-comment me-1'></i> " + Model.AnswerCount + " answers" +
+                      "<i class='fas fa-comment me-1'></i> " + Model.Question.AnswerCount + " answers" +
                       "</span>" +
                       "<span class='stats-badge'>" +
-                      "<i class='fas fa-arrow-up me-1'></i> " + Model.VoteCount + " votes" +
+                      "<i class='fas fa-arrow-up me-1'></i> " + Model.Question.VoteCount + " votes" +
                       "</span>" +
                       resolvedBadge +
                       "</div>";
@@ -31,16 +30,16 @@
 <partial name="_InnerPageHeader" />
 
 <!-- Question Card -->
-<div class="card question-card" data-question-id="@Model.Id">
+<div class="card question-card" data-question-id="@Model.Question.Id">
     <div class="card-body p-4">
         <div class="row">
             <div class="col-auto">
                 <div class="vote-section">
-                    <button class="vote-btn upvote" data-type="question" data-id="@Model.Id" data-vote="up">
+                    <button class="vote-btn upvote" data-type="question" data-id="@Model.Question.Id" data-vote="up">
                         <i class="fas fa-arrow-up"></i>
                     </button>
-                    <span class="vote-count">@Model.VoteCount</span>
-                    <button class="vote-btn downvote" data-type="question" data-id="@Model.Id" data-vote="down">
+                    <span class="vote-count">@Model.Question.VoteCount</span>
+                    <button class="vote-btn downvote" data-type="question" data-id="@Model.Question.Id" data-vote="down">
                         <i class="fas fa-arrow-down"></i>
                     </button>
                 </div>
@@ -48,26 +47,26 @@
             <div class="col">
                 <div class="author-info mb-3">
                     <i class="fas fa-user-circle me-2 text-primary"></i>
-                    <strong>@Model.AuthorName</strong>
+                    <strong>@Model.Question.AuthorName</strong>
                     <span class="text-muted ms-2">
-                        • @Model.CreatedAt.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                        • @Model.Question.CreatedAt.ToString("MMM dd, yyyy 'at' hh:mm tt")
                     </span>
-                    @if (Model.UpdatedAt.HasValue)
+                    @if (Model.Question.UpdatedAt.HasValue)
                     {
                         <span class="text-muted">
-                            • <i class="fas fa-edit"></i> Updated @Model.UpdatedAt.Value.ToString("MMM dd, yyyy")
+                            • <i class="fas fa-edit"></i> Updated @Model.Question.UpdatedAt.Value.ToString("MMM dd, yyyy")
                         </span>
                     }
                 </div>
 
                 <div class="question-content mb-4" class="content-readable">
-                    @Html.Raw(Model.Content.Replace("\n", "<br/>"))
+                    @Html.Raw(Model.Question.Content.Replace("\n", "<br/>"))
                 </div>
 
-                @if (!string.IsNullOrEmpty(Model.Tags))
+                @if (!string.IsNullOrEmpty(Model.Question.Tags))
                 {
                     <div class="mb-3">
-                        @foreach (var tag in Model.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                        @foreach (var tag in Model.Question.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
                         {
                             <a asp-action="Index" asp-route-tag="@tag.Trim()" class="tag-badge">
                                 <i class="fas fa-tag me-1"></i>@tag.Trim()
@@ -79,10 +78,10 @@
                 @if (isAuthor)
                 {
                     <div class="mt-4 pt-3 border-top">
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary rounded-pill px-4">
+                        <a asp-action="Edit" asp-route-id="@Model.Question.Id" class="btn btn-outline-primary rounded-pill px-4">
                             <i class="fas fa-edit me-2"></i>Edit Question
                         </a>
-                        <button class="btn btn-outline-danger rounded-pill px-4" onclick="deleteQuestion('@Model.Id')">
+                        <button class="btn btn-outline-danger rounded-pill px-4" onclick="deleteQuestion('@Model.Question.Id')">
                             <i class="fas fa-trash me-2"></i>Delete
                         </button>
                     </div>
@@ -96,15 +95,15 @@
 <div class="mb-4">
     <h3 class="mb-4 fw-bold">
         <i class="fas fa-comments me-2 text-primary"></i>
-        @answers.Count() Answer@(answers.Count() != 1 ? "s" : "")
+        @Model.Answers.Count Answer@(Model.Answers.Count != 1 ? "s" : "")
     </h3>
 
-    @if (answers.Any())
+    @if (Model.Answers.Any())
     {
-        foreach (var answer in answers.OrderByDescending(a => a.IsAccepted).ThenByDescending(a => a.VoteCount))
+        foreach (var answer in Model.Answers.OrderByDescending(a => a.IsAccepted).ThenByDescending(a => a.VoteCount))
         {
             ViewBag.IsQuestionAuthor = isAuthor;
-            ViewBag.QuestionId = Model.Id;
+            ViewBag.QuestionId = Model.Question.Id;
             <partial name="_AnswerItem" model="answer" />
         }
     }
@@ -130,8 +129,8 @@
             </h4>
         </div>
         <div class="card-body p-4">
-            <form asp-controller="Answers" asp-action="Create" method="post">
-                <input type="hidden" name="QuestionId" value="@Model.Id" />
+            <form asp-action="AddAnswer" method="post">
+                <input type="hidden" name="QuestionId" value="@Model.Question.Id" />
                 <div class="mb-3">
                     <textarea name="Content" class="form-control" rows="8" 
                               class="form-control-rounded form-control-readable"
@@ -210,7 +209,7 @@ else
                 .build();
 
             connection.on("ReceiveAnswer", (answer) => {
-                if (answer.questionId === '@Model.Id') {
+                if (answer.questionId === '@Model.Question.Id') {
                      toastr.info('New answer posted! Click to refresh.', 'Update', {
                         timeOut: 5000,
                         onclick: function() { location.reload(); }
@@ -224,7 +223,7 @@ else
             });
 
             connection.on("QuestionScoreUpdated", ({ questionId, newScore }) => {
-                if (questionId === '@Model.Id') {
+                if (questionId === '@Model.Question.Id') {
                     const $count = $('.question-card .vote-count');
                     const currentScore = parseInt($count.text());
                     $count.text(newScore);
@@ -247,7 +246,7 @@ else
             });
             
             connection.on("QuestionMarkedResolved", ({ questionId, isResolved }) => {
-                 if (questionId === '@Model.Id') {
+                 if (questionId === '@Model.Question.Id') {
                      toastr.success(`Question marked as ${isResolved ? 'Resolved' : 'Unresolved'}!`);
                      setTimeout(() => location.reload(), 1500);
                  }

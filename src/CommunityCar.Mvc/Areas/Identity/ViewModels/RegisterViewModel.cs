@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using CommunityCar.Web.Validators.Identity;
+using CommunityCar.Mvc.Areas.Identity.Validators;
+using CommunityCar.Mvc.Validators.Identity;
 
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 /// <summary>
 /// ViewModel for user registration

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using CommunityCar.Mvc.Models;
 
 namespace CommunityCar.Mvc.Controllers;
 
@@ -35,7 +36,7 @@ public class ErrorController : Controller
             ViewBag.Exception = HttpContext.Items["Exception"] as Exception;
         }
 
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -58,7 +59,7 @@ public class ErrorController : Controller
         ViewBag.StatusCode = 400;
         ViewBag.Title = _localizer["Error400Title"];
         ViewBag.Message = _localizer["Error400Message"];
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -71,7 +72,7 @@ public class ErrorController : Controller
         ViewBag.StatusCode = 401;
         ViewBag.Title = _localizer["Error401Title"];
         ViewBag.Message = _localizer["Error401Message"];
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -84,7 +85,7 @@ public class ErrorController : Controller
         ViewBag.StatusCode = 403;
         ViewBag.Title = _localizer["Error403Title"];
         ViewBag.Message = _localizer["Error403Message"];
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -97,7 +98,7 @@ public class ErrorController : Controller
         ViewBag.StatusCode = 404;
         ViewBag.Title = _localizer["Error404Title"];
         ViewBag.Message = _localizer["Error404Message"];
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -117,7 +118,7 @@ public class ErrorController : Controller
             ViewBag.Exception = exceptionFeature.Error;
         }
 
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };
@@ -130,7 +131,7 @@ public class ErrorController : Controller
         ViewBag.StatusCode = 503;
         ViewBag.Title = _localizer["Error503Title"];
         ViewBag.Message = _localizer["Error503Message"];
-        var model = new CommunityCar.Web.Models.ErrorViewModel
+        var model = new ErrorViewModel
         {
             RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier
         };

@@ -1,6 +1,6 @@
 using CommunityCar.Domain.Entities.Identity.Users;
 
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 public class UserStatisticsViewModel
 {

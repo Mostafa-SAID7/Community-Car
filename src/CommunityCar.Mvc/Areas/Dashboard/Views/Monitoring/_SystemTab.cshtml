@@ -1,0 +1,205 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="monitoring-tab-content">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1">
+                        <i class="fas fa-server me-2"></i>
+                        @Localizer["System Information"]
+                    </h3>
+                    <p class="text-muted">@Localizer["View system configuration and resource usage"]</p>
+                </div>
+                <div>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System" 
+                       class="btn btn-primary">
+                        <i class="fas fa-cog me-1"></i>
+                        @Localizer["System Details"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Overview Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded p-3">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Uptime"]</h6>
+                            <h3 class="mb-0">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 text-success rounded p-3">
+                                <i class="fas fa-code-branch fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Version"]</h6>
+                            <h3 class="mb-0">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 text-info rounded p-3">
+                                <i class="fas fa-network-wired fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Active Connections"]</h6>
+                            <h3 class="mb-0">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 text-warning rounded p-3">
+                                <i class="fas fa-tasks fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Running Services"]</h6>
+                            <h3 class="mb-0">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Categories -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["System Info"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["View system information and configuration"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System/Info" 
+                           class="btn btn-outline-primary">
+                            @Localizer["View Info"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-area fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Resources"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Monitor CPU, memory, and disk usage"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System/Resources" 
+                           class="btn btn-outline-success">
+                            @Localizer["View Resources"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-cogs fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Services"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["View running services and background jobs"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System/Services" 
+                           class="btn btn-outline-info">
+                            @Localizer["View Services"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["System Logs"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["View application and system logs"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System/Logs" 
+                           class="btn btn-outline-warning">
+                            @Localizer["View Logs"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-sliders-h fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Configuration"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["View system configuration settings"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/System/Configuration" 
+                           class="btn btn-outline-secondary">
+                            @Localizer["View Config"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

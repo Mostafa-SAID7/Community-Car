@@ -5,7 +5,7 @@ using CommunityCar.Domain.Base;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Management;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.management;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Administration.Management;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]

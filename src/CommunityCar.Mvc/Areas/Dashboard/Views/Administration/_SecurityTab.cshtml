@@ -1,0 +1,161 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="administration-tab-content">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        @Localizer["Security Management"]
+                    </h3>
+                    <p class="text-muted">@Localizer["Monitor security alerts and manage system security"]</p>
+                </div>
+                <div>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security" 
+                       class="btn btn-primary">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        @Localizer["View All Alerts"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded p-3">
+                                <i class="fas fa-exclamation-circle fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Critical Alerts"]</h6>
+                            <h3 class="mb-0 text-danger">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 text-warning rounded p-3">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Warnings"]</h6>
+                            <h3 class="mb-0 text-warning">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 text-info rounded p-3">
+                                <i class="fas fa-info-circle fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Info Alerts"]</h6>
+                            <h3 class="mb-0 text-info">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 text-success rounded p-3">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">@Localizer["Resolved"]</h6>
+                            <h3 class="mb-0 text-success">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Actions -->
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-bell text-danger me-2"></i>
+                        @Localizer["Security Alerts"]
+                    </h5>
+                    <p class="card-text text-muted">@Localizer["View and manage security alerts and incidents"]</p>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security" 
+                       class="btn btn-outline-danger">
+                        @Localizer["View Alerts"]
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-chart-bar text-info me-2"></i>
+                        @Localizer["Security Statistics"]
+                    </h5>
+                    <p class="card-text text-muted">@Localizer["View detailed security statistics and trends"]</p>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Security/Statistics" 
+                       class="btn btn-outline-info">
+                        @Localizer["View Statistics"]
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-shield text-primary me-2"></i>
+                        @Localizer["Access Control"]
+                    </h5>
+                    <p class="card-text text-muted">@Localizer["Manage user access and permissions"]</p>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Management/Roles" 
+                       class="btn btn-outline-primary">
+                        @Localizer["Manage Access"]
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-history text-secondary me-2"></i>
+                        @Localizer["Audit Logs"]
+                    </h5>
+                    <p class="card-text text-muted">@Localizer["Review system audit logs and activity"]</p>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring/Audit" 
+                       class="btn btn-outline-secondary">
+                        @Localizer["View Logs"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

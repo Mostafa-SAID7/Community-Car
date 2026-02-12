@@ -7,7 +7,7 @@ using System.IO;
 using CommunityCar.Domain.Models.AI;
 using System.Collections.Concurrent;
 
-namespace CommunityCar.Infrastructure.Services
+namespace CommunityCar.Infrastructure.Services.AI
 {
     public partial class AssistantService : CommunityCar.Domain.Interfaces.Services.IAssistantService
     {

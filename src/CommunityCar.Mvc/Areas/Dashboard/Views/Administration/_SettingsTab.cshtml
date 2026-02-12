@@ -1,0 +1,198 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="administration-tab-content">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1">
+                        <i class="fas fa-sliders-h me-2"></i>
+                        @Localizer["System Settings"]
+                    </h3>
+                    <p class="text-muted">@Localizer["Configure system-wide settings and preferences"]</p>
+                </div>
+                <div>
+                    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings" 
+                       class="btn btn-primary">
+                        <i class="fas fa-cog me-1"></i>
+                        @Localizer["Manage Settings"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Categories -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-cog fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["General Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Configure general system settings"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=General" 
+                           class="btn btn-outline-primary">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-envelope fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Email Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Configure email and notification settings"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=Email" 
+                           class="btn btn-outline-success">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-palette fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Appearance"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Customize theme and appearance"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=Appearance" 
+                           class="btn btn-outline-info">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Security Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Configure security and authentication"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=Security" 
+                           class="btn btn-outline-warning">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-database fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Database Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Configure database and storage"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=Database" 
+                           class="btn btn-outline-danger">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-plug fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Integration Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Configure third-party integrations"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings?category=Integration" 
+                           class="btn btn-outline-secondary">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-purple bg-opacity-10 text-purple rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-hdd fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title text-center">@Localizer["Storage Settings"]</h5>
+                    <p class="card-text text-muted text-center">@Localizer["Manage file storage and uploads"]</p>
+                    <div class="d-grid">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings/Storage" 
+                           class="btn btn-outline-purple">
+                            @Localizer["Configure"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@Localizer["Quick Actions"]</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings/Create" 
+                           class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>
+                            @Localizer["Add Setting"]
+                        </a>
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Administration/Settings" 
+                           class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>
+                            @Localizer["View All Settings"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

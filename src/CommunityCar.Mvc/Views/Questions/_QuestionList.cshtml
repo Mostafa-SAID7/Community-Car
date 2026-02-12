@@ -1,12 +1,5 @@
 @model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
 
-@{
-    var currentTag = ViewBag.CurrentTag as string;
-    var isResolved = ViewBag.IsResolved as bool?;
-    var sortBy = ViewBag.SortBy as string ?? "recent";
-    var searchTerm = ViewBag.SearchTerm as string;
-}
-
 @if (Model.Items.Any())
 {
     foreach (var question in Model.Items)
@@ -123,7 +116,7 @@ else
         </div>
         <h4 class="mb-2">@Localizer["No Questions Found"]</h4>
         <p class="text-muted mb-4">
-            @if (!string.IsNullOrEmpty(currentTag) || isResolved.HasValue || !string.IsNullOrEmpty(searchTerm))
+            @if (!string.IsNullOrEmpty(ViewBag.Tag as string) || !string.IsNullOrEmpty(ViewBag.SearchTerm as string))
             {
                 <span>@Localizer["Try adjusting your filters or search terms to find what you're looking for."]</span>
             }

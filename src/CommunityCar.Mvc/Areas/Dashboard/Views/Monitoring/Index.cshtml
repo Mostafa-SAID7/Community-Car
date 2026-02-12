@@ -1,0 +1,60 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Monitoring"].Value;
+    var activeTab = ViewData["ActiveTab"]?.ToString() ?? "health";
+}
+
+<div class="dashboard-container">
+    <!-- Monitoring Header -->
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">
+                <i class="fas fa-heartbeat me-2"></i>
+                @Localizer["Monitoring"]
+            </h1>
+            <p class="dashboard-subtitle">@Localizer["Monitoring.Subtitle"]</p>
+        </div>
+    </div>
+
+    <!-- Monitoring Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring?tab=health" 
+               class="dashboard-tab @(activeTab == "health" ? "active" : "")">
+                <i class="fas fa-heartbeat"></i>
+                <span>@Localizer["Health"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring?tab=system" 
+               class="dashboard-tab @(activeTab == "system" ? "active" : "")">
+                <i class="fas fa-server"></i>
+                <span>@Localizer["System"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Monitoring?tab=audit" 
+               class="dashboard-tab @(activeTab == "audit" ? "active" : "")">
+                <i class="fas fa-clipboard-list"></i>
+                <span>@Localizer["Audit Logs"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Monitoring Content -->
+    <div class="dashboard-content">
+        @switch (activeTab)
+        {
+            case "health":
+                <partial name="_HealthTab" />
+                break;
+            case "system":
+                <partial name="_SystemTab" />
+                break;
+            case "audit":
+                <partial name="_AuditTab" />
+                break;
+            default:
+                <partial name="_HealthTab" />
+                break;
+        }
+    </div>
+</div>

@@ -7,11 +7,11 @@ using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CommunityCar.Web.Areas.Dashboard.Controllers.security;
+namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Administration.Security;
 
 [Area("Dashboard")]
 [Authorize(Roles = "SuperAdmin,Admin")]
-[Route("{culture}/Dashboard/Administration/Security")]
+[Route("{culture}/Dashboard/Administration/[controller]")]
 public class SecurityController : Controller
 {
     private readonly ISecurityAlertService _securityAlertService;

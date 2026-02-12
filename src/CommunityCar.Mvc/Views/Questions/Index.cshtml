@@ -1,10 +1,10 @@
 @model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
 @{
     ViewData["Title"] = Localizer["Questions & Answers"];
-    var currentTag = ViewBag.CurrentTag as string;
-    var isResolved = ViewBag.IsResolved as bool?;
+    var currentTag = ViewBag.Tag as string;
     var sortBy = ViewBag.SortBy as string ?? "recent";
     var searchTerm = ViewBag.SearchTerm as string;
+    var isResolved = ViewBag.IsResolved as bool?;
 }
 
 

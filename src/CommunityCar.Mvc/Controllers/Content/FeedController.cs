@@ -1,6 +1,7 @@
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Mvc.ViewModels.Feed;
+using CommunityCar.Domain.Enums.Community.Feed;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;

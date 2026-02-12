@@ -1,7 +1,7 @@
-@model CommunityCar.Web.ViewModels.Groups.GroupViewModel
+@model CommunityCar.Mvc.ViewModels.Groups.GroupViewModel
 @{
     ViewData["Title"] = Model.Name;
-    var members = ViewBag.Members as List<CommunityCar.Web.ViewModels.Groups.GroupMemberViewModel> ?? new List<CommunityCar.Web.ViewModels.Groups.GroupMemberViewModel>();
+    var members = ViewBag.Members as List<CommunityCar.Mvc.ViewModels.Groups.GroupMemberViewModel> ?? new List<CommunityCar.Mvc.ViewModels.Groups.GroupMemberViewModel>();
     var activeTab = ViewBag.ActiveTab as string ?? "about";
 }
 

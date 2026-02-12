@@ -1,4 +1,4 @@
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 /// <summary>
 /// ViewModel for user search results

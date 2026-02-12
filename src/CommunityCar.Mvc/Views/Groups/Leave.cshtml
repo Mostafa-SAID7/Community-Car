@@ -1,7 +1,8 @@
 @model CommunityCar.Domain.DTOs.Community.GroupDto
-@using CommunityCar.Mvc.Controllers.Community
+@* @using CommunityCar.Mvc.Controllers.Community *@
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<GroupsController> Localizer
+@* @inject IStringLocalizer<GroupsController> Localizer *@
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = Localizer["LeaveGroup"];

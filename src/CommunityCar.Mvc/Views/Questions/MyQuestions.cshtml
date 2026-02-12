@@ -1,4 +1,4 @@
-@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
+@model CommunityCar.Mvc.ViewModels.Qa.QuestionsListViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
@@ -47,7 +47,7 @@
 }
 
 <!-- Questions List -->
-@if (!Model.Items.Any())
+@if (!Model.Questions.Any())
 {
     <div class="empty-state">
         <i class="fas fa-question-circle"></i>
@@ -79,7 +79,7 @@ else
                     <div class="text-success mb-2">
                         <i class="fas fa-check-circle fa-2x"></i>
                     </div>
-                    <h3 class="mb-0 fw-bold">@Model.Items.Count(q => q.IsResolved)</h3>
+                    <h3 class="mb-0 fw-bold">@Model.Questions.Count(q => q.IsResolved)</h3>
                     <small class="text-muted">@Localizer["Resolved"]</small>
                 </div>
             </div>
@@ -90,7 +90,7 @@ else
                     <div class="text-warning mb-2">
                         <i class="fas fa-clock fa-2x"></i>
                     </div>
-                    <h3 class="mb-0 fw-bold">@Model.Items.Count(q => !q.IsResolved)</h3>
+                    <h3 class="mb-0 fw-bold">@Model.Questions.Count(q => !q.IsResolved)</h3>
                     <small class="text-muted">@Localizer["Open"]</small>
                 </div>
             </div>
@@ -101,7 +101,7 @@ else
                     <div class="text-info mb-2">
                         <i class="fas fa-comments fa-2x"></i>
                     </div>
-                    <h3 class="mb-0 fw-bold">@Model.Items.Sum(q => q.AnswerCount)</h3>
+                    <h3 class="mb-0 fw-bold">@Model.Questions.Sum(q => q.AnswerCount)</h3>
                     <small class="text-muted">@Localizer["Total Answers"]</small>
                 </div>
             </div>
@@ -109,7 +109,7 @@ else
     </div>
 
     <div class="row g-3">
-        @foreach (var question in Model.Items)
+        @foreach (var question in Model.Questions)
         {
             <div class="col-12">
                 <div class="card question-card">

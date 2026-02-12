@@ -14,9 +14,12 @@ public class AnswerViewModel
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorProfilePicture { get; set; }
+    public string AuthorRankName { get; set; } = string.Empty;
+    public bool AuthorIsExpert { get; set; }
     
     public int VoteCount { get; set; }
     public bool IsAccepted { get; set; }
+    public int CurrentUserVote { get; set; }
     
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }

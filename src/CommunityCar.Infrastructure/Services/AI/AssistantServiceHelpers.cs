@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using CommunityCar.Domain.Models.AI;
 using Microsoft.Extensions.Logging;
 
-namespace CommunityCar.Infrastructure.Services
+namespace CommunityCar.Infrastructure.Services.AI
 {
     public partial class AssistantService
     {

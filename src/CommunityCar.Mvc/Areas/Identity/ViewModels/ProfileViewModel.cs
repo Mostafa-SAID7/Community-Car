@@ -2,7 +2,7 @@ using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Domain.Enums.Community.friends;
 
-namespace CommunityCar.Web.Areas.Identity.ViewModels;
+namespace CommunityCar.Mvc.Areas.Identity.ViewModels;
 
 public class ProfileViewModel
 {

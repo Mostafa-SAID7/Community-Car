@@ -1,4 +1,4 @@
-@model CommunityCar.Domain.Base.PagedResult<CommunityCar.Domain.DTOs.Community.QuestionDto>
+@model CommunityCar.Mvc.ViewModels.Qa.QuestionsListViewModel
 @{
     ViewData["Title"] = "Bookmarks";
 }
@@ -35,7 +35,7 @@
 }
 
 <!-- Questions List -->
-@if (!Model.Items.Any())
+@if (!Model.Questions.Any())
 {
     <div class="empty-state">
         <i class="fas fa-bookmark"></i>
@@ -49,7 +49,7 @@
 else
 {
     <div class="row g-3">
-        @foreach (var question in Model.Items)
+        @foreach (var question in Model.Questions)
         {
             <div class="col-12">
                 <div class="card question-card">

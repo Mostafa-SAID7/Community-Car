@@ -2385,3 +2385,75 @@ canvas {
         font-size: 0.8125rem;
     }
 }
+
+
+/* ============================================
+   Administration Tab Content
+   ============================================ */
+.administration-tab-content {
+    padding: 1.5rem 0;
+}
+
+.administration-tab-content .card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.administration-tab-content .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 767.98px) {
+    .administration-tab-content {
+        padding: 1rem 0;
+    }
+}
+
+
+/* ============================================
+   Monitoring Tab Content
+   ============================================ */
+.monitoring-tab-content {
+    padding: 1.5rem 0;
+}
+
+.monitoring-tab-content .card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.monitoring-tab-content .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 767.98px) {
+    .monitoring-tab-content {
+        padding: 1rem 0;
+    }
+}
+
+/* ============================================
+   Purple Color Variant for Storage
+   ============================================ */
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.text-purple {
+    color: #6f42c1 !important;
+}
+
+.btn-outline-purple {
+    color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-outline-purple:hover {
+    color: #fff;
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.bg-purple.bg-opacity-10 {
+    background-color: rgba(111, 66, 193, 0.1) !important;
+}

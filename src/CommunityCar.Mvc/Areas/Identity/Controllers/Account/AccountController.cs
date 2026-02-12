@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using CommunityCar.Domain.Entities.Identity.Users;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using CommunityCar.Web.Areas.Identity.ViewModels;
+using CommunityCar.Mvc.Areas.Identity.ViewModels;
 using CommunityCar.Domain.Interfaces.Common;
 using Microsoft.EntityFrameworkCore;
 

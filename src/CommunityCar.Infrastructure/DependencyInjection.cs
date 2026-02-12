@@ -38,7 +38,7 @@ using CommunityCar.Infrastructure.Services.Dashboard.Administration.Security;
 using CommunityCar.Infrastructure.Services.Dashboard.Administration.Localization;
 using CommunityCar.Infrastructure.Services.Dashboard.Administration.Settings;
 using CommunityCar.Infrastructure.Services.Common;
-using CommunityCar.Infrastructure.Services;
+using CommunityCar.Infrastructure.Services.AI;
 using CommunityCar.Infrastructure.Services.ML;
 using CommunityCar.Infrastructure.Interfaces.ML;
 using CommunityCar.Infrastructure.Handlers.Community;
@@ -217,6 +217,7 @@ public static class DependencyInjection
         services.AddScoped<IGuideService, GuideService>();
         services.AddScoped<INewsService, NewsService>();
         services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IFeedService, FeedService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<IAssistantService, AssistantService>();
         services.AddScoped<IMLPipelineService, MLPipelineService>();

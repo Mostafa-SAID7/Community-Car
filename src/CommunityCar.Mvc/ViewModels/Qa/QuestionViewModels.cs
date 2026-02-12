@@ -21,15 +21,43 @@ public class QuestionViewModel
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorProfilePicture { get; set; }
+    public string AuthorRankName { get; set; } = string.Empty;
+    public bool AuthorIsExpert { get; set; }
     
     public int ViewCount { get; set; }
     public int VoteCount { get; set; }
     public int AnswerCount { get; set; }
+    public int BookmarkCount { get; set; }
+    public int ReactionCount { get; set; }
+    public int ShareCount { get; set; }
     public bool IsResolved { get; set; }
     public Guid? AcceptedAnswerId { get; set; }
     
+    public int CurrentUserVote { get; set; }
+    public bool IsBookmarkedByUser { get; set; }
+    public int? CurrentUserReactionType { get; set; }
+    
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
+}
+
+public class QuestionsListViewModel
+{
+    public List<QuestionViewModel> Questions { get; set; } = new();
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
+    public int TotalPages { get; set; }
+    public string? SearchTerm { get; set; }
+    public string? Tag { get; set; }
+    public string? SortBy { get; set; }
+}
+
+public class QuestionDetailsViewModel
+{
+    public QuestionViewModel Question { get; set; } = new();
+    public List<AnswerViewModel> Answers { get; set; } = new();
+    public List<QuestionViewModel> RelatedQuestions { get; set; } = new();
 }
 
 public class CreateQuestionViewModel

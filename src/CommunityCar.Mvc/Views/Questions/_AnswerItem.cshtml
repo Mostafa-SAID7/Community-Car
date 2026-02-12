@@ -1,4 +1,4 @@
-@model CommunityCar.Domain.DTOs.Community.AnswerDto
+@model CommunityCar.Mvc.ViewModels.Qa.AnswerViewModel
 @{
     var currentUserId = ViewBag.CurrentUserId as Guid?;
     var isQuestionAuthor = ViewBag.IsQuestionAuthor as bool? ?? false;
@@ -78,10 +78,7 @@
                 <!-- Comments Section -->
                 <div class="comments-section mt-4 bg-light rounded-3 p-3">
                     <div id="comments-list-@Model.Id">
-                        @if (Model.Comments != null && Model.Comments.Any())
-                        {
-                            <partial name="_CommentList" model="Model.Comments" />
-                        }
+                        @* Comments would be rendered here if we had a _CommentList partial *@
                     </div>
 
                     <!-- Add Comment Form (Hidden by default) -->
