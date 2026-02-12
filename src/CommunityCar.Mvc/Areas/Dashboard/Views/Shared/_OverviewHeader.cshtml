@@ -1,0 +1,22 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    var title = ViewData["PageTitle"]?.ToString() ?? Localizer["Dashboard"];
+    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? Localizer["Monitor your metrics"];
+}
+
+<!-- Page Header -->
+<div class="dashboard-page-header">
+    <div class="dashboard-header-content">
+        <div class="dashboard-header-text">
+            <h1 class="dashboard-title">@title</h1>
+            <p class="dashboard-subtitle">@subtitle</p>
+        </div>
+        <div class="dashboard-header-actions">
+            <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                <span>@Localizer["Refresh"]</span>
+            </button>
+        </div>
+    </div>
+</div>
