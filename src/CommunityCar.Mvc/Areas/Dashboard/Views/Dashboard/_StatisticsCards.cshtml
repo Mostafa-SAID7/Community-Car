@@ -1,0 +1,65 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Dashboard.DashboardSummaryViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="dashboard-stats-grid">
+    <div class="dashboard-stat-card dashboard-stat-card-primary">
+        <div class="dashboard-stat-content">
+            <div class="dashboard-stat-icon dashboard-stat-icon-primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="dashboard-stat-info">
+                <div class="dashboard-stat-label">@Localizer["Total Users"]</div>
+                <div class="dashboard-stat-value">@Model.TotalUsers.ToString("N0")</div>
+                <div class="dashboard-stat-change dashboard-stat-change-positive">
+                    <i class="fas fa-arrow-up"></i>@Model.UserGrowthPercentage.ToString("F1")% @Localizer["from last month"]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card dashboard-stat-card-success">
+        <div class="dashboard-stat-content">
+            <div class="dashboard-stat-icon dashboard-stat-icon-success">
+                <i class="fas fa-user-friends"></i>
+            </div>
+            <div class="dashboard-stat-info">
+                <div class="dashboard-stat-label">@Localizer["Friendships"]</div>
+                <div class="dashboard-stat-value">@Model.TotalFriendships.ToString("N0")</div>
+                <div class="dashboard-stat-change dashboard-stat-change-positive">
+                    <i class="fas fa-arrow-up"></i>8% @Localizer["from last month"]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card dashboard-stat-card-warning">
+        <div class="dashboard-stat-content">
+            <div class="dashboard-stat-icon dashboard-stat-icon-warning">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="dashboard-stat-info">
+                <div class="dashboard-stat-label">@Localizer["Active Events"]</div>
+                <div class="dashboard-stat-value">@Model.ActiveEvents.ToString("N0")</div>
+                <div class="dashboard-stat-change dashboard-stat-change-info">
+                    <i class="fas fa-calendar"></i>@Localizer["This month"]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card dashboard-stat-card-info">
+        <div class="dashboard-stat-content">
+            <div class="dashboard-stat-icon dashboard-stat-icon-info">
+                <i class="fas fa-heart-pulse"></i>
+            </div>
+            <div class="dashboard-stat-info">
+                <div class="dashboard-stat-label">@Localizer["System Health"]</div>
+                <div class="dashboard-stat-value">@Model.SystemHealth%</div>
+                <div class="dashboard-stat-change dashboard-stat-change-positive">
+                    <i class="fas fa-check-circle"></i>@Localizer["All systems operational"]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

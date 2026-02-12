@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<!-- Weekly Activity Chart -->
+<div class="dashboard-card bg-red">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["Weekly Activity"]</h5>
+        <div class="dashboard-btn-group">
+            <button type="button" class="dashboard-btn-group-item active" data-period="week">@Localizer["Week"]</button>
+            <button type="button" class="dashboard-btn-group-item" data-period="month">@Localizer["Month"]</button>
+            <button type="button" class="dashboard-btn-group-item" data-period="year">@Localizer["Year"]</button>
+        </div>
+    </div>
+    <div class="dashboard-card-body">
+        <canvas id="activityChart" height="80"></canvas>
+    </div>
+</div>
+
+<!-- User Growth Trend Chart -->
+<div class="dashboard-card bg-red">
+    <div class="dashboard-card-header">
+        <h5 class="dashboard-card-title">@Localizer["User Growth Trend"]</h5>
+    </div>
+    <div class="dashboard-card-body">
+        <canvas id="growthChart" height="80"></canvas>
+    </div>
+</div>

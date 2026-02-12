@@ -5,6 +5,7 @@ using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Base;
 using CommunityCar.Domain.DTOs.Community;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Analytics;
 
 namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Reports;
 

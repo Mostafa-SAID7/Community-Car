@@ -1,4 +1,5 @@
 using CommunityCar.Infrastructure.Data.Seed;
+using CommunityCar.Infrastructure.Mappings.Community.Friends;
 
 try
 {

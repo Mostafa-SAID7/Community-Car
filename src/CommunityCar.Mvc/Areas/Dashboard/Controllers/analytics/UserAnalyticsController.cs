@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Interfaces.Community;
 using CommunityCar.Domain.Base;
-using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Analytics;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.analytics;
 

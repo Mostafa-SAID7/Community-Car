@@ -2,9 +2,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = Localizer["Widgets"];
-    ViewData["PageTitle"] = Localizer["Dashboard Widgets"];
-    ViewData["PageSubtitle"] = Localizer["Customizable widgets and quick insights"];
+    ViewData["Title"] = Localizer["Widgets"].Value;
+    ViewData["PageTitle"] = Localizer["Dashboard Widgets"].Value;
+    ViewData["PageSubtitle"] = Localizer["Customizable widgets and quick insights"].Value;
 }
 
 @section Styles {

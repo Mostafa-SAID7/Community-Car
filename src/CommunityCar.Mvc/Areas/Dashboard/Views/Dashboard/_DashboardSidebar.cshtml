@@ -212,13 +212,13 @@ function saveTask() {
     const dueDate = document.getElementById('taskDueDate').value;
     
     if (!title) {
-        alert('@Localizer["Please enter a task title"]');
+        alert('@Localizer["Please enter a task title"].Value');
         return;
     }
     
     // TODO: Implement actual save functionality
     console.log('Saving task:', { title, description, priority, dueDate });
-    alert('@Localizer["Task saved successfully!"]');
+    alert('@Localizer["Task saved successfully!"].Value');
     
     // Close modal and reset form
     const modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
@@ -234,13 +234,13 @@ function saveTarget() {
     const notes = document.getElementById('targetNotes').value;
     
     if (!name || !value) {
-        alert('@Localizer["Please enter target name and value"]');
+        alert('@Localizer["Please enter target name and value"].Value');
         return;
     }
     
     // TODO: Implement actual save functionality
     console.log('Saving target:', { name, metric, value, deadline, notes });
-    alert('@Localizer["Target saved successfully!"]');
+    alert('@Localizer["Target saved successfully!"].Value');
     
     // Close modal and reset form
     const modal = bootstrap.Modal.getInstance(document.getElementById('addTargetModal'));

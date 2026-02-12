@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using CommunityCar.Domain.Entities.Identity.Users;
 using CommunityCar.Domain.Entities.Identity.Roles;
-using CommunityCar.Mvc.Areas.Dashboard.ViewModels.management;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Management;
 
 namespace CommunityCar.Web.Areas.Dashboard.Controllers.management;
 

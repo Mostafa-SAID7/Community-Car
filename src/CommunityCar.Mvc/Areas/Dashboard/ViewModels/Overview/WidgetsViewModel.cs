@@ -1,4 +1,4 @@
-using CommunityCar.Domain.DTOs.Dashboard;
+using CommunityCar.Domain.DTOs.Dashboard.Overview;
 using CommunityCar.Domain.Models;
 
 namespace CommunityCar.Mvc.Areas.Dashboard.ViewModels.Overview;

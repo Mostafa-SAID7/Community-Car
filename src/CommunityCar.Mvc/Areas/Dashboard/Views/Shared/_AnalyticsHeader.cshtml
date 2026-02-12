@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizerFactory LocalizerFactory
+@{
+    var analyticsLocalizer = LocalizerFactory.Create("AnalyticsController", "CommunityCar.Mvc.Areas.Dashboard.Controllers.Analytics");
+    var title = ViewData["PageTitle"]?.ToString() ?? analyticsLocalizer["Analytics"].Value;
+    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? analyticsLocalizer["Analyze your data and insights"].Value;
+}
+
+<!-- Page Header -->
+<div class="dashboard-page-header">
+    <div class="dashboard-header-content">
+        <div class="dashboard-header-text">
+            <h1 class="dashboard-title">@title</h1>
+            <p class="dashboard-subtitle">@subtitle</p>
+        </div>
+        <div class="dashboard-header-actions">
+            <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                <span>@analyticsLocalizer["Refresh"]</span>
+            </button>
+        </div>
+    </div>
+</div>

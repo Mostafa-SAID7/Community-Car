@@ -1,0 +1,205 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="~/js/pages/dashboard.js"></script>
+<script>
+    // Load Google Charts
+    google.charts.load('current', {
+        'packages': ['geochart'],
+        'mapsApiKey': 'YOUR_API_KEY'
+    });
+    google.charts.setOnLoadCallback(drawGeoChart);
+
+    // Activity Chart (Line)
+    const activityCtx = document.getElementById('activityChart');
+    const activityData = @Html.Raw(Json.Serialize(ViewBag.ActivityData ?? new List<int>()));
+    const activityLabels = @Html.Raw(Json.Serialize(ViewBag.ActivityLabels ?? new List<string>()));
+
+    let activityChart = new Chart(activityCtx, {
+        type: 'line',
+        data: {
+            labels: activityLabels,
+            datasets: [{
+                label: '@Localizer["User Registrations"].Value',
+                data: activityData,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+
+    // Store chart instance for period button functionality
+    if (typeof DashboardPage !== 'undefined') {
+        DashboardPage.setActivityChartInstance(activityChart);
+    }
+
+    // Content Distribution Chart (Doughnut)
+    const contentCtx = document.getElementById('contentChart');
+    const contentData = @Html.Raw(Json.Serialize(ViewBag.ContentData ?? new List<int>()));
+    const contentLabels = @Html.Raw(Json.Serialize(ViewBag.ContentLabels ?? new List<string>()));
+
+    new Chart(contentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: contentLabels,
+            datasets: [{
+                data: contentData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // User Growth Chart (Line)
+    const growthCtx = document.getElementById('growthChart');
+    const growthData = @Html.Raw(Json.Serialize(ViewBag.GrowthData ?? new List<int>()));
+    const growthLabels = @Html.Raw(Json.Serialize(ViewBag.GrowthLabels ?? new List<string>()));
+
+    new Chart(growthCtx, {
+        type: 'line',
+        data: {
+            labels: growthLabels,
+            datasets: [{
+                label: '@Localizer["New Users"].Value',
+                data: growthData,
+                borderColor: 'rgb(153, 102, 255)',
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Geo Chart
+    function drawGeoChart() {
+        const locationData = @Html.Raw(Json.Serialize(ViewBag.LocationData ?? new Dictionary<string, int>()));
+        
+        const dataArray = [['Country', 'Users']];
+        for (const [location, count] of Object.entries(locationData)) {
+            dataArray.push([location, count]);
+        }
+
+        const data = google.visualization.arrayToDataTable(dataArray);
+
+        const options = {
+            colorAxis: {colors: ['#e0f2f1', '#00695c']},
+            backgroundColor: '#f5f5f5',
+            datalessRegionColor: '#f8bbd0',
+            defaultColor: '#f5f5f5'
+        };
+
+        const chart = new google.visualization.GeoChart(document.getElementById('geoChart'));
+        chart.draw(data, options);
+    }
+
+    // Update clock
+    function updateClock() {
+        const now = new Date();
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        document.getElementById('currentDay').textContent = days[now.getDay()];
+        document.getElementById('currentDate').textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Simple calendar
+    function generateCalendar() {
+        const calendar = document.getElementById('dashboardCalendar');
+        if (!calendar) return;
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        let html = '<div class="dashboard-calendar-header">';
+        html += '<div class="dashboard-calendar-month">' + now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) + '</div>';
+        html += '</div>';
+        html += '<div class="dashboard-calendar-grid">';
+        html += '<div class="dashboard-calendar-day-name">S</div>';
+        html += '<div class="dashboard-calendar-day-name">M</div>';
+        html += '<div class="dashboard-calendar-day-name">T</div>';
+        html += '<div class="dashboard-calendar-day-name">W</div>';
+        html += '<div class="dashboard-calendar-day-name">T</div>';
+        html += '<div class="dashboard-calendar-day-name">F</div>';
+        html += '<div class="dashboard-calendar-day-name">S</div>';
+        
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="dashboard-calendar-day dashboard-calendar-day-empty"></div>';
+        }
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const isToday = day === now.getDate();
+            html += `<div class="dashboard-calendar-day ${isToday ? 'dashboard-calendar-day-today' : ''}">${day}</div>`;
+        }
+        
+        html += '</div>';
+        calendar.innerHTML = html;
+    }
+
+    generateCalendar();
+</script>

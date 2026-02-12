@@ -1,8 +1,9 @@
-using CommunityCar.Domain.DTOs.Dashboard;
+using CommunityCar.Domain.DTOs.Dashboard.Administration.Settings;
 using CommunityCar.Domain.Enums.Dashboard.settings;
 using CommunityCar.Domain.Interfaces.Common;
-using CommunityCar.Domain.Interfaces.Dashboard;
+using CommunityCar.Domain.Interfaces.Dashboard.Administration.Settings;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels;
+using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

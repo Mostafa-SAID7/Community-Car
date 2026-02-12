@@ -1,0 +1,179 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="analytics-analysis-tab">
+    <div class="row">
+        <!-- Overview Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card dashboard-card-primary">
+                <div class="dashboard-card-body">
+                    <div class="dashboard-stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="dashboard-stat-content">
+                        <div class="dashboard-stat-label">@Localizer["Total Analytics"]</div>
+                        <div class="dashboard-stat-value">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card dashboard-card-success">
+                <div class="dashboard-card-body">
+                    <div class="dashboard-stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="dashboard-stat-content">
+                        <div class="dashboard-stat-label">@Localizer["Active Users"]</div>
+                        <div class="dashboard-stat-value">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card dashboard-card-info">
+                <div class="dashboard-card-body">
+                    <div class="dashboard-stat-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="dashboard-stat-content">
+                        <div class="dashboard-stat-label">@Localizer["Total Views"]</div>
+                        <div class="dashboard-stat-value">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card dashboard-card-warning">
+                <div class="dashboard-card-body">
+                    <div class="dashboard-stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="dashboard-stat-content">
+                        <div class="dashboard-stat-label">@Localizer["Engagement Rate"]</div>
+                        <div class="dashboard-stat-value">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Analytics Overview"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="analyticsOverviewChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Content Distribution"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <canvas id="contentDistributionChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h5 class="dashboard-card-title">@Localizer["Quick Access"]</h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="dashboard-actions-list">
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Content" 
+                           class="dashboard-action-item dashboard-action-item-primary">
+                            <i class="fas fa-file-lines"></i>
+                            <span>@Localizer["Content Reports"]</span>
+                        </a>
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Users" 
+                           class="dashboard-action-item dashboard-action-item-success">
+                            <i class="fas fa-users"></i>
+                            <span>@Localizer["User Reports"]</span>
+                        </a>
+                        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" 
+                           class="dashboard-action-item dashboard-action-item-info">
+                            <i class="fas fa-clock-rotate-left"></i>
+                            <span>@Localizer["User Activity"]</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Analytics Overview Chart
+        const analyticsCtx = document.getElementById('analyticsOverviewChart');
+        new Chart(analyticsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: '@Localizer["Views"].Value',
+                    data: [0, 0, 0, 0, 0, 0],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Content Distribution Chart
+        const contentCtx = document.getElementById('contentDistributionChart');
+        new Chart(contentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['@Localizer["Posts"].Value', '@Localizer["Questions"].Value', '@Localizer["Events"].Value'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}

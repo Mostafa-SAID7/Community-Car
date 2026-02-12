@@ -1,0 +1,30 @@
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Dashboard.DashboardSummaryViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="dashboard-metrics-grid">
+    <div class="dashboard-metric-card dashboard-metric-card-primary">
+        <div class="dashboard-metric-label">@Localizer["Total Posts"]</div>
+        <div class="dashboard-metric-value">@Model.TotalPosts.ToString("N0")</div>
+    </div>
+    <div class="dashboard-metric-card dashboard-metric-card-info">
+        <div class="dashboard-metric-label">@Localizer["Questions"]</div>
+        <div class="dashboard-metric-value">@Model.TotalQuestions.ToString("N0")</div>
+    </div>
+    <div class="dashboard-metric-card dashboard-metric-card-success">
+        <div class="dashboard-metric-label">@Localizer["Groups"]</div>
+        <div class="dashboard-metric-value">@Model.TotalGroups.ToString("N0")</div>
+    </div>
+    <div class="dashboard-metric-card dashboard-metric-card-warning">
+        <div class="dashboard-metric-label">@Localizer["Reviews"]</div>
+        <div class="dashboard-metric-value">@Model.TotalReviews.ToString("N0")</div>
+    </div>
+    <div class="dashboard-metric-card dashboard-metric-card-danger">
+        <div class="dashboard-metric-label">@Localizer["Guides"]</div>
+        <div class="dashboard-metric-value">@Model.TotalGuides.ToString("N0")</div>
+    </div>
+    <div class="dashboard-metric-card dashboard-metric-card-secondary">
+        <div class="dashboard-metric-label">@Localizer["News"]</div>
+        <div class="dashboard-metric-value">@Model.TotalNews.ToString("N0")</div>
+    </div>
+</div>

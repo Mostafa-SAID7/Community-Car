@@ -1,7 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
-<!-- Recent Activity -->
 <div class="dashboard-card dashboard-card-warning">
     <div class="dashboard-card-header">
         <h5 class="dashboard-card-title">@Localizer["Recent Activity"]</h5>
@@ -9,8 +8,8 @@
             @Localizer["View All"]
         </a>
     </div>
-    <div class="dashboard-card-body" style="overflow-x: hidden;">
-        <div class="dashboard-table-wrapper" style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+    <div class="dashboard-card-body">
+        <div class="dashboard-table">
             <table class="dashboard-table dashboard-table-activity">
                 <thead>
                     <tr>
@@ -22,7 +21,7 @@
                 </thead>
                 <tbody>
                     @{
-                        var recentActivity = ViewBag.RecentActivity as IEnumerable<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Dashboard.RecentActivityDto>();
+                        var recentActivity = ViewBag.RecentActivity as IEnumerable<CommunityCar.Domain.DTOs.Dashboard.Overview.RecentActivityDto> ?? Enumerable.Empty<CommunityCar.Domain.DTOs.Dashboard.Overview.RecentActivityDto>();
                     }
                     @if (recentActivity.Any())
                     {

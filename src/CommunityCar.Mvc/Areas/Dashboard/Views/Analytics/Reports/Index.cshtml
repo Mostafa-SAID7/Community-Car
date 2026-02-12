@@ -1,0 +1,206 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Analytics.ContentReportsViewModel
+
+@{
+    ViewData["Title"] = Localizer["Content Reports"].Value;
+}
+
+<div class="dashboard-container">
+    <!-- Reports Header -->
+    <div class="dashboard-page-header">
+        <div class="dashboard-header-content">
+            <div class="dashboard-header-text">
+                <h1 class="dashboard-title">@Localizer["Content Reports"]</h1>
+                <p class="dashboard-subtitle">@Localizer["Analyze content performance and engagement"]</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>@Localizer["Refresh"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics" 
+               class="dashboard-tab">
+                <i class="fas fa-chart-line"></i>
+                <span>@Localizer["Analysis"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Content" 
+               class="dashboard-tab active">
+                <i class="fas fa-file-chart-pie"></i>
+                <span>@Localizer["Reports"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" 
+               class="dashboard-tab">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>@Localizer["User Activities"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Reports Content -->
+    <div class="dashboard-content">
+        <div class="row g-3 mb-4">
+            <!-- Summary Cards -->
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-primary">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-primary me-3">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Total Content"]</div>
+                                <div class="dashboard-stat-value">@Model.TotalContent</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-info">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-info me-3">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Total Views"]</div>
+                                <div class="dashboard-stat-value">@Model.TotalViews</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-success">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-success me-3">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Engagement"]</div>
+                                <div class="dashboard-stat-value">@Model.TotalEngagement</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-warning">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-warning me-3">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Avg Views"]</div>
+                                <div class="dashboard-stat-value">@Model.AverageViewsPerContent.ToString("F1")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content by Type -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-12">
+                <div class="dashboard-card dashboard-card-primary">
+                    <div class="dashboard-card-header">
+                        <h5 class="dashboard-card-title">@Localizer["Content by Type"]</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-question-circle fa-2x text-primary mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Questions"]</div>
+                                    <div class="dashboard-metric-value text-primary">@Model.QuestionCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-newspaper fa-2x text-info mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Posts"]</div>
+                                    <div class="dashboard-metric-value text-info">@Model.PostCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-calendar fa-2x text-success mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Events"]</div>
+                                    <div class="dashboard-metric-value text-success">@Model.EventCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-rss fa-2x text-warning mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["News"]</div>
+                                    <div class="dashboard-metric-value text-warning">@Model.NewsCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-book fa-2x text-danger mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Guides"]</div>
+                                    <div class="dashboard-metric-value text-danger">@Model.GuideCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <i class="fas fa-star fa-2x text-secondary mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Reviews"]</div>
+                                    <div class="dashboard-metric-value text-secondary">@Model.ReviewCount</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Authors -->
+        <div class="row g-3">
+            <div class="col-md-12">
+                <div class="dashboard-card dashboard-card-info">
+                    <div class="dashboard-card-header">
+                        <h5 class="dashboard-card-title">@Localizer["Top Authors"]</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="table-responsive">
+                            <table class="table dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer["Author"]</th>
+                                        <th>@Localizer["Content Count"]</th>
+                                        <th>@Localizer["Total Views"]</th>
+                                        <th>@Localizer["Engagement"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var author in Model.TopAuthors)
+                                    {
+                                        <tr>
+                                            <td>@author.AuthorName</td>
+                                            <td>@author.ContentCount</td>
+                                            <td>@author.TotalViews</td>
+                                            <td>@author.TotalEngagement</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

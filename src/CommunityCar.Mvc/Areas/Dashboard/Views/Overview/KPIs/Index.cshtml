@@ -2,9 +2,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = Localizer["KPIs"];
-    ViewData["PageTitle"] = Localizer["Key Performance Indicators"];
-    ViewData["PageSubtitle"] = Localizer["Monitor critical metrics and performance indicators"];
+    ViewData["Title"] = Localizer["KPIs"].Value;
+    ViewData["PageTitle"] = Localizer["Key Performance Indicators"].Value;
+    ViewData["PageSubtitle"] = Localizer["Monitor critical metrics and performance indicators"].Value;
 }
 
 @section Styles {
@@ -165,7 +165,7 @@
             data: {
                 labels: contentLabels,
                 datasets: [{
-                    label: '@Localizer["Content Items"]',
+                    label: '@Localizer["Content Items"].Value',
                     data: contentData,
                     backgroundColor: [
                         'rgba(251, 44, 54, 0.8)',
@@ -202,7 +202,7 @@
             data: {
                 labels: engagementLabels,
                 datasets: [{
-                    label: '@Localizer["Engagement"]',
+                    label: '@Localizer["Engagement"].Value',
                     data: engagementData,
                     backgroundColor: 'rgba(34, 197, 94, 0.8)',
                     borderColor: 'rgb(34, 197, 94)',
@@ -234,7 +234,7 @@
             data: {
                 labels: growthLabels,
                 datasets: [{
-                    label: '@Localizer["New Users"]',
+                    label: '@Localizer["New Users"].Value',
                     data: growthData,
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',

@@ -1,4 +1,4 @@
-using CommunityCar.Domain.Interfaces.Dashboard;
+using CommunityCar.Domain.Interfaces.Dashboard.Overview;
 using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Overview;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

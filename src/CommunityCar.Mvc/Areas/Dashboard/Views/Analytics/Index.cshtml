@@ -1,0 +1,42 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Analytics"].Value;
+}
+
+<div class="dashboard-container">
+    <!-- Analytics Header -->
+    <div class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">@Localizer["Analytics"]</h1>
+            <p class="dashboard-subtitle">@Localizer["Analytics.Subtitle"]</p>
+        </div>
+    </div>
+
+    <!-- Analytics Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics" 
+               class="dashboard-tab active">
+                <i class="fas fa-chart-line"></i>
+                <span>@Localizer["Analysis"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Content" 
+               class="dashboard-tab">
+                <i class="fas fa-file-chart-pie"></i>
+                <span>@Localizer["Reports"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" 
+               class="dashboard-tab">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>@Localizer["User Activities"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Analytics Content -->
+    <div class="dashboard-content">
+        <partial name="_AnalysisTab" />
+    </div>
+</div>

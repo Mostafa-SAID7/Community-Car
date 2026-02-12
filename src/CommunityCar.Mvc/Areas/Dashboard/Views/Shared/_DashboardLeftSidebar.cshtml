@@ -12,13 +12,9 @@
 
     <!-- Analytics Section -->
     <div class="dashboard-sidebar-section-title">@Localizer["Dashboard.Analytics"]</div>
-    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Users" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserReports" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentReports") ? "active" : "")">
-        <i class="fas fa-file-chart-pie"></i>
-        <span>@Localizer["Dashboard.Reports"]</span>
-    </a>
-    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && (ViewContext.RouteData.Values["controller"]?.ToString() == "UserActivity" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity") ? "active" : "")">
-        <i class="fas fa-clock-rotate-left"></i>
-        <span>@Localizer["Dashboard.UserActivity"]</span>
+    <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics" class="dashboard-sidebar-item @(ViewContext.RouteData.Values["area"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["controller"]?.ToString() == "Analytics" ? "active" : "")">
+        <i class="fas fa-chart-line"></i>
+        <span>@Localizer["Dashboard.Analytics"]</span>
     </a>
 
     <!-- Monitoring Section -->

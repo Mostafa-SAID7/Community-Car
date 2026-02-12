@@ -1,0 +1,233 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model CommunityCar.Mvc.Areas.Dashboard.ViewModels.Analytics.UserAnalyticsViewModel
+
+@{
+    ViewData["Title"] = Localizer["User Activities"].Value;
+}
+
+<div class="dashboard-container">
+    <!-- User Activities Header -->
+    <div class="dashboard-page-header">
+        <div class="dashboard-header-content">
+            <div class="dashboard-header-text">
+                <h1 class="dashboard-title">@Localizer["User Activities"]</h1>
+                <p class="dashboard-subtitle">@Localizer["Monitor user engagement and activity patterns"]</p>
+            </div>
+            <div class="dashboard-header-actions">
+                <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>@Localizer["Refresh"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Navigation Tabs -->
+    <div class="dashboard-nav-tabs">
+        <div class="dashboard-tabs-container">
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics" 
+               class="dashboard-tab">
+                <i class="fas fa-chart-line"></i>
+                <span>@Localizer["Analysis"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Content" 
+               class="dashboard-tab">
+                <i class="fas fa-file-chart-pie"></i>
+                <span>@Localizer["Reports"]</span>
+            </a>
+            <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" 
+               class="dashboard-tab active">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>@Localizer["User Activities"]</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- User Activities Content -->
+    <div class="dashboard-content">
+        <div class="row g-3 mb-4">
+            <!-- Summary Cards -->
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-primary">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-primary me-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Total Users"]</div>
+                                <div class="dashboard-stat-value">@Model.TotalUsers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-success">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-success me-3">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Active Users"]</div>
+                                <div class="dashboard-stat-value">@Model.ActiveUsers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-info">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-info me-3">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["New Users"]</div>
+                                <div class="dashboard-stat-value">@Model.NewUsers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card dashboard-card-warning">
+                    <div class="dashboard-card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="dashboard-stat-icon dashboard-stat-icon-warning me-3">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <div class="dashboard-stat-label">@Localizer["Avg Content/User"]</div>
+                                <div class="dashboard-stat-value">@Model.AverageContentPerUser.ToString("F1")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Role Distribution -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-12">
+                <div class="dashboard-card dashboard-card-primary">
+                    <div class="dashboard-card-header">
+                        <h5 class="dashboard-card-title">@Localizer["User Role Distribution"]</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-user-shield fa-2x text-danger mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Super Admins"]</div>
+                                    <div class="dashboard-metric-value text-danger">@Model.SuperAdminCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-user-cog fa-2x text-warning mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Admins"]</div>
+                                    <div class="dashboard-metric-value text-warning">@Model.AdminCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-user-tie fa-2x text-info mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Moderators"]</div>
+                                    <div class="dashboard-metric-value text-info">@Model.ModeratorCount</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-user fa-2x text-primary mb-2"></i>
+                                    <div class="dashboard-metric-label">@Localizer["Regular Users"]</div>
+                                    <div class="dashboard-metric-value text-primary">@Model.RegularUserCount</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Contributors -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-12">
+                <div class="dashboard-card dashboard-card-success">
+                    <div class="dashboard-card-header">
+                        <h5 class="dashboard-card-title">@Localizer["Top Contributors"]</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="table-responsive">
+                            <table class="table dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer["User"]</th>
+                                        <th>@Localizer["Contributions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var contributor in Model.TopContributors)
+                                    {
+                                        <tr>
+                                            <td>@contributor.UserName</td>
+                                            <td>@contributor.ContributionCount</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="row g-3">
+            <div class="col-md-12">
+                <div class="dashboard-card dashboard-card-info">
+                    <div class="dashboard-card-header">
+                        <h5 class="dashboard-card-title">@Localizer["Recent Registrations"]</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="table-responsive">
+                            <table class="table dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer["Username"]</th>
+                                        <th>@Localizer["Email"]</th>
+                                        <th>@Localizer["Registered"]</th>
+                                        <th>@Localizer["Status"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.RecentUsers)
+                                    {
+                                        <tr>
+                                            <td>@user.UserName</td>
+                                            <td>@user.Email</td>
+                                            <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (user.EmailConfirmed)
+                                                {
+                                                    <span class="badge bg-success">@Localizer["Verified"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">@Localizer["Pending"]</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,12 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using CommunityCar.Web.Areas.Dashboard.Controllers
 @inject IViewLocalizer Localizer
+@inject IStringLocalizerFactory LocalizerFactory
 @{
-    var title = ViewData["PageTitle"]?.ToString() ?? Localizer["Dashboard"].Value;
-    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? Localizer["Monitor your metrics"].Value;
+    var dashboardLocalizer = LocalizerFactory.Create(typeof(DashboardController));
+    var title = ViewData["PageTitle"]?.ToString() ?? dashboardLocalizer["Dashboard"].Value;
+    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? dashboardLocalizer["Monitor your metrics"].Value;
 }
 
 <!-- Page Header -->
@@ -15,7 +19,7 @@
         <div class="dashboard-header-actions">
             <button class="dashboard-btn dashboard-btn-secondary" onclick="location.reload()">
                 <i class="fas fa-sync-alt"></i>
-                <span>@Localizer["Refresh"]</span>
+                <span>@dashboardLocalizer["Refresh"]</span>
             </button>
         </div>
     </div>

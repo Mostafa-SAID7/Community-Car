@@ -1,5 +1,11 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using CommunityCar.Web.Areas.Dashboard.Controllers
 @inject IViewLocalizer Localizer
+@inject IStringLocalizerFactory LocalizerFactory
+@{
+    var dashboardLocalizer = LocalizerFactory.Create(typeof(DashboardController));
+}
 
 <!-- Dashboard Navigation Tabs -->
 <div class="dashboard-nav-tabs">
@@ -7,22 +13,22 @@
         <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard" 
            class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
             <i class="fas fa-chart-line"></i>
-            <span>@Localizer["Overview"]</span>
+            <span>@dashboardLocalizer["Overview"]</span>
         </a>
         <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/KPIs" 
            class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "KPIs" ? "active" : "")">
             <i class="fas fa-chart-bar"></i>
-            <span>@Localizer["KPIs"]</span>
+            <span>@dashboardLocalizer["KPIs"]</span>
         </a>
         <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Trends" 
            class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Trends" ? "active" : "")">
             <i class="fas fa-chart-area"></i>
-            <span>@Localizer["Trends"]</span>
+            <span>@dashboardLocalizer["Trends"]</span>
         </a>
         <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Widgets" 
            class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Widgets" ? "active" : "")">
             <i class="fas fa-th"></i>
-            <span>@Localizer["Widgets"]</span>
+            <span>@dashboardLocalizer["Widgets"]</span>
         </a>
     </div>
 </div>

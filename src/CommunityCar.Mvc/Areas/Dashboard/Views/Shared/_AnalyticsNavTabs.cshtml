@@ -1,0 +1,28 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@inject IViewLocalizer Localizer
+@inject IStringLocalizerFactory LocalizerFactory
+@{
+    var analyticsLocalizer = LocalizerFactory.Create("AnalyticsController", "CommunityCar.Mvc.Areas.Dashboard.Controllers.Analytics");
+}
+
+<!-- Analytics Navigation Tabs -->
+<div class="dashboard-nav-tabs">
+    <div class="dashboard-tabs-container">
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Analytics" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+            <i class="fas fa-chart-pie"></i>
+            <span>@analyticsLocalizer["Analysis"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/Reports/Users" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserReports" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentReports" ? "active" : "")">
+            <i class="fas fa-file-alt"></i>
+            <span>@analyticsLocalizer["Reports"]</span>
+        </a>
+        <a href="/@ViewContext.RouteData.Values["culture"]/Dashboard/Analytics/UserActivity" 
+           class="dashboard-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserAnalytics" || ViewContext.RouteData.Values["controller"]?.ToString() == "ContentActivity" ? "active" : "")">
+            <i class="fas fa-user-clock"></i>
+            <span>@analyticsLocalizer["User Activities"]</span>
+        </a>
+    </div>
+</div>
