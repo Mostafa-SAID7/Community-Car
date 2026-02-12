@@ -357,7 +357,7 @@
                         <div class="dashboard-datetime-date" id="currentDate">@DateTime.Now.ToString("MMMM dd, yyyy")</div>
                         <div class="dashboard-datetime-time" id="currentTime">@DateTime.Now.ToString("hh:mm:ss tt")</div>
                     </div>
-                    <button type="button" class="dashboard-btn bg-red dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTaskFeature"]')">
+                    <button type="button" class="dashboard-btn bg-red dashboard-btn-block" data-bs-toggle="modal" data-bs-target="#addTaskModal">
                         <i class="fas fa-plus"></i>
                         <span>@Localizer["Dashboard.AddTask"]</span>
                     </button>
@@ -371,7 +371,7 @@
                 </div>
                 <div class="dashboard-card-body">
                     <div class="dashboard-calendar" id="dashboardCalendar"></div>
-                    <button type="button" class="dashboard-btn dashboard-btn-success dashboard-btn-block" onclick="alert('@Localizer["Dashboard.AddTargetFeature"]')">
+                    <button type="button" class="dashboard-btn dashboard-btn-success dashboard-btn-block" data-bs-toggle="modal" data-bs-target="#addTargetModal">
                         <i class="fas fa-bullseye"></i>
                         <span>@Localizer["Dashboard.AddTarget"]</span>
                     </button>
