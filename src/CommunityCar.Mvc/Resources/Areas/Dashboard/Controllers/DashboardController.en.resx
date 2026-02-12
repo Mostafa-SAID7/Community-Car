@@ -187,7 +187,7 @@
   
   <!-- Date & Time -->
   <data name="Dashboard.DateTime" xml:space="preserve">
-    <value>Date & Time</value>
+    <value>Date &amp; Time</value>
   </data>
   <data name="Dashboard.AddTask" xml:space="preserve">
     <value>Add Task</value>

@@ -1,8 +1,8 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    var title = ViewData["PageTitle"]?.ToString() ?? Localizer["Dashboard"];
-    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? Localizer["Monitor your metrics"];
+    var title = ViewData["PageTitle"]?.ToString() ?? Localizer["Dashboard"].Value;
+    var subtitle = ViewData["PageSubtitle"]?.ToString() ?? Localizer["Monitor your metrics"].Value;
 }
 
 <!-- Page Header -->
