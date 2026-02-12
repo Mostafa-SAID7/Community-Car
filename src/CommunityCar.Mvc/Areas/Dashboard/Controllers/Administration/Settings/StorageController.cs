@@ -6,7 +6,7 @@ using CommunityCar.Mvc.Areas.Dashboard.ViewModels.Administration.Settings;
 namespace CommunityCar.Mvc.Areas.Dashboard.Controllers.Administration.Settings;
 
 [Area("Dashboard")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "SuperAdmin,Admin")]
 [Route("{culture}/Dashboard/Administration/Settings/[controller]")]
 public class StorageController : Controller
 {
